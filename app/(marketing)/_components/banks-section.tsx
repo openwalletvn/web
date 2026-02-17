@@ -18,7 +18,7 @@ export async function BanksSection() {
             <div className="relative w-16 h-16">
               <Image
                 src={getBankImageUrl(bank.logo_url)}
-                alt={bank.name}
+                alt=""
                 fill
                 className="object-contain"
               />

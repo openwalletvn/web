@@ -35,7 +35,7 @@ export async function CardsSection({ filters, title = 'Cards' }: Props) {
               <div className={`relative w-full ${isVertical ? 'aspect-[2/3]' : 'aspect-[16/10]'}`}>
                 <Image
                   src={getCardImageUrl(card)}
-                  alt={card.name}
+                  alt=""
                   fill
                   className="object-contain"
                 />

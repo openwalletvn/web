@@ -1,12 +1,27 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { getCard, getBank, getCardImageUrl, getBankImageUrl } from '@/lib/api';
+import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 
 export const runtime = 'edge';
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const card = await getCard(slug);
+    return {
+      title: `${card.name} | Cards | Open Wallet`,
+      description: `${card.name} — ${card.card_network} ${card.card_type.join('/')} card on Open Wallet.`,
+    };
+  } catch {
+    return { title: 'Card not found | Open Wallet' };
+  }
 }
 
 export default async function CardPage({ params }: Props) {
@@ -17,7 +32,7 @@ export default async function CardPage({ params }: Props) {
     card = await getCard(slug);
   } catch {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="flex items-center justify-center py-32 px-4">
         <div className="text-center">
           <p className="text-2xl font-semibold text-slate-900 mb-4">Card not found</p>
           <Link href="/cards" className="text-brand-red hover:underline">
@@ -32,24 +47,26 @@ export default async function CardPage({ params }: Props) {
   const isVertical = card.image_orientation === 'vertical';
 
   return (
-    <div className="min-h-screen bg-white px-4 py-12">
+    <div className="px-4 py-12">
       <div className="max-w-2xl mx-auto">
-        <Link href="/cards" className="text-slate-500 hover:text-slate-900 text-sm transition-colors">
-          ← Cards
-        </Link>
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Cards', href: '/cards' },
+            { label: card.name },
+          ]}
+        />
 
-        <div className="mt-8 flex flex-col gap-8">
-          {/* Card image */}
+        <div className="flex flex-col gap-8">
           <div className={`relative mx-auto ${isVertical ? 'w-48 aspect-[2/3]' : 'w-full max-w-sm aspect-[16/10]'}`}>
             <Image
               src={getCardImageUrl(card)}
-              alt={card.name}
+              alt=""
               fill
               className="object-contain"
             />
           </div>
 
-          {/* Card info */}
           <div className="flex flex-col gap-4">
             <div>
               <h1 className="text-3xl font-bold text-slate-900">{card.name}</h1>
@@ -98,7 +115,6 @@ export default async function CardPage({ params }: Props) {
               </a>
             )}
 
-            {/* Bank */}
             {bank && (
               <Link
                 href={`/banks/${bank.id}`}
@@ -107,7 +123,7 @@ export default async function CardPage({ params }: Props) {
                 <div className="relative w-8 h-8">
                   <Image
                     src={getBankImageUrl(bank.logo_url)}
-                    alt={bank.name}
+                    alt=""
                     fill
                     className="object-contain"
                   />

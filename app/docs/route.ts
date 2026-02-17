@@ -5,8 +5,7 @@ export const runtime = 'edge';
 export async function GET() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
-  const html = `
-<!doctype html>
+  const html = `<!doctype html>
 <html>
   <head>
     <title>OpenWallet API Documentation</title>
@@ -32,7 +31,6 @@ export async function GET() {
         "hideDownloadButton": false,
         "darkMode": false,
         "searchHotKey": "k",
-        "customCss": ".scalar-api-reference { --scalar-color-1: #2563EB; --scalar-color-2: #DC2626; --scalar-color-3: #0F172A; }",
         "metaData": {
           "title": "OpenWallet API",
           "description": "Vietnamese bank card data API"
@@ -40,8 +38,7 @@ export async function GET() {
       }'></script>
     <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
   </body>
-</html>
-  `;
+</html>`;
 
   return new NextResponse(html, {
     headers: {

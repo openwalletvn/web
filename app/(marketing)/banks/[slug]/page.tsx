@@ -1,13 +1,28 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getBank, getBankImageUrl } from '@/lib/api';
+import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { CardsSection, CardsSectionSkeleton } from '../../_components/cards-section';
 
 export const runtime = 'edge';
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const bank = await getBank(slug);
+    return {
+      title: `${bank.name} | Banks | Open Wallet`,
+      description: `${bank.full_name} — cards and details on Open Wallet.`,
+    };
+  } catch {
+    return { title: 'Bank not found | Open Wallet' };
+  }
 }
 
 export default async function BankPage({ params }: Props) {
@@ -18,7 +33,7 @@ export default async function BankPage({ params }: Props) {
     bank = await getBank(slug);
   } catch {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="flex items-center justify-center py-32 px-4">
         <div className="text-center">
           <p className="text-2xl font-semibold text-slate-900 mb-4">Bank not found</p>
           <Link href="/banks" className="text-brand-red hover:underline">
@@ -30,17 +45,21 @@ export default async function BankPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-white px-4 py-12">
+    <div className="px-4 py-12">
       <div className="max-w-6xl mx-auto">
-        <Link href="/banks" className="text-slate-500 hover:text-slate-900 text-sm transition-colors">
-          ← Banks
-        </Link>
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Banks', href: '/banks' },
+            { label: bank.name },
+          ]}
+        />
 
-        <div className="mt-8 flex items-start gap-6">
+        <div className="flex items-start gap-6 mb-12">
           <div className="relative w-28 h-28 shrink-0">
             <Image
               src={getBankImageUrl(bank.logo_url)}
-              alt={bank.name}
+              alt=""
               fill
               className="object-contain"
             />
@@ -58,7 +77,6 @@ export default async function BankPage({ params }: Props) {
               )}
             </div>
             <p className="text-slate-500 mt-1">{bank.full_name}</p>
-
             {bank.link && (
               <a
                 href={bank.link}
