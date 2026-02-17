@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@scalar/api-reference-react": "^0.8.57",
+    "@scalar/nextjs-api-reference": "^0.9.19",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.570.0",

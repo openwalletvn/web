@@ -8,7 +8,7 @@ export async function Header() {
   const banks = await getBanks();
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200">
+    <header className="bg-white border-b border-slate-200">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
 
         {/* Left: logo + desktop nav */}
