@@ -82,7 +82,7 @@ export default async function BankPage({ params }: Props) {
                 href={bank.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block mt-4 text-brand-red hover:underline text-sm"
+                className="inline-block mt-4 text-brand-red hover:underline text-base"
               >
                 {bank.link} ↗
               </a>

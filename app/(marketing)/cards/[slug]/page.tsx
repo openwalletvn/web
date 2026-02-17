@@ -85,7 +85,7 @@ export default async function CardPage({ params }: Props) {
               </div>
             </div>
 
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-base">
               {card.annual_fee !== undefined && (
                 <>
                   <dt className="text-slate-500">Annual fee</dt>
@@ -113,7 +113,7 @@ export default async function CardPage({ params }: Props) {
                 href={card.card_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brand-red hover:underline text-sm"
+                className="text-brand-red hover:underline text-base"
               >
                 View card details ↗
               </a>
@@ -132,7 +132,7 @@ export default async function CardPage({ params }: Props) {
                     className="object-contain"
                   />
                 </div>
-                <span className="text-sm font-medium text-slate-800">{bank.name}</span>
+                <span className="text-base font-medium text-slate-800">{bank.name}</span>
               </Link>
             )}
           </div>

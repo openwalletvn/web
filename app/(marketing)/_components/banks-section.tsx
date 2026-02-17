@@ -17,7 +17,7 @@ export async function BanksSection({ limit, showViewAll, description }: Props) {
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-slate-900">Banks</h2>
         {description && (
-          <p className="text-slate-500 mt-1 text-sm">{description}</p>
+          <p className="text-slate-500 mt-1">{description}</p>
         )}
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -35,7 +35,7 @@ export async function BanksSection({ limit, showViewAll, description }: Props) {
                 className="object-contain"
               />
             </div>
-            <span className="text-xs text-slate-600 text-center leading-tight">{bank.name}</span>
+            <span className="text-sm text-slate-600 text-center leading-tight">{bank.name}</span>
           </Link>
         ))}
       </div>
@@ -43,7 +43,7 @@ export async function BanksSection({ limit, showViewAll, description }: Props) {
         <div className="mt-8 text-center">
           <Link
             href="/banks"
-            className="inline-block px-6 py-2.5 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            className="inline-block px-6 py-2.5 border border-slate-300 rounded-lg font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
             View all {banks.length} banks →
           </Link>

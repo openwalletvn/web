@@ -3,7 +3,7 @@ import Link from 'next/link';
 export function Footer() {
   return (
     <footer className="bg-brand-dark border-t border-slate-800">
-      <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
+      <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-base text-slate-400">
         <span className="text-slate-300">© {new Date().getFullYear()} Open Wallet Vietnam</span>
         <nav className="flex items-center gap-6">
           <Link href="/" className="hover:text-white transition-colors">Home</Link>

@@ -81,7 +81,7 @@ export function Nav({ banks }: Props) {
                           className="object-contain"
                         />
                       </div>
-                      <span className="text-xs text-slate-600 text-center leading-tight line-clamp-2">
+                      <span className="text-sm text-slate-600 text-center leading-tight line-clamp-2">
                         {bank.name}
                       </span>
                     </Link>
@@ -92,7 +92,7 @@ export function Nav({ banks }: Props) {
                 <NavigationMenuLink asChild>
                   <Link
                     href="/banks"
-                    className="text-sm text-brand-red hover:underline font-medium"
+                    className="text-base text-brand-red hover:underline font-medium"
                   >
                     View all banks →
                   </Link>
@@ -112,7 +112,7 @@ export function Nav({ banks }: Props) {
           <NavigationMenuContent>
             <div className="w-[400px] p-4 grid grid-cols-2 gap-6">
               <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">
                   By Type
                 </p>
                 <ul className="space-y-1">
@@ -121,7 +121,7 @@ export function Nav({ banks }: Props) {
                       <NavigationMenuLink asChild>
                         <Link
                           href={`/cards?type=${t.value}`}
-                          className="block text-sm text-slate-700 hover:text-brand-red py-1 transition-colors"
+                          className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors"
                         >
                           {t.label}
                         </Link>
@@ -131,7 +131,7 @@ export function Nav({ banks }: Props) {
                 </ul>
               </div>
               <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">
                   By Network
                 </p>
                 <ul className="space-y-1">
@@ -140,7 +140,7 @@ export function Nav({ banks }: Props) {
                       <NavigationMenuLink asChild>
                         <Link
                           href={`/cards?network=${n.value}`}
-                          className="block text-sm text-slate-700 hover:text-brand-red py-1 transition-colors"
+                          className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors"
                         >
                           {n.label}
                         </Link>
@@ -153,7 +153,7 @@ export function Nav({ banks }: Props) {
                 <NavigationMenuLink asChild>
                   <Link
                     href="/cards"
-                    className="text-sm text-brand-red hover:underline font-medium"
+                    className="text-base text-brand-red hover:underline font-medium"
                   >
                     View all cards →
                   </Link>

@@ -64,7 +64,7 @@ export function MobileNav({ banks }: Props) {
             href="/"
             onClick={close}
             className={cn(
-              'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+              'px-3 py-2 rounded-md text-base font-medium transition-colors',
               pathname === '/'
                 ? 'text-brand-red bg-red-50'
                 : 'text-slate-700 hover:bg-slate-100',
@@ -75,7 +75,7 @@ export function MobileNav({ banks }: Props) {
 
           {/* Banks */}
           <Collapsible defaultOpen={pathname.startsWith('/banks')}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+            <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
               <span className={cn(pathname.startsWith('/banks') && 'text-brand-red')}>
                 Banks
               </span>
@@ -98,7 +98,7 @@ export function MobileNav({ banks }: Props) {
                         className="object-contain"
                       />
                     </div>
-                    <span className="text-xs text-slate-600 text-center leading-tight line-clamp-2">
+                    <span className="text-sm text-slate-600 text-center leading-tight line-clamp-2">
                       {bank.name}
                     </span>
                   </Link>
@@ -107,7 +107,7 @@ export function MobileNav({ banks }: Props) {
               <Link
                 href="/banks"
                 onClick={close}
-                className="block mt-2 ml-3 text-xs text-brand-red hover:underline font-medium"
+                className="block mt-2 ml-3 text-sm text-brand-red hover:underline font-medium"
               >
                 View all →
               </Link>
@@ -116,7 +116,7 @@ export function MobileNav({ banks }: Props) {
 
           {/* Cards */}
           <Collapsible defaultOpen={pathname.startsWith('/cards')}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+            <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
               <span className={cn(pathname.startsWith('/cards') && 'text-brand-red')}>
                 Cards
               </span>
@@ -125,7 +125,7 @@ export function MobileNav({ banks }: Props) {
             <CollapsibleContent>
               <div className="mt-1 ml-3 space-y-3">
                 <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1 px-2">
+                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-1 px-2">
                     By Type
                   </p>
                   {CARD_TYPES.map((t) => (
@@ -133,14 +133,14 @@ export function MobileNav({ banks }: Props) {
                       key={t.value}
                       href={`/cards?type=${t.value}`}
                       onClick={close}
-                      className="block px-2 py-1 text-sm text-slate-700 hover:text-brand-red transition-colors"
+                      className="block px-2 py-1 text-base text-slate-700 hover:text-brand-red transition-colors"
                     >
                       {t.label}
                     </Link>
                   ))}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1 px-2">
+                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-1 px-2">
                     By Network
                   </p>
                   {CARD_NETWORKS.map((n) => (
@@ -148,7 +148,7 @@ export function MobileNav({ banks }: Props) {
                       key={n.value}
                       href={`/cards?network=${n.value}`}
                       onClick={close}
-                      className="block px-2 py-1 text-sm text-slate-700 hover:text-brand-red transition-colors"
+                      className="block px-2 py-1 text-base text-slate-700 hover:text-brand-red transition-colors"
                     >
                       {n.label}
                     </Link>
@@ -157,7 +157,7 @@ export function MobileNav({ banks }: Props) {
                 <Link
                   href="/cards"
                   onClick={close}
-                  className="block text-xs text-brand-red hover:underline font-medium px-2"
+                  className="block text-sm text-brand-red hover:underline font-medium px-2"
                 >
                   View all →
                 </Link>
@@ -169,7 +169,7 @@ export function MobileNav({ banks }: Props) {
           <Link
             href="/docs"
             onClick={close}
-            className="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+            className="px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors"
           >
             API Docs
           </Link>

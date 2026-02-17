@@ -41,10 +41,14 @@ export interface Card {
     status?: 'published' | 'draft';
 }
 
+export type CardSort = 'fee_asc' | 'fee_desc';
+
 export interface CardFilters {
     type?: CardType;
     network?: CardNetwork;
     bank_id?: string;
+    co_brand?: boolean;
+    sort?: CardSort;
 }
 
 interface CardListResponse {
