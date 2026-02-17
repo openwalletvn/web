@@ -35,7 +35,7 @@ export async function BanksSection({ limit, showViewAll, description }: Props) {
                 className="object-contain"
               />
             </div>
-            <span className="text-sm text-slate-600 text-center leading-tight">{bank.name}</span>
+            <span className="text-base text-slate-600 text-center leading-tight">{bank.name}</span>
           </Link>
         ))}
       </div>

@@ -81,7 +81,7 @@ export function Nav({ banks }: Props) {
                           className="object-contain"
                         />
                       </div>
-                      <span className="text-sm text-slate-600 text-center leading-tight line-clamp-2">
+                      <span className="text-base text-slate-600 text-center leading-tight line-clamp-2">
                         {bank.name}
                       </span>
                     </Link>
@@ -112,7 +112,7 @@ export function Nav({ banks }: Props) {
           <NavigationMenuContent>
             <div className="w-[400px] p-4 grid grid-cols-2 gap-6">
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
                   By Type
                 </p>
                 <ul className="space-y-1">
@@ -131,7 +131,7 @@ export function Nav({ banks }: Props) {
                 </ul>
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
                   By Network
                 </p>
                 <ul className="space-y-1">

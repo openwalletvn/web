@@ -98,7 +98,7 @@ export function MobileNav({ banks }: Props) {
                         className="object-contain"
                       />
                     </div>
-                    <span className="text-sm text-slate-600 text-center leading-tight line-clamp-2">
+                    <span className="text-base text-slate-600 text-center leading-tight line-clamp-2">
                       {bank.name}
                     </span>
                   </Link>
@@ -107,7 +107,7 @@ export function MobileNav({ banks }: Props) {
               <Link
                 href="/banks"
                 onClick={close}
-                className="block mt-2 ml-3 text-sm text-brand-red hover:underline font-medium"
+                className="block mt-2 ml-3 text-base text-brand-red hover:underline font-medium"
               >
                 View all →
               </Link>
@@ -125,7 +125,7 @@ export function MobileNav({ banks }: Props) {
             <CollapsibleContent>
               <div className="mt-1 ml-3 space-y-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-1 px-2">
+                  <p className="text-base font-semibold text-slate-400 uppercase tracking-wide mb-1 px-2">
                     By Type
                   </p>
                   {CARD_TYPES.map((t) => (
@@ -140,7 +140,7 @@ export function MobileNav({ banks }: Props) {
                   ))}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-1 px-2">
+                  <p className="text-base font-semibold text-slate-400 uppercase tracking-wide mb-1 px-2">
                     By Network
                   </p>
                   {CARD_NETWORKS.map((n) => (
@@ -157,7 +157,7 @@ export function MobileNav({ banks }: Props) {
                 <Link
                   href="/cards"
                   onClick={close}
-                  className="block text-sm text-brand-red hover:underline font-medium px-2"
+                  className="block text-base text-brand-red hover:underline font-medium px-2"
                 >
                   View all →
                 </Link>
