@@ -75,7 +75,7 @@ export default async function CardPage({ params }: Props) {
             <div>
               <h1 className="text-3xl font-bold text-slate-900">{card.name}</h1>
               <div className="flex flex-wrap gap-2 mt-2">
-                <Badge variant="secondary" className="capitalize bg-brand-blue/10 text-brand-blue border-transparent">{card.card_network}</Badge>
+                <Badge variant="secondary" className="capitalize bg-brand-blue text-white border-transparent">{card.card_network}</Badge>
                 {card.card_type.map((t) => (
                   <Badge key={t} variant="outline" className="capitalize">{t}</Badge>
                 ))}

@@ -66,13 +66,13 @@ export async function CardsSection({ filters, title = 'Cards', limit, showViewAl
                 <div>
                   <p className="font-medium text-slate-800 leading-tight">{card.name}</p>
                   <div className="flex flex-wrap gap-1 mt-1">
-                    <Badge variant="secondary" className="text-base capitalize bg-brand-blue/10 text-brand-blue border-transparent">{card.card_network}</Badge>
+                    <Badge variant="secondary" className="text-base capitalize bg-brand-blue text-white border-transparent">{card.card_network}</Badge>
                     {card.card_type.map((t) => (
                       <Badge key={t} variant="outline" className="text-base capitalize">{t}</Badge>
                     ))}
                   </div>
                   {card.co_brand && (
-                    <p className="text-base text-slate-400 mt-1">× {card.co_brand}</p>
+                    <p className="text-base text-slate-600 mt-1">× {card.co_brand}</p>
                   )}
                 </div>
               </Link>

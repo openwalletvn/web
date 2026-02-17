@@ -45,8 +45,8 @@ export function MobileNav({ banks }: Props) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="p-2 text-slate-600 hover:text-slate-900">
-          <Menu className="w-5 h-5" />
+        <button className="p-2 text-slate-600 hover:text-slate-900" aria-label="Open menu">
+          <Menu className="w-5 h-5" aria-hidden="true" />
         </button>
       </SheetTrigger>
       <SheetContent side="left" className="w-72 overflow-y-auto">
