@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { BanksSection, BanksSectionSkeleton } from './_components/banks-section';
+import { CardsSection, CardsSectionSkeleton } from './_components/cards-section';
 
 export const runtime = 'edge';
 
@@ -37,6 +38,10 @@ export default function HomePage() {
 
         <Suspense fallback={<BanksSectionSkeleton />}>
           <BanksSection />
+        </Suspense>
+
+        <Suspense fallback={<CardsSectionSkeleton />}>
+          <CardsSection />
         </Suspense>
       </main>
 

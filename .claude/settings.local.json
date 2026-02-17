@@ -9,7 +9,9 @@
       "Bash(pkill:*)",
       "Bash(lsof:*)",
       "Bash(curl:*)",
-      "Bash(pnpm exec tsc:*)"
+      "Bash(pnpm exec tsc:*)",
+      "Bash(pnpm dlx shadcn@latest init:*)",
+      "Bash(pnpm dlx shadcn@latest add:*)"
     ]
   }
 }

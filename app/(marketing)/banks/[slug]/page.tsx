@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { getBank, getBankImageUrl } from '@/lib/api';
+import { CardsSection, CardsSectionSkeleton } from '../../_components/cards-section';
 
 export const runtime = 'edge';
 
@@ -29,7 +31,7 @@ export default async function BankPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-white px-4 py-12">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <Link href="/banks" className="text-slate-500 hover:text-slate-900 text-sm transition-colors">
           ← Banks
         </Link>
@@ -69,6 +71,10 @@ export default async function BankPage({ params }: Props) {
             )}
           </div>
         </div>
+
+        <Suspense fallback={<CardsSectionSkeleton />}>
+          <CardsSection filters={{ bank_id: bank.id }} title="Cards" />
+        </Suspense>
       </div>
     </div>
   );
