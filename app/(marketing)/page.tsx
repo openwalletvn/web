@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { BanksSection, BanksSectionSkeleton } from './_components/banks-section';
 
+export const runtime = 'edge';
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">

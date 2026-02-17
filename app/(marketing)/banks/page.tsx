@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getBanks, getBankImageUrl } from '@/lib/api';
 
+export const runtime = 'edge';
+
 export default async function BanksPage() {
   const banks = await getBanks();
 

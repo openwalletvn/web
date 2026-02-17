@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getBank, getBankImageUrl } from '@/lib/api';
 
+export const runtime = 'edge';
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
