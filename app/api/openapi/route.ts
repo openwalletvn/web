@@ -9,6 +9,18 @@ export async function GET() {
     const response = await fetch(`${apiUrl}/api/v1/openapi.json`);
     const data = await response.json();
 
+    // Update server URLs in the OpenAPI spec to match the environment
+    if (data.servers && Array.isArray(data.servers)) {
+      data.servers = [
+        {
+          url: `${apiUrl}/api/v1`,
+          description: apiUrl.includes('localhost')
+            ? 'Local Development Server'
+            : 'Production Server'
+        }
+      ];
+    }
+
     return NextResponse.json(data, {
       headers: {
         'Access-Control-Allow-Origin': '*',
