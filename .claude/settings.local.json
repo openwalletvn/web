@@ -8,7 +8,8 @@
       "Bash(pnpm dev:*)",
       "Bash(pkill:*)",
       "Bash(lsof:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(pnpm exec tsc:*)"
     ]
   }
 }
