@@ -41,8 +41,10 @@ export function CardsFilter() {
     router.push(`/cards?${params.toString()}`);
   }
 
+  const hasFilter = !!(searchParams.get('type') || searchParams.get('network'));
+
   return (
-    <div className="flex gap-3 flex-wrap">
+    <div className="flex gap-3 flex-wrap items-center">
       <Select
         value={searchParams.get('type') ?? 'all'}
         onValueChange={(v) => update('type', v)}
@@ -72,6 +74,14 @@ export function CardsFilter() {
           ))}
         </SelectContent>
       </Select>
+      {hasFilter && (
+        <button
+          onClick={() => router.push('/cards')}
+          className="text-sm text-slate-500 hover:text-slate-900 transition-colors underline underline-offset-2"
+        >
+          Reset filters
+        </button>
+      )}
     </div>
   );
 }

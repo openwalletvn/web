@@ -28,12 +28,18 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default async function CardsPage({ searchParams }: Props) {
   const { type, network } = await searchParams;
 
+  const pageTitle = type
+    ? `${type.charAt(0).toUpperCase() + type.slice(1)} Cards`
+    : network
+      ? `${network.charAt(0).toUpperCase() + network.slice(1)} Cards`
+      : 'Cards';
+
   return (
     <div className="px-4 py-12">
       <div className="max-w-6xl mx-auto">
         <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Cards' }]} />
 
-        <h1 className="text-4xl font-bold text-slate-900 mb-6">Cards</h1>
+        <h1 className="text-4xl font-bold text-slate-900 mb-6">{pageTitle}</h1>
 
         <div className="mb-6">
           <Suspense>

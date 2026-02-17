@@ -48,7 +48,7 @@ export default async function CardPage({ params }: Props) {
 
   return (
     <div className="px-4 py-12">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <Breadcrumbs
           items={[
             { label: 'Home', href: '/' },
@@ -57,21 +57,25 @@ export default async function CardPage({ params }: Props) {
           ]}
         />
 
-        <div className="flex flex-col gap-8">
-          <div className={`relative mx-auto ${isVertical ? 'w-48 aspect-[2/3]' : 'w-full max-w-sm aspect-[16/10]'}`}>
-            <Image
-              src={getCardImageUrl(card)}
-              alt=""
-              fill
-              className="object-contain"
-            />
+        <div className="flex flex-col md:flex-row gap-10">
+          {/* Image column */}
+          <div className={`shrink-0 ${isVertical ? 'md:w-48' : 'md:w-80'}`}>
+            <div className={`relative w-full ${isVertical ? 'aspect-[2/3]' : 'aspect-[16/10]'} bg-slate-100 rounded-xl overflow-hidden`}>
+              <Image
+                src={getCardImageUrl(card)}
+                alt=""
+                fill
+                className="object-contain"
+              />
+            </div>
           </div>
 
-          <div className="flex flex-col gap-4">
+          {/* Details column */}
+          <div className="flex-1 flex flex-col gap-4">
             <div>
               <h1 className="text-3xl font-bold text-slate-900">{card.name}</h1>
               <div className="flex flex-wrap gap-2 mt-2">
-                <Badge variant="secondary" className="capitalize">{card.card_network}</Badge>
+                <Badge variant="secondary" className="capitalize bg-brand-blue/10 text-brand-blue border-transparent">{card.card_network}</Badge>
                 {card.card_type.map((t) => (
                   <Badge key={t} variant="outline" className="capitalize">{t}</Badge>
                 ))}

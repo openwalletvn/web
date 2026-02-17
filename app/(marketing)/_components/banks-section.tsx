@@ -2,14 +2,26 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getBanks, getBankImageUrl } from '@/lib/api';
 
-export async function BanksSection() {
+interface Props {
+  limit?: number;
+  showViewAll?: boolean;
+  description?: string;
+}
+
+export async function BanksSection({ limit, showViewAll, description }: Props) {
   const banks = await getBanks();
+  const displayed = limit ? banks.slice(0, limit) : banks;
 
   return (
     <section className="py-12 px-4 max-w-6xl mx-auto w-full">
-      <h2 className="text-2xl font-bold text-slate-900 mb-6">Banks</h2>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-slate-900">Banks</h2>
+        {description && (
+          <p className="text-slate-500 mt-1 text-sm">{description}</p>
+        )}
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {banks.map((bank) => (
+        {displayed.map((bank) => (
           <Link
             key={bank.id}
             href={`/banks/${bank.id}`}
@@ -27,6 +39,16 @@ export async function BanksSection() {
           </Link>
         ))}
       </div>
+      {showViewAll && (
+        <div className="mt-8 text-center">
+          <Link
+            href="/banks"
+            className="inline-block px-6 py-2.5 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            View all {banks.length} banks →
+          </Link>
+        </div>
+      )}
     </section>
   );
 }
@@ -34,7 +56,10 @@ export async function BanksSection() {
 export function BanksSectionSkeleton() {
   return (
     <section className="py-12 px-4 max-w-6xl mx-auto w-full">
-      <div className="h-8 w-24 bg-slate-200 rounded mb-6 animate-pulse" />
+      <div className="mb-6">
+        <div className="h-8 w-24 bg-slate-200 rounded animate-pulse" />
+        <div className="h-4 w-64 bg-slate-200 rounded animate-pulse mt-2" />
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="flex flex-col items-center gap-2 p-4 bg-slate-50 border border-slate-200 rounded-lg">

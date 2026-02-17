@@ -22,7 +22,7 @@ export function Breadcrumbs({ items }: { items: BreadcrumbSegment[] }) {
             {i > 0 && <BreadcrumbSeparator />}
             <BreadcrumbItem>
               {item.href ? (
-                <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+                <BreadcrumbLink href={item.href} className="text-brand-blue hover:text-brand-blue/80">{item.label}</BreadcrumbLink>
               ) : (
                 <BreadcrumbPage>{item.label}</BreadcrumbPage>
               )}

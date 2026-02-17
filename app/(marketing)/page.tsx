@@ -32,15 +32,35 @@ export default function HomePage() {
           >
             View API Documentation
           </Link>
+          <Link
+            href="/banks"
+            className="px-8 py-4 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg font-semibold transition-colors text-lg"
+          >
+            Browse Banks
+          </Link>
+          <Link
+            href="/cards"
+            className="px-8 py-4 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg font-semibold transition-colors text-lg"
+          >
+            Browse Cards
+          </Link>
         </div>
       </div>
 
       <Suspense fallback={<BanksSectionSkeleton />}>
-        <BanksSection />
+        <BanksSection
+          limit={12}
+          showViewAll
+          description="Comprehensive data for all major Vietnamese banks, updated regularly."
+        />
       </Suspense>
 
       <Suspense fallback={<CardsSectionSkeleton />}>
-        <CardsSection />
+        <CardsSection
+          limit={10}
+          showViewAll
+          description="Explore credit, debit, and prepaid cards from leading Vietnamese banks."
+        />
       </Suspense>
     </div>
   );

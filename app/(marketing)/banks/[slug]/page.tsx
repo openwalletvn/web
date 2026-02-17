@@ -90,6 +90,8 @@ export default async function BankPage({ params }: Props) {
           </div>
         </div>
 
+        <hr className="border-slate-200 mb-2" />
+
         <Suspense fallback={<CardsSectionSkeleton />}>
           <CardsSection filters={{ bank_id: bank.id }} title="Cards" />
         </Suspense>
