@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getCreditAccountsForBank, getCardsForCreditAccount } from '@/lib/credit-account';
+import { inputClass } from '@/lib/ui-constants';
 import type { CreditAccount } from '@/lib/db';
 
 export interface PoolSelection {
@@ -19,8 +20,6 @@ interface Props {
   canBeSupplementary?: boolean;
 }
 
-const inputClass =
-  'w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm';
 
 export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary = false }: Props) {
   const [accounts, setAccounts] = useState<CreditAccount[]>([]);

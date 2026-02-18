@@ -5,9 +5,14 @@ import { useRouter } from 'next/navigation';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { addCard, hasCardWithSameCatalogId } from '@/lib/wallet';
 import { createCreditAccount } from '@/lib/credit-account';
-import { getBanks, getCards, getBankImageUrl, getCardImageUrl, type Bank, type Card } from '@/lib/api';
+import { getBanks, getCards, getCardImageUrl, type Bank, type Card } from '@/lib/api';
 import type { CardStatus } from '@/lib/db';
+import { inputClass } from '@/lib/ui-constants';
 import { CreditPoolSelector, type PoolSelection } from '@/components/wallet/credit-pool-selector';
+import { PageContainer } from '@/components/ui/page-container';
+import { FormField } from '@/components/ui/form-field';
+import { BankSelectionStep } from '@/components/wallet/add/bank-selection-step';
+import { CardSelectionStep } from '@/components/wallet/add/card-selection-step';
 
 // ─── Day select helper ────────────────────────────────────────────────────────
 
@@ -23,20 +28,18 @@ function DaySelect({
   onChange: (v: string) => void;
 }) {
   return (
-    <div>
-      <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
-      {hint && <p className="text-slate-400 mb-1">{hint}</p>}
+    <FormField label={label} hint={hint}>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 focus:outline-none focus:border-brand-blue text-sm"
+        className={inputClass}
       >
         <option value="">— chọn ngày —</option>
         {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
           <option key={d} value={String(d)}>Ngày {d}</option>
         ))}
       </select>
-    </div>
+    </FormField>
   );
 }
 
@@ -69,24 +72,17 @@ export default function AddCardPage() {
   const [canBeSupplementary, setCanBeSupplementary] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Fetch banks on mount
   useEffect(() => {
     setBanksLoading(true);
-    getBanks()
-      .then(setBanks)
-      .finally(() => setBanksLoading(false));
+    getBanks().then(setBanks).finally(() => setBanksLoading(false));
   }, []);
 
-  // Fetch cards when bank is selected
   useEffect(() => {
     if (!selectedBank) return;
     setCardsLoading(true);
-    getCards({ bank_id: selectedBank.id })
-      .then(setBankCards)
-      .finally(() => setCardsLoading(false));
+    getCards({ bank_id: selectedBank.id }).then(setBankCards).finally(() => setCardsLoading(false));
   }, [selectedBank]);
 
-  // Auto-calc payment due date
   useEffect(() => {
     if (dueDateOverridden || !statementDate || !selectedCard?.interest_free_days) return;
     const raw = (parseInt(statementDate) + selectedCard.interest_free_days) % 30;
@@ -178,7 +174,7 @@ export default function AddCardPage() {
     selectedCard?.card_type.includes('credit') || selectedCard?.card_type.includes('2in1');
 
   return (
-    <div className="px-4 py-8 max-w-2xl mx-auto">
+    <PageContainer maxWidth="2xl">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <button
@@ -205,68 +201,18 @@ export default function AddCardPage() {
       {step === 1 && (
         <div>
           <p className="text-sm text-slate-500 mb-5">Chọn ngân hàng phát hành thẻ</p>
-          {banksLoading ? (
-            <div className="grid grid-cols-3 gap-3">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm">
-                  <div className="w-12 h-12 bg-slate-100 rounded-sm animate-pulse" />
-                  <div className="w-14 h-3 bg-slate-100 rounded animate-pulse" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-3">
-              {banks.map((bank) => (
-                <button
-                  key={bank.id}
-                  onClick={() => selectBank(bank)}
-                  className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm hover:border-brand-blue hover:bg-blue-50/40 transition-colors text-center"
-                >
-                  <img src={getBankImageUrl(bank.logo_url)} alt={bank.name} className="w-12 h-12 object-contain" />
-                  <span className="text-slate-600 leading-tight">{bank.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
+          <BankSelectionStep banks={banks} loading={banksLoading} onSelect={selectBank} />
         </div>
       )}
 
       {/* ── Step 2: Choose Card ── */}
       {step === 2 && selectedBank && (
-        <div>
-          <div className="flex items-center gap-2 mb-5 p-2.5 border border-dashed border-slate-200 rounded-sm w-fit">
-            <img src={getBankImageUrl(selectedBank.logo_url)} alt={selectedBank.name} className="w-7 h-7 object-contain" />
-            <span className="text-sm font-medium text-slate-700">{selectedBank.name}</span>
-          </div>
-          <p className="text-sm text-slate-500 mb-4">Chọn thẻ của bạn</p>
-          {cardsLoading ? (
-            <div className="grid grid-cols-2 gap-3">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="border border-dashed border-slate-200 rounded-sm p-3">
-                  <div className="w-full aspect-[16/10] bg-slate-100 rounded-sm animate-pulse mb-2" />
-                  <div className="h-4 w-3/4 bg-slate-100 rounded animate-pulse" />
-                </div>
-              ))}
-            </div>
-          ) : bankCards.length === 0 ? (
-            <p className="text-sm text-slate-400">Không tìm thấy thẻ nào của ngân hàng này.</p>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {bankCards.map((card) => (
-                <button
-                  key={card.id}
-                  onClick={() => selectCard(card)}
-                  className="flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded-sm hover:border-brand-blue hover:bg-blue-50/40 transition-colors text-left"
-                >
-                  <div className="w-full aspect-[16/10] bg-slate-50 overflow-hidden rounded-sm">
-                    <img src={getCardImageUrl(card)} alt={card.name} className="w-full h-full object-contain" />
-                  </div>
-                  <span className="font-medium text-slate-800 leading-tight">{card.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <CardSelectionStep
+          bank={selectedBank}
+          cards={bankCards}
+          loading={cardsLoading}
+          onSelect={selectCard}
+        />
       )}
 
       {/* ── Step 3: Fill Details ── */}
@@ -289,39 +235,49 @@ export default function AddCardPage() {
           <p className="text-slate-400 mb-6">Tất cả các trường đều không bắt buộc</p>
 
           <div className="space-y-5">
-            {/* Nickname */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tên gợi nhớ</label>
-              <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)}
+            <FormField label="Tên gợi nhớ">
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
                 placeholder="Thẻ chính, thẻ công ty..."
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
-            </div>
+                className={inputClass}
+              />
+            </FormField>
 
-            {/* Last 4 digits */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">4 số cuối thẻ</label>
-              <input type="number" value={last4} onChange={(e) => setLast4(e.target.value.slice(0, 4))}
+            <FormField label="4 số cuối thẻ">
+              <input
+                type="number"
+                value={last4}
+                onChange={(e) => setLast4(e.target.value.slice(0, 4))}
                 placeholder="1234"
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
-            </div>
+                className={inputClass}
+              />
+            </FormField>
 
-            {/* Issue date + valid thru */}
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Ngày phát hành</label>
-                <input type="text" value={issueDate} onChange={(e) => setIssueDate(e.target.value)}
-                  placeholder="MM/YY" maxLength={5}
-                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Hiệu lực đến</label>
-                <input type="text" value={validThru} onChange={(e) => setValidThru(e.target.value)}
-                  placeholder="MM/YY" maxLength={5}
-                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
-              </div>
+              <FormField label="Ngày phát hành">
+                <input
+                  type="text"
+                  value={issueDate}
+                  onChange={(e) => setIssueDate(e.target.value)}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  className={inputClass}
+                />
+              </FormField>
+              <FormField label="Hiệu lực đến">
+                <input
+                  type="text"
+                  value={validThru}
+                  onChange={(e) => setValidThru(e.target.value)}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  className={inputClass}
+                />
+              </FormField>
             </div>
 
-            {/* Credit pool + statement dates */}
             {showCreditFields && (
               <>
                 <CreditPoolSelector
@@ -350,34 +306,40 @@ export default function AddCardPage() {
               </>
             )}
 
-            {/* Status */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Trạng thái thẻ</label>
-              <select value={status} onChange={(e) => setStatus(e.target.value as CardStatus)}
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 focus:outline-none focus:border-brand-blue text-sm">
+            <FormField label="Trạng thái thẻ">
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as CardStatus)}
+                className={inputClass}
+              >
                 <option value="active">Đang dùng</option>
                 <option value="locked">Đã khoá (tạm ngưng sử dụng)</option>
                 <option value="expired">Hết hạn</option>
                 <option value="canceled">Đã huỷ</option>
               </select>
-            </div>
+            </FormField>
 
             {status !== 'active' && (
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Lý do</label>
-                <input type="text" value={statusNote} onChange={(e) => setStatusNote(e.target.value)}
+              <FormField label="Lý do">
+                <input
+                  type="text"
+                  value={statusNote}
+                  onChange={(e) => setStatusNote(e.target.value)}
                   placeholder="Ví dụ: hết hạn tháng 12/2024..."
-                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
-              </div>
+                  className={inputClass}
+                />
+              </FormField>
             )}
 
-            {/* Note */}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Ghi chú</label>
-              <textarea value={note} onChange={(e) => setNote(e.target.value)}
-                placeholder="Thẻ chính, thẻ công ty..." rows={3}
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm resize-none" />
-            </div>
+            <FormField label="Ghi chú">
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Thẻ chính, thẻ công ty..."
+                rows={3}
+                className={`${inputClass} resize-none`}
+              />
+            </FormField>
           </div>
 
           <button
@@ -389,6 +351,6 @@ export default function AddCardPage() {
           </button>
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

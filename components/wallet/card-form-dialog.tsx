@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { Dialog } from 'radix-ui';
 import { IconX, IconTrash, IconExternalLink, IconUnlink } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
+import { inputClass } from '@/lib/ui-constants';
 import { addCard, updateCard, removeCard, hasCardWithSameCatalogId } from '@/lib/wallet';
+import { formatSiblingNames } from '@/lib/card-utils';
 import {
   getCreditAccountsForBank,
   getCardsForCreditAccount,
@@ -15,6 +17,7 @@ import {
 } from '@/lib/credit-account';
 import { getCardImageUrl, getCard, type Card } from '@/lib/api';
 import { db, type WalletCard, type CreditAccount, type CardStatus } from '@/lib/db';
+import { FormField } from '@/components/ui/form-field';
 import { CreditPoolSelector, type PoolSelection } from './credit-pool-selector';
 
 interface Props {
@@ -35,51 +38,7 @@ const STATUS_OPTIONS: { value: CardStatus; label: string }[] = [
   { value: 'canceled', label: 'Đã huỷ' },
 ];
 
-const inputClass =
-  'w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm';
-
-function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="block font-medium text-slate-600 mb-1">{label}</label>
-      {hint && <p className="text-slate-400 mb-1">{hint}</p>}
-      {children}
-    </div>
-  );
-}
-
 // ─── Credit limit section for edit mode ──────────────────────────────────────
-
-/** Format the list of sibling card names for the sharing warning.
- *  Each card is shown as "Catalog Name •••• last4" when last4 is available.
- *  When multiple cards share the same catalog name and have no last4,
- *  they get a numeric suffix (1, 2, 3…). */
-function formatSiblingNames(siblings: WalletCard[], siblingCatalogNames: Record<string, string>): string {
-  // Resolve base name: nickname > fetched catalog name > cardId fallback
-  const baseNames = siblings.map((s) => s.nickname ?? siblingCatalogNames[s.cardId] ?? s.cardId);
-
-  // Count how many times each base name appears among cards without last4
-  const noLast4Counts: Record<string, number> = {};
-  for (let i = 0; i < siblings.length; i++) {
-    if (!siblings[i].last4) {
-      noLast4Counts[baseNames[i]] = (noLast4Counts[baseNames[i]] ?? 0) + 1;
-    }
-  }
-
-  // Assign running counters for the numeric suffix
-  const noLast4Counters: Record<string, number> = {};
-  return siblings
-    .map((sibling, i) => {
-      const name = baseNames[i];
-      if (sibling.last4) return `${name} •••• ${sibling.last4}`;
-      if (noLast4Counts[name] > 1) {
-        noLast4Counters[name] = (noLast4Counters[name] ?? 0) + 1;
-        return `${name} ${noLast4Counters[name]}`;
-      }
-      return name;
-    })
-    .join(', ');
-}
 
 function EditCreditLimitSection({
   walletCard,

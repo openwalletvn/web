@@ -5,19 +5,11 @@ import { CSS } from '@dnd-kit/utilities';
 import { IconGripVertical } from '@tabler/icons-react';
 import { getCardImageUrl, type Card, type Bank } from '@/lib/api';
 import type { WalletCard, CardStatus } from '@/lib/db';
-import { DashedBadge } from '@/components/ui/dashed-badge';
+import { WalletCardBadges } from './wallet-card-badges';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type CreditBadge = 'primary_shared' | 'supplementary';
-
-// ─── Status helpers ───────────────────────────────────────────────────────────
-
-const STATUS_LABELS: Record<string, string> = {
-  locked:   'Đã khoá',
-  expired:  'Hết hạn',
-  canceled: 'Đã huỷ',
-};
 
 const ALL_STATUSES: { value: CardStatus; label: string }[] = [
   { value: 'active',   label: 'Đang dùng' },
@@ -45,12 +37,10 @@ export function WalletCardContent({
   onEdit: (walletCard: WalletCard) => void;
   onStatusChange?: (walletCard: WalletCard, status: CardStatus) => void;
 }) {
-  // Locked counts as active — only expired and canceled are truly inactive
   const isInactive = walletCard.status === 'expired' || walletCard.status === 'canceled';
 
   return (
     <>
-      {/* Clickable area: image + info */}
       <button
         onClick={() => onEdit(walletCard)}
         className="flex items-center gap-3 flex-1 min-w-0 text-left"
@@ -77,52 +67,12 @@ export function WalletCardContent({
             )}
           </p>
 
-          <div className="flex flex-wrap gap-1 mt-1.5">
-            {/* Status badge — locked, expired, canceled */}
-            {walletCard.status && walletCard.status !== 'active' && (
-              <DashedBadge variant={isInactive ? 'amber' : 'default'}>
-                {STATUS_LABELS[walletCard.status]}
-              </DashedBadge>
-            )}
-
-            {/* Credit role badge */}
-            {creditBadge === 'supplementary' && (
-              <DashedBadge variant="default">Thẻ phụ</DashedBadge>
-            )}
-            {creditBadge === 'primary_shared' && (
-              <DashedBadge variant="blue">Thẻ thông</DashedBadge>
-            )}
-
-            {walletCard.last4 && (
-              <DashedBadge>•••• {walletCard.last4}</DashedBadge>
-            )}
-
-            {walletCard.validThru && (
-              <DashedBadge>Đến {walletCard.validThru}</DashedBadge>
-            )}
-
-            {/* Annual fee from catalog */}
-            {catalogCard?.annual_fee !== undefined && (
-              catalogCard.annual_fee === 0 ? (
-                <DashedBadge variant="green">Miễn phí thường niên</DashedBadge>
-              ) : (
-                <DashedBadge>PTN: {catalogCard.annual_fee.toLocaleString('vi-VN')}đ</DashedBadge>
-              )
-            )}
-
-            {/* Credit limit from credit account */}
-            {creditLimit !== undefined && creditLimit > 0 && (
-              <DashedBadge variant="blue">Hạn mức: {creditLimit.toLocaleString('vi-VN')}đ</DashedBadge>
-            )}
-
-            {walletCard.statementDate && (
-              <DashedBadge variant="blue">Sao kê: ngày {walletCard.statementDate}</DashedBadge>
-            )}
-
-            {walletCard.paymentDueDate && (
-              <DashedBadge variant="red">Đến hạn: ngày {walletCard.paymentDueDate}</DashedBadge>
-            )}
-          </div>
+          <WalletCardBadges
+            walletCard={walletCard}
+            catalogCard={catalogCard}
+            creditBadge={creditBadge}
+            creditLimit={creditLimit}
+          />
 
           {walletCard.note && (
             <p className="text-slate-400 mt-1 truncate">{walletCard.note}</p>
@@ -130,7 +80,7 @@ export function WalletCardContent({
         </div>
       </button>
 
-      {/* Quick status select — outside the edit button to avoid nesting */}
+      {/* Quick status select */}
       {onStatusChange && (
         <select
           value={walletCard.status ?? 'active'}

@@ -6,6 +6,7 @@ import { Dialog } from 'radix-ui';
 import { IconDownload, IconUpload, IconDeviceFloppy, IconCheck, IconDatabase, IconCopy, IconX } from '@tabler/icons-react';
 import { db } from '@/lib/db';
 import { exportWallet, importWallet } from '@/lib/import-export';
+import { PageContainer } from '@/components/ui/page-container';
 
 export default function SettingsPage() {
   const configWalletName = useLiveQuery(
@@ -80,7 +81,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="px-4 py-8 max-w-2xl mx-auto">
+    <PageContainer maxWidth="2xl">
       <h1 className="text-2xl font-bold text-slate-900 mb-2">Cài đặt ví</h1>
       <div className="border-t border-dashed border-slate-200 mb-8" />
 
@@ -224,6 +225,6 @@ export default function SettingsPage() {
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
-    </div>
+    </PageContainer>
   );
 }
