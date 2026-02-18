@@ -1,0 +1,105 @@
+{
+  "Hero": {
+    "title": "Open Wallet",
+    "description": "Cơ sở dữ liệu thẻ ngân hàng mã nguồn mở cho Việt Nam",
+    "cta_api": "Xem Tài liệu API",
+    "cta_banks": "Khám phá Ngân hàng",
+    "cta_cards": "Khám phá Thẻ"
+  },
+  "Nav": {
+    "home": "Trang chủ",
+    "banks": "Ngân hàng",
+    "cards": "Thẻ",
+    "api_docs": "Tài liệu API",
+    "view_all_banks": "Xem tất cả ngân hàng →",
+    "view_all_cards": "Xem tất cả thẻ →",
+    "by_type": "Theo loại",
+    "by_network": "Theo mạng"
+  },
+  "Footer": {
+    "copyright": "© {year} Open Wallet Vietnam",
+    "home": "Trang chủ",
+    "banks": "Ngân hàng",
+    "cards": "Thẻ",
+    "api_docs": "Tài liệu API",
+    "github": "GitHub"
+  },
+  "Breadcrumbs": {
+    "home": "Trang chủ",
+    "banks": "Ngân hàng",
+    "cards": "Thẻ"
+  },
+  "BanksPage": {
+    "title": "Ngân hàng",
+    "count": "{count} ngân hàng",
+    "not_found": "Không tìm thấy ngân hàng",
+    "back": "← Quay lại Ngân hàng",
+    "meta_title": "Ngân hàng | Open Wallet",
+    "meta_description": "Danh sách tất cả các ngân hàng Việt Nam trên Open Wallet."
+  },
+  "BanksSection": {
+    "title": "Ngân hàng",
+    "description": "Dữ liệu đầy đủ cho tất cả các ngân hàng lớn tại Việt Nam, được cập nhật thường xuyên.",
+    "view_all": "Xem tất cả {count} ngân hàng →"
+  },
+  "BankDetail": {
+    "not_found": "Không tìm thấy ngân hàng",
+    "back": "← Quay lại Ngân hàng",
+    "cards_title": "Thẻ"
+  },
+  "CardsPage": {
+    "title": "Thẻ",
+    "bank_cards": "Thẻ {bank}",
+    "cobranded": "Thẻ Đồng Thương Hiệu",
+    "type_credit": "Thẻ Tín dụng",
+    "type_debit": "Thẻ Ghi nợ",
+    "type_prepaid": "Thẻ Trả trước",
+    "type_transit": "Thẻ Transit",
+    "type_atm": "Thẻ ATM",
+    "network_visa": "Thẻ Visa",
+    "network_mastercard": "Thẻ Mastercard",
+    "network_jcb": "Thẻ JCB",
+    "network_napas": "Thẻ Napas",
+    "network_amex": "Thẻ Amex",
+    "network_unionpay": "Thẻ UnionPay",
+    "not_found": "Không tìm thấy thẻ",
+    "back": "← Quay lại Thẻ"
+  },
+  "CardsSection": {
+    "title": "Thẻ",
+    "description": "Khám phá thẻ tín dụng, thẻ ghi nợ và thẻ trả trước từ các ngân hàng hàng đầu Việt Nam.",
+    "view_all": "Xem tất cả {count} thẻ →",
+    "no_cards": "Không tìm thấy thẻ nào."
+  },
+  "CardsFilter": {
+    "all_types": "Tất cả loại",
+    "all_networks": "Tất cả mạng",
+    "all_banks": "Tất cả ngân hàng",
+    "default_order": "Thứ tự mặc định",
+    "fee_asc": "Phí: Thấp đến Cao",
+    "fee_desc": "Phí: Cao đến Thấp",
+    "co_branded": "Co-branded",
+    "reset": "Đặt lại",
+    "type_credit": "Tín dụng",
+    "type_debit": "Ghi nợ",
+    "type_prepaid": "Trả trước",
+    "type_transit": "Transit",
+    "type_atm": "ATM",
+    "network_visa": "Visa",
+    "network_mastercard": "Mastercard",
+    "network_jcb": "JCB",
+    "network_napas": "Napas",
+    "network_amex": "Amex",
+    "network_unionpay": "UnionPay"
+  },
+  "CardDetail": {
+    "annual_fee": "Phí thường niên",
+    "free": "Miễn phí",
+    "interest_free_days": "Ngày miễn lãi",
+    "days": "{count} ngày",
+    "co_brand_label": "Co-brand",
+    "view_details": "Xem chi tiết thẻ ↗",
+    "not_found": "Không tìm thấy thẻ",
+    "back": "← Quay lại Thẻ"
+  }
+}

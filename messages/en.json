@@ -1,0 +1,105 @@
+{
+  "Hero": {
+    "title": "Open Wallet",
+    "description": "Open-source digital wallet card database for Vietnam",
+    "cta_api": "View API Documentation",
+    "cta_banks": "Browse Banks",
+    "cta_cards": "Browse Cards"
+  },
+  "Nav": {
+    "home": "Home",
+    "banks": "Banks",
+    "cards": "Cards",
+    "api_docs": "API Docs",
+    "view_all_banks": "View all banks →",
+    "view_all_cards": "View all cards →",
+    "by_type": "By Type",
+    "by_network": "By Network"
+  },
+  "Footer": {
+    "copyright": "© {year} Open Wallet Vietnam",
+    "home": "Home",
+    "banks": "Banks",
+    "cards": "Cards",
+    "api_docs": "API Docs",
+    "github": "GitHub"
+  },
+  "Breadcrumbs": {
+    "home": "Home",
+    "banks": "Banks",
+    "cards": "Cards"
+  },
+  "BanksPage": {
+    "title": "Banks",
+    "count": "{count} banks",
+    "not_found": "Bank not found",
+    "back": "← Back to Banks",
+    "meta_title": "Banks | Open Wallet",
+    "meta_description": "Browse all Vietnamese banks on Open Wallet."
+  },
+  "BanksSection": {
+    "title": "Banks",
+    "description": "Comprehensive data for all major Vietnamese banks, updated regularly.",
+    "view_all": "View all {count} banks →"
+  },
+  "BankDetail": {
+    "not_found": "Bank not found",
+    "back": "← Back to Banks",
+    "cards_title": "Cards"
+  },
+  "CardsPage": {
+    "title": "Cards",
+    "bank_cards": "{bank} Cards",
+    "cobranded": "Co-branded Cards",
+    "type_credit": "Credit Cards",
+    "type_debit": "Debit Cards",
+    "type_prepaid": "Prepaid Cards",
+    "type_transit": "Transit Cards",
+    "type_atm": "ATM Cards",
+    "network_visa": "Visa Cards",
+    "network_mastercard": "Mastercard Cards",
+    "network_jcb": "JCB Cards",
+    "network_napas": "Napas Cards",
+    "network_amex": "Amex Cards",
+    "network_unionpay": "UnionPay Cards",
+    "not_found": "Card not found",
+    "back": "← Back to Cards"
+  },
+  "CardsSection": {
+    "title": "Cards",
+    "description": "Explore credit, debit, and prepaid cards from leading Vietnamese banks.",
+    "view_all": "View all {count} cards →",
+    "no_cards": "No cards found."
+  },
+  "CardsFilter": {
+    "all_types": "All types",
+    "all_networks": "All networks",
+    "all_banks": "All banks",
+    "default_order": "Default order",
+    "fee_asc": "Fee: Low to High",
+    "fee_desc": "Fee: High to Low",
+    "co_branded": "Co-branded",
+    "reset": "Reset",
+    "type_credit": "Credit",
+    "type_debit": "Debit",
+    "type_prepaid": "Prepaid",
+    "type_transit": "Transit",
+    "type_atm": "ATM",
+    "network_visa": "Visa",
+    "network_mastercard": "Mastercard",
+    "network_jcb": "JCB",
+    "network_napas": "Napas",
+    "network_amex": "Amex",
+    "network_unionpay": "UnionPay"
+  },
+  "CardDetail": {
+    "annual_fee": "Annual fee",
+    "free": "Free",
+    "interest_free_days": "Interest-free days",
+    "days": "{count} days",
+    "co_brand_label": "Co-brand",
+    "view_details": "View card details ↗",
+    "not_found": "Card not found",
+    "back": "← Back to Cards"
+  }
+}
