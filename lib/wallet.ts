@@ -1,5 +1,36 @@
 import { db, type UserCard } from './db';
 
+// ─── Gamification (score/level ready for UI, not rendered yet) ────────────────
+
+export type WalletLevel = 'starter' | 'regular' | 'pro' | 'elite';
+
+export const WALLET_LEVELS: Record<WalletLevel, { label: string; minScore: number; color: string }> = {
+  starter: { label: 'Starter',  minScore: 0,   color: 'slate'  },
+  regular: { label: 'Regular',  minScore: 40,  color: 'blue'   },
+  pro:     { label: 'Pro',      minScore: 100, color: 'purple' },
+  elite:   { label: 'Elite',    minScore: 200, color: 'amber'  },
+};
+
+/** Points per card: 10 base + bonus for each filled optional field */
+export function getWalletScore(userCards: UserCard[]): number {
+  return userCards.reduce((total, card) => {
+    let pts = 10;
+    if (card.last4)          pts += 5;
+    if (card.statementDate)  pts += 10;
+    if (card.paymentDueDate) pts += 10;
+    if (card.creditLimit)    pts += 5;
+    if (card.note)           pts += 5;
+    return total + pts;
+  }, 0);
+}
+
+export function getWalletLevel(score: number): WalletLevel {
+  if (score >= WALLET_LEVELS.elite.minScore)   return 'elite';
+  if (score >= WALLET_LEVELS.pro.minScore)     return 'pro';
+  if (score >= WALLET_LEVELS.regular.minScore) return 'regular';
+  return 'starter';
+}
+
 export type CardFormData = {
   catalogId: string;
   last4?: string;

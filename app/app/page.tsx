@@ -25,6 +25,7 @@ import { db, type UserCard } from '@/lib/db';
 import { reorderCards } from '@/lib/wallet';
 import { getBanks, getCard, getCardImageUrl, type Card, type Bank } from '@/lib/api';
 import { CardFormDialog } from '@/components/wallet/card-form-dialog';
+import { StatsWidget } from '@/components/wallet/widgets/stats-widget';
 
 // ─── Sortable card item ───────────────────────────────────────────────────────
 
@@ -37,7 +38,7 @@ function SortableWalletCard({
   userCard: UserCard;
   catalogCard: Card | undefined;
   bank: Bank | undefined;
-  onEdit: (uc: UserCard) => void;
+  onEdit: (userCard: UserCard) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: userCard.id!,
@@ -131,19 +132,19 @@ export default function WalletPage() {
   // Fetch catalog data for any new userCards
   useEffect(() => {
     if (!userCards?.length) return;
-    const missing = userCards.filter((uc) => !catalogCards[uc.catalogId]);
+    const missing = userCards.filter((userCard) => !catalogCards[userCard.catalogId]);
     if (!missing.length) return;
     Promise.all(
-      missing.map((uc) =>
-        getCard(uc.catalogId)
-          .then((card) => [uc.catalogId, card] as const)
+      missing.map((userCard) =>
+        getCard(userCard.catalogId)
+          .then((card) => [userCard.catalogId, card] as const)
           .catch(() => null),
       ),
     ).then((results) => {
       const entries = Object.fromEntries(
-        results.filter((r): r is [string, Card] => r !== null),
+        results.filter((result): result is [string, Card] => result !== null),
       );
-      setCatalogCards((prev) => ({ ...prev, ...entries }));
+      setCatalogCards((previous) => ({ ...previous, ...entries }));
     });
   }, [userCards]);
 
@@ -151,8 +152,8 @@ export default function WalletPage() {
     const { active, over } = event;
     if (!over || active.id === over.id || !userCards) return;
 
-    const oldIndex = userCards.findIndex((c) => c.id === (active.id as number));
-    const newIndex = userCards.findIndex((c) => c.id === (over.id as number));
+    const oldIndex = userCards.findIndex((card) => card.id === (active.id as number));
+    const newIndex = userCards.findIndex((card) => card.id === (over.id as number));
     await reorderCards(arrayMove(userCards, oldIndex, newIndex));
   }
 
@@ -160,78 +161,91 @@ export default function WalletPage() {
   const editingCatalogCard = editingCard ? catalogCards[editingCard.catalogId] : null;
 
   return (
-    <div className="px-4 py-8 max-w-2xl mx-auto">
-      {/* Page header */}
-      <div className="flex items-center justify-between mb-8">
+    <div className="px-4 py-8 max-w-6xl mx-auto">
+      <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-8">
+        {/* ── Main column ── */}
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Ví của tôi</h1>
-          {!isLoading && userCards.length > 0 && (
-            <p className="text-sm text-slate-400 mt-0.5">{userCards.length} thẻ</p>
-          )}
-        </div>
-        <Link
-          href="/app/add"
-          className="flex items-center gap-1.5 px-4 py-2 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm hover:bg-blue-50/60 transition-colors text-sm"
-        >
-          <IconPlus size={15} />
-          Thêm thẻ
-        </Link>
-      </div>
-
-      {/* Loading skeleton */}
-      {isLoading && (
-        <div className="space-y-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm">
-              <div className="w-20 aspect-[16/10] bg-slate-100 rounded-sm animate-pulse" />
-              <div className="flex-1 space-y-2">
-                <div className="h-3 w-16 bg-slate-100 rounded animate-pulse" />
-                <div className="h-4 w-32 bg-slate-100 rounded animate-pulse" />
-              </div>
+          {/* Page header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Ví của tôi</h1>
+              {!isLoading && userCards.length > 0 && (
+                <p className="text-sm text-slate-400 mt-0.5">{userCards.length} thẻ</p>
+              )}
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* Empty state */}
-      {!isLoading && userCards.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 border border-dashed border-slate-200 rounded-sm flex items-center justify-center mb-5">
-            <IconCreditCard size={26} className="text-slate-300" />
+            <Link
+              href="/app/add"
+              className="flex items-center gap-1.5 px-4 py-2 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm hover:bg-blue-50/60 transition-colors text-sm"
+            >
+              <IconPlus size={15} />
+              Thêm thẻ
+            </Link>
           </div>
-          <p className="text-slate-500 text-sm mb-1">Chưa có thẻ nào.</p>
-          <p className="text-slate-400 text-xs mb-6">Thêm thẻ để theo dõi sao kê và đến hạn.</p>
-          <Link
-            href="/app/add"
-            className="px-6 py-2.5 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm hover:bg-blue-50/60 transition-colors text-sm"
-          >
-            Thêm thẻ đầu tiên
-          </Link>
-        </div>
-      )}
 
-      {/* Card list with drag-to-reorder */}
-      {!isLoading && userCards.length > 0 && (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={userCards.map((c) => c.id!)} strategy={verticalListSortingStrategy}>
+          {/* Loading skeleton */}
+          {isLoading && (
             <div className="space-y-2">
-              {userCards.map((userCard) => (
-                <SortableWalletCard
-                  key={userCard.id}
-                  userCard={userCard}
-                  catalogCard={catalogCards[userCard.catalogId]}
-                  bank={
-                    catalogCards[userCard.catalogId]
-                      ? banks[catalogCards[userCard.catalogId].bank_id]
-                      : undefined
-                  }
-                  onEdit={setEditingCard}
-                />
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm">
+                  <div className="w-20 aspect-[16/10] bg-slate-100 rounded-sm animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-16 bg-slate-100 rounded animate-pulse" />
+                    <div className="h-4 w-32 bg-slate-100 rounded animate-pulse" />
+                  </div>
+                </div>
               ))}
             </div>
-          </SortableContext>
-        </DndContext>
-      )}
+          )}
+
+          {/* Empty state */}
+          {!isLoading && userCards.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-16 h-16 border border-dashed border-slate-200 rounded-sm flex items-center justify-center mb-5">
+                <IconCreditCard size={26} className="text-slate-300" />
+              </div>
+              <p className="text-slate-500 text-sm mb-1">Chưa có thẻ nào.</p>
+              <p className="text-slate-400 text-xs mb-6">Thêm thẻ để theo dõi sao kê và đến hạn.</p>
+              <Link
+                href="/app/add"
+                className="px-6 py-2.5 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm hover:bg-blue-50/60 transition-colors text-sm"
+              >
+                Thêm thẻ đầu tiên
+              </Link>
+            </div>
+          )}
+
+          {/* Card list with drag-to-reorder */}
+          {!isLoading && userCards.length > 0 && (
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={userCards.map((card) => card.id!)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-2">
+                  {userCards.map((userCard) => (
+                    <SortableWalletCard
+                      key={userCard.id}
+                      userCard={userCard}
+                      catalogCard={catalogCards[userCard.catalogId]}
+                      bank={
+                        catalogCards[userCard.catalogId]
+                          ? banks[catalogCards[userCard.catalogId].bank_id]
+                          : undefined
+                      }
+                      onEdit={setEditingCard}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )}
+        </div>
+
+        {/* ── Sidebar widgets ── */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-[57px] space-y-4">
+            <StatsWidget />
+            {/* Future widgets go here */}
+          </div>
+        </aside>
+      </div>
 
       {/* Edit dialog — rendered outside the list to avoid DnD context issues */}
       {editingCard && editingCatalogCard && (
