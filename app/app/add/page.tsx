@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft } from '@tabler/icons-react';
-import { addCard } from '@/lib/wallet';
+import { addCard, hasCardWithSameCatalogId } from '@/lib/wallet';
 import { createCreditAccount } from '@/lib/credit-account';
 import { getBanks, getCards, getBankImageUrl, getCardImageUrl, type Bank, type Card } from '@/lib/api';
 import type { CardStatus } from '@/lib/db';
@@ -66,6 +66,7 @@ export default function AddCardPage() {
   const [status, setStatus] = useState<CardStatus>('active');
   const [statusNote, setStatusNote] = useState('');
   const [note, setNote] = useState('');
+  const [canBeSupplementary, setCanBeSupplementary] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Fetch banks on mount
@@ -112,6 +113,7 @@ export default function AddCardPage() {
   function selectCard(card: Card) {
     setSelectedCard(card);
     setStep(3);
+    hasCardWithSameCatalogId(card.id).then(setCanBeSupplementary);
     setNickname('');
     setLast4('');
     setIssueDate('');
@@ -326,6 +328,7 @@ export default function AddCardPage() {
                   bankId={selectedBank!.id}
                   value={poolSelection}
                   onChange={setPoolSelection}
+                  canBeSupplementary={canBeSupplementary}
                 />
 
                 <DaySelect
@@ -337,7 +340,7 @@ export default function AddCardPage() {
                 <DaySelect
                   label="Ngày đến hạn thanh toán"
                   hint={
-                    !dueDateOverridden && statementDate && selectedCard.interest_free_days
+                    statementDate && selectedCard.interest_free_days
                       ? `Tự tính: ngày sao kê + ${selectedCard.interest_free_days} ngày miễn lãi`
                       : undefined
                   }
@@ -353,6 +356,7 @@ export default function AddCardPage() {
               <select value={status} onChange={(e) => setStatus(e.target.value as CardStatus)}
                 className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 focus:outline-none focus:border-brand-blue text-sm">
                 <option value="active">Đang dùng</option>
+                <option value="locked">Đã khoá (tạm ngưng sử dụng)</option>
                 <option value="expired">Hết hạn</option>
                 <option value="canceled">Đã huỷ</option>
               </select>

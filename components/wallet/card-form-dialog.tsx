@@ -13,7 +13,7 @@ import {
   reassignCardToAccount,
   createCreditAccount,
 } from '@/lib/credit-account';
-import { getCardImageUrl, type Card } from '@/lib/api';
+import { getCardImageUrl, getCard, type Card } from '@/lib/api';
 import { db, type WalletCard, type CreditAccount, type CardStatus } from '@/lib/db';
 import { CreditPoolSelector, type PoolSelection } from './credit-pool-selector';
 
@@ -50,23 +50,56 @@ function FormField({ label, hint, children }: { label: string; hint?: string; ch
 
 // ─── Credit limit section for edit mode ──────────────────────────────────────
 
+/** Format the list of sibling card names for the sharing warning.
+ *  Each card is shown as "Catalog Name •••• last4" when last4 is available.
+ *  When multiple cards share the same catalog name and have no last4,
+ *  they get a numeric suffix (1, 2, 3…). */
+function formatSiblingNames(siblings: WalletCard[], siblingCatalogNames: Record<string, string>): string {
+  // Resolve base name: nickname > fetched catalog name > cardId fallback
+  const baseNames = siblings.map((s) => s.nickname ?? siblingCatalogNames[s.cardId] ?? s.cardId);
+
+  // Count how many times each base name appears among cards without last4
+  const noLast4Counts: Record<string, number> = {};
+  for (let i = 0; i < siblings.length; i++) {
+    if (!siblings[i].last4) {
+      noLast4Counts[baseNames[i]] = (noLast4Counts[baseNames[i]] ?? 0) + 1;
+    }
+  }
+
+  // Assign running counters for the numeric suffix
+  const noLast4Counters: Record<string, number> = {};
+  return siblings
+    .map((sibling, i) => {
+      const name = baseNames[i];
+      if (sibling.last4) return `${name} •••• ${sibling.last4}`;
+      if (noLast4Counts[name] > 1) {
+        noLast4Counters[name] = (noLast4Counters[name] ?? 0) + 1;
+        return `${name} ${noLast4Counters[name]}`;
+      }
+      return name;
+    })
+    .join(', ');
+}
+
 function EditCreditLimitSection({
   walletCard,
   creditAccount,
-  siblingCount,
+  siblingCards,
+  siblingCatalogNames,
   creditLimitInput,
   onCreditLimitChange,
   onUnlink,
 }: {
   walletCard: WalletCard;
   creditAccount: CreditAccount | undefined;
-  siblingCount: number;
+  siblingCards: WalletCard[];
+  siblingCatalogNames: Record<string, string>;
   creditLimitInput: string;
   onCreditLimitChange: (value: string) => void;
   onUnlink: () => void;
 }) {
   const isSupplementary = walletCard.isSupplementary;
-  const isShared = siblingCount > 0;
+  const isShared = siblingCards.length > 0;
 
   return (
     <div className="space-y-2">
@@ -87,7 +120,7 @@ function EditCreditLimitSection({
         </p>
       ) : isShared ? (
         <p className="text-amber-600 border border-dashed border-amber-300 px-2 py-1.5 rounded-sm bg-amber-50/60">
-          ⚠ Thẻ này đang dùng chung hạn mức với {siblingCount} thẻ khác. Thay đổi sẽ ảnh hưởng tất cả các thẻ.
+          ⚠ Thẻ này đang dùng chung hạn mức với: {formatSiblingNames(siblingCards, siblingCatalogNames)}. Thay đổi sẽ ảnh hưởng tất cả các thẻ.
         </p>
       ) : null}
 
@@ -183,7 +216,8 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
 
   // Edit-mode credit account state
   const [creditAccount, setCreditAccount] = useState<CreditAccount | undefined>();
-  const [siblingCount, setSiblingCount] = useState(0);
+  const [siblingCards, setSiblingCards] = useState<WalletCard[]>([]);
+  const [siblingCatalogNames, setSiblingCatalogNames] = useState<Record<string, string>>({});
   const [creditLimitInput, setCreditLimitInput] = useState('');
 
   // Populate form on open
@@ -214,7 +248,17 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
             setCreditAccount(account);
             setCreditLimitInput(account.creditLimit.toString());
             const siblings = await getCardsForCreditAccount(account.id);
-            setSiblingCount(siblings.filter((c) => c.id !== walletCard.id).length);
+            const filteredSiblings = siblings.filter((c) => c.id !== walletCard.id);
+            setSiblingCards(filteredSiblings);
+            // Fetch each sibling's catalog card name
+            const nameEntries = await Promise.all(
+              filteredSiblings.map((sibling) =>
+                getCard(sibling.cardId)
+                  .then((catalogCard) => [sibling.cardId, catalogCard.name] as const)
+                  .catch(() => [sibling.cardId, sibling.cardId] as const),
+              ),
+            );
+            setSiblingCatalogNames(Object.fromEntries(nameEntries));
           }
         })();
       }
@@ -232,7 +276,8 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
       setNote('');
       setPoolSelection({ poolChoice: 'new', creditLimit: '', isSupplementary: false });
       setCreditAccount(undefined);
-      setSiblingCount(0);
+      setSiblingCards([]);
+      setSiblingCatalogNames({});
       setCreditLimitInput('');
     }
   }, [open, card.id, walletCard?.id]);
@@ -331,7 +376,8 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
       if (account) {
         setCreditAccount(account);
         setCreditLimitInput(account.creditLimit.toString());
-        setSiblingCount(0);
+        setSiblingCards([]);
+        setSiblingCatalogNames({});
       }
     }
   }
@@ -431,7 +477,8 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                     <EditCreditLimitSection
                       walletCard={walletCard!}
                       creditAccount={creditAccount}
-                      siblingCount={siblingCount}
+                      siblingCards={siblingCards}
+                      siblingCatalogNames={siblingCatalogNames}
                       creditLimitInput={creditLimitInput}
                       onCreditLimitChange={setCreditLimitInput}
                       onUnlink={handleUnlink}
@@ -480,7 +527,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                 <FormField
                   label="Ngày đến hạn thanh toán"
                   hint={
-                    !dueDateOverridden && statementDate && card.interest_free_days
+                    statementDate && card.interest_free_days
                       ? `Tự tính: ngày ${statementDate} + ${card.interest_free_days} ngày miễn lãi`
                       : undefined
                   }
