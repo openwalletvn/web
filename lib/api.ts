@@ -20,7 +20,7 @@ interface BankDetailResponse {
 }
 
 export type CardNetwork = 'visa' | 'mastercard' | 'jcb' | 'napas' | 'amex' | 'unionpay';
-export type CardType = 'credit' | 'debit' | 'prepaid' | 'transit' | 'atm';
+export type CardType = 'credit' | 'debit' | 'prepaid' | 'transit' | 'atm' | '2in1' | 'co-branded';
 export type ImageOrientation = 'horizontal' | 'vertical' | 'both';
 
 export interface Card {
@@ -50,6 +50,19 @@ export interface CardFilters {
     co_brand?: boolean;
     sort?: CardSort;
 }
+
+export const SEGMENT_FILTERS: Record<string, Pick<CardFilters, 'type' | 'network'>> = {
+    credit:         { type: 'credit' },
+    debit:          { type: 'debit' },
+    '2in1':         { type: '2in1' },
+    'co-branded':   { type: 'co-branded' },
+    visa:           { network: 'visa' },
+    mastercard:     { network: 'mastercard' },
+    jcb:            { network: 'jcb' },
+    napas:          { network: 'napas' },
+    amex:           { network: 'amex' },
+    unionpay:       { network: 'unionpay' },
+};
 
 interface CardListResponse {
     success: boolean;

@@ -16,8 +16,21 @@ import {
 import { cn } from '@/lib/utils';
 import { getBankImageUrl, type Bank } from '@/lib/api';
 
-const CARD_TYPE_KEYS = ['credit', 'debit', 'prepaid', 'transit', 'atm'] as const;
-const CARD_NETWORK_KEYS = ['visa', 'mastercard', 'jcb', 'napas', 'amex', 'unionpay'] as const;
+const CARD_TYPE_ITEMS = [
+  { navKey: 'type_credit',     href: '/cards/credit' },
+  { navKey: 'type_debit',      href: '/cards/debit' },
+  { navKey: 'type_2in1',       href: '/cards/2in1' },
+  { navKey: 'type_co_branded', href: '/cards/co-branded' },
+] as const;
+
+const CARD_NETWORK_ITEMS = [
+  { navKey: 'network_visa',       href: '/cards/visa' },
+  { navKey: 'network_mastercard', href: '/cards/mastercard' },
+  { navKey: 'network_jcb',        href: '/cards/jcb' },
+  { navKey: 'network_napas',      href: '/cards/napas' },
+  { navKey: 'network_amex',       href: '/cards/amex' },
+  { navKey: 'network_unionpay',   href: '/cards/unionpay' },
+] as const;
 
 interface Props {
   banks: Bank[];
@@ -86,11 +99,18 @@ export function Nav({ banks }: Props) {
                   {t('by_type')}
                 </p>
                 <ul className="space-y-1">
-                  {CARD_TYPE_KEYS.map((key) => (
-                    <li key={key}>
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/cards" className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
+                        {t('all_cards')}
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                  {CARD_TYPE_ITEMS.map(({ navKey, href }) => (
+                    <li key={navKey}>
                       <NavigationMenuLink asChild>
-                        <Link href={`/cards?type=${key}`} className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
-                          {key.charAt(0).toUpperCase() + key.slice(1)}
+                        <Link href={href} className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
+                          {t(navKey)}
                         </Link>
                       </NavigationMenuLink>
                     </li>
@@ -102,23 +122,16 @@ export function Nav({ banks }: Props) {
                   {t('by_network')}
                 </p>
                 <ul className="space-y-1">
-                  {CARD_NETWORK_KEYS.map((key) => (
-                    <li key={key}>
+                  {CARD_NETWORK_ITEMS.map(({ navKey, href }) => (
+                    <li key={navKey}>
                       <NavigationMenuLink asChild>
-                        <Link href={`/cards?network=${key}`} className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
-                          {key.charAt(0).toUpperCase() + key.slice(1)}
+                        <Link href={href} className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
+                          {t(navKey)}
                         </Link>
                       </NavigationMenuLink>
                     </li>
                   ))}
                 </ul>
-              </div>
-              <div className="col-span-2 pt-3 border-t border-slate-100">
-                <NavigationMenuLink asChild>
-                  <Link href="/cards" className="text-base text-brand-red hover:underline font-medium">
-                    {t('view_all_cards')}
-                  </Link>
-                </NavigationMenuLink>
               </div>
             </div>
           </NavigationMenuContent>

@@ -48,7 +48,18 @@
     "view_all_banks": "Xem tất cả ngân hàng →",
     "view_all_cards": "Xem tất cả thẻ →",
     "by_type": "Theo loại",
-    "by_network": "Theo mạng"
+    "by_network": "Theo mạng",
+    "all_cards": "Tất cả thẻ",
+    "type_credit": "Tín dụng",
+    "type_debit": "Ghi nợ",
+    "type_2in1": "2-trong-1",
+    "type_co_branded": "Co-branded",
+    "network_visa": "Visa",
+    "network_mastercard": "Mastercard",
+    "network_jcb": "JCB",
+    "network_napas": "Napas",
+    "network_amex": "Amex",
+    "network_unionpay": "UnionPay"
   },
   "Footer": {
     "copyright": "© {year} Open Wallet Vietnam",
@@ -90,6 +101,8 @@
     "type_prepaid": "Thẻ Trả trước",
     "type_transit": "Thẻ Transit",
     "type_atm": "Thẻ ATM",
+    "type_2in1": "Thẻ 2-trong-1",
+    "type_co_branded": "Thẻ Co-branded",
     "network_visa": "Thẻ Visa",
     "network_mastercard": "Thẻ Mastercard",
     "network_jcb": "Thẻ JCB",
