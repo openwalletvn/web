@@ -1,8 +1,42 @@
 {
+  "metadata": {
+    "siteName": "Open Wallet",
+    "title": "Open Wallet – Tra cứu thẻ. Quản lý thẻ.",
+    "description": "Tra cứu thông tin thẻ ngân hàng Việt Nam và quản lý ngày sao kê, nhắc hạn thanh toán. Miễn phí, bảo mật, mã nguồn mở.",
+    "tagline": "Tra cứu thẻ. Quản lý thẻ."
+  },
+  "og": {
+    "description": "Tra cứu thông tin thẻ tín dụng, thẻ ghi nợ Việt Nam. Nhắc ngày sao kê, quản lý thẻ cá nhân. Miễn phí mãi mãi."
+  },
+  "organization": {
+    "description": "Nguồn dữ liệu thẻ ngân hàng Việt Nam mã nguồn mở – miễn phí cho mọi người."
+  },
+  "hero": {
+    "tagline": "Tra cứu thẻ. Quản lý thẻ.",
+    "subtext": "Miễn phí, bảo mật, mã nguồn mở.",
+    "db": {
+      "title": "Card Database",
+      "description": "Tra cứu thông tin thẻ ngân hàng Việt Nam",
+      "cta": "Xem tài liệu API →"
+    },
+    "app": {
+      "title": "Card Manager",
+      "badge": "Coming Soon",
+      "description": "Quản lý thẻ tín dụng, nhắc ngày sao kê",
+      "placeholder": "Email của bạn",
+      "cta": "Thông báo tôi"
+    },
+    "stats": {
+      "banks": "30 ngân hàng",
+      "cards": "200+ thẻ",
+      "free": "Miễn phí mãi mãi"
+    }
+  },
   "Hero": {
     "title": "Open Wallet",
     "description": "Cơ sở dữ liệu thẻ ngân hàng mã nguồn mở cho Việt Nam",
     "cta_api": "Xem Tài liệu API",
+    "cta_app": "Ứng dụng quản lý thẻ",
     "cta_banks": "Khám phá Ngân hàng",
     "cta_cards": "Khám phá Thẻ"
   },

@@ -1,8 +1,42 @@
 {
+  "metadata": {
+    "siteName": "Open Wallet",
+    "title": "Open Wallet – Find Cards. Manage Cards.",
+    "description": "Look up Vietnamese bank card info and manage statement dates, payment reminders. Free, secure, open source.",
+    "tagline": "Find Cards. Manage Cards."
+  },
+  "og": {
+    "description": "Look up Vietnamese credit and debit card info. Track statement dates, manage personal cards. Always free."
+  },
+  "organization": {
+    "description": "Open-source Vietnamese bank card data – free for everyone."
+  },
+  "hero": {
+    "tagline": "Find Cards. Manage Cards.",
+    "subtext": "Free, secure, open source.",
+    "db": {
+      "title": "Card Database",
+      "description": "Look up Vietnamese bank card information",
+      "cta": "View API docs →"
+    },
+    "app": {
+      "title": "Card Manager",
+      "badge": "Coming Soon",
+      "description": "Manage credit cards, track statement dates",
+      "placeholder": "Your email",
+      "cta": "Notify me"
+    },
+    "stats": {
+      "banks": "30 banks",
+      "cards": "200+ cards",
+      "free": "Free forever"
+    }
+  },
   "Hero": {
     "title": "Open Wallet",
     "description": "Open-source digital wallet card database for Vietnam",
     "cta_api": "View API Documentation",
+    "cta_app": "Card manager app",
     "cta_banks": "Browse Banks",
     "cta_cards": "Browse Cards"
   },

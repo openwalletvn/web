@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   // Redirect _rsc requests that lack the RSC header (bots/audit tools).
   // Real browser RSC navigation always includes the "RSC: 1" header.
   if (request.nextUrl.searchParams.has('_rsc') && !request.headers.get('RSC')) {

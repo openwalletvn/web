@@ -28,12 +28,20 @@ export default function AppPage() {
           </p>
         </div>
 
-        <Link
-          href="/"
-          className="inline-block px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors"
-        >
-          ← Back to Home
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link
+            href="/"
+            className="inline-block px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors"
+          >
+            ← Back to Home
+          </Link>
+          <Link
+            href="/docs"
+            className="inline-block px-6 py-3 bg-brand-red hover:bg-red-700 text-white rounded-lg transition-colors"
+          >
+            View API Docs
+          </Link>
+        </div>
       </div>
     </div>
   );
