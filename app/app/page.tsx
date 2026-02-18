@@ -1,48 +1,233 @@
-import Link from "next/link";
+'use client';
 
-export default function AppPage() {
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useLiveQuery } from 'dexie-react-hooks';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  arrayMove,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { IconGripVertical, IconPlus, IconCreditCard } from '@tabler/icons-react';
+import { db, type UserCard } from '@/lib/db';
+import { getBanks, getCard, getCardImageUrl, type Card, type Bank } from '@/lib/api';
+
+// ─── Sortable card item ───────────────────────────────────────────────────────
+
+function SortableWalletCard({
+  userCard,
+  catalogCard,
+  bank,
+}: {
+  userCard: UserCard;
+  catalogCard: Card | undefined;
+  bank: Bank | undefined;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: userCard.id!,
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-dark via-slate-900 to-brand-dark flex flex-col items-center justify-center px-4">
-      <div className="max-w-2xl mx-auto text-center">
-        <div className="mb-8">
-          <div className="w-20 h-20 mx-auto mb-6 bg-brand-red/10 rounded-2xl flex items-center justify-center">
-            <svg
-              className="w-10 h-10 text-brand-red"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <h1 className="text-6xl md:text-8xl font-bold text-white mb-6">
-            Coming Soon
-          </h1>
-          <p className="text-xl md:text-2xl text-slate-400 mb-8">
-            Card manager app launching soon
-          </p>
-        </div>
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }}
+      className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm bg-white hover:border-slate-300 transition-colors"
+    >
+      {/* Card image */}
+      <div className="shrink-0 w-20 aspect-[16/10] bg-slate-50 overflow-hidden rounded-sm">
+        {catalogCard ? (
+          <img
+            src={getCardImageUrl(catalogCard)}
+            alt={catalogCard.name}
+            className="w-full h-full object-contain"
+          />
+        ) : (
+          <div className="w-full h-full bg-slate-100 animate-pulse" />
+        )}
+      </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/"
-            className="inline-block px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors"
-          >
-            ← Back to Home
-          </Link>
-          <Link
-            href="/docs"
-            className="inline-block px-6 py-3 bg-brand-red hover:bg-red-700 text-white rounded-lg transition-colors"
-          >
-            View API Docs
-          </Link>
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-slate-400 truncate">{bank?.name ?? '—'}</p>
+        <p className="font-medium text-slate-900 leading-tight truncate text-sm">
+          {catalogCard?.name ?? (
+            <span className="inline-block w-28 h-4 bg-slate-100 rounded animate-pulse" />
+          )}
+        </p>
+        <div className="flex flex-wrap gap-1 mt-1.5">
+          {userCard.last4 && (
+            <span className="text-xs px-1.5 py-0.5 border border-dashed border-slate-300 text-slate-500">
+              •••• {userCard.last4}
+            </span>
+          )}
+          {userCard.statementDate && (
+            <span className="text-xs px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue">
+              Sao kê: ngày {userCard.statementDate}
+            </span>
+          )}
+          {userCard.paymentDueDate && (
+            <span className="text-xs px-1.5 py-0.5 border border-dashed border-brand-red text-brand-red">
+              Đến hạn: ngày {userCard.paymentDueDate}
+            </span>
+          )}
         </div>
       </div>
+
+      {/* Drag handle */}
+      <button
+        {...attributes}
+        {...listeners}
+        className="shrink-0 p-1.5 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing touch-none"
+        aria-label="Kéo để sắp xếp"
+      >
+        <IconGripVertical size={18} />
+      </button>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function WalletPage() {
+  const userCards = useLiveQuery(() => db.userCards.orderBy('order').toArray());
+  const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
+  const [banks, setBanks] = useState<Record<string, Bank>>({});
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  // Fetch all banks once for name lookup
+  useEffect(() => {
+    getBanks().then((list) =>
+      setBanks(Object.fromEntries(list.map((b) => [b.id, b]))),
+    );
+  }, []);
+
+  // Fetch catalog data for any new userCards
+  useEffect(() => {
+    if (!userCards?.length) return;
+    const missing = userCards.filter((uc) => !catalogCards[uc.catalogId]);
+    if (!missing.length) return;
+    Promise.all(
+      missing.map((uc) =>
+        getCard(uc.catalogId)
+          .then((card) => [uc.catalogId, card] as const)
+          .catch(() => null),
+      ),
+    ).then((results) => {
+      const entries = Object.fromEntries(
+        results.filter((r): r is [string, Card] => r !== null),
+      );
+      setCatalogCards((prev) => ({ ...prev, ...entries }));
+    });
+  }, [userCards]);
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id || !userCards) return;
+
+    const oldIndex = userCards.findIndex((c) => c.id === (active.id as number));
+    const newIndex = userCards.findIndex((c) => c.id === (over.id as number));
+    const reordered = arrayMove(userCards, oldIndex, newIndex);
+
+    await db.transaction('rw', db.userCards, async () => {
+      for (let i = 0; i < reordered.length; i++) {
+        await db.userCards.update(reordered[i].id!, { order: i, updatedAt: new Date() });
+      }
+    });
+  }
+
+  const isLoading = userCards === undefined;
+
+  return (
+    <div className="px-4 py-8 max-w-2xl mx-auto">
+      {/* Page header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Ví của tôi</h1>
+          {!isLoading && userCards.length > 0 && (
+            <p className="text-sm text-slate-400 mt-0.5">{userCards.length} thẻ</p>
+          )}
+        </div>
+        <Link
+          href="/app/add"
+          className="flex items-center gap-1.5 px-4 py-2 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm hover:bg-blue-50/60 transition-colors text-sm"
+        >
+          <IconPlus size={15} />
+          Thêm thẻ
+        </Link>
+      </div>
+
+      {/* Loading skeleton */}
+      {isLoading && (
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm"
+            >
+              <div className="w-20 aspect-[16/10] bg-slate-100 rounded-sm animate-pulse" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 w-16 bg-slate-100 rounded animate-pulse" />
+                <div className="h-4 w-32 bg-slate-100 rounded animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!isLoading && userCards.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-16 h-16 border border-dashed border-slate-200 rounded-sm flex items-center justify-center mb-5">
+            <IconCreditCard size={26} className="text-slate-300" />
+          </div>
+          <p className="text-slate-500 text-sm mb-1">Chưa có thẻ nào.</p>
+          <p className="text-slate-400 text-xs mb-6">Thêm thẻ để theo dõi sao kê và đến hạn.</p>
+          <Link
+            href="/app/add"
+            className="px-6 py-2.5 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm hover:bg-blue-50/60 transition-colors text-sm"
+          >
+            Thêm thẻ đầu tiên
+          </Link>
+        </div>
+      )}
+
+      {/* Card list with drag-to-reorder */}
+      {!isLoading && userCards.length > 0 && (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={userCards.map((c) => c.id!)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-2">
+              {userCards.map((userCard) => (
+                <SortableWalletCard
+                  key={userCard.id}
+                  userCard={userCard}
+                  catalogCard={catalogCards[userCard.catalogId]}
+                  bank={
+                    catalogCards[userCard.catalogId]
+                      ? banks[catalogCards[userCard.catalogId].bank_id]
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
     </div>
   );
 }
