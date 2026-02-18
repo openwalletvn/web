@@ -34,7 +34,7 @@ Open-source digital wallet card database for Vietnam.
 /lib
   /utils.ts             → Utility functions
 /public
-  /logo.svg             → OpenWallet logo
+  /logo.png             → OpenWallet logo
 ```
 
 ## Environment Variables

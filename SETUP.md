@@ -62,7 +62,7 @@ Defined in `app/globals.css` using Tailwind v4 theme system:
 /lib
   /utils.ts             → cn() utility function
 /public
-  /logo.svg             → Placeholder OpenWallet logo
+  /logo.png             → Placeholder OpenWallet logo
 ```
 
 ## Environment Variables
