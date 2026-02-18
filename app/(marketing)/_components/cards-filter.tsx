@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Select,
   SelectContent,
@@ -10,27 +11,9 @@ import {
 } from '@/components/ui/select';
 import type { Bank, CardType, CardNetwork, CardSort } from '@/lib/api';
 
-const TYPES: { value: CardType; label: string }[] = [
-  { value: 'credit', label: 'Credit' },
-  { value: 'debit', label: 'Debit' },
-  { value: 'prepaid', label: 'Prepaid' },
-  { value: 'transit', label: 'Transit' },
-  { value: 'atm', label: 'ATM' },
-];
-
-const NETWORKS: { value: CardNetwork; label: string }[] = [
-  { value: 'visa', label: 'Visa' },
-  { value: 'mastercard', label: 'Mastercard' },
-  { value: 'jcb', label: 'JCB' },
-  { value: 'napas', label: 'Napas' },
-  { value: 'amex', label: 'Amex' },
-  { value: 'unionpay', label: 'UnionPay' },
-];
-
-const SORTS: { value: CardSort; label: string }[] = [
-  { value: 'fee_asc', label: 'Fee: Low to High' },
-  { value: 'fee_desc', label: 'Fee: High to Low' },
-];
+const TYPE_KEYS: CardType[] = ['credit', 'debit', 'prepaid', 'transit', 'atm'];
+const NETWORK_KEYS: CardNetwork[] = ['visa', 'mastercard', 'jcb', 'napas', 'amex', 'unionpay'];
+const SORT_KEYS: CardSort[] = ['fee_asc', 'fee_desc'];
 
 interface Props {
   banks: Bank[];
@@ -39,10 +22,11 @@ interface Props {
 export function CardsFilter({ banks }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('CardsFilter');
 
   function update(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === 'all' || value === '') {
+    if (value === 'all' || value === '' || value === 'default') {
       params.delete(key);
     } else {
       params.set(key, value);
@@ -71,62 +55,50 @@ export function CardsFilter({ banks }: Props) {
 
   return (
     <div className="flex gap-2 flex-wrap items-center">
-      <Select
-        value={searchParams.get('type') ?? 'all'}
-        onValueChange={(v) => update('type', v)}
-      >
+      <Select value={searchParams.get('type') ?? 'all'} onValueChange={(v) => update('type', v)}>
         <SelectTrigger className="w-36">
-          <SelectValue placeholder="Type" />
+          <SelectValue placeholder={t('all_types')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All types</SelectItem>
-          {TYPES.map((t) => (
-            <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+          <SelectItem value="all">{t('all_types')}</SelectItem>
+          {TYPE_KEYS.map((key) => (
+            <SelectItem key={key} value={key}>{t(`type_${key}`)}</SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      <Select
-        value={searchParams.get('network') ?? 'all'}
-        onValueChange={(v) => update('network', v)}
-      >
+      <Select value={searchParams.get('network') ?? 'all'} onValueChange={(v) => update('network', v)}>
         <SelectTrigger className="w-36">
-          <SelectValue placeholder="Network" />
+          <SelectValue placeholder={t('all_networks')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All networks</SelectItem>
-          {NETWORKS.map((n) => (
-            <SelectItem key={n.value} value={n.value}>{n.label}</SelectItem>
+          <SelectItem value="all">{t('all_networks')}</SelectItem>
+          {NETWORK_KEYS.map((key) => (
+            <SelectItem key={key} value={key}>{t(`network_${key}`)}</SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      <Select
-        value={searchParams.get('bank') ?? 'all'}
-        onValueChange={(v) => update('bank', v)}
-      >
+      <Select value={searchParams.get('bank') ?? 'all'} onValueChange={(v) => update('bank', v)}>
         <SelectTrigger className="w-44">
-          <SelectValue placeholder="Bank" />
+          <SelectValue placeholder={t('all_banks')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All banks</SelectItem>
+          <SelectItem value="all">{t('all_banks')}</SelectItem>
           {banks.map((b) => (
             <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      <Select
-        value={searchParams.get('sort') ?? 'default'}
-        onValueChange={(v) => update('sort', v === 'default' ? '' : v)}
-      >
+      <Select value={searchParams.get('sort') ?? 'default'} onValueChange={(v) => update('sort', v)}>
         <SelectTrigger className="w-44">
-          <SelectValue placeholder="Sort by" />
+          <SelectValue placeholder={t('default_order')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="default">Default order</SelectItem>
-          {SORTS.map((s) => (
-            <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+          <SelectItem value="default">{t('default_order')}</SelectItem>
+          {SORT_KEYS.map((key) => (
+            <SelectItem key={key} value={key}>{t(key)}</SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -139,7 +111,7 @@ export function CardsFilter({ banks }: Props) {
             : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
         }`}
       >
-        Co-branded
+        {t('co_branded')}
       </button>
 
       {hasFilter && (
@@ -147,7 +119,7 @@ export function CardsFilter({ banks }: Props) {
           onClick={() => router.push('/cards')}
           className="h-9 px-3 text-base text-slate-500 hover:text-slate-900 transition-colors underline underline-offset-2"
         >
-          Reset
+          {t('reset')}
         </button>
       )}
     </div>

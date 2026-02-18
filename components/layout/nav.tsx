@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -15,22 +16,8 @@ import {
 import { cn } from '@/lib/utils';
 import { getBankImageUrl, type Bank } from '@/lib/api';
 
-const CARD_TYPES = [
-  { value: 'credit', label: 'Credit' },
-  { value: 'debit', label: 'Debit' },
-  { value: 'prepaid', label: 'Prepaid' },
-  { value: 'transit', label: 'Transit' },
-  { value: 'atm', label: 'ATM' },
-];
-
-const CARD_NETWORKS = [
-  { value: 'visa', label: 'Visa' },
-  { value: 'mastercard', label: 'Mastercard' },
-  { value: 'jcb', label: 'JCB' },
-  { value: 'napas', label: 'Napas' },
-  { value: 'amex', label: 'Amex' },
-  { value: 'unionpay', label: 'UnionPay' },
-];
+const CARD_TYPE_KEYS = ['credit', 'debit', 'prepaid', 'transit', 'atm'] as const;
+const CARD_NETWORK_KEYS = ['visa', 'mastercard', 'jcb', 'napas', 'amex', 'unionpay'] as const;
 
 interface Props {
   banks: Bank[];
@@ -38,31 +25,25 @@ interface Props {
 
 export function Nav({ banks }: Props) {
   const pathname = usePathname();
+  const t = useTranslations('Nav');
 
   return (
     <NavigationMenu>
       <NavigationMenuList>
-        {/* Home */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <Link
               href="/"
-              className={cn(
-                navigationMenuTriggerStyle(),
-                pathname === '/' && 'text-brand-red font-semibold',
-              )}
+              className={cn(navigationMenuTriggerStyle(), pathname === '/' && 'text-brand-red font-semibold')}
             >
-              Home
+              {t('home')}
             </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
 
-        {/* Banks */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger
-            className={cn(pathname.startsWith('/banks') && 'text-brand-red font-semibold')}
-          >
-            Banks
+          <NavigationMenuTrigger className={cn(pathname.startsWith('/banks') && 'text-brand-red font-semibold')}>
+            {t('banks')}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="w-[640px] p-4">
@@ -74,12 +55,7 @@ export function Nav({ banks }: Props) {
                       className="flex flex-col items-center gap-1.5 p-2 rounded-md hover:bg-slate-100 transition-colors"
                     >
                       <div className="relative w-10 h-10">
-                        <Image
-                          src={getBankImageUrl(bank.logo_url)}
-                          alt=""
-                          fill
-                          className="object-contain"
-                        />
+                        <Image src={getBankImageUrl(bank.logo_url)} alt="" fill className="object-contain" />
                       </div>
                       <span className="text-base text-slate-600 text-center leading-tight line-clamp-2">
                         {bank.name}
@@ -90,11 +66,8 @@ export function Nav({ banks }: Props) {
               </div>
               <div className="mt-3 pt-3 border-t border-slate-100">
                 <NavigationMenuLink asChild>
-                  <Link
-                    href="/banks"
-                    className="text-base text-brand-red hover:underline font-medium"
-                  >
-                    View all banks →
+                  <Link href="/banks" className="text-base text-brand-red hover:underline font-medium">
+                    {t('view_all_banks')}
                   </Link>
                 </NavigationMenuLink>
               </div>
@@ -102,28 +75,22 @@ export function Nav({ banks }: Props) {
           </NavigationMenuContent>
         </NavigationMenuItem>
 
-        {/* Cards */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger
-            className={cn(pathname.startsWith('/cards') && 'text-brand-red font-semibold')}
-          >
-            Cards
+          <NavigationMenuTrigger className={cn(pathname.startsWith('/cards') && 'text-brand-red font-semibold')}>
+            {t('cards')}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <div className="w-[400px] p-4 grid grid-cols-2 gap-6">
               <div>
                 <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                  By Type
+                  {t('by_type')}
                 </p>
                 <ul className="space-y-1">
-                  {CARD_TYPES.map((t) => (
-                    <li key={t.value}>
+                  {CARD_TYPE_KEYS.map((key) => (
+                    <li key={key}>
                       <NavigationMenuLink asChild>
-                        <Link
-                          href={`/cards?type=${t.value}`}
-                          className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors"
-                        >
-                          {t.label}
+                        <Link href={`/cards?type=${key}`} className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
+                          {key.charAt(0).toUpperCase() + key.slice(1)}
                         </Link>
                       </NavigationMenuLink>
                     </li>
@@ -132,17 +99,14 @@ export function Nav({ banks }: Props) {
               </div>
               <div>
                 <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                  By Network
+                  {t('by_network')}
                 </p>
                 <ul className="space-y-1">
-                  {CARD_NETWORKS.map((n) => (
-                    <li key={n.value}>
+                  {CARD_NETWORK_KEYS.map((key) => (
+                    <li key={key}>
                       <NavigationMenuLink asChild>
-                        <Link
-                          href={`/cards?network=${n.value}`}
-                          className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors"
-                        >
-                          {n.label}
+                        <Link href={`/cards?network=${key}`} className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
+                          {key.charAt(0).toUpperCase() + key.slice(1)}
                         </Link>
                       </NavigationMenuLink>
                     </li>
@@ -151,11 +115,8 @@ export function Nav({ banks }: Props) {
               </div>
               <div className="col-span-2 pt-3 border-t border-slate-100">
                 <NavigationMenuLink asChild>
-                  <Link
-                    href="/cards"
-                    className="text-base text-brand-red hover:underline font-medium"
-                  >
-                    View all cards →
+                  <Link href="/cards" className="text-base text-brand-red hover:underline font-medium">
+                    {t('view_all_cards')}
                   </Link>
                 </NavigationMenuLink>
               </div>

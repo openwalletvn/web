@@ -1,24 +1,22 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { getBanks, getBankImageUrl } from '@/lib/api';
 
 interface Props {
   limit?: number;
   showViewAll?: boolean;
-  description?: string;
 }
 
-export async function BanksSection({ limit, showViewAll, description }: Props) {
-  const banks = await getBanks();
+export async function BanksSection({ limit, showViewAll }: Props) {
+  const [banks, t] = await Promise.all([getBanks(), getTranslations('BanksSection')]);
   const displayed = limit ? banks.slice(0, limit) : banks;
 
   return (
     <section className="py-12 px-4 max-w-6xl mx-auto w-full">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-slate-900">Banks</h2>
-        {description && (
-          <p className="text-slate-500 mt-1">{description}</p>
-        )}
+        <h2 className="text-2xl font-bold text-slate-900">{t('title')}</h2>
+        <p className="text-slate-500 mt-1">{t('description')}</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {displayed.map((bank) => (
@@ -45,7 +43,7 @@ export async function BanksSection({ limit, showViewAll, description }: Props) {
             href="/banks"
             className="inline-block px-6 py-2.5 border border-slate-300 rounded-lg font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
-            View all {banks.length} banks →
+            {t('view_all', { count: banks.length })}
           </Link>
         </div>
       )}

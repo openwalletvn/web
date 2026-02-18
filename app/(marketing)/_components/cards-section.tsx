@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { Badge } from '@/components/ui/badge';
 import { getCards, getCardImageUrl, type CardFilters } from '@/lib/api';
 
@@ -8,16 +9,16 @@ interface Props {
   title?: string;
   limit?: number;
   showViewAll?: boolean;
-  description?: string;
 }
 
-export async function CardsSection({ filters, title = 'Cards', limit, showViewAll, description }: Props) {
-  let cards = await getCards(filters);
+export async function CardsSection({ filters, title, limit, showViewAll }: Props) {
+  const [t, allCards] = await Promise.all([getTranslations('CardsSection'), getCards(filters)]);
+
+  let cards = allCards;
 
   if (filters?.co_brand) {
     cards = cards.filter((c) => !!c.co_brand);
   }
-
   if (filters?.sort === 'fee_asc') {
     cards = [...cards].sort((a, b) => (a.annual_fee ?? 0) - (b.annual_fee ?? 0));
   } else if (filters?.sort === 'fee_desc') {
@@ -25,24 +26,23 @@ export async function CardsSection({ filters, title = 'Cards', limit, showViewAl
   }
 
   const displayed = limit ? cards.slice(0, limit) : cards;
+  const heading = title !== undefined ? title : t('title');
 
   if (displayed.length === 0) {
     return (
       <section className="py-4 max-w-6xl mx-auto w-full">
-        {title && <h2 className="text-2xl font-bold text-slate-900 mb-6">{title}</h2>}
-        <p className="text-slate-500">No cards found.</p>
+        {heading && <h2 className="text-2xl font-bold text-slate-900 mb-6">{heading}</h2>}
+        <p className="text-slate-500">{t('no_cards')}</p>
       </section>
     );
   }
 
   return (
     <section className="py-4 max-w-6xl mx-auto w-full">
-      {(title || description) && (
+      {heading && (
         <div className="mb-6">
-          {title && <h2 className="text-2xl font-bold text-slate-900">{title}</h2>}
-          {description && (
-            <p className="text-slate-500 mt-1">{description}</p>
-          )}
+          <h2 className="text-2xl font-bold text-slate-900">{heading}</h2>
+          {showViewAll && <p className="text-slate-500 mt-1">{t('description')}</p>}
         </div>
       )}
 
@@ -56,12 +56,7 @@ export async function CardsSection({ filters, title = 'Cards', limit, showViewAl
                 className="flex flex-col gap-2 p-3 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors block"
               >
                 <div className={`relative w-full ${isVertical ? 'aspect-[2/3]' : 'aspect-[16/10]'} bg-white rounded overflow-hidden`}>
-                  <Image
-                    src={getCardImageUrl(card)}
-                    alt=""
-                    fill
-                    className="object-contain"
-                  />
+                  <Image src={getCardImageUrl(card)} alt="" fill className="object-contain" />
                 </div>
                 <div>
                   <p className="font-medium text-slate-800 leading-tight">{card.name}</p>
@@ -87,7 +82,7 @@ export async function CardsSection({ filters, title = 'Cards', limit, showViewAl
             href="/cards"
             className="inline-block px-6 py-2.5 border border-slate-300 rounded-lg font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
-            View all {cards.length} cards →
+            {t('view_all', { count: cards.length })}
           </Link>
         </div>
       )}

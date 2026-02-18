@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { CardsFilter } from '../_components/cards-filter';
 import { CardsSection, CardsSectionSkeleton } from '../_components/cards-section';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
@@ -14,38 +15,43 @@ interface Props {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { type, network } = await searchParams;
+  const t = await getTranslations('CardsPage');
   const label = type
-    ? `${type.charAt(0).toUpperCase() + type.slice(1)} Cards`
+    ? t(`type_${type}` as Parameters<typeof t>[0])
     : network
-      ? `${network.charAt(0).toUpperCase() + network.slice(1)} Cards`
-      : 'Cards';
+      ? t(`network_${network}` as Parameters<typeof t>[0])
+      : t('title');
   return {
     title: `${label} | Open Wallet`,
-    description: `Browse ${label.toLowerCase()} on Open Wallet Vietnam.`,
+    description: `Khám phá ${label.toLowerCase()} trên Open Wallet Vietnam.`,
   };
 }
 
 export default async function CardsPage({ searchParams }: Props) {
   const { type, network, bank: bankId, co_brand, sort } = await searchParams;
 
-  const banks = await getBanks();
+  const [banks, t, tb] = await Promise.all([
+    getBanks(),
+    getTranslations('CardsPage'),
+    getTranslations('Breadcrumbs'),
+  ]);
 
   const selectedBank = bankId ? banks.find((b) => b.id === bankId) : undefined;
 
   const pageTitle = type
-    ? `${type.charAt(0).toUpperCase() + type.slice(1)} Cards`
+    ? t(`type_${type}` as Parameters<typeof t>[0])
     : network
-      ? `${network.charAt(0).toUpperCase() + network.slice(1)} Cards`
+      ? t(`network_${network}` as Parameters<typeof t>[0])
       : selectedBank
-        ? `${selectedBank.name} Cards`
+        ? t('bank_cards', { bank: selectedBank.name })
         : co_brand === '1'
-          ? 'Co-branded Cards'
-          : 'Cards';
+          ? t('cobranded')
+          : t('title');
 
   return (
     <div className="px-4 py-12">
       <div className="max-w-6xl mx-auto">
-        <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Cards' }]} />
+        <Breadcrumbs items={[{ label: tb('home'), href: '/' }, { label: tb('cards') }]} />
 
         <h1 className="text-4xl font-bold text-slate-900 mb-6">{pageTitle}</h1>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { League_Spartan } from "next/font/google";
+import { NextIntlClientProvider } from 'next-intl';
 import "./globals.css";
 
 const leagueSpartan = League_Spartan({
@@ -8,8 +9,8 @@ const leagueSpartan = League_Spartan({
 });
 
 export const metadata: Metadata = {
-  title: "OpenWallet Vietnam",
-  description: "Open-source digital wallet card database for Vietnam",
+  title: "Open Wallet Vietnam",
+  description: "Cơ sở dữ liệu thẻ ngân hàng mã nguồn mở cho Việt Nam",
   icons: {
     icon: "/icon.jpg",
     apple: "/icon.jpg",
@@ -22,8 +23,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={leagueSpartan.variable}>
-      <body className="antialiased">{children}</body>
+    <html lang="vi" className={leagueSpartan.variable}>
+      <body className="antialiased">
+        <NextIntlClientProvider>
+          {children}
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }

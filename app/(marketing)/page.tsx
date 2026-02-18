@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { BanksSection, BanksSectionSkeleton } from './_components/banks-section';
 import { CardsSection, CardsSectionSkeleton } from './_components/cards-section';
 
 export const runtime = 'edge';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const t = await getTranslations('Hero');
+
   return (
     <div className="flex flex-col items-center">
       <div className="max-w-4xl mx-auto text-center py-20 px-4">
@@ -18,10 +21,10 @@ export default function HomePage() {
             />
           </div>
           <h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-4">
-            Open Wallet
+            {t('title')}
           </h1>
           <p className="text-xl md:text-2xl text-slate-500 mb-8">
-            Open-source digital wallet card database for Vietnam
+            {t('description')}
           </p>
         </div>
 
@@ -30,37 +33,29 @@ export default function HomePage() {
             href="/docs"
             className="px-8 py-4 bg-brand-red hover:bg-red-700 text-white rounded-lg font-semibold transition-colors text-lg"
           >
-            View API Documentation
+            {t('cta_api')}
           </Link>
           <Link
             href="/banks"
             className="px-8 py-4 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg font-semibold transition-colors text-lg"
           >
-            Browse Banks
+            {t('cta_banks')}
           </Link>
           <Link
             href="/cards"
             className="px-8 py-4 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg font-semibold transition-colors text-lg"
           >
-            Browse Cards
+            {t('cta_cards')}
           </Link>
         </div>
       </div>
 
       <Suspense fallback={<BanksSectionSkeleton />}>
-        <BanksSection
-          limit={12}
-          showViewAll
-          description="Comprehensive data for all major Vietnamese banks, updated regularly."
-        />
+        <BanksSection limit={12} showViewAll />
       </Suspense>
 
       <Suspense fallback={<CardsSectionSkeleton />}>
-        <CardsSection
-          limit={10}
-          showViewAll
-          description="Explore credit, debit, and prepaid cards from leading Vietnamese banks."
-        />
+        <CardsSection limit={10} showViewAll />
       </Suspense>
     </div>
   );
