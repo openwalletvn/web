@@ -20,7 +20,9 @@
       "Bash(ls:*)",
       "WebFetch(domain:api.openwallet.vn)",
       "Bash(git push:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
