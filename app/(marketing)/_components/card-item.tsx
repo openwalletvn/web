@@ -21,11 +21,11 @@ export function CardItem({ card }: Props) {
       <div>
         <p className="font-medium text-slate-800 leading-tight">{card.name}</p>
         <div className="flex flex-wrap gap-1 mt-1">
-          <span className="text-xs px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium capitalize">
+          <span className="px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium capitalize">
             {card.card_network}
           </span>
           {card.card_type.map((type) => (
-            <span key={type} className="text-xs px-1.5 py-0.5 border border-dashed border-slate-300 text-slate-500 capitalize">
+            <span key={type} className="px-1.5 py-0.5 border border-dashed border-slate-300 text-slate-500 capitalize">
               {type}
             </span>
           ))}

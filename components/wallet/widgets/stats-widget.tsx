@@ -51,8 +51,8 @@ export function StatsWidget() {
 
         {configuredCards > 0 && configuredCards < totalCards && (
           <div className="flex items-center justify-between pt-1 border-t border-dashed border-slate-200">
-            <span className="text-xs text-slate-400">Đã cài sao kê/đến hạn</span>
-            <span className="text-xs text-slate-500">{configuredCards}/{totalCards}</span>
+            <span className="text-slate-400">Đã cài sao kê/đến hạn</span>
+            <span className="text-slate-500">{configuredCards}/{totalCards}</span>
           </div>
         )}
       </div>

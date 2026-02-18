@@ -40,8 +40,8 @@ const inputClass =
 function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-600 mb-1">{label}</label>
-      {hint && <p className="text-xs text-slate-400 mb-1">{hint}</p>}
+      <label className="block font-medium text-slate-600 mb-1">{label}</label>
+      {hint && <p className="text-slate-400 mb-1">{hint}</p>}
       {children}
     </div>
   );
@@ -81,11 +81,11 @@ function EditCreditLimitSection({
       </FormField>
 
       {isSupplementary ? (
-        <p className="text-xs text-slate-400 flex items-center gap-1">
+        <p className="text-slate-400 flex items-center gap-1">
           🔒 Hạn mức được quản lý bởi thẻ chính
         </p>
       ) : isShared ? (
-        <p className="text-xs text-amber-600 border border-dashed border-amber-300 px-2 py-1.5 rounded-sm bg-amber-50/60">
+        <p className="text-amber-600 border border-dashed border-amber-300 px-2 py-1.5 rounded-sm bg-amber-50/60">
           ⚠ Thẻ này đang dùng chung hạn mức với {siblingCount} thẻ khác. Thay đổi sẽ ảnh hưởng tất cả các thẻ.
         </p>
       ) : null}
@@ -94,7 +94,7 @@ function EditCreditLimitSection({
         <button
           type="button"
           onClick={onUnlink}
-          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 border border-dashed border-slate-300 hover:border-slate-400 px-2.5 py-1.5 rounded-sm transition-colors"
+          className="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 border border-dashed border-slate-300 hover:border-slate-400 px-2.5 py-1.5 rounded-sm transition-colors"
         >
           <IconUnlink size={12} />
           Tách khỏi pool này
@@ -363,14 +363,14 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
               <Dialog.Title className="font-bold text-slate-900 text-sm leading-tight truncate">
                 {card.name}
               </Dialog.Title>
-              <p className="text-xs text-slate-400 capitalize mt-0.5">
+              <p className="text-slate-400 capitalize mt-0.5">
                 {card.card_network} · {card.card_type.join(' / ')}
               </p>
               {isEdit && (
                 <Link
                   href={`/cards/${card.id}`}
                   onClick={onClose}
-                  className="text-xs text-brand-blue hover:underline underline-offset-2 flex items-center gap-0.5 mt-0.5 w-fit"
+                  className="text-brand-blue hover:underline underline-offset-2 flex items-center gap-0.5 mt-0.5 w-fit"
                 >
                   Xem chi tiết <IconExternalLink size={11} />
                 </Link>
@@ -385,7 +385,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
 
           {/* Form */}
           <div className="px-4 py-4 space-y-4">
-            <p className="text-xs text-slate-400">Tất cả các trường đều không bắt buộc</p>
+            <p className="text-slate-400">Tất cả các trường đều không bắt buộc</p>
 
             <FormField label="Tên gợi nhớ">
               <input
@@ -446,7 +446,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                           onChange={(e) => setIsSupplementary(e.target.checked)}
                           className="accent-brand-blue"
                         />
-                        <span className="text-xs text-slate-600">Thẻ phụ (thẻ bổ sung)</span>
+                        <span className="text-slate-600">Thẻ phụ (thẻ bổ sung)</span>
                       </label>
                     </FormField>
                   </>

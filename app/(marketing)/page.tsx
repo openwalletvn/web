@@ -94,7 +94,7 @@ export default async function HomePage() {
                 <h2 className="text-lg font-bold text-slate-900">
                   {hero('app.title')}
                 </h2>
-                <span className="text-xs px-2 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm">
+                <span className="px-2 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm">
                   {hero('app.badge')}
                 </span>
               </div>

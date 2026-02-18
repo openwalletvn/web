@@ -25,7 +25,7 @@ function DaySelect({
   return (
     <div>
       <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
-      {hint && <p className="text-xs text-slate-400 mb-1">{hint}</p>}
+      {hint && <p className="text-slate-400 mb-1">{hint}</p>}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -221,7 +221,7 @@ export default function AddCardPage() {
                   className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm hover:border-brand-blue hover:bg-blue-50/40 transition-colors text-center"
                 >
                   <img src={getBankImageUrl(bank.logo_url)} alt={bank.name} className="w-12 h-12 object-contain" />
-                  <span className="text-xs text-slate-600 leading-tight">{bank.name}</span>
+                  <span className="text-slate-600 leading-tight">{bank.name}</span>
                 </button>
               ))}
             </div>
@@ -259,7 +259,7 @@ export default function AddCardPage() {
                   <div className="w-full aspect-[16/10] bg-slate-50 overflow-hidden rounded-sm">
                     <img src={getCardImageUrl(card)} alt={card.name} className="w-full h-full object-contain" />
                   </div>
-                  <span className="text-xs font-medium text-slate-800 leading-tight">{card.name}</span>
+                  <span className="font-medium text-slate-800 leading-tight">{card.name}</span>
                 </button>
               ))}
             </div>
@@ -277,14 +277,14 @@ export default function AddCardPage() {
             </div>
             <div>
               <p className="font-bold text-slate-900 text-sm">{selectedCard.name}</p>
-              <p className="text-xs text-slate-400 capitalize mt-0.5">
+              <p className="text-slate-400 capitalize mt-0.5">
                 {selectedCard.card_network} · {selectedCard.card_type.join(' / ')}
               </p>
             </div>
           </div>
 
           <div className="border-t border-dashed border-slate-200 mb-6" />
-          <p className="text-xs text-slate-400 mb-6">Tất cả các trường đều không bắt buộc</p>
+          <p className="text-slate-400 mb-6">Tất cả các trường đều không bắt buộc</p>
 
           <div className="space-y-5">
             {/* Nickname */}

@@ -193,13 +193,13 @@ export default function WalletPage() {
           {/* Sort bar */}
           {!isLoading && walletCards.length > 1 && (
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-xs text-slate-400 shrink-0">Sắp xếp:</span>
+              <span className="text-slate-400 shrink-0">Sắp xếp:</span>
               <div className="flex flex-wrap gap-1.5">
                 {(Object.keys(SORT_LABELS) as SortOption[]).map((option) => (
                   <button
                     key={option}
                     onClick={() => setSortBy(option)}
-                    className={`text-xs px-2.5 py-1 border border-dashed rounded-sm transition-colors ${
+                    className={`px-2.5 py-1 border border-dashed rounded-sm transition-colors ${
                       sortBy === option
                         ? 'border-brand-blue text-brand-blue bg-blue-50/60'
                         : 'border-slate-300 text-slate-500 hover:border-slate-400 hover:text-slate-700'
@@ -234,7 +234,7 @@ export default function WalletPage() {
                 <IconCreditCard size={26} className="text-slate-300" />
               </div>
               <p className="text-slate-500 text-sm mb-1">Chưa có thẻ nào.</p>
-              <p className="text-slate-400 text-xs mb-6">Thêm thẻ để theo dõi sao kê và đến hạn.</p>
+              <p className="text-slate-400 mb-6">Thêm thẻ để theo dõi sao kê và đến hạn.</p>
               <Link
                 href="/app/add"
                 className="px-6 py-2.5 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm hover:bg-blue-50/60 transition-colors text-sm"

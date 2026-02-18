@@ -18,7 +18,9 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(ls:*)",
-      "WebFetch(domain:api.openwallet.vn)"
+      "WebFetch(domain:api.openwallet.vn)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)"
     ]
   }
 }

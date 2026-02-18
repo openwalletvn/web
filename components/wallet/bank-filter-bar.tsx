@@ -45,8 +45,8 @@ export function BankFilterBar({ walletCards, banks, selectedBankId, onSelect }: 
               alt={bank.name}
               className="w-8 h-8 object-contain"
             />
-            <p className="text-xs text-slate-600 text-center leading-tight line-clamp-2">{bank.name}</p>
-            <p className="text-xs text-slate-400">{cardCount} thẻ</p>
+            <p className="text-slate-600 text-center leading-tight line-clamp-2">{bank.name}</p>
+            <p className="text-slate-400">{cardCount} thẻ</p>
           </button>
         );
       })}

@@ -55,7 +55,7 @@ export function WalletCardContent({
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-slate-400 truncate">{bank?.name ?? '—'}</p>
+        <p className="text-slate-400 truncate">{bank?.name ?? '—'}</p>
         <p className={`font-medium leading-tight truncate text-sm ${isInactive ? 'text-slate-400' : 'text-slate-900'}`}>
           {walletCard.nickname ?? catalogCard?.name ?? (
             <span className="inline-block w-28 h-4 bg-slate-100 rounded animate-pulse" />
@@ -94,7 +94,7 @@ export function WalletCardContent({
         </div>
 
         {walletCard.note && (
-          <p className="text-xs text-slate-400 mt-1 truncate">{walletCard.note}</p>
+          <p className="text-slate-400 mt-1 truncate">{walletCard.note}</p>
         )}
       </div>
     </button>

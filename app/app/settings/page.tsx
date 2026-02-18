@@ -65,7 +65,7 @@ export default function SettingsPage() {
 
       {/* Wallet name */}
       <section className="mb-8">
-        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">
+        <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-4">
           Tên ví
         </h2>
         <div className="flex gap-2">
@@ -94,10 +94,10 @@ export default function SettingsPage() {
 
       {/* Backup */}
       <section>
-        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+        <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-1">
           Sao lưu dữ liệu
         </h2>
-        <p className="text-xs text-slate-400 mb-5">
+        <p className="text-slate-400 mb-5">
           Dữ liệu ví được lưu trên thiết bị của bạn. Xuất file để sao lưu hoặc chuyển sang thiết
           bị khác.
         </p>
@@ -111,7 +111,7 @@ export default function SettingsPage() {
             <IconDownload size={20} className="text-slate-400 shrink-0" />
             <div>
               <p className="text-sm font-medium text-slate-800">Xuất ví (JSON)</p>
-              <p className="text-xs text-slate-400 mt-0.5">Tải file sao lưu về thiết bị</p>
+              <p className="text-slate-400 mt-0.5">Tải file sao lưu về thiết bị</p>
             </div>
           </button>
 
@@ -122,7 +122,7 @@ export default function SettingsPage() {
               <p className="text-sm font-medium text-slate-800">
                 {importing ? 'Đang nhập...' : 'Nhập ví từ file'}
               </p>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-slate-400 mt-0.5">
                 Thay thế dữ liệu hiện tại bằng file sao lưu
               </p>
             </div>
@@ -138,12 +138,12 @@ export default function SettingsPage() {
         </div>
 
         {importError && (
-          <p className="mt-4 text-xs text-brand-red border border-dashed border-brand-red px-3 py-2 rounded-sm">
+          <p className="mt-4 text-brand-red border border-dashed border-brand-red px-3 py-2 rounded-sm">
             Lỗi: {importError}
           </p>
         )}
         {importSuccess && (
-          <p className="mt-4 text-xs text-green-600 border border-dashed border-green-400 px-3 py-2 rounded-sm">
+          <p className="mt-4 text-green-600 border border-dashed border-green-400 px-3 py-2 rounded-sm">
             Nhập ví thành công!
           </p>
         )}

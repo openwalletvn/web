@@ -56,7 +56,7 @@ export function CreditPoolSelector({ bankId, value, onChange }: Props) {
   if (accounts.length === 0) {
     return (
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">
+        <label className="block font-medium text-slate-600 mb-1">
           Hạn mức tín dụng (VND)
         </label>
         <input
@@ -73,7 +73,7 @@ export function CreditPoolSelector({ bankId, value, onChange }: Props) {
   // 1+ existing accounts: show pool picker
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-600 mb-2">Hạn mức tín dụng</label>
+      <label className="block font-medium text-slate-600 mb-2">Hạn mức tín dụng</label>
       <div className="space-y-2">
 
         {/* Create new pool */}
@@ -90,7 +90,7 @@ export function CreditPoolSelector({ bankId, value, onChange }: Props) {
             className="mt-0.5 shrink-0 accent-brand-blue"
           />
           <div className="flex-1">
-            <p className="text-xs font-medium text-slate-700">Tạo pool mới riêng</p>
+            <p className="font-medium text-slate-700">Tạo pool mới riêng</p>
             {value.poolChoice === 'new' && (
               <input
                 type="number"
@@ -120,10 +120,10 @@ export function CreditPoolSelector({ bankId, value, onChange }: Props) {
                 className="mt-0.5 shrink-0 accent-brand-blue"
               />
               <div className="flex-1">
-                <p className="text-xs font-medium text-slate-700">
+                <p className="font-medium text-slate-700">
                   Dùng chung pool hiện có ({count} thẻ)
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-slate-400">
                   Hạn mức: {account.creditLimit.toLocaleString('vi-VN')}đ
                 </p>
                 {isSelected && (
@@ -134,7 +134,7 @@ export function CreditPoolSelector({ bankId, value, onChange }: Props) {
                       onChange={(e) => onChange({ ...value, isSupplementary: e.target.checked })}
                       className="accent-brand-blue"
                     />
-                    <span className="text-xs text-slate-600">Đây là thẻ phụ</span>
+                    <span className="text-slate-600">Đây là thẻ phụ</span>
                   </label>
                 )}
               </div>
