@@ -15,11 +15,17 @@ export function StatsWidget() {
     (card) => card.cardType === 'credit' || card.cardType === '2in1',
   ).length ?? 0;
 
-  // Sum credit limits across accounts — avoids double-counting shared pools
-  const totalCreditLimit = creditAccounts?.reduce(
-    (sum, account) => sum + account.creditLimit,
-    0,
-  ) ?? 0;
+  // Only count credit accounts that have at least one active card linked.
+  // Expired/canceled cards don't contribute to available credit limit.
+  const activeAccountIds = new Set(
+    (walletCards ?? [])
+      .filter((card) => card.creditAccountId && card.status !== 'expired' && card.status !== 'canceled')
+      .map((card) => card.creditAccountId!),
+  );
+
+  const totalCreditLimit = creditAccounts
+    ?.filter((account) => activeAccountIds.has(account.id))
+    .reduce((sum, account) => sum + account.creditLimit, 0) ?? 0;
 
   const configuredCards = walletCards?.filter(
     (card) => card.statementDate || card.paymentDueDate,

@@ -31,6 +31,28 @@ export function getWalletLevel(score: number): WalletLevel {
   return 'starter';
 }
 
+// ─── Supplementary card check ─────────────────────────────────────────────────
+
+/**
+ * Returns true when the wallet already contains another card with the same
+ * catalog cardId (same product, same bank). Only then can the current card
+ * be marked as supplementary (one primary + one or more supplementary).
+ * Excludes expired/canceled cards and optionally the card being edited.
+ */
+export async function hasCardWithSameCatalogId(
+  cardId: string,
+  excludeWalletCardId?: string,
+): Promise<boolean> {
+  const allCards = await db.walletCards.toArray();
+  return allCards.some(
+    (card) =>
+      card.cardId === cardId &&
+      card.id !== excludeWalletCardId &&
+      card.status !== 'expired' &&
+      card.status !== 'canceled',
+  );
+}
+
 // ─── Card CRUD ───────────────────────────────────────────────────────────────
 
 export type CardFormData = {

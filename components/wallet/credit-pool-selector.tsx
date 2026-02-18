@@ -14,12 +14,15 @@ interface Props {
   bankId: string;
   value: PoolSelection;
   onChange: (value: PoolSelection) => void;
+  /** Show the supplementary checkbox only when wallet already has another card
+   *  with the same catalog cardId (same product = possible primary/supplementary pair). */
+  canBeSupplementary?: boolean;
 }
 
 const inputClass =
   'w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm';
 
-export function CreditPoolSelector({ bankId, value, onChange }: Props) {
+export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary = false }: Props) {
   const [accounts, setAccounts] = useState<CreditAccount[]>([]);
   const [cardCounts, setCardCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -35,7 +38,10 @@ export function CreditPoolSelector({ bankId, value, onChange }: Props) {
       const counts: Record<string, number> = {};
       for (const account of existingAccounts) {
         const cards = await getCardsForCreditAccount(account.id);
-        counts[account.id] = cards.length;
+        // Only count active cards — expired/canceled don't count toward pool occupancy
+        counts[account.id] = cards.filter(
+          (card) => card.status !== 'expired' && card.status !== 'canceled',
+        ).length;
       }
 
       if (!cancelled) {
@@ -126,7 +132,8 @@ export function CreditPoolSelector({ bankId, value, onChange }: Props) {
                 <p className="text-slate-400">
                   Hạn mức: {account.creditLimit.toLocaleString('vi-VN')}đ
                 </p>
-                {isSelected && (
+                {/* Only show when wallet already has another card with the same catalog cardId */}
+                {isSelected && canBeSupplementary && (
                   <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer">
                     <input
                       type="checkbox"

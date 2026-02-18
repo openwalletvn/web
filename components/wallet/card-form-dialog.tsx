@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Dialog } from 'radix-ui';
 import { IconX, IconTrash, IconExternalLink, IconUnlink } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
-import { addCard, updateCard, removeCard } from '@/lib/wallet';
+import { addCard, updateCard, removeCard, hasCardWithSameCatalogId } from '@/lib/wallet';
 import {
   getCreditAccountsForBank,
   getCardsForCreditAccount,
@@ -30,6 +30,7 @@ const dayOptions = Array.from({ length: 31 }, (_, i) => i + 1);
 
 const STATUS_OPTIONS: { value: CardStatus; label: string }[] = [
   { value: 'active',   label: 'Đang dùng' },
+  { value: 'locked',   label: 'Đã khoá (tạm ngưng sử dụng)' },
   { value: 'expired',  label: 'Hết hạn' },
   { value: 'canceled', label: 'Đã huỷ' },
 ];
@@ -169,6 +170,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
   const [status, setStatus] = useState<CardStatus>('active');
   const [statusNote, setStatusNote] = useState('');
   const [note, setNote] = useState('');
+  const [canBeSupplementary, setCanBeSupplementary] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -187,6 +189,9 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
   // Populate form on open
   useEffect(() => {
     if (!open) return;
+
+    // Check if another wallet card with the same catalog card already exists
+    hasCardWithSameCatalogId(card.id, walletCard?.id).then(setCanBeSupplementary);
 
     if (isEdit && walletCard) {
       setNickname(walletCard.nickname ?? '');
@@ -344,7 +349,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <Dialog.Content
           className={cn(
-            'fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2',
+            'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2',
             'max-h-[90vh] overflow-y-auto',
             'bg-white border border-dashed border-slate-200 rounded-sm shadow-lg',
             'data-[state=open]:animate-in data-[state=closed]:animate-out',
@@ -438,23 +443,26 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                         onReassign={handleReassign}
                       />
                     )}
-                    <FormField label="">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={isSupplementary}
-                          onChange={(e) => setIsSupplementary(e.target.checked)}
-                          className="accent-brand-blue"
-                        />
-                        <span className="text-slate-600">Thẻ phụ (thẻ bổ sung)</span>
-                      </label>
-                    </FormField>
+                    {canBeSupplementary && (
+                      <FormField label="">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={isSupplementary}
+                            onChange={(e) => setIsSupplementary(e.target.checked)}
+                            className="accent-brand-blue"
+                          />
+                          <span className="text-slate-600">Thẻ phụ (thẻ bổ sung)</span>
+                        </label>
+                      </FormField>
+                    )}
                   </>
                 ) : (
                   <CreditPoolSelector
                     bankId={card.bank_id}
                     value={poolSelection}
                     onChange={setPoolSelection}
+                    canBeSupplementary={canBeSupplementary}
                   />
                 )}
 

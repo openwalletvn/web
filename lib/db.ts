@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie';
 
-export type CardStatus = 'active' | 'expired' | 'canceled';
+export type CardStatus = 'active' | 'locked' | 'expired' | 'canceled';
 
 export interface CreditAccount {
   id: string;

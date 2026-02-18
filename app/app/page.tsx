@@ -19,7 +19,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { IconPlus, IconCreditCard } from '@tabler/icons-react';
-import { db, type WalletCard } from '@/lib/db';
+import { db, type WalletCard, type CardStatus } from '@/lib/db';
 import { reorderCards } from '@/lib/wallet';
 import { getBanks, getCard, type Card, type Bank } from '@/lib/api';
 import { CardFormDialog } from '@/components/wallet/card-form-dialog';
@@ -30,11 +30,12 @@ import { BanksWidget } from '@/components/wallet/widgets/banks-widget';
 
 // ─── Sort ─────────────────────────────────────────────────────────────────────
 
-type SortOption = 'custom' | 'credit_limit' | 'added' | 'updated' | 'due_date';
+type SortOption = 'custom' | 'credit_limit' | 'annual_fee' | 'added' | 'updated' | 'due_date';
 
 const SORT_LABELS: Record<SortOption, string> = {
   custom:       'Tùy chỉnh',
   credit_limit: 'Hạn mức',
+  annual_fee:   'PTN',
   added:        'Ngày thêm',
   updated:      'Ngày cập nhật',
   due_date:     'Ngày đến hạn',
@@ -44,11 +45,22 @@ function applySortOrder(
   cards: WalletCard[],
   sortBy: SortOption,
   creditLimitMap: Map<string, number>,
+  catalogCards: Record<string, Card>,
 ): WalletCard[] {
   if (sortBy === 'custom') return cards;
   const sorted = [...cards];
   if (sortBy === 'credit_limit') {
     sorted.sort((a, b) => (creditLimitMap.get(b.creditAccountId ?? '') ?? -1) - (creditLimitMap.get(a.creditAccountId ?? '') ?? -1));
+  } else if (sortBy === 'annual_fee') {
+    // Ascending: free (0) first, then cheapest → most expensive, undefined last
+    sorted.sort((a, b) => {
+      const feeA = catalogCards[a.cardId]?.annual_fee;
+      const feeB = catalogCards[b.cardId]?.annual_fee;
+      if (feeA === undefined && feeB === undefined) return 0;
+      if (feeA === undefined) return 1;
+      if (feeB === undefined) return -1;
+      return feeA - feeB;
+    });
   } else if (sortBy === 'added') {
     sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   } else if (sortBy === 'updated') {
@@ -143,8 +155,12 @@ export default function WalletPage() {
     if (bankFilter) {
       cards = cards.filter((walletCard) => walletCard.bankId === bankFilter);
     }
-    return applySortOrder(cards, sortBy, creditLimitMap);
-  }, [walletCards, bankFilter, sortBy, creditLimitMap]);
+    return applySortOrder(cards, sortBy, creditLimitMap, catalogCards);
+  }, [walletCards, bankFilter, sortBy, creditLimitMap, catalogCards]);
+
+  async function handleStatusChange(walletCard: WalletCard, status: CardStatus) {
+    await db.walletCards.update(walletCard.id, { status, updatedAt: new Date() });
+  }
 
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -255,7 +271,9 @@ export default function WalletPage() {
                     catalogCard={catalogCards[walletCard.cardId]}
                     bank={banks[walletCard.bankId]}
                     creditBadge={getCreditBadge(walletCard)}
+                    creditLimit={walletCard.creditAccountId ? creditLimitMap.get(walletCard.creditAccountId) : undefined}
                     onEdit={setEditingCard}
+                    onStatusChange={handleStatusChange}
                   />
                 ))}
               </div>
@@ -270,7 +288,9 @@ export default function WalletPage() {
                         catalogCard={catalogCards[walletCard.cardId]}
                         bank={banks[walletCard.bankId]}
                         creditBadge={getCreditBadge(walletCard)}
+                        creditLimit={walletCard.creditAccountId ? creditLimitMap.get(walletCard.creditAccountId) : undefined}
                         onEdit={setEditingCard}
+                        onStatusChange={handleStatusChange}
                       />
                     ))}
                   </div>
