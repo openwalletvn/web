@@ -1,12 +1,18 @@
 import Dexie, { type EntityTable } from 'dexie';
 
+export type CardStatus = 'active' | 'expired' | 'canceled';
+
 export interface UserCard {
   id?: number;
   catalogId: string;
   last4?: string;
+  issueDate?: string;    // MM/YY
+  validThru?: string;    // MM/YY
   creditLimit?: number;
   statementDate?: number;
   paymentDueDate?: number;
+  status?: CardStatus;
+  statusNote?: string;
   note?: string;
   order: number;
   createdAt: Date;

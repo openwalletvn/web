@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { addCard } from '@/lib/wallet';
 import { getBanks, getCards, getBankImageUrl, getCardImageUrl, type Bank, type Card } from '@/lib/api';
+import type { CardStatus } from '@/lib/db';
 
 // ─── Day select helper ────────────────────────────────────────────────────────
 
@@ -55,10 +56,14 @@ export default function AddCardPage() {
 
   // Step 3 form
   const [last4, setLast4] = useState('');
+  const [issueDate, setIssueDate] = useState('');
+  const [validThru, setValidThru] = useState('');
   const [creditLimit, setCreditLimit] = useState('');
   const [statementDate, setStatementDate] = useState('');
   const [paymentDueDate, setPaymentDueDate] = useState('');
   const [dueDateOverridden, setDueDateOverridden] = useState(false);
+  const [status, setStatus] = useState<CardStatus>('active');
+  const [statusNote, setStatusNote] = useState('');
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -108,10 +113,14 @@ export default function AddCardPage() {
     setStep(3);
     // Reset form
     setLast4('');
+    setIssueDate('');
+    setValidThru('');
     setCreditLimit('');
     setStatementDate('');
     setPaymentDueDate('');
     setDueDateOverridden(false);
+    setStatus('active');
+    setStatusNote('');
     setNote('');
   }
 
@@ -122,9 +131,13 @@ export default function AddCardPage() {
       await addCard({
         catalogId: selectedCard.id,
         last4: last4 || undefined,
+        issueDate: issueDate || undefined,
+        validThru: validThru || undefined,
         creditLimit: creditLimit ? parseInt(creditLimit) : undefined,
         statementDate: statementDate ? parseInt(statementDate) : undefined,
         paymentDueDate: paymentDueDate ? parseInt(paymentDueDate) : undefined,
+        status,
+        statusNote: status !== 'active' ? (statusNote || undefined) : undefined,
         note: note || undefined,
       });
       router.push('/app');
@@ -287,6 +300,32 @@ export default function AddCardPage() {
               />
             </div>
 
+            {/* Issue date + valid thru */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Ngày phát hành</label>
+                <input
+                  type="text"
+                  value={issueDate}
+                  onChange={(e) => setIssueDate(e.target.value)}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Hiệu lực đến</label>
+                <input
+                  type="text"
+                  value={validThru}
+                  onChange={(e) => setValidThru(e.target.value)}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
+                />
+              </div>
+            </div>
+
             {/* Credit limit — credit/2in1 only */}
             {showCreditFields && (
               <div>
@@ -303,30 +342,60 @@ export default function AddCardPage() {
               </div>
             )}
 
-            {/* Statement date */}
-            <DaySelect
-              label="Ngày sao kê"
-              value={statementDate}
-              onChange={(v) => {
-                setStatementDate(v);
-                setDueDateOverridden(false);
-              }}
-            />
+            {/* Statement date + payment due date — credit/2in1 only */}
+            {showCreditFields && (
+              <>
+                <DaySelect
+                  label="Ngày sao kê"
+                  value={statementDate}
+                  onChange={(v) => {
+                    setStatementDate(v);
+                    setDueDateOverridden(false);
+                  }}
+                />
 
-            {/* Payment due date */}
-            <DaySelect
-              label="Ngày đến hạn thanh toán"
-              hint={
-                !dueDateOverridden && statementDate && selectedCard.interest_free_days
-                  ? `Tự tính: ngày sao kê + ${selectedCard.interest_free_days} ngày miễn lãi`
-                  : undefined
-              }
-              value={paymentDueDate}
-              onChange={(v) => {
-                setPaymentDueDate(v);
-                setDueDateOverridden(true);
-              }}
-            />
+                <DaySelect
+                  label="Ngày đến hạn thanh toán"
+                  hint={
+                    !dueDateOverridden && statementDate && selectedCard.interest_free_days
+                      ? `Tự tính: ngày sao kê + ${selectedCard.interest_free_days} ngày miễn lãi`
+                      : undefined
+                  }
+                  value={paymentDueDate}
+                  onChange={(v) => {
+                    setPaymentDueDate(v);
+                    setDueDateOverridden(true);
+                  }}
+                />
+              </>
+            )}
+
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Trạng thái thẻ</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as CardStatus)}
+                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 focus:outline-none focus:border-brand-blue text-sm"
+              >
+                <option value="active">Đang dùng</option>
+                <option value="expired">Hết hạn</option>
+                <option value="canceled">Đã huỷ</option>
+              </select>
+            </div>
+
+            {status !== 'active' && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Lý do</label>
+                <input
+                  type="text"
+                  value={statusNote}
+                  onChange={(e) => setStatusNote(e.target.value)}
+                  placeholder="Ví dụ: hết hạn tháng 12/2024, huỷ theo yêu cầu..."
+                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
+                />
+              </div>
+            )}
 
             {/* Note */}
             <div>

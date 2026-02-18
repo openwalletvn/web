@@ -34,9 +34,13 @@ export function getWalletLevel(score: number): WalletLevel {
 export type CardFormData = {
   catalogId: string;
   last4?: string;
+  issueDate?: string;
+  validThru?: string;
   creditLimit?: number;
   statementDate?: number;
   paymentDueDate?: number;
+  status?: import('./db').CardStatus;
+  statusNote?: string;
   note?: string;
 };
 

@@ -7,51 +7,80 @@ import { IconX, IconTrash, IconExternalLink } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import { addCard, updateCard, removeCard } from '@/lib/wallet';
 import { getCardImageUrl, type Card } from '@/lib/api';
-import type { UserCard } from '@/lib/db';
+import type { UserCard, CardStatus } from '@/lib/db';
 
 interface Props {
   card: Card;
   userCard?: UserCard;       // provided → edit mode, absent → add mode
   open: boolean;
   onClose: () => void;
-  onAfterSave?: () => void;  // e.g. navigate to /app from catalog
+  onAfterSave?: () => void;
   onAfterDelete?: () => void;
 }
 
 const dayOptions = Array.from({ length: 31 }, (_, i) => i + 1);
 
+const STATUS_OPTIONS: { value: CardStatus; label: string }[] = [
+  { value: 'active',   label: 'Đang dùng' },
+  { value: 'expired',  label: 'Hết hạn' },
+  { value: 'canceled', label: 'Đã huỷ' },
+];
+
+function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-slate-600 mb-1">{label}</label>
+      {hint && <p className="text-xs text-slate-400 mb-1">{hint}</p>}
+      {children}
+    </div>
+  );
+}
+
+const inputClass = 'w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm';
+
 export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onAfterDelete }: Props) {
   const isEdit = !!userCard;
 
   const [last4, setLast4] = useState('');
+  const [issueDate, setIssueDate] = useState('');
+  const [validThru, setValidThru] = useState('');
   const [creditLimit, setCreditLimit] = useState('');
   const [statementDate, setStatementDate] = useState('');
   const [paymentDueDate, setPaymentDueDate] = useState('');
   const [dueDateOverridden, setDueDateOverridden] = useState(false);
+  const [status, setStatus] = useState<CardStatus>('active');
+  const [statusNote, setStatusNote] = useState('');
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Populate form when opening in edit mode or when card changes
   useEffect(() => {
     if (isEdit && userCard) {
       setLast4(userCard.last4 ?? '');
+      setIssueDate(userCard.issueDate ?? '');
+      setValidThru(userCard.validThru ?? '');
       setCreditLimit(userCard.creditLimit?.toString() ?? '');
       setStatementDate(userCard.statementDate?.toString() ?? '');
       setPaymentDueDate(userCard.paymentDueDate?.toString() ?? '');
       setDueDateOverridden(!!userCard.paymentDueDate);
+      setStatus(userCard.status ?? 'active');
+      setStatusNote(userCard.statusNote ?? '');
       setNote(userCard.note ?? '');
     } else {
       setLast4('');
+      setIssueDate('');
+      setValidThru('');
       setCreditLimit('');
       setStatementDate('');
       setPaymentDueDate('');
       setDueDateOverridden(false);
+      setStatus('active');
+      setStatusNote('');
       setNote('');
     }
   }, [open, card.id, userCard?.id]);
 
-  // Auto-calc payment due date from statement date + interest_free_days
+  // Auto-calc payment due date
   useEffect(() => {
     if (dueDateOverridden || !statementDate || !card.interest_free_days) return;
     const raw = (parseInt(statementDate) + card.interest_free_days) % 30;
@@ -64,9 +93,13 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
       const data = {
         catalogId: card.id,
         last4: last4 || undefined,
+        issueDate: issueDate || undefined,
+        validThru: validThru || undefined,
         creditLimit: creditLimit ? parseInt(creditLimit) : undefined,
         statementDate: statementDate ? parseInt(statementDate) : undefined,
         paymentDueDate: paymentDueDate ? parseInt(paymentDueDate) : undefined,
+        status,
+        statusNote: status !== 'active' ? (statusNote || undefined) : undefined,
         note: note || undefined,
       };
       if (isEdit && userCard) {
@@ -93,11 +126,10 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
     }
   }
 
-  const showCreditFields =
-    card.card_type.includes('credit') || card.card_type.includes('2in1');
+  const showCreditFields = card.card_type.includes('credit') || card.card_type.includes('2in1');
 
   return (
-    <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <Dialog.Content
@@ -115,11 +147,7 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
           {/* Header */}
           <div className="flex items-center gap-3 px-4 pt-4 pb-3">
             <div className="w-16 aspect-[16/10] bg-slate-50 rounded-sm overflow-hidden shrink-0">
-              <img
-                src={getCardImageUrl(card)}
-                alt={card.name}
-                className="w-full h-full object-contain"
-              />
+              <img src={getCardImageUrl(card)} alt={card.name} className="w-full h-full object-contain" />
             </div>
             <div className="flex-1 min-w-0">
               <Dialog.Title className="font-bold text-slate-900 text-sm leading-tight truncate">
@@ -149,82 +177,123 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
           <div className="px-4 py-4 space-y-4">
             <p className="text-xs text-slate-400">Tất cả các trường đều không bắt buộc</p>
 
-            {/* Last 4 digits */}
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">4 số cuối thẻ</label>
+            <FormField label="4 số cuối thẻ">
               <input
                 type="number"
                 value={last4}
                 onChange={(e) => setLast4(e.target.value.slice(0, 4))}
                 placeholder="1234"
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
+                className={inputClass}
               />
+            </FormField>
+
+            {/* Issue date + valid thru in a row */}
+            <div className="grid grid-cols-2 gap-3">
+              <FormField label="Ngày phát hành">
+                <input
+                  type="text"
+                  value={issueDate}
+                  onChange={(e) => setIssueDate(e.target.value)}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  className={inputClass}
+                />
+              </FormField>
+              <FormField label="Hiệu lực đến">
+                <input
+                  type="text"
+                  value={validThru}
+                  onChange={(e) => setValidThru(e.target.value)}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  className={inputClass}
+                />
+              </FormField>
             </div>
 
-            {/* Credit limit — credit/2in1 only */}
+            {/* Credit fields — credit/2in1 only */}
             {showCreditFields && (
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Hạn mức tín dụng (VND)
-                </label>
-                <input
-                  type="number"
-                  value={creditLimit}
-                  onChange={(e) => setCreditLimit(e.target.value)}
-                  placeholder="50.000.000"
-                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
-                />
-              </div>
+              <>
+                <FormField label="Hạn mức tín dụng (VND)">
+                  <input
+                    type="number"
+                    value={creditLimit}
+                    onChange={(e) => setCreditLimit(e.target.value)}
+                    placeholder="50.000.000"
+                    className={inputClass}
+                  />
+                </FormField>
+
+                <FormField label="Ngày sao kê">
+                  <select
+                    value={statementDate}
+                    onChange={(e) => { setStatementDate(e.target.value); setDueDateOverridden(false); }}
+                    className={inputClass}
+                  >
+                    <option value="">— chọn ngày —</option>
+                    {dayOptions.map((d) => (
+                      <option key={d} value={String(d)}>Ngày {d}</option>
+                    ))}
+                  </select>
+                </FormField>
+
+                <FormField
+                  label="Ngày đến hạn thanh toán"
+                  hint={
+                    !dueDateOverridden && statementDate && card.interest_free_days
+                      ? `Tự tính: ngày ${statementDate} + ${card.interest_free_days} ngày miễn lãi`
+                      : undefined
+                  }
+                >
+                  <select
+                    value={paymentDueDate}
+                    onChange={(e) => { setPaymentDueDate(e.target.value); setDueDateOverridden(true); }}
+                    className={inputClass}
+                  >
+                    <option value="">— chọn ngày —</option>
+                    {dayOptions.map((d) => (
+                      <option key={d} value={String(d)}>Ngày {d}</option>
+                    ))}
+                  </select>
+                </FormField>
+              </>
             )}
 
-            {/* Statement date */}
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Ngày sao kê</label>
+            {/* Status */}
+            <FormField label="Trạng thái thẻ">
               <select
-                value={statementDate}
-                onChange={(e) => { setStatementDate(e.target.value); setDueDateOverridden(false); }}
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 focus:outline-none focus:border-brand-blue text-sm"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as CardStatus)}
+                className={inputClass}
               >
-                <option value="">— chọn ngày —</option>
-                {dayOptions.map((d) => (
-                  <option key={d} value={String(d)}>Ngày {d}</option>
+                {STATUS_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
               </select>
-            </div>
+            </FormField>
 
-            {/* Payment due date */}
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
-                Ngày đến hạn thanh toán
-              </label>
-              {!dueDateOverridden && statementDate && card.interest_free_days && (
-                <p className="text-xs text-slate-400 mb-1">
-                  Tự tính: ngày {statementDate} + {card.interest_free_days} ngày miễn lãi
-                </p>
-              )}
-              <select
-                value={paymentDueDate}
-                onChange={(e) => { setPaymentDueDate(e.target.value); setDueDateOverridden(true); }}
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 focus:outline-none focus:border-brand-blue text-sm"
-              >
-                <option value="">— chọn ngày —</option>
-                {dayOptions.map((d) => (
-                  <option key={d} value={String(d)}>Ngày {d}</option>
-                ))}
-              </select>
-            </div>
+            {status !== 'active' && (
+              <FormField label="Lý do">
+                <input
+                  type="text"
+                  value={statusNote}
+                  onChange={(e) => setStatusNote(e.target.value)}
+                  placeholder="Ví dụ: hết hạn tháng 12/2024, huỷ theo yêu cầu..."
+                  className={inputClass}
+                />
+              </FormField>
+            )}
 
             {/* Note */}
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Ghi chú</label>
+            <FormField label="Ghi chú">
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Thẻ chính, thẻ công ty..."
                 rows={2}
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm resize-none"
+                className={cn(inputClass, 'resize-none')}
               />
-            </div>
+            </FormField>
           </div>
 
           {/* Footer */}
