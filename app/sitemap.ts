@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getBanks, getCards } from '@/lib/api';
+import { getAllPosts, getAllCategories, getAllTags } from '@/lib/mdx';
 
 export const dynamic = 'force-static';
 
@@ -7,6 +8,10 @@ const BASE_URL = 'https://openwallet.vn';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [banks, cards] = await Promise.all([getBanks(), getCards()]);
+
+  const posts = getAllPosts();
+  const categories = getAllCategories();
+  const tags = getAllTags();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: BASE_URL,                              changeFrequency: 'weekly',  priority: 1.0 },
@@ -23,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/cards/amex`,              changeFrequency: 'weekly',  priority: 0.7 },
     { url: `${BASE_URL}/cards/unionpay`,          changeFrequency: 'weekly',  priority: 0.7 },
     { url: `${BASE_URL}/docs`,                    changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${BASE_URL}/blog`,                    changeFrequency: 'weekly',  priority: 0.8 },
   ];
 
   const bankRoutes: MetadataRoute.Sitemap = banks.map((bank) => ({
@@ -37,5 +43,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...bankRoutes, ...cardRoutes];
+  const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
+    url: `${BASE_URL}/blog/${post.slug}`,
+    lastModified: new Date(post.frontmatter.date),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
+  const categoryRoutes: MetadataRoute.Sitemap = categories.map(({ slug }) => ({
+    url: `${BASE_URL}/blog/category/${slug}`,
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }));
+
+  const tagRoutes: MetadataRoute.Sitemap = tags.map(({ slug }) => ({
+    url: `${BASE_URL}/blog/tag/${slug}`,
+    changeFrequency: 'weekly',
+    priority: 0.5,
+  }));
+
+  return [...staticRoutes, ...bankRoutes, ...cardRoutes, ...postRoutes, ...categoryRoutes, ...tagRoutes];
 }

@@ -77,6 +77,7 @@ interface CardDetailResponse {
 }
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+const fetchOptions: RequestInit = process.env.NODE_ENV === 'development' ? { cache: 'no-store' } : {};
 
 export function getBankImageUrl(logoUrl: string): string {
     return `${apiUrl}${logoUrl}`;
@@ -90,14 +91,14 @@ export function getCardImageUrl(card: Card): string {
 }
 
 export async function getBanks(): Promise<Bank[]> {
-    const res = await fetch(`${apiUrl}/api/v1/banks`, {next: {revalidate: 3600}});
+    const res = await fetch(`${apiUrl}/api/v1/banks`, fetchOptions);
     const json = (await res.json()) as BankListResponse;
     if (!json.success) throw new Error('Failed to fetch banks');
     return json.data;
 }
 
 export async function getBank(id: string): Promise<Bank> {
-    const res = await fetch(`${apiUrl}/api/v1/banks/${id}`, {next: {revalidate: 3600}});
+    const res = await fetch(`${apiUrl}/api/v1/banks/${id}`, fetchOptions);
     const json = (await res.json()) as BankDetailResponse;
     if (!json.success) throw new Error(`Failed to fetch bank: ${id}`);
     return json.data;
@@ -109,14 +110,14 @@ export async function getCards(filters?: CardFilters): Promise<Card[]> {
     if (filters?.network) params.set('network', filters.network);
     if (filters?.bank_id) params.set('bank_id', filters.bank_id);
     const query = params.size > 0 ? `?${params.toString()}` : '';
-    const res = await fetch(`${apiUrl}/api/v1/cards${query}`, {next: {revalidate: 3600}});
+    const res = await fetch(`${apiUrl}/api/v1/cards${query}`, fetchOptions);
     const json = (await res.json()) as CardListResponse;
     if (!json.success) throw new Error('Failed to fetch cards');
     return json.data;
 }
 
 export async function getCard(id: string): Promise<Card> {
-    const res = await fetch(`${apiUrl}/api/v1/cards/${id}`, {next: {revalidate: 3600}});
+    const res = await fetch(`${apiUrl}/api/v1/cards/${id}`, fetchOptions);
     const json = (await res.json()) as CardDetailResponse;
     if (!json.success) throw new Error(`Failed to fetch card: ${id}`);
     return json.data;

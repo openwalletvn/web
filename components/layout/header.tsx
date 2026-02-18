@@ -5,7 +5,7 @@ import { MobileNav } from './mobile-nav';
 import { WalletNavButton } from './wallet-nav-button';
 
 export async function Header() {
-  const banks = await getBanks();
+  const banks = await getBanks().catch(() => []);
 
   return (
     <header className="bg-white border-b border-slate-200">

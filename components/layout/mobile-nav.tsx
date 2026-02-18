@@ -125,6 +125,17 @@ export function MobileNav({ banks }: Props) {
           </Collapsible>
 
           <Link
+            href="/blog"
+            onClick={close}
+            className={cn(
+              'px-3 py-2 rounded-md text-base font-medium transition-colors',
+              pathname.startsWith('/blog') ? 'text-brand-red bg-red-50' : 'text-slate-700 hover:bg-slate-100',
+            )}
+          >
+            {t('blog')}
+          </Link>
+
+          <Link
             href="/docs"
             onClick={close}
             className="px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors"

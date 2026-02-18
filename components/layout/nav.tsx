@@ -136,6 +136,17 @@ export function Nav({ banks }: Props) {
             </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
+
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <Link
+              href="/blog"
+              className={cn(navigationMenuTriggerStyle(), pathname.startsWith('/blog') && 'text-brand-red font-semibold')}
+            >
+              {t('blog')}
+            </Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
   );

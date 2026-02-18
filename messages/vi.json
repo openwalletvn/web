@@ -44,6 +44,7 @@
     "home": "Trang chủ",
     "banks": "Ngân hàng",
     "cards": "Thẻ",
+    "blog": "Blog",
     "api_docs": "Tài liệu API",
     "view_all_banks": "Xem tất cả ngân hàng →",
     "view_all_cards": "Xem tất cả thẻ →",
@@ -66,6 +67,7 @@
     "home": "Trang chủ",
     "banks": "Ngân hàng",
     "cards": "Thẻ",
+    "blog": "Blog",
     "api_docs": "Tài liệu API",
     "github": "GitHub"
   },
