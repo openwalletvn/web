@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { IconBrandGithub } from '@tabler/icons-react';
 import { getBanks } from '@/lib/api';
 import { Nav } from './nav';
 import { MobileNav } from './mobile-nav';
+import { WalletNavButton } from './wallet-nav-button';
 
 export async function Header() {
   const banks = await getBanks();
@@ -21,17 +21,9 @@ export async function Header() {
           </div>
         </div>
 
-        {/* Right: github + mobile trigger */}
+        {/* Right: wallet + mobile trigger */}
         <div className="flex items-center gap-2">
-          <a
-            href="https://github.com/openwalletvn"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 text-slate-500 hover:text-slate-900 transition-colors"
-            aria-label="GitHub"
-          >
-            <IconBrandGithub className="w-5 h-5" />
-          </a>
+          <WalletNavButton />
           <div className="md:hidden">
             <MobileNav banks={banks} />
           </div>

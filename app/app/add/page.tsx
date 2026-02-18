@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft } from '@tabler/icons-react';
-import { db } from '@/lib/db';
+import { addCard } from '@/lib/wallet';
 import { getBanks, getCards, getBankImageUrl, getCardImageUrl, type Bank, type Card } from '@/lib/api';
 
 // ─── Day select helper ────────────────────────────────────────────────────────
@@ -119,16 +119,13 @@ export default function AddCardPage() {
     if (!selectedCard) return;
     setSaving(true);
     try {
-      await db.userCards.add({
+      await addCard({
         catalogId: selectedCard.id,
         last4: last4 || undefined,
         creditLimit: creditLimit ? parseInt(creditLimit) : undefined,
         statementDate: statementDate ? parseInt(statementDate) : undefined,
         paymentDueDate: paymentDueDate ? parseInt(paymentDueDate) : undefined,
         note: note || undefined,
-        order: Date.now(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
       router.push('/app');
     } finally {

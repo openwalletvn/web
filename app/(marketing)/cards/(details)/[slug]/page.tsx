@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import { Badge } from '@/components/ui/badge';
 import { getCards, getCard, getBank, getCardImageUrl, getBankImageUrl } from '@/lib/api';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { AddToWalletButton } from './_add-to-wallet-button';
 
 export async function generateStaticParams() {
   const cards = await getCards();
@@ -84,6 +85,8 @@ export default async function CardPage({ params }: Props) {
                 )}
               </div>
             </div>
+
+            <AddToWalletButton card={card} />
 
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-base">
               {card.annual_fee !== undefined && (

@@ -33,7 +33,7 @@ async function seedConfig() {
   if (count > 0) return;
   await db.config.bulkPut([
     { key: 'walletId', value: crypto.randomUUID() },
-    { key: 'walletName', value: 'My Wallet' },
+    { key: 'walletName', value: 'Ví của tôi' },
     { key: 'schemaVersion', value: '1' },
     { key: 'createdAt', value: new Date().toISOString() },
   ]);

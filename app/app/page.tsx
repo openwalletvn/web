@@ -22,7 +22,9 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { IconGripVertical, IconPlus, IconCreditCard } from '@tabler/icons-react';
 import { db, type UserCard } from '@/lib/db';
+import { reorderCards } from '@/lib/wallet';
 import { getBanks, getCard, getCardImageUrl, type Card, type Bank } from '@/lib/api';
+import { CardFormDialog } from '@/components/wallet/card-form-dialog';
 
 // ─── Sortable card item ───────────────────────────────────────────────────────
 
@@ -30,10 +32,12 @@ function SortableWalletCard({
   userCard,
   catalogCard,
   bank,
+  onEdit,
 }: {
   userCard: UserCard;
   catalogCard: Card | undefined;
   bank: Bank | undefined;
+  onEdit: (uc: UserCard) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: userCard.id!,
@@ -45,45 +49,51 @@ function SortableWalletCard({
       style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }}
       className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm bg-white hover:border-slate-300 transition-colors"
     >
-      {/* Card image */}
-      <div className="shrink-0 w-20 aspect-[16/10] bg-slate-50 overflow-hidden rounded-sm">
-        {catalogCard ? (
-          <img
-            src={getCardImageUrl(catalogCard)}
-            alt={catalogCard.name}
-            className="w-full h-full object-contain"
-          />
-        ) : (
-          <div className="w-full h-full bg-slate-100 animate-pulse" />
-        )}
-      </div>
-
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className="text-xs text-slate-400 truncate">{bank?.name ?? '—'}</p>
-        <p className="font-medium text-slate-900 leading-tight truncate text-sm">
-          {catalogCard?.name ?? (
-            <span className="inline-block w-28 h-4 bg-slate-100 rounded animate-pulse" />
-          )}
-        </p>
-        <div className="flex flex-wrap gap-1 mt-1.5">
-          {userCard.last4 && (
-            <span className="text-xs px-1.5 py-0.5 border border-dashed border-slate-300 text-slate-500">
-              •••• {userCard.last4}
-            </span>
-          )}
-          {userCard.statementDate && (
-            <span className="text-xs px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue">
-              Sao kê: ngày {userCard.statementDate}
-            </span>
-          )}
-          {userCard.paymentDueDate && (
-            <span className="text-xs px-1.5 py-0.5 border border-dashed border-brand-red text-brand-red">
-              Đến hạn: ngày {userCard.paymentDueDate}
-            </span>
+      {/* Tappable area → opens edit */}
+      <button
+        onClick={() => onEdit(userCard)}
+        className="flex items-center gap-3 flex-1 min-w-0 text-left"
+      >
+        {/* Card image */}
+        <div className="shrink-0 w-20 aspect-[16/10] bg-slate-50 overflow-hidden rounded-sm">
+          {catalogCard ? (
+            <img
+              src={getCardImageUrl(catalogCard)}
+              alt={catalogCard.name}
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <div className="w-full h-full bg-slate-100 animate-pulse" />
           )}
         </div>
-      </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-slate-400 truncate">{bank?.name ?? '—'}</p>
+          <p className="font-medium text-slate-900 leading-tight truncate text-sm">
+            {catalogCard?.name ?? (
+              <span className="inline-block w-28 h-4 bg-slate-100 rounded animate-pulse" />
+            )}
+          </p>
+          <div className="flex flex-wrap gap-1 mt-1.5">
+            {userCard.last4 && (
+              <span className="text-xs px-1.5 py-0.5 border border-dashed border-slate-300 text-slate-500">
+                •••• {userCard.last4}
+              </span>
+            )}
+            {userCard.statementDate && (
+              <span className="text-xs px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue">
+                Sao kê: ngày {userCard.statementDate}
+              </span>
+            )}
+            {userCard.paymentDueDate && (
+              <span className="text-xs px-1.5 py-0.5 border border-dashed border-brand-red text-brand-red">
+                Đến hạn: ngày {userCard.paymentDueDate}
+              </span>
+            )}
+          </div>
+        </div>
+      </button>
 
       {/* Drag handle */}
       <button
@@ -104,9 +114,10 @@ export default function WalletPage() {
   const userCards = useLiveQuery(() => db.userCards.orderBy('order').toArray());
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
   const [banks, setBanks] = useState<Record<string, Bank>>({});
+  const [editingCard, setEditingCard] = useState<UserCard | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
@@ -142,16 +153,11 @@ export default function WalletPage() {
 
     const oldIndex = userCards.findIndex((c) => c.id === (active.id as number));
     const newIndex = userCards.findIndex((c) => c.id === (over.id as number));
-    const reordered = arrayMove(userCards, oldIndex, newIndex);
-
-    await db.transaction('rw', db.userCards, async () => {
-      for (let i = 0; i < reordered.length; i++) {
-        await db.userCards.update(reordered[i].id!, { order: i, updatedAt: new Date() });
-      }
-    });
+    await reorderCards(arrayMove(userCards, oldIndex, newIndex));
   }
 
   const isLoading = userCards === undefined;
+  const editingCatalogCard = editingCard ? catalogCards[editingCard.catalogId] : null;
 
   return (
     <div className="px-4 py-8 max-w-2xl mx-auto">
@@ -176,10 +182,7 @@ export default function WalletPage() {
       {isLoading && (
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm"
-            >
+            <div key={i} className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm">
               <div className="w-20 aspect-[16/10] bg-slate-100 rounded-sm animate-pulse" />
               <div className="flex-1 space-y-2">
                 <div className="h-3 w-16 bg-slate-100 rounded animate-pulse" />
@@ -222,11 +225,23 @@ export default function WalletPage() {
                       ? banks[catalogCards[userCard.catalogId].bank_id]
                       : undefined
                   }
+                  onEdit={setEditingCard}
                 />
               ))}
             </div>
           </SortableContext>
         </DndContext>
+      )}
+
+      {/* Edit dialog — rendered outside the list to avoid DnD context issues */}
+      {editingCard && editingCatalogCard && (
+        <CardFormDialog
+          card={editingCatalogCard}
+          userCard={editingCard}
+          open={!!editingCard}
+          onClose={() => setEditingCard(null)}
+          onAfterDelete={() => setEditingCard(null)}
+        />
       )}
     </div>
   );
