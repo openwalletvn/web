@@ -109,6 +109,7 @@
     "network_napas": "Napas Cards",
     "network_amex": "Amex Cards",
     "network_unionpay": "UnionPay Cards",
+    "no_cards": "No cards found.",
     "not_found": "Card not found",
     "back": "← Back to Cards"
   },

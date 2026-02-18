@@ -109,6 +109,7 @@
     "network_napas": "Thẻ Napas",
     "network_amex": "Thẻ Amex",
     "network_unionpay": "Thẻ UnionPay",
+    "no_cards": "Không tìm thấy thẻ nào.",
     "not_found": "Không tìm thấy thẻ",
     "back": "← Quay lại Thẻ"
   },

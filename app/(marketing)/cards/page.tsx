@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
-import { CardsFilter } from '../_components/cards-filter';
-import { CardsSection, CardsSectionSkeleton } from '../_components/cards-section';
+import { getCards, getBanks } from '@/lib/api';
+import { CardsFilteredSection } from '../_components/cards-filtered-section';
+import { CardsSectionSkeleton } from '../_components/cards-section';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
-import { getBanks } from '@/lib/api';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('CardsPage');
@@ -15,7 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CardsPage() {
-  const [banks, t, tb] = await Promise.all([
+  const [allCards, banks, t, tb] = await Promise.all([
+    getCards(),
     getBanks(),
     getTranslations('CardsPage'),
     getTranslations('Breadcrumbs'),
@@ -28,14 +29,12 @@ export default async function CardsPage() {
 
         <h1 className="text-4xl font-bold text-slate-900 mb-6">{t('title')}</h1>
 
-        <div className="mb-8">
-          <Suspense>
-            <CardsFilter banks={banks} />
-          </Suspense>
-        </div>
-
         <Suspense fallback={<CardsSectionSkeleton />}>
-          <CardsSection title="" />
+          <CardsFilteredSection
+            allCards={allCards}
+            banks={banks}
+            noCardsLabel={t('no_cards')}
+          />
         </Suspense>
       </div>
     </div>
