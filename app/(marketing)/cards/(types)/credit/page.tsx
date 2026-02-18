@@ -4,7 +4,6 @@ import { getTranslations } from 'next-intl/server';
 import { CardsSection, CardsSectionSkeleton } from '../../../_components/cards-section';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 
-export const runtime = 'edge';
 
 export async function generateMetadata(): Promise<Metadata> {
   const cardsPage = await getTranslations('CardsPage');

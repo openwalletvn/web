@@ -3,10 +3,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { Badge } from '@/components/ui/badge';
-import { getCard, getBank, getCardImageUrl, getBankImageUrl } from '@/lib/api';
+import { getCards, getCard, getBank, getCardImageUrl, getBankImageUrl } from '@/lib/api';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 
-export const runtime = 'edge';
+export async function generateStaticParams() {
+  const cards = await getCards();
+  return cards.map((card) => ({ slug: card.id }));
+}
 
 interface Props {
   params: Promise<{ slug: string }>;

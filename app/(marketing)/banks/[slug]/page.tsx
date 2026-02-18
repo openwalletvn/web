@@ -3,11 +3,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
-import { getBank, getBankImageUrl } from '@/lib/api';
+import { getBanks, getBank, getBankImageUrl } from '@/lib/api';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { CardsSection, CardsSectionSkeleton } from '../../_components/cards-section';
 
-export const runtime = 'edge';
+export async function generateStaticParams() {
+  const banks = await getBanks();
+  return banks.map((bank) => ({ slug: bank.id }));
+}
 
 interface Props {
   params: Promise<{ slug: string }>;

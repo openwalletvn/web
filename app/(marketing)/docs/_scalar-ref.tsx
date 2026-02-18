@@ -12,7 +12,7 @@ export function ScalarRef() {
   return (
     <ApiReferenceReact
       configuration={{
-        url: '/api/openapi',
+        url: `${process.env.NEXT_PUBLIC_API_URL ?? 'https://api.openwallet.vn'}/api/v1/openapi.json`,
         theme: 'bluePlanet',
         layout: 'modern',
         darkMode: false,

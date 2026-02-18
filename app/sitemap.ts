@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getBanks, getCards } from '@/lib/api';
 
-export const runtime = 'edge';
+export const dynamic = 'force-static';
 
 const BASE_URL = 'https://openwallet.vn';
 

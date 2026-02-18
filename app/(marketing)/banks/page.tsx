@@ -4,8 +4,6 @@ import { getBanks } from '@/lib/api';
 import { BankItem } from '../_components/bank-item';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 
-export const runtime = 'edge';
-
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('BanksPage');
   return {

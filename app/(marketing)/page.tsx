@@ -4,8 +4,6 @@ import { getTranslations } from 'next-intl/server';
 import { BanksSection, BanksSectionSkeleton } from './_components/banks-section';
 import { CardsSection, CardsSectionSkeleton } from './_components/cards-section';
 
-export const runtime = 'edge';
-
 export default async function HomePage() {
   const [hero, heroTitle, metadata, organization] = await Promise.all([
     getTranslations('hero'),
