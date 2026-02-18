@@ -6,7 +6,7 @@ export const contentType = 'image/png';
 
 export default function Image() {
   return createOgImage({
-    title: 'Open Wallet',
-    description: 'Tra cuu the ngan hang Viet Nam. Du lieu mo, mien phi, khong quang cao.',
+    title: 'Ngan hang',
+    description: 'Danh sach ngan hang Viet Nam tren Open Wallet.',
   });
 }

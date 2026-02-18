@@ -5,8 +5,5 @@ export const size = OG_SIZE;
 export const contentType = 'image/png';
 
 export default function Image() {
-  return createOgImage({
-    title: 'Open Wallet',
-    description: 'Tra cuu the ngan hang Viet Nam. Du lieu mo, mien phi, khong quang cao.',
-  });
+  return createOgImage({ title: 'The Visa', description: 'Open Wallet · The ngan hang Viet Nam' });
 }

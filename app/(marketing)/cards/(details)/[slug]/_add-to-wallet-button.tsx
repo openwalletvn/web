@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconWallet } from '@tabler/icons-react';
 import { CardFormDialog } from '@/components/wallet/card-form-dialog';
+import { WalletDbProvider } from '@/providers/wallet-db-provider';
 import type { Card } from '@/lib/api';
 
 interface Props {
@@ -24,12 +25,14 @@ export function AddToWalletButton({ card }: Props) {
         Thêm vào ví
       </button>
 
-      <CardFormDialog
-        card={card}
-        open={open}
-        onClose={() => setOpen(false)}
-        onAfterSave={() => router.push('/app')}
-      />
+      <WalletDbProvider>
+        <CardFormDialog
+          card={card}
+          open={open}
+          onClose={() => setOpen(false)}
+          onAfterSave={() => router.push('/app')}
+        />
+      </WalletDbProvider>
     </>
   );
 }

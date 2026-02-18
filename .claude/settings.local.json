@@ -22,7 +22,17 @@
       "Bash(git push:*)",
       "Bash(git reset:*)",
       "Bash(npx shadcn@latest add:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npm logout:*)",
+      "Bash(node -e:*)",
+      "Bash(npm_config_registry=https://registry.npmjs.org npm install:*)",
+      "Bash(node:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(git -C /Users/bmp/PHUC-LOCAL/openwalletvn/web status)",
+      "Bash(git -C /Users/bmp/PHUC-LOCAL/openwalletvn/web log --oneline -3)",
+      "Bash(git -C /Users/bmp/PHUC-LOCAL/openwalletvn/web add app/\\\\\\(marketing\\\\\\)/blog/ components/blog/ content/ lib/mdx.ts scripts/ app/globals.css app/sitemap.ts components/layout/footer.tsx components/layout/header.tsx components/layout/mobile-nav.tsx components/layout/nav.tsx lib/api.ts messages/en.json messages/vi.json package.json pnpm-lock.yaml)",
+      "Bash(git -C /Users/bmp/PHUC-LOCAL/openwalletvn/web add app/\\\\\\(marketing\\\\\\)/blog/ components/blog/ content/ lib/mdx.ts scripts/ app/globals.css app/sitemap.ts components/layout/footer.tsx components/layout/header.tsx components/layout/mobile-nav.tsx components/layout/nav.tsx lib/api.ts messages/en.json messages/vi.json package.json)",
+      "Bash(git -C:*)"
     ]
   }
 }

@@ -6,7 +6,8 @@ export const contentType = 'image/png';
 
 export default function Image() {
   return createOgImage({
-    title: 'Open Wallet',
-    description: 'Tra cuu the ngan hang Viet Nam. Du lieu mo, mien phi, khong quang cao.',
+    title: 'Blog',
+    description:
+      'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.',
   });
 }
