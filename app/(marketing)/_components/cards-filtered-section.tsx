@@ -21,6 +21,15 @@ export function CardsFilteredSection({ allCards, banks, noCardsLabel }: Props) {
   const coBrand = searchParams.get('co_brand') === '1';
   const sort = searchParams.get('sort') as CardSort | null;
 
+  const types = useMemo(
+    () => [...new Set(allCards.flatMap((c) => c.card_type))] as CardType[],
+    [allCards],
+  );
+  const networks = useMemo(
+    () => [...new Set(allCards.map((c) => c.card_network))] as CardNetwork[],
+    [allCards],
+  );
+
   const filtered = useMemo(() => {
     let cards = allCards;
     if (type) cards = cards.filter((c) => c.card_type.includes(type));
@@ -35,7 +44,7 @@ export function CardsFilteredSection({ allCards, banks, noCardsLabel }: Props) {
   return (
     <>
       <div className="mb-8">
-        <CardsFilter banks={banks} />
+        <CardsFilter banks={banks} types={types} networks={networks} />
       </div>
 
       {filtered.length === 0 ? (

@@ -11,15 +11,15 @@ import {
 } from '@/components/ui/select';
 import type { Bank, CardType, CardNetwork, CardSort } from '@/lib/api';
 
-const TYPE_KEYS: CardType[] = ['credit', 'debit', 'prepaid', 'transit', 'atm'];
-const NETWORK_KEYS: CardNetwork[] = ['visa', 'mastercard', 'jcb', 'napas', 'amex', 'unionpay'];
 const SORT_KEYS: CardSort[] = ['fee_asc', 'fee_desc'];
 
 interface Props {
   banks: Bank[];
+  types: CardType[];
+  networks: CardNetwork[];
 }
 
-export function CardsFilter({ banks }: Props) {
+export function CardsFilter({ banks, types, networks }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('CardsFilter');
@@ -61,7 +61,7 @@ export function CardsFilter({ banks }: Props) {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">{t('all_types')}</SelectItem>
-          {TYPE_KEYS.map((key) => (
+          {types.map((key) => (
             <SelectItem key={key} value={key}>{t(`type_${key}`)}</SelectItem>
           ))}
         </SelectContent>
@@ -73,7 +73,7 @@ export function CardsFilter({ banks }: Props) {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">{t('all_networks')}</SelectItem>
-          {NETWORK_KEYS.map((key) => (
+          {networks.map((key) => (
             <SelectItem key={key} value={key}>{t(`network_${key}`)}</SelectItem>
           ))}
         </SelectContent>
