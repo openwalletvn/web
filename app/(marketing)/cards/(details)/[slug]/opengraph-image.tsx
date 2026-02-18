@@ -34,11 +34,14 @@ export default async function Image({ params }: { params: Promise<{ slug: string
       card.image_orientation === 'vertical' ? card.image_vertical_url : card.image_horizontal_url;
     const cardImageUrl = imagePath ? `${apiUrl}${imagePath}` : null;
 
+    // Satori doesn't support WebP — skip non-PNG/JPG images
+    const isWebp = cardImageUrl?.match(/\.webp(\?|$)/i);
+
     let imageOk = false;
-    if (cardImageUrl) {
+    if (cardImageUrl && !isWebp) {
       try {
         const probe = await fetch(cardImageUrl, { method: 'HEAD' });
-        imageOk = probe.ok;
+        imageOk = probe.ok && (probe.headers.get('content-type') ?? '').includes('image');
       } catch {
         imageOk = false;
       }
@@ -58,7 +61,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           <img
             src={cardImageUrl}
             alt=""
-            style={{ maxWidth: '360px', maxHeight: '460px', objectFit: 'contain', borderRadius: '12px' }}
+            width={360}
+            height={460}
+            style={{ objectFit: 'contain', borderRadius: '12px' }}
           />
         </div>
       ) : undefined,

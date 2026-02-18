@@ -27,11 +27,13 @@ export default async function Image({ params }: { params: Promise<{ slug: string
     const bank = json.data;
 
     const logoUrl = bank.logo_url ? `${apiUrl}${bank.logo_url}` : null;
+    // Satori doesn't support WebP images
+    const isWebp = logoUrl?.match(/\.webp(\?|$)/i);
     let logoOk = false;
-    if (logoUrl) {
+    if (logoUrl && !isWebp) {
       try {
         const probe = await fetch(logoUrl, { method: 'HEAD' });
-        logoOk = probe.ok;
+        logoOk = probe.ok && (probe.headers.get('content-type') ?? '').includes('image');
       } catch {
         logoOk = false;
       }
@@ -58,7 +60,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           <img
             src={logoUrl}
             alt=""
-            style={{ width: '160px', height: '160px', objectFit: 'contain' }}
+            width={160}
+            height={160}
+            style={{ objectFit: 'contain' }}
           />
         </div>
       ) : undefined,
