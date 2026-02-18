@@ -17,7 +17,7 @@
     "db": {
       "title": "Card Database",
       "description": "Tra cứu thông tin thẻ ngân hàng Việt Nam",
-      "cta": "Xem tài liệu API →"
+      "ctanow": "Xem tài liệu API →"
     },
     "app": {
       "title": "Card Manager",

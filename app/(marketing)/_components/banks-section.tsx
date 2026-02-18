@@ -1,7 +1,7 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { getBanks, getBankImageUrl } from '@/lib/api';
+import { getBanks } from '@/lib/api';
+import { BankItem } from './bank-item';
 
 interface Props {
   limit?: number;
@@ -16,27 +16,13 @@ export async function BanksSection({ limit, showViewAll }: Props) {
     <section className="py-12 px-4 max-w-6xl mx-auto w-full">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-slate-900">{t('title')}</h2>
-        <div className="border-t border-dashed border-slate-300 mt-3 mb-1" />
+        <div className="border-t border-dashed border-slate-300 mt-3" />
         <p className="text-slate-500 mt-3">{t('description')}</p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {displayed.map((bank) => (
-          <Link
-            key={bank.id}
-            href={`/banks/${bank.id}`}
-            className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors"
-          >
-            <div className="relative w-14 h-14">
-              <Image
-                src={getBankImageUrl(bank.logo_url)}
-                alt=""
-                fill
-                className="object-contain"
-              />
-            </div>
-            <span className="text-base text-slate-600 text-center leading-tight">{bank.name}</span>
-          </Link>
+          <BankItem key={bank.id} bank={bank} />
         ))}
       </div>
 
@@ -59,7 +45,7 @@ export function BanksSectionSkeleton() {
     <section className="py-12 px-4 max-w-6xl mx-auto w-full">
       <div className="mb-8">
         <div className="h-9 w-24 bg-slate-200 rounded animate-pulse" />
-        <div className="border-t border-dashed border-slate-200 mt-3 mb-1" />
+        <div className="border-t border-dashed border-slate-200 mt-3" />
         <div className="h-4 w-64 bg-slate-200 rounded animate-pulse mt-3" />
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">

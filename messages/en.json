@@ -17,7 +17,7 @@
     "db": {
       "title": "Card Database",
       "description": "Look up Vietnamese bank card information",
-      "cta": "View API docs →"
+      "ctanow": "View API docs →"
     },
     "app": {
       "title": "Card Manager",

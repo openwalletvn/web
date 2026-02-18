@@ -114,7 +114,7 @@ export default async function CardPage({ params }: Props) {
             {bank && (
               <Link
                 href={`/banks/${bank.id}`}
-                className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors w-fit"
+                className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors w-fit"
               >
                 <div className="relative w-8 h-8">
                   <Image src={getBankImageUrl(bank.logo_url)} alt="" fill className="object-contain" />
