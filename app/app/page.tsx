@@ -4,10 +4,10 @@ import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { IconCreditCard, IconArrowRight } from '@tabler/icons-react';
-import { db } from '@/lib/db';
 import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
 import { PaymentRow, getNextOccurrence } from '@/components/wallet/payment-row';
+import { useWalletDb } from '@/providers/wallet-db-provider';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -25,8 +25,9 @@ const STATUS_LABELS: Record<string, string> = {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [], []);
-  const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [], []);
+  const db = useWalletDb();
+  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db], []);
+  const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [db], []);
 
   const [banks, setBanks] = useState<Record<string, Bank>>({});
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
@@ -157,10 +158,7 @@ export default function DashboardPage() {
               ))}
               {allUpcoming.length > 2 && (
                 <div className="py-3 text-center border-t border-dashed border-slate-100">
-                  <Link
-                    href="/app/upcoming"
-                    className="text-xs text-brand-blue hover:underline"
-                  >
+                  <Link href="/app/upcoming" className="text-xs text-brand-blue hover:underline">
                     + {allUpcoming.length - 2} thẻ nữa
                   </Link>
                 </div>

@@ -3,13 +3,14 @@
 import { useMemo, useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { IconCreditCard } from '@tabler/icons-react';
-import { db } from '@/lib/db';
 import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
 import { PaymentRow, getNextOccurrence } from '@/components/wallet/payment-row';
+import { useWalletDb } from '@/providers/wallet-db-provider';
 
 export default function UpcomingPage() {
-  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [], []);
+  const db = useWalletDb();
+  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db], []);
   const [banks, setBanks] = useState<Record<string, Bank>>({});
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
 
@@ -24,7 +25,6 @@ export default function UpcomingPage() {
     [walletCards],
   );
 
-  // All active cards with paymentDueDate, sorted by next occurrence — no date cap
   const upcomingPayments = useMemo(() =>
     activeCards
       .filter((c) => c.paymentDueDate)

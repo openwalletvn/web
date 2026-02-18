@@ -1,76 +1,112 @@
-import { db, type WalletCard, type CreditAccount } from './db';
+import { appDb, type AppWallet } from './app-db';
+import { WalletDb, type WalletCard, type CreditAccount } from './db';
+
+const SCHEMA_VERSION = '3';
 
 interface WalletBackup {
+  version: string;
   walletId: string;
   walletName: string;
-  schemaVersion: string;
-  createdAt: string;
   exportedAt: string;
   walletCards: WalletCard[];
   creditAccounts: CreditAccount[];
 }
 
-export async function exportWallet(): Promise<void> {
-  const [walletCards, creditAccounts, configEntries] = await Promise.all([
-    db.walletCards.toArray(),
-    db.creditAccounts.toArray(),
-    db.config.toArray(),
-  ]);
+interface AllWalletsBackup {
+  version: string;
+  exportedAt: string;
+  wallets: Array<{
+    wallet: AppWallet;
+    walletCards: WalletCard[];
+    creditAccounts: CreditAccount[];
+  }>;
+}
 
-  const config = Object.fromEntries(configEntries.map(({ key, value }) => [key, value]));
-
-  const backup: WalletBackup = {
-    walletId: config.walletId ?? '',
-    walletName: config.walletName ?? 'Ví của tôi',
-    schemaVersion: '2',
-    createdAt: config.createdAt ?? new Date().toISOString(),
-    exportedAt: new Date().toISOString(),
-    walletCards,
-    creditAccounts,
-  };
-
-  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+function downloadJson(data: unknown, filename: string): void {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `openwallet-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
-export async function importWallet(file: File): Promise<void> {
+/** Export a single wallet to a JSON file. */
+export async function exportWallet(db: WalletDb, wallet: AppWallet): Promise<void> {
+  const [walletCards, creditAccounts] = await Promise.all([
+    db.walletCards.toArray(),
+    db.creditAccounts.toArray(),
+  ]);
+
+  const backup: WalletBackup = {
+    version: SCHEMA_VERSION,
+    walletId: wallet.id,
+    walletName: wallet.name,
+    exportedAt: new Date().toISOString(),
+    walletCards,
+    creditAccounts,
+  };
+
+  const date = new Date().toISOString().split('T')[0];
+  downloadJson(backup, `openwallet-${wallet.name}-${date}.json`);
+}
+
+/** Export all wallets to a single JSON file. */
+export async function exportAllWallets(): Promise<void> {
+  const wallets = await appDb.wallets.toArray();
+
+  const walletsData = await Promise.all(
+    wallets.map(async (wallet) => {
+      const db = new WalletDb(wallet.id);
+      const [walletCards, creditAccounts] = await Promise.all([
+        db.walletCards.toArray(),
+        db.creditAccounts.toArray(),
+      ]);
+      return { wallet, walletCards, creditAccounts };
+    }),
+  );
+
+  const backup: AllWalletsBackup = {
+    version: SCHEMA_VERSION,
+    exportedAt: new Date().toISOString(),
+    wallets: walletsData,
+  };
+
+  const date = new Date().toISOString().split('T')[0];
+  downloadJson(backup, `openwallet-all-${date}.json`);
+}
+
+/** Import a wallet backup as a NEW wallet. Returns the new wallet ID. */
+export async function importAsNewWallet(file: File): Promise<string> {
   const text = await file.text();
   const data: WalletBackup = JSON.parse(text);
 
-  if (data.schemaVersion !== '2') {
-    throw new Error(`Định dạng sao lưu không tương thích (phiên bản ${data.schemaVersion})`);
-  }
+  const newWalletId = crypto.randomUUID();
+  const walletName = data.walletName ?? 'Imported Wallet';
 
-  await db.transaction('rw', [db.walletCards, db.creditAccounts, db.config], async () => {
-    await db.walletCards.clear();
-    await db.creditAccounts.clear();
-    await db.config.clear();
+  await appDb.wallets.add({
+    id: newWalletId,
+    name: walletName,
+    createdAt: new Date(),
+  });
 
+  const newDb = new WalletDb(newWalletId);
+  await newDb.transaction('rw', [newDb.walletCards, newDb.creditAccounts], async () => {
     if (data.creditAccounts?.length) {
-      await db.creditAccounts.bulkAdd(data.creditAccounts);
+      await newDb.creditAccounts.bulkAdd(data.creditAccounts);
     }
-
     if (data.walletCards?.length) {
       const cards = data.walletCards.map((card) => ({
         ...card,
         createdAt: new Date(card.createdAt),
         updatedAt: new Date(card.updatedAt),
       }));
-      await db.walletCards.bulkAdd(cards);
+      await newDb.walletCards.bulkAdd(cards);
     }
-
-    await db.config.bulkPut([
-      { key: 'walletId', value: data.walletId ?? crypto.randomUUID() },
-      { key: 'walletName', value: data.walletName ?? 'Ví của tôi' },
-      { key: 'schemaVersion', value: '2' },
-      { key: 'createdAt', value: data.createdAt ?? new Date().toISOString() },
-    ]);
   });
+
+  return newWalletId;
 }

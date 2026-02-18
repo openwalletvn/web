@@ -29,49 +29,22 @@ export interface WalletCard {
   updatedAt: Date;
 }
 
-export interface Config {
+export interface WalletConfig {
   key: string;
   value: string;
 }
 
-export const db = new Dexie('openwallet') as Dexie & {
-  walletCards: EntityTable<WalletCard, 'id'>;
-  creditAccounts: EntityTable<CreditAccount, 'id'>;
-  config: EntityTable<Config, 'key'>;
-};
+export class WalletDb extends Dexie {
+  walletCards!: EntityTable<WalletCard, 'id'>;
+  creditAccounts!: EntityTable<CreditAccount, 'id'>;
+  config!: EntityTable<WalletConfig, 'key'>;
 
-// v1: original userCards table
-db.version(1).stores({
-  userCards: '++id, catalogId, order',
-  config: 'key',
-});
-
-// v2: drop userCards, add walletCards + creditAccounts
-db.version(2).stores({
-  userCards: null,
-  walletCards: 'id, bankId, creditAccountId',
-  creditAccounts: 'id, bankId',
-  config: 'key',
-});
-
-// v3: add order index to walletCards
-db.version(3).stores({
-  walletCards: 'id, bankId, creditAccountId, order',
-  creditAccounts: 'id, bankId',
-  config: 'key',
-});
-
-async function seedConfig() {
-  const count = await db.config.count();
-  if (count > 0) return;
-  await db.config.bulkPut([
-    { key: 'walletId', value: crypto.randomUUID() },
-    { key: 'walletName', value: 'Ví của tôi' },
-    { key: 'schemaVersion', value: '2' },
-    { key: 'createdAt', value: new Date().toISOString() },
-  ]);
-}
-
-if (typeof window !== 'undefined') {
-  seedConfig();
+  constructor(walletId: string) {
+    super(`openwallet-wallet-${walletId}`);
+    this.version(1).stores({
+      walletCards: 'id, bankId, creditAccountId, order, status',
+      creditAccounts: 'id, bankId',
+      config: 'key',
+    });
+  }
 }

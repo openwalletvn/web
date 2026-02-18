@@ -1,12 +1,13 @@
 'use client';
 
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@/lib/db';
+import { useWalletDb } from '@/providers/wallet-db-provider';
 import { Widget } from './widget';
 
 export function StatsWidget() {
-  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [], []);
-  const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [], []);
+  const db = useWalletDb();
+  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db], []);
+  const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [db], []);
 
   const totalCards = walletCards?.length ?? 0;
   if (totalCards === 0) return null;
@@ -15,8 +16,6 @@ export function StatsWidget() {
     (card) => card.cardType === 'credit' || card.cardType === '2in1',
   ).length ?? 0;
 
-  // Only count credit accounts that have at least one active card linked.
-  // Expired/canceled cards don't contribute to available credit limit.
   const activeAccountIds = new Set(
     (walletCards ?? [])
       .filter((card) => card.creditAccountId && card.status !== 'expired' && card.status !== 'canceled')

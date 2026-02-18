@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { getCreditAccountsForBank, getCardsForCreditAccount } from '@/lib/credit-account';
 import { inputClass } from '@/lib/ui-constants';
 import type { CreditAccount } from '@/lib/db';
+import { useWalletDb } from '@/providers/wallet-db-provider';
 
 export interface PoolSelection {
   poolChoice: 'new' | string; // 'new' or creditAccountId
@@ -15,13 +16,11 @@ interface Props {
   bankId: string;
   value: PoolSelection;
   onChange: (value: PoolSelection) => void;
-  /** Show the supplementary checkbox only when wallet already has another card
-   *  with the same catalog cardId (same product = possible primary/supplementary pair). */
   canBeSupplementary?: boolean;
 }
 
-
 export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary = false }: Props) {
+  const db = useWalletDb();
   const [accounts, setAccounts] = useState<CreditAccount[]>([]);
   const [cardCounts, setCardCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -31,13 +30,12 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
     setLoading(true);
 
     (async () => {
-      const existingAccounts = await getCreditAccountsForBank(bankId);
+      const existingAccounts = await getCreditAccountsForBank(db, bankId);
       if (cancelled) return;
 
       const counts: Record<string, number> = {};
       for (const account of existingAccounts) {
-        const cards = await getCardsForCreditAccount(account.id);
-        // Only count active cards — expired/canceled don't count toward pool occupancy
+        const cards = await getCardsForCreditAccount(db, account.id);
         counts[account.id] = cards.filter(
           (card) => card.status !== 'expired' && card.status !== 'canceled',
         ).length;
@@ -51,19 +49,16 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
     })();
 
     return () => { cancelled = true; };
-  }, [bankId]);
+  }, [db, bankId]);
 
   if (loading) {
     return <div className="h-16 bg-slate-50 border border-dashed border-slate-200 rounded-sm animate-pulse" />;
   }
 
-  // No existing accounts: just a credit limit input, will create new pool on save
   if (accounts.length === 0) {
     return (
       <div>
-        <label className="block font-medium text-slate-600 mb-1">
-          Hạn mức tín dụng (VND)
-        </label>
+        <label className="block font-medium text-slate-600 mb-1">Hạn mức tín dụng (VND)</label>
         <input
           type="number"
           value={value.creditLimit}
@@ -75,12 +70,10 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
     );
   }
 
-  // 1+ existing accounts: show pool picker
   return (
     <div>
       <label className="block font-medium text-slate-600 mb-2">Hạn mức tín dụng</label>
       <div className="space-y-2">
-
         {/* Create new pool */}
         <label className={`flex items-start gap-2.5 p-2.5 border border-dashed rounded-sm cursor-pointer transition-colors ${
           value.poolChoice === 'new'
@@ -125,13 +118,8 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
                 className="mt-0.5 shrink-0 accent-brand-blue"
               />
               <div className="flex-1">
-                <p className="font-medium text-slate-700">
-                  Dùng chung pool hiện có ({count} thẻ)
-                </p>
-                <p className="text-slate-400">
-                  Hạn mức: {account.creditLimit.toLocaleString('vi-VN')}đ
-                </p>
-                {/* Only show when wallet already has another card with the same catalog cardId */}
+                <p className="font-medium text-slate-700">Dùng chung pool hiện có ({count} thẻ)</p>
+                <p className="text-slate-400">Hạn mức: {account.creditLimit.toLocaleString('vi-VN')}đ</p>
                 {isSelected && canBeSupplementary && (
                   <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer">
                     <input

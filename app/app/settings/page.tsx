@@ -3,17 +3,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Dialog } from 'radix-ui';
-import { IconDownload, IconUpload, IconDeviceFloppy, IconCheck, IconDatabase, IconCopy, IconX } from '@tabler/icons-react';
-import { db } from '@/lib/db';
-import { exportWallet, importWallet } from '@/lib/import-export';
+import { IconDownload, IconUpload, IconDeviceFloppy, IconCheck, IconDatabase, IconCopy, IconX, IconTrash } from '@tabler/icons-react';
+import Dexie from 'dexie';
+import { exportWallet, exportAllWallets, importAsNewWallet } from '@/lib/import-export';
+import { appDb } from '@/lib/app-db';
+import { switchWallet } from '@/providers/wallet-db-provider';
 import { PageContainer } from '@/components/ui/page-container';
+import { useWalletDb, useActiveWallet } from '@/providers/wallet-db-provider';
 
 export default function SettingsPage() {
-  const configWalletName = useLiveQuery(
-    () => db.config.get('walletName').then((c) => c?.value ?? 'My Wallet'),
-    [],
-    'My Wallet',
-  );
+  const db = useWalletDb();
+  const activeWallet = useActiveWallet();
+
+  const wallets = useLiveQuery(() => appDb.wallets.toArray(), [], []);
 
   const [walletName, setWalletName] = useState('');
   const [nameSaved, setNameSaved] = useState(false);
@@ -26,12 +28,18 @@ export default function SettingsPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (configWalletName) setWalletName(configWalletName);
-  }, [configWalletName]);
+    setWalletName(activeWallet.name);
+  }, [activeWallet.name]);
+
+  async function handleDeleteWallet(walletId: string, walletName: string) {
+    if (!window.confirm(`Xóa ví "${walletName}"? Toàn bộ thẻ và dữ liệu trong ví này sẽ bị mất vĩnh viễn.`)) return;
+    await appDb.wallets.delete(walletId);
+    await Dexie.delete(`openwallet-wallet-${walletId}`);
+  }
 
   async function handleSaveName() {
     if (!walletName.trim()) return;
-    await db.config.put({ key: 'walletName', value: walletName.trim() });
+    await appDb.wallets.update(activeWallet.id, { name: walletName.trim() });
     setNameSaved(true);
     setTimeout(() => setNameSaved(false), 2000);
   }
@@ -40,21 +48,14 @@ export default function SettingsPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const confirmed = window.confirm(
-      'Nhập ví sẽ xóa toàn bộ dữ liệu hiện tại và thay thế bằng dữ liệu từ file. Bạn có chắc không?',
-    );
-    if (!confirmed) {
-      if (fileRef.current) fileRef.current.value = '';
-      return;
-    }
-
     setImporting(true);
     setImportError(null);
     setImportSuccess(false);
     try {
-      await importWallet(file);
+      const newWalletId = await importAsNewWallet(file);
       setImportSuccess(true);
-      setTimeout(() => setImportSuccess(false), 3000);
+      const confirmed = window.confirm('Nhập ví thành công! Chuyển sang ví vừa nhập?');
+      if (confirmed) await switchWallet(newWalletId);
     } catch (err) {
       setImportError(err instanceof Error ? err.message : 'Lỗi không xác định');
     } finally {
@@ -69,7 +70,7 @@ export default function SettingsPage() {
       db.creditAccounts.toArray(),
       db.config.toArray(),
     ]);
-    setJsonData(JSON.stringify({ walletCards, creditAccounts, config }, null, 2));
+    setJsonData(JSON.stringify({ wallet: activeWallet, walletCards, creditAccounts, config }, null, 2));
     setJsonDialogOpen(true);
   }
 
@@ -87,9 +88,7 @@ export default function SettingsPage() {
 
       {/* Wallet name */}
       <section className="mb-8">
-        <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-4">
-          Tên ví
-        </h2>
+        <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-4">Tên ví</h2>
         <div className="flex gap-2">
           <input
             type="text"
@@ -102,11 +101,7 @@ export default function SettingsPage() {
             onClick={handleSaveName}
             className="flex items-center gap-1.5 px-4 py-2 border border-dashed border-slate-300 rounded-sm text-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors whitespace-nowrap"
           >
-            {nameSaved ? (
-              <IconCheck size={15} className="text-green-500" />
-            ) : (
-              <IconDeviceFloppy size={15} />
-            )}
+            {nameSaved ? <IconCheck size={15} className="text-green-500" /> : <IconDeviceFloppy size={15} />}
             {nameSaved ? 'Đã lưu' : 'Lưu'}
           </button>
         </div>
@@ -114,20 +109,62 @@ export default function SettingsPage() {
 
       <div className="border-t border-dashed border-slate-200 mb-8" />
 
+      {/* Wallet list */}
+      {(wallets ?? []).length > 1 && (
+        <>
+          <section className="mb-8">
+            <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-4">Các ví</h2>
+            <div className="space-y-2">
+              {(wallets ?? []).map((wallet) => {
+                const isActive = wallet.id === activeWallet.id;
+                return (
+                  <div
+                    key={wallet.id}
+                    className={`flex items-center gap-2 p-3 border border-dashed rounded-sm transition-colors ${
+                      isActive ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200'
+                    }`}
+                  >
+                    <button
+                      onClick={() => !isActive && switchWallet(wallet.id)}
+                      className={`flex-1 text-left text-sm font-medium transition-colors ${
+                        isActive ? 'text-brand-blue cursor-default' : 'text-slate-700 hover:text-slate-900 cursor-pointer'
+                      }`}
+                    >
+                      {wallet.name}
+                    </button>
+                    {isActive ? (
+                      <span className="text-xs border border-dashed border-brand-blue text-brand-blue px-1.5 py-0.5 rounded-sm shrink-0">
+                        Đang dùng
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => handleDeleteWallet(wallet.id, wallet.name)}
+                        className="shrink-0 p-1 text-slate-300 hover:text-brand-red transition-colors"
+                        title="Xóa ví"
+                      >
+                        <IconTrash size={15} />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+          <div className="border-t border-dashed border-slate-200 mb-8" />
+        </>
+      )}
+
       {/* Backup */}
       <section>
-        <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-1">
-          Sao lưu dữ liệu
-        </h2>
+        <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-1">Sao lưu dữ liệu</h2>
         <p className="text-slate-400 mb-5">
-          Dữ liệu ví được lưu trên thiết bị của bạn. Xuất file để sao lưu hoặc chuyển sang thiết
-          bị khác.
+          Dữ liệu ví được lưu trên thiết bị của bạn. Xuất file để sao lưu hoặc chuyển sang thiết bị khác.
         </p>
 
         <div className="space-y-3">
-          {/* Export */}
+          {/* Export current wallet */}
           <button
-            onClick={exportWallet}
+            onClick={() => exportWallet(db, activeWallet)}
             className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left"
           >
             <IconDownload size={20} className="text-slate-400 shrink-0" />
@@ -137,6 +174,20 @@ export default function SettingsPage() {
             </div>
           </button>
 
+          {/* Export all wallets */}
+          {(wallets ?? []).length > 1 && (
+            <button
+              onClick={exportAllWallets}
+              className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left"
+            >
+              <IconDownload size={20} className="text-slate-400 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-slate-800">Xuất tất cả ví (JSON)</p>
+                <p className="text-slate-400 mt-0.5">Sao lưu toàn bộ {wallets?.length} ví</p>
+              </div>
+            </button>
+          )}
+
           {/* Import */}
           <label className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors cursor-pointer">
             <IconUpload size={20} className="text-slate-400 shrink-0" />
@@ -144,9 +195,7 @@ export default function SettingsPage() {
               <p className="text-sm font-medium text-slate-800">
                 {importing ? 'Đang nhập...' : 'Nhập ví từ file'}
               </p>
-              <p className="text-slate-400 mt-0.5">
-                Thay thế dữ liệu hiện tại bằng file sao lưu
-              </p>
+              <p className="text-slate-400 mt-0.5">Thêm ví mới từ file sao lưu</p>
             </div>
             <input
               ref={fileRef}
@@ -175,9 +224,7 @@ export default function SettingsPage() {
 
       {/* Debug / raw data */}
       <section>
-        <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-1">
-          Dữ liệu thô
-        </h2>
+        <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-1">Dữ liệu thô</h2>
         <p className="text-slate-400 mb-5">
           Xem toàn bộ dữ liệu ví dưới dạng JSON (hữu ích để kiểm tra hoặc gỡ lỗi).
         </p>
@@ -205,11 +252,7 @@ export default function SettingsPage() {
                   onClick={handleCopyJson}
                   className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-slate-300 rounded-sm text-sm text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
                 >
-                  {copied ? (
-                    <IconCheck size={14} className="text-green-500" />
-                  ) : (
-                    <IconCopy size={14} />
-                  )}
+                  {copied ? <IconCheck size={14} className="text-green-500" /> : <IconCopy size={14} />}
                   {copied ? 'Đã sao chép' : 'Sao chép'}
                 </button>
                 <Dialog.Close className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors">

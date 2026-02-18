@@ -1,6 +1,6 @@
-import { db, type CreditAccount, type WalletCard } from './db';
+import type { WalletDb, CreditAccount, WalletCard } from './db';
 
-export async function createCreditAccount(bankId: string, creditLimit: number): Promise<CreditAccount> {
+export async function createCreditAccount(db: WalletDb, bankId: string, creditLimit: number): Promise<CreditAccount> {
   const account: CreditAccount = {
     id: crypto.randomUUID(),
     bankId,
@@ -10,15 +10,15 @@ export async function createCreditAccount(bankId: string, creditLimit: number): 
   return account;
 }
 
-export async function getCreditAccountsForBank(bankId: string): Promise<CreditAccount[]> {
+export async function getCreditAccountsForBank(db: WalletDb, bankId: string): Promise<CreditAccount[]> {
   return db.creditAccounts.where('bankId').equals(bankId).toArray();
 }
 
-export async function getCardsForCreditAccount(creditAccountId: string): Promise<WalletCard[]> {
+export async function getCardsForCreditAccount(db: WalletDb, creditAccountId: string): Promise<WalletCard[]> {
   return db.walletCards.where('creditAccountId').equals(creditAccountId).toArray();
 }
 
-export async function cleanupOrphanAccounts(): Promise<void> {
+export async function cleanupOrphanAccounts(db: WalletDb): Promise<void> {
   const allAccounts = await db.creditAccounts.toArray();
   const orphanIds: string[] = [];
   for (const account of allAccounts) {
@@ -33,7 +33,7 @@ export async function cleanupOrphanAccounts(): Promise<void> {
   }
 }
 
-export async function unlinkCardFromPool(card: WalletCard): Promise<void> {
+export async function unlinkCardFromPool(db: WalletDb, card: WalletCard): Promise<void> {
   if (!card.creditAccountId) return;
   const originalAccount = await db.creditAccounts.get(card.creditAccountId);
   if (!originalAccount) return;
@@ -53,10 +53,10 @@ export async function unlinkCardFromPool(card: WalletCard): Promise<void> {
   });
 }
 
-export async function reassignCardToAccount(cardId: string, newCreditAccountId: string): Promise<void> {
+export async function reassignCardToAccount(db: WalletDb, cardId: string, newCreditAccountId: string): Promise<void> {
   await db.walletCards.update(cardId, {
     creditAccountId: newCreditAccountId,
     updatedAt: new Date(),
   });
-  await cleanupOrphanAccounts();
+  await cleanupOrphanAccounts(db);
 }

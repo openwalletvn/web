@@ -13,6 +13,7 @@ import { PageContainer } from '@/components/ui/page-container';
 import { FormField } from '@/components/ui/form-field';
 import { BankSelectionStep } from '@/components/wallet/add/bank-selection-step';
 import { CardSelectionStep } from '@/components/wallet/add/card-selection-step';
+import { useWalletDb } from '@/providers/wallet-db-provider';
 
 // ─── Day select helper ────────────────────────────────────────────────────────
 
@@ -47,6 +48,7 @@ function DaySelect({
 
 export default function AddCardPage() {
   const router = useRouter();
+  const db = useWalletDb();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
@@ -109,7 +111,7 @@ export default function AddCardPage() {
   function selectCard(card: Card) {
     setSelectedCard(card);
     setStep(3);
-    hasCardWithSameCatalogId(card.id).then(setCanBeSupplementary);
+    hasCardWithSameCatalogId(db, card.id).then(setCanBeSupplementary);
     setNickname('');
     setLast4('');
     setIssueDate('');
@@ -135,6 +137,7 @@ export default function AddCardPage() {
       if (showCreditFields) {
         if (poolSelection.poolChoice === 'new') {
           const newAccount = await createCreditAccount(
+            db,
             selectedBank.id,
             parseInt(poolSelection.creditLimit) || 0,
           );
@@ -144,7 +147,7 @@ export default function AddCardPage() {
         }
       }
 
-      await addCard({
+      await addCard(db, {
         cardId: selectedCard.id,
         bankId: selectedBank.id,
         cardType: selectedCard.card_type.includes('credit') ? 'credit'
@@ -164,7 +167,7 @@ export default function AddCardPage() {
         note: note || undefined,
       });
 
-      router.push('/app');
+      router.push('/app/my-cards');
     } finally {
       setSaving(false);
     }

@@ -1,4 +1,4 @@
-import { db, type WalletCard } from './db';
+import type { WalletDb, WalletCard } from './db';
 import { cleanupOrphanAccounts } from './credit-account';
 
 // ─── Gamification (score/level data layer, no UI yet) ────────────────────────
@@ -33,13 +33,8 @@ export function getWalletLevel(score: number): WalletLevel {
 
 // ─── Supplementary card check ─────────────────────────────────────────────────
 
-/**
- * Returns true when the wallet already contains another card with the same
- * catalog cardId (same product, same bank). Only then can the current card
- * be marked as supplementary (one primary + one or more supplementary).
- * Excludes expired/canceled cards and optionally the card being edited.
- */
 export async function hasCardWithSameCatalogId(
+  db: WalletDb,
   cardId: string,
   excludeWalletCardId?: string,
 ): Promise<boolean> {
@@ -72,7 +67,7 @@ export type CardFormData = {
   note?: string;
 };
 
-export async function addCard(data: CardFormData): Promise<string> {
+export async function addCard(db: WalletDb, data: CardFormData): Promise<string> {
   const id = crypto.randomUUID();
   await db.walletCards.add({
     ...data,
@@ -84,16 +79,16 @@ export async function addCard(data: CardFormData): Promise<string> {
   return id;
 }
 
-export async function updateCard(id: string, data: Partial<CardFormData>): Promise<void> {
+export async function updateCard(db: WalletDb, id: string, data: Partial<CardFormData>): Promise<void> {
   await db.walletCards.update(id, { ...data, updatedAt: new Date() });
 }
 
-export async function removeCard(id: string): Promise<void> {
+export async function removeCard(db: WalletDb, id: string): Promise<void> {
   await db.walletCards.delete(id);
-  await cleanupOrphanAccounts();
+  await cleanupOrphanAccounts(db);
 }
 
-export async function reorderCards(ordered: WalletCard[]): Promise<void> {
+export async function reorderCards(db: WalletDb, ordered: WalletCard[]): Promise<void> {
   await db.transaction('rw', db.walletCards, async () => {
     for (let i = 0; i < ordered.length; i++) {
       await db.walletCards.update(ordered[i].id, { order: i, updatedAt: new Date() });

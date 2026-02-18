@@ -16,9 +16,10 @@ import {
   createCreditAccount,
 } from '@/lib/credit-account';
 import { getCardImageUrl, getCard, type Card } from '@/lib/api';
-import { db, type WalletCard, type CreditAccount, type CardStatus } from '@/lib/db';
+import type { WalletCard, CreditAccount, CardStatus } from '@/lib/db';
 import { FormField } from '@/components/ui/form-field';
 import { CreditPoolSelector, type PoolSelection } from './credit-pool-selector';
+import { useWalletDb } from '@/providers/wallet-db-provider';
 
 interface Props {
   card: Card;
@@ -97,7 +98,7 @@ function EditCreditLimitSection({
   );
 }
 
-// ─── Reassign section (edit mode, when multiple pools exist for bank) ─────────
+// ─── Reassign section ─────────────────────────────────────────────────────────
 
 function ReassignSection({
   currentAccountId,
@@ -108,21 +109,22 @@ function ReassignSection({
   bankId: string;
   onReassign: (newAccountId: string) => void;
 }) {
+  const db = useWalletDb();
   const [otherAccounts, setOtherAccounts] = useState<CreditAccount[]>([]);
   const [cardCounts, setCardCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     (async () => {
-      const all = await getCreditAccountsForBank(bankId);
+      const all = await getCreditAccountsForBank(db, bankId);
       const others = all.filter((a) => a.id !== currentAccountId);
       setOtherAccounts(others);
       const counts: Record<string, number> = {};
       for (const acc of others) {
-        counts[acc.id] = await getCardsForCreditAccount(acc.id).then((c) => c.length);
+        counts[acc.id] = await getCardsForCreditAccount(db, acc.id).then((c) => c.length);
       }
       setCardCounts(counts);
     })();
-  }, [bankId, currentAccountId]);
+  }, [db, bankId, currentAccountId]);
 
   if (otherAccounts.length === 0) return null;
 
@@ -147,10 +149,10 @@ function ReassignSection({
 // ─── Main dialog ─────────────────────────────────────────────────────────────
 
 export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, onAfterDelete }: Props) {
+  const db = useWalletDb();
   const isEdit = !!walletCard;
   const showCreditFields = card.card_type.includes('credit') || card.card_type.includes('2in1');
 
-  // Common form fields
   const [nickname, setNickname] = useState('');
   const [last4, setLast4] = useState('');
   const [issueDate, setIssueDate] = useState('');
@@ -166,25 +168,21 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Add-mode credit pool state
   const [poolSelection, setPoolSelection] = useState<PoolSelection>({
     poolChoice: 'new',
     creditLimit: '',
     isSupplementary: false,
   });
 
-  // Edit-mode credit account state
   const [creditAccount, setCreditAccount] = useState<CreditAccount | undefined>();
   const [siblingCards, setSiblingCards] = useState<WalletCard[]>([]);
   const [siblingCatalogNames, setSiblingCatalogNames] = useState<Record<string, string>>({});
   const [creditLimitInput, setCreditLimitInput] = useState('');
 
-  // Populate form on open
   useEffect(() => {
     if (!open) return;
 
-    // Check if another wallet card with the same catalog card already exists
-    hasCardWithSameCatalogId(card.id, walletCard?.id).then(setCanBeSupplementary);
+    hasCardWithSameCatalogId(db, card.id, walletCard?.id).then(setCanBeSupplementary);
 
     if (isEdit && walletCard) {
       setNickname(walletCard.nickname ?? '');
@@ -199,17 +197,15 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
       setStatusNote(walletCard.statusNote ?? '');
       setNote(walletCard.note ?? '');
 
-      // Fetch credit account data for edit mode
       if (showCreditFields && walletCard.creditAccountId) {
         (async () => {
           const account = await db.creditAccounts.get(walletCard.creditAccountId!);
           if (account) {
             setCreditAccount(account);
             setCreditLimitInput(account.creditLimit.toString());
-            const siblings = await getCardsForCreditAccount(account.id);
+            const siblings = await getCardsForCreditAccount(db, account.id);
             const filteredSiblings = siblings.filter((c) => c.id !== walletCard.id);
             setSiblingCards(filteredSiblings);
-            // Fetch each sibling's catalog card name
             const nameEntries = await Promise.all(
               filteredSiblings.map((sibling) =>
                 getCard(sibling.cardId)
@@ -241,7 +237,6 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
     }
   }, [open, card.id, walletCard?.id]);
 
-  // Auto-calc payment due date
   useEffect(() => {
     if (dueDateOverridden || !statementDate || !card.interest_free_days) return;
     const raw = (parseInt(statementDate) + card.interest_free_days) % 30;
@@ -255,22 +250,16 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
 
       if (showCreditFields) {
         if (isEdit && walletCard?.creditAccountId) {
-          // Update the credit account limit if it changed and not supplementary
           if (!walletCard.isSupplementary && creditAccount && creditLimitInput) {
             const newLimit = parseInt(creditLimitInput);
             if (newLimit !== creditAccount.creditLimit) {
-              const { db } = await import('@/lib/db');
               await db.creditAccounts.update(creditAccount.id, { creditLimit: newLimit });
             }
           }
           resolvedCreditAccountId = walletCard.creditAccountId;
         } else {
-          // Add mode: create or assign pool
           if (poolSelection.poolChoice === 'new') {
-            const newAccount = await createCreditAccount(
-              card.bank_id,
-              parseInt(poolSelection.creditLimit) || 0,
-            );
+            const newAccount = await createCreditAccount(db, card.bank_id, parseInt(poolSelection.creditLimit) || 0);
             resolvedCreditAccountId = newAccount.id;
           } else {
             resolvedCreditAccountId = poolSelection.poolChoice;
@@ -301,9 +290,9 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
       };
 
       if (isEdit && walletCard) {
-        await updateCard(walletCard.id, data);
+        await updateCard(db, walletCard.id, data);
       } else {
-        await addCard(data);
+        await addCard(db, data);
       }
 
       onClose();
@@ -317,7 +306,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
     if (!walletCard || !window.confirm('Xóa thẻ này khỏi ví?')) return;
     setDeleting(true);
     try {
-      await removeCard(walletCard.id);
+      await removeCard(db, walletCard.id);
       onClose();
       onAfterDelete?.();
     } finally {
@@ -327,8 +316,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
 
   async function handleUnlink() {
     if (!walletCard || !window.confirm('Tách thẻ này ra khỏi pool chung? Thẻ sẽ có pool hạn mức riêng.')) return;
-    await unlinkCardFromPool(walletCard);
-    // Reload credit account data
+    await unlinkCardFromPool(db, walletCard);
     const updatedCard = await db.walletCards.get(walletCard.id);
     if (updatedCard?.creditAccountId) {
       const account = await db.creditAccounts.get(updatedCard.creditAccountId);
@@ -343,7 +331,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
 
   async function handleReassign(newAccountId: string) {
     if (!walletCard) return;
-    await reassignCardToAccount(walletCard.id, newAccountId);
+    await reassignCardToAccount(db, walletCard.id, newAccountId);
     onClose();
     onAfterSave?.();
   }
@@ -428,7 +416,6 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
               </FormField>
             </div>
 
-            {/* Credit fields */}
             {showCreditFields && (
               <>
                 {isEdit ? (

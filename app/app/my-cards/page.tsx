@@ -18,7 +18,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { IconCreditCard } from '@tabler/icons-react';
-import { db, type WalletCard, type CardStatus } from '@/lib/db';
+import type { WalletCard, CardStatus } from '@/lib/db';
 import { reorderCards } from '@/lib/wallet';
 import { getBanks, getCard, type Card, type Bank } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
@@ -26,6 +26,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { CardFormDialog } from '@/components/wallet/card-form-dialog';
 import { SortableWalletCard, WalletCardRow, type CreditBadge } from '@/components/wallet/wallet-card-row';
 import { BankFilterBar } from '@/components/wallet/bank-filter-bar';
+import { useWalletDb } from '@/providers/wallet-db-provider';
 
 // ─── Sort ─────────────────────────────────────────────────────────────────────
 
@@ -185,8 +186,9 @@ function WalletCardList({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function WalletPage() {
-  const walletCards = useLiveQuery(() => db.walletCards.orderBy('order').toArray());
-  const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [], []);
+  const db = useWalletDb();
+  const walletCards = useLiveQuery(() => db.walletCards.orderBy('order').toArray(), [db]);
+  const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [db], []);
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
   const [banks, setBanks] = useState<Record<string, Bank>>({});
   const [editingCard, setEditingCard] = useState<WalletCard | null>(null);
@@ -247,7 +249,6 @@ export default function WalletPage() {
     return count >= 2 ? 'primary_shared' : undefined;
   }
 
-
   const displayCards = useMemo(() => {
     let cards = walletCards ?? [];
     if (bankFilter) {
@@ -265,7 +266,7 @@ export default function WalletPage() {
     if (!over || active.id === over.id || !walletCards) return;
     const oldIndex = walletCards.findIndex((card) => card.id === (active.id as string));
     const newIndex = walletCards.findIndex((card) => card.id === (over.id as string));
-    await reorderCards(arrayMove(walletCards, oldIndex, newIndex));
+    await reorderCards(db, arrayMove(walletCards, oldIndex, newIndex));
   }
 
   const isLoading = walletCards === undefined;
@@ -275,57 +276,57 @@ export default function WalletPage() {
   return (
     <PageContainer>
       <div>
-          <div className="flex items-baseline justify-between mb-2">
-            <h1 className="text-2xl font-bold text-slate-900">Ví của tôi</h1>
-            {!isLoading && (
-              <span className="text-sm text-slate-400">{walletCards.length} thẻ</span>
-            )}
-          </div>
-          <div className="border-t border-dashed border-slate-200 mb-6" />
-
-          {!isLoading && walletCards.length > 0 && (
-            <BankFilterBar
-              walletCards={walletCards}
-              banks={banks}
-              selectedBankId={bankFilter}
-              onSelect={setBankFilter}
-            />
-          )}
-
+        <div className="flex items-baseline justify-between mb-2">
+          <h1 className="text-2xl font-bold text-slate-900">Ví của tôi</h1>
           {!isLoading && (
-            <WalletSortBar
-              sortBy={sortBy}
-              cardCount={walletCards.length}
-              onSort={setSortBy}
-            />
+            <span className="text-sm text-slate-400">{walletCards.length} thẻ</span>
           )}
+        </div>
+        <div className="border-t border-dashed border-slate-200 mb-6" />
 
-          {isLoading && <WalletLoadingSkeleton />}
+        {!isLoading && walletCards.length > 0 && (
+          <BankFilterBar
+            walletCards={walletCards}
+            banks={banks}
+            selectedBankId={bankFilter}
+            onSelect={setBankFilter}
+          />
+        )}
 
-          {!isLoading && walletCards.length === 0 && (
-            <EmptyState
-              icon={<IconCreditCard size={26} className="text-slate-300" />}
-              title="Chưa có thẻ nào."
-              description="Thêm thẻ để theo dõi sao kê và đến hạn."
-              action={{ label: 'Thêm thẻ đầu tiên', href: '/app/add' }}
-            />
-          )}
+        {!isLoading && (
+          <WalletSortBar
+            sortBy={sortBy}
+            cardCount={walletCards.length}
+            onSort={setSortBy}
+          />
+        )}
 
-          {!isLoading && walletCards.length > 0 && (
-            <WalletCardList
-              displayCards={displayCards}
-              catalogCards={catalogCards}
-              banks={banks}
-              getCreditBadge={getCreditBadge}
-              creditLimitMap={creditLimitMap}
-              onEdit={setEditingCard}
-              onStatusChange={handleStatusChange}
-              isSorted={isSorted}
-              bankFilter={bankFilter}
-              sensors={sensors}
-              onDragEnd={handleDragEnd}
-            />
-          )}
+        {isLoading && <WalletLoadingSkeleton />}
+
+        {!isLoading && walletCards.length === 0 && (
+          <EmptyState
+            icon={<IconCreditCard size={26} className="text-slate-300" />}
+            title="Chưa có thẻ nào."
+            description="Thêm thẻ để theo dõi sao kê và đến hạn."
+            action={{ label: 'Thêm thẻ đầu tiên', href: '/app/add' }}
+          />
+        )}
+
+        {!isLoading && walletCards.length > 0 && (
+          <WalletCardList
+            displayCards={displayCards}
+            catalogCards={catalogCards}
+            banks={banks}
+            getCreditBadge={getCreditBadge}
+            creditLimitMap={creditLimitMap}
+            onEdit={setEditingCard}
+            onStatusChange={handleStatusChange}
+            isSorted={isSorted}
+            bankFilter={bankFilter}
+            sensors={sensors}
+            onDragEnd={handleDragEnd}
+          />
+        )}
       </div>
 
       {editingCard && editingCatalogCard && (
