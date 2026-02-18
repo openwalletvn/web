@@ -3,15 +3,23 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Dialog } from 'radix-ui';
-import { IconX, IconTrash, IconExternalLink } from '@tabler/icons-react';
+import { IconX, IconTrash, IconExternalLink, IconUnlink } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import { addCard, updateCard, removeCard } from '@/lib/wallet';
+import {
+  getCreditAccountsForBank,
+  getCardsForCreditAccount,
+  unlinkCardFromPool,
+  reassignCardToAccount,
+  createCreditAccount,
+} from '@/lib/credit-account';
 import { getCardImageUrl, type Card } from '@/lib/api';
-import type { UserCard, CardStatus } from '@/lib/db';
+import { db, type WalletCard, type CreditAccount, type CardStatus } from '@/lib/db';
+import { CreditPoolSelector, type PoolSelection } from './credit-pool-selector';
 
 interface Props {
   card: Card;
-  userCard?: UserCard;       // provided → edit mode, absent → add mode
+  walletCard?: WalletCard;
   open: boolean;
   onClose: () => void;
   onAfterSave?: () => void;
@@ -26,6 +34,9 @@ const STATUS_OPTIONS: { value: CardStatus; label: string }[] = [
   { value: 'canceled', label: 'Đã huỷ' },
 ];
 
+const inputClass =
+  'w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm';
+
 function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div>
@@ -36,49 +47,190 @@ function FormField({ label, hint, children }: { label: string; hint?: string; ch
   );
 }
 
-const inputClass = 'w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm';
+// ─── Credit limit section for edit mode ──────────────────────────────────────
 
-export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onAfterDelete }: Props) {
-  const isEdit = !!userCard;
+function EditCreditLimitSection({
+  walletCard,
+  creditAccount,
+  siblingCount,
+  creditLimitInput,
+  onCreditLimitChange,
+  onUnlink,
+}: {
+  walletCard: WalletCard;
+  creditAccount: CreditAccount | undefined;
+  siblingCount: number;
+  creditLimitInput: string;
+  onCreditLimitChange: (value: string) => void;
+  onUnlink: () => void;
+}) {
+  const isSupplementary = walletCard.isSupplementary;
+  const isShared = siblingCount > 0;
 
+  return (
+    <div className="space-y-2">
+      <FormField label="Hạn mức tín dụng (VND)">
+        <input
+          type="number"
+          value={creditLimitInput}
+          onChange={(e) => onCreditLimitChange(e.target.value)}
+          placeholder="50.000.000"
+          disabled={isSupplementary}
+          className={cn(inputClass, isSupplementary ? 'opacity-50 cursor-not-allowed' : '')}
+        />
+      </FormField>
+
+      {isSupplementary ? (
+        <p className="text-xs text-slate-400 flex items-center gap-1">
+          🔒 Hạn mức được quản lý bởi thẻ chính
+        </p>
+      ) : isShared ? (
+        <p className="text-xs text-amber-600 border border-dashed border-amber-300 px-2 py-1.5 rounded-sm bg-amber-50/60">
+          ⚠ Thẻ này đang dùng chung hạn mức với {siblingCount} thẻ khác. Thay đổi sẽ ảnh hưởng tất cả các thẻ.
+        </p>
+      ) : null}
+
+      {!isSupplementary && isShared && (
+        <button
+          type="button"
+          onClick={onUnlink}
+          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 border border-dashed border-slate-300 hover:border-slate-400 px-2.5 py-1.5 rounded-sm transition-colors"
+        >
+          <IconUnlink size={12} />
+          Tách khỏi pool này
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ─── Reassign section (edit mode, when multiple pools exist for bank) ─────────
+
+function ReassignSection({
+  currentAccountId,
+  bankId,
+  onReassign,
+}: {
+  currentAccountId: string;
+  bankId: string;
+  onReassign: (newAccountId: string) => void;
+}) {
+  const [otherAccounts, setOtherAccounts] = useState<CreditAccount[]>([]);
+  const [cardCounts, setCardCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    (async () => {
+      const all = await getCreditAccountsForBank(bankId);
+      const others = all.filter((a) => a.id !== currentAccountId);
+      setOtherAccounts(others);
+      const counts: Record<string, number> = {};
+      for (const acc of others) {
+        counts[acc.id] = await getCardsForCreditAccount(acc.id).then((c) => c.length);
+      }
+      setCardCounts(counts);
+    })();
+  }, [bankId, currentAccountId]);
+
+  if (otherAccounts.length === 0) return null;
+
+  return (
+    <FormField label="Chuyển sang pool khác">
+      <select
+        defaultValue=""
+        onChange={(e) => { if (e.target.value) onReassign(e.target.value); }}
+        className={inputClass}
+      >
+        <option value="">— giữ nguyên —</option>
+        {otherAccounts.map((account) => (
+          <option key={account.id} value={account.id}>
+            Pool {account.creditLimit.toLocaleString('vi-VN')}đ ({cardCounts[account.id] ?? 0} thẻ)
+          </option>
+        ))}
+      </select>
+    </FormField>
+  );
+}
+
+// ─── Main dialog ─────────────────────────────────────────────────────────────
+
+export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, onAfterDelete }: Props) {
+  const isEdit = !!walletCard;
+  const showCreditFields = card.card_type.includes('credit') || card.card_type.includes('2in1');
+
+  // Common form fields
+  const [nickname, setNickname] = useState('');
   const [last4, setLast4] = useState('');
   const [issueDate, setIssueDate] = useState('');
   const [validThru, setValidThru] = useState('');
-  const [creditLimit, setCreditLimit] = useState('');
   const [statementDate, setStatementDate] = useState('');
   const [paymentDueDate, setPaymentDueDate] = useState('');
   const [dueDateOverridden, setDueDateOverridden] = useState(false);
+  const [isSupplementary, setIsSupplementary] = useState(false);
   const [status, setStatus] = useState<CardStatus>('active');
   const [statusNote, setStatusNote] = useState('');
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Add-mode credit pool state
+  const [poolSelection, setPoolSelection] = useState<PoolSelection>({
+    poolChoice: 'new',
+    creditLimit: '',
+    isSupplementary: false,
+  });
+
+  // Edit-mode credit account state
+  const [creditAccount, setCreditAccount] = useState<CreditAccount | undefined>();
+  const [siblingCount, setSiblingCount] = useState(0);
+  const [creditLimitInput, setCreditLimitInput] = useState('');
+
+  // Populate form on open
   useEffect(() => {
-    if (isEdit && userCard) {
-      setLast4(userCard.last4 ?? '');
-      setIssueDate(userCard.issueDate ?? '');
-      setValidThru(userCard.validThru ?? '');
-      setCreditLimit(userCard.creditLimit?.toString() ?? '');
-      setStatementDate(userCard.statementDate?.toString() ?? '');
-      setPaymentDueDate(userCard.paymentDueDate?.toString() ?? '');
-      setDueDateOverridden(!!userCard.paymentDueDate);
-      setStatus(userCard.status ?? 'active');
-      setStatusNote(userCard.statusNote ?? '');
-      setNote(userCard.note ?? '');
+    if (!open) return;
+
+    if (isEdit && walletCard) {
+      setNickname(walletCard.nickname ?? '');
+      setLast4(walletCard.last4 ?? '');
+      setIssueDate(walletCard.issueDate ?? '');
+      setValidThru(walletCard.validThru ?? '');
+      setStatementDate(walletCard.statementDate?.toString() ?? '');
+      setPaymentDueDate(walletCard.paymentDueDate?.toString() ?? '');
+      setDueDateOverridden(!!walletCard.paymentDueDate);
+      setIsSupplementary(walletCard.isSupplementary ?? false);
+      setStatus(walletCard.status ?? 'active');
+      setStatusNote(walletCard.statusNote ?? '');
+      setNote(walletCard.note ?? '');
+
+      // Fetch credit account data for edit mode
+      if (showCreditFields && walletCard.creditAccountId) {
+        (async () => {
+          const account = await db.creditAccounts.get(walletCard.creditAccountId!);
+          if (account) {
+            setCreditAccount(account);
+            setCreditLimitInput(account.creditLimit.toString());
+            const siblings = await getCardsForCreditAccount(account.id);
+            setSiblingCount(siblings.filter((c) => c.id !== walletCard.id).length);
+          }
+        })();
+      }
     } else {
+      setNickname('');
       setLast4('');
       setIssueDate('');
       setValidThru('');
-      setCreditLimit('');
       setStatementDate('');
       setPaymentDueDate('');
       setDueDateOverridden(false);
+      setIsSupplementary(false);
       setStatus('active');
       setStatusNote('');
       setNote('');
+      setPoolSelection({ poolChoice: 'new', creditLimit: '', isSupplementary: false });
+      setCreditAccount(undefined);
+      setSiblingCount(0);
+      setCreditLimitInput('');
     }
-  }, [open, card.id, userCard?.id]);
+  }, [open, card.id, walletCard?.id]);
 
   // Auto-calc payment due date
   useEffect(() => {
@@ -90,23 +242,61 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
   async function handleSave() {
     setSaving(true);
     try {
+      let resolvedCreditAccountId: string | undefined;
+
+      if (showCreditFields) {
+        if (isEdit && walletCard?.creditAccountId) {
+          // Update the credit account limit if it changed and not supplementary
+          if (!walletCard.isSupplementary && creditAccount && creditLimitInput) {
+            const newLimit = parseInt(creditLimitInput);
+            if (newLimit !== creditAccount.creditLimit) {
+              const { db } = await import('@/lib/db');
+              await db.creditAccounts.update(creditAccount.id, { creditLimit: newLimit });
+            }
+          }
+          resolvedCreditAccountId = walletCard.creditAccountId;
+        } else {
+          // Add mode: create or assign pool
+          if (poolSelection.poolChoice === 'new') {
+            const newAccount = await createCreditAccount(
+              card.bank_id,
+              parseInt(poolSelection.creditLimit) || 0,
+            );
+            resolvedCreditAccountId = newAccount.id;
+          } else {
+            resolvedCreditAccountId = poolSelection.poolChoice;
+          }
+        }
+      }
+
       const data = {
-        catalogId: card.id,
+        cardId: card.id,
+        bankId: card.bank_id,
+        cardType: card.card_type.includes('credit') ? 'credit'
+          : card.card_type.includes('2in1') ? '2in1'
+          : card.card_type.includes('debit') ? 'debit'
+          : 'prepaid',
+        nickname: nickname || undefined,
+        creditAccountId: resolvedCreditAccountId,
+        isSupplementary: showCreditFields
+          ? (isEdit ? isSupplementary : poolSelection.isSupplementary)
+          : undefined,
         last4: last4 || undefined,
         issueDate: issueDate || undefined,
         validThru: validThru || undefined,
-        creditLimit: creditLimit ? parseInt(creditLimit) : undefined,
         statementDate: statementDate ? parseInt(statementDate) : undefined,
         paymentDueDate: paymentDueDate ? parseInt(paymentDueDate) : undefined,
         status,
         statusNote: status !== 'active' ? (statusNote || undefined) : undefined,
         note: note || undefined,
       };
-      if (isEdit && userCard) {
-        await updateCard(userCard.id!, data);
+
+      if (isEdit && walletCard) {
+        await updateCard(walletCard.id, data);
       } else {
         await addCard(data);
       }
+
       onClose();
       onAfterSave?.();
     } finally {
@@ -115,10 +305,10 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
   }
 
   async function handleDelete() {
-    if (!userCard || !window.confirm('Xóa thẻ này khỏi ví?')) return;
+    if (!walletCard || !window.confirm('Xóa thẻ này khỏi ví?')) return;
     setDeleting(true);
     try {
-      await removeCard(userCard.id!);
+      await removeCard(walletCard.id);
       onClose();
       onAfterDelete?.();
     } finally {
@@ -126,7 +316,27 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
     }
   }
 
-  const showCreditFields = card.card_type.includes('credit') || card.card_type.includes('2in1');
+  async function handleUnlink() {
+    if (!walletCard || !window.confirm('Tách thẻ này ra khỏi pool chung? Thẻ sẽ có pool hạn mức riêng.')) return;
+    await unlinkCardFromPool(walletCard);
+    // Reload credit account data
+    const updatedCard = await db.walletCards.get(walletCard.id);
+    if (updatedCard?.creditAccountId) {
+      const account = await db.creditAccounts.get(updatedCard.creditAccountId);
+      if (account) {
+        setCreditAccount(account);
+        setCreditLimitInput(account.creditLimit.toString());
+        setSiblingCount(0);
+      }
+    }
+  }
+
+  async function handleReassign(newAccountId: string) {
+    if (!walletCard) return;
+    await reassignCardToAccount(walletCard.id, newAccountId);
+    onClose();
+    onAfterSave?.();
+  }
 
   return (
     <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -177,6 +387,16 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
           <div className="px-4 py-4 space-y-4">
             <p className="text-xs text-slate-400">Tất cả các trường đều không bắt buộc</p>
 
+            <FormField label="Tên gợi nhớ">
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="Thẻ chính, thẻ công ty..."
+                className={inputClass}
+              />
+            </FormField>
+
             <FormField label="4 số cuối thẻ">
               <input
                 type="number"
@@ -187,42 +407,56 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
               />
             </FormField>
 
-            {/* Issue date + valid thru in a row */}
             <div className="grid grid-cols-2 gap-3">
               <FormField label="Ngày phát hành">
-                <input
-                  type="text"
-                  value={issueDate}
-                  onChange={(e) => setIssueDate(e.target.value)}
-                  placeholder="MM/YY"
-                  maxLength={5}
-                  className={inputClass}
-                />
+                <input type="text" value={issueDate} onChange={(e) => setIssueDate(e.target.value)}
+                  placeholder="MM/YY" maxLength={5} className={inputClass} />
               </FormField>
               <FormField label="Hiệu lực đến">
-                <input
-                  type="text"
-                  value={validThru}
-                  onChange={(e) => setValidThru(e.target.value)}
-                  placeholder="MM/YY"
-                  maxLength={5}
-                  className={inputClass}
-                />
+                <input type="text" value={validThru} onChange={(e) => setValidThru(e.target.value)}
+                  placeholder="MM/YY" maxLength={5} className={inputClass} />
               </FormField>
             </div>
 
-            {/* Credit fields — credit/2in1 only */}
+            {/* Credit fields */}
             {showCreditFields && (
               <>
-                <FormField label="Hạn mức tín dụng (VND)">
-                  <input
-                    type="number"
-                    value={creditLimit}
-                    onChange={(e) => setCreditLimit(e.target.value)}
-                    placeholder="50.000.000"
-                    className={inputClass}
+                {isEdit ? (
+                  <>
+                    <EditCreditLimitSection
+                      walletCard={walletCard!}
+                      creditAccount={creditAccount}
+                      siblingCount={siblingCount}
+                      creditLimitInput={creditLimitInput}
+                      onCreditLimitChange={setCreditLimitInput}
+                      onUnlink={handleUnlink}
+                    />
+                    {walletCard?.creditAccountId && (
+                      <ReassignSection
+                        currentAccountId={walletCard.creditAccountId}
+                        bankId={card.bank_id}
+                        onReassign={handleReassign}
+                      />
+                    )}
+                    <FormField label="">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isSupplementary}
+                          onChange={(e) => setIsSupplementary(e.target.checked)}
+                          className="accent-brand-blue"
+                        />
+                        <span className="text-xs text-slate-600">Thẻ phụ (thẻ bổ sung)</span>
+                      </label>
+                    </FormField>
+                  </>
+                ) : (
+                  <CreditPoolSelector
+                    bankId={card.bank_id}
+                    value={poolSelection}
+                    onChange={setPoolSelection}
                   />
-                </FormField>
+                )}
 
                 <FormField label="Ngày sao kê">
                   <select
@@ -231,9 +465,7 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
                     className={inputClass}
                   >
                     <option value="">— chọn ngày —</option>
-                    {dayOptions.map((d) => (
-                      <option key={d} value={String(d)}>Ngày {d}</option>
-                    ))}
+                    {dayOptions.map((d) => <option key={d} value={String(d)}>Ngày {d}</option>)}
                   </select>
                 </FormField>
 
@@ -251,48 +483,29 @@ export function CardFormDialog({ card, userCard, open, onClose, onAfterSave, onA
                     className={inputClass}
                   >
                     <option value="">— chọn ngày —</option>
-                    {dayOptions.map((d) => (
-                      <option key={d} value={String(d)}>Ngày {d}</option>
-                    ))}
+                    {dayOptions.map((d) => <option key={d} value={String(d)}>Ngày {d}</option>)}
                   </select>
                 </FormField>
               </>
             )}
 
-            {/* Status */}
             <FormField label="Trạng thái thẻ">
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as CardStatus)}
-                className={inputClass}
-              >
-                {STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
+              <select value={status} onChange={(e) => setStatus(e.target.value as CardStatus)} className={inputClass}>
+                {STATUS_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
               </select>
             </FormField>
 
             {status !== 'active' && (
               <FormField label="Lý do">
-                <input
-                  type="text"
-                  value={statusNote}
-                  onChange={(e) => setStatusNote(e.target.value)}
-                  placeholder="Ví dụ: hết hạn tháng 12/2024, huỷ theo yêu cầu..."
-                  className={inputClass}
-                />
+                <input type="text" value={statusNote} onChange={(e) => setStatusNote(e.target.value)}
+                  placeholder="Ví dụ: hết hạn tháng 12/2024..." className={inputClass} />
               </FormField>
             )}
 
-            {/* Note */}
             <FormField label="Ghi chú">
-              <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Thẻ chính, thẻ công ty..."
-                rows={2}
-                className={cn(inputClass, 'resize-none')}
-              />
+              <textarea value={note} onChange={(e) => setNote(e.target.value)}
+                placeholder="Thẻ chính, thẻ công ty..." rows={2}
+                className={cn(inputClass, 'resize-none')} />
             </FormField>
           </div>
 

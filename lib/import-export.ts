@@ -1,4 +1,4 @@
-import { db, type UserCard } from './db';
+import { db, type WalletCard, type CreditAccount } from './db';
 
 interface WalletBackup {
   walletId: string;
@@ -6,12 +6,14 @@ interface WalletBackup {
   schemaVersion: string;
   createdAt: string;
   exportedAt: string;
-  userCards: UserCard[];
+  walletCards: WalletCard[];
+  creditAccounts: CreditAccount[];
 }
 
 export async function exportWallet(): Promise<void> {
-  const [userCards, configEntries] = await Promise.all([
-    db.userCards.toArray(),
+  const [walletCards, creditAccounts, configEntries] = await Promise.all([
+    db.walletCards.toArray(),
+    db.creditAccounts.toArray(),
     db.config.toArray(),
   ]);
 
@@ -19,11 +21,12 @@ export async function exportWallet(): Promise<void> {
 
   const backup: WalletBackup = {
     walletId: config.walletId ?? '',
-    walletName: config.walletName ?? 'My Wallet',
-    schemaVersion: config.schemaVersion ?? '1',
+    walletName: config.walletName ?? 'Ví của tôi',
+    schemaVersion: '2',
     createdAt: config.createdAt ?? new Date().toISOString(),
     exportedAt: new Date().toISOString(),
-    userCards,
+    walletCards,
+    creditAccounts,
   };
 
   const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
@@ -41,27 +44,32 @@ export async function importWallet(file: File): Promise<void> {
   const text = await file.text();
   const data: WalletBackup = JSON.parse(text);
 
-  if (data.schemaVersion !== '1') {
-    throw new Error(`Incompatible backup version: ${data.schemaVersion}`);
+  if (data.schemaVersion !== '2') {
+    throw new Error(`Định dạng sao lưu không tương thích (phiên bản ${data.schemaVersion})`);
   }
 
-  await db.transaction('rw', [db.userCards, db.config], async () => {
-    await db.userCards.clear();
+  await db.transaction('rw', [db.walletCards, db.creditAccounts, db.config], async () => {
+    await db.walletCards.clear();
+    await db.creditAccounts.clear();
     await db.config.clear();
 
-    if (data.userCards?.length) {
-      const cards = data.userCards.map(({ id: _id, ...card }) => ({
+    if (data.creditAccounts?.length) {
+      await db.creditAccounts.bulkAdd(data.creditAccounts);
+    }
+
+    if (data.walletCards?.length) {
+      const cards = data.walletCards.map((card) => ({
         ...card,
         createdAt: new Date(card.createdAt),
         updatedAt: new Date(card.updatedAt),
       }));
-      await db.userCards.bulkAdd(cards);
+      await db.walletCards.bulkAdd(cards);
     }
 
     await db.config.bulkPut([
       { key: 'walletId', value: data.walletId ?? crypto.randomUUID() },
-      { key: 'walletName', value: data.walletName ?? 'My Wallet' },
-      { key: 'schemaVersion', value: '1' },
+      { key: 'walletName', value: data.walletName ?? 'Ví của tôi' },
+      { key: 'schemaVersion', value: '2' },
       { key: 'createdAt', value: data.createdAt ?? new Date().toISOString() },
     ]);
   });

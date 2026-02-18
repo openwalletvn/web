@@ -1,6 +1,7 @@
-import { db, type UserCard } from './db';
+import { db, type WalletCard } from './db';
+import { cleanupOrphanAccounts } from './credit-account';
 
-// ─── Gamification (score/level ready for UI, not rendered yet) ────────────────
+// ─── Gamification (score/level data layer, no UI yet) ────────────────────────
 
 export type WalletLevel = 'starter' | 'regular' | 'pro' | 'elite';
 
@@ -11,15 +12,14 @@ export const WALLET_LEVELS: Record<WalletLevel, { label: string; minScore: numbe
   elite:   { label: 'Elite',    minScore: 200, color: 'amber'  },
 };
 
-/** Points per card: 10 base + bonus for each filled optional field */
-export function getWalletScore(userCards: UserCard[]): number {
-  return userCards.reduce((total, card) => {
+export function getWalletScore(walletCards: WalletCard[]): number {
+  return walletCards.reduce((total, card) => {
     let pts = 10;
-    if (card.last4)          pts += 5;
-    if (card.statementDate)  pts += 10;
-    if (card.paymentDueDate) pts += 10;
-    if (card.creditLimit)    pts += 5;
-    if (card.note)           pts += 5;
+    if (card.last4)           pts += 5;
+    if (card.statementDate)   pts += 10;
+    if (card.paymentDueDate)  pts += 10;
+    if (card.creditAccountId) pts += 5;
+    if (card.note)            pts += 5;
     return total + pts;
   }, 0);
 }
@@ -31,12 +31,18 @@ export function getWalletLevel(score: number): WalletLevel {
   return 'starter';
 }
 
+// ─── Card CRUD ───────────────────────────────────────────────────────────────
+
 export type CardFormData = {
-  catalogId: string;
+  cardId: string;
+  bankId: string;
+  cardType: string;
+  nickname?: string;
+  creditAccountId?: string;
+  isSupplementary?: boolean;
   last4?: string;
   issueDate?: string;
   validThru?: string;
-  creditLimit?: number;
   statementDate?: number;
   paymentDueDate?: number;
   status?: import('./db').CardStatus;
@@ -44,28 +50,31 @@ export type CardFormData = {
   note?: string;
 };
 
-export async function addCard(data: CardFormData): Promise<number> {
-  const id = await db.userCards.add({
+export async function addCard(data: CardFormData): Promise<string> {
+  const id = crypto.randomUUID();
+  await db.walletCards.add({
     ...data,
+    id,
     order: Date.now(),
     createdAt: new Date(),
     updatedAt: new Date(),
   });
-  return id as number;
+  return id;
 }
 
-export async function updateCard(id: number, data: Partial<CardFormData>): Promise<void> {
-  await db.userCards.update(id, { ...data, updatedAt: new Date() });
+export async function updateCard(id: string, data: Partial<CardFormData>): Promise<void> {
+  await db.walletCards.update(id, { ...data, updatedAt: new Date() });
 }
 
-export async function removeCard(id: number): Promise<void> {
-  await db.userCards.delete(id);
+export async function removeCard(id: string): Promise<void> {
+  await db.walletCards.delete(id);
+  await cleanupOrphanAccounts();
 }
 
-export async function reorderCards(ordered: UserCard[]): Promise<void> {
-  await db.transaction('rw', db.userCards, async () => {
+export async function reorderCards(ordered: WalletCard[]): Promise<void> {
+  await db.transaction('rw', db.walletCards, async () => {
     for (let i = 0; i < ordered.length; i++) {
-      await db.userCards.update(ordered[i].id!, { order: i, updatedAt: new Date() });
+      await db.walletCards.update(ordered[i].id, { order: i, updatedAt: new Date() });
     }
   });
 }

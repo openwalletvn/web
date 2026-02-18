@@ -4,8 +4,12 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { IconGripVertical } from '@tabler/icons-react';
 import { getCardImageUrl, type Card, type Bank } from '@/lib/api';
-import type { UserCard } from '@/lib/db';
+import type { WalletCard } from '@/lib/db';
 import { DashedBadge } from '@/components/ui/dashed-badge';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type CreditBadge = 'primary_shared' | 'supplementary';
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
 
@@ -17,21 +21,23 @@ const STATUS_LABELS: Record<string, string> = {
 // ─── Shared inner content ─────────────────────────────────────────────────────
 
 export function WalletCardContent({
-  userCard,
+  walletCard,
   catalogCard,
   bank,
+  creditBadge,
   onEdit,
 }: {
-  userCard: UserCard;
+  walletCard: WalletCard;
   catalogCard: Card | undefined;
   bank: Bank | undefined;
-  onEdit: (userCard: UserCard) => void;
+  creditBadge?: CreditBadge;
+  onEdit: (walletCard: WalletCard) => void;
 }) {
-  const isInactive = userCard.status === 'expired' || userCard.status === 'canceled';
+  const isInactive = walletCard.status === 'expired' || walletCard.status === 'canceled';
 
   return (
     <button
-      onClick={() => onEdit(userCard)}
+      onClick={() => onEdit(walletCard)}
       className="flex items-center gap-3 flex-1 min-w-0 text-left"
     >
       {/* Card image */}
@@ -51,81 +57,89 @@ export function WalletCardContent({
       <div className="flex-1 min-w-0">
         <p className="text-xs text-slate-400 truncate">{bank?.name ?? '—'}</p>
         <p className={`font-medium leading-tight truncate text-sm ${isInactive ? 'text-slate-400' : 'text-slate-900'}`}>
-          {catalogCard?.name ?? (
+          {walletCard.nickname ?? catalogCard?.name ?? (
             <span className="inline-block w-28 h-4 bg-slate-100 rounded animate-pulse" />
           )}
         </p>
 
         <div className="flex flex-wrap gap-1 mt-1.5">
           {/* Status badge — only for non-active */}
-          {isInactive && userCard.status && (
-            <DashedBadge variant="amber">{STATUS_LABELS[userCard.status]}</DashedBadge>
+          {isInactive && walletCard.status && (
+            <DashedBadge variant="amber">{STATUS_LABELS[walletCard.status]}</DashedBadge>
           )}
 
-          {userCard.last4 && (
-            <DashedBadge>•••• {userCard.last4}</DashedBadge>
+          {/* Credit role badge */}
+          {creditBadge === 'supplementary' && (
+            <DashedBadge variant="default">Thẻ phụ</DashedBadge>
+          )}
+          {creditBadge === 'primary_shared' && (
+            <DashedBadge variant="blue">Thẻ thông</DashedBadge>
           )}
 
-          {userCard.validThru && (
-            <DashedBadge>Đến {userCard.validThru}</DashedBadge>
+          {walletCard.last4 && (
+            <DashedBadge>•••• {walletCard.last4}</DashedBadge>
           )}
 
-          {userCard.statementDate && (
-            <DashedBadge variant="blue">Sao kê: ngày {userCard.statementDate}</DashedBadge>
+          {walletCard.validThru && (
+            <DashedBadge>Đến {walletCard.validThru}</DashedBadge>
           )}
 
-          {userCard.paymentDueDate && (
-            <DashedBadge variant="red">Đến hạn: ngày {userCard.paymentDueDate}</DashedBadge>
+          {walletCard.statementDate && (
+            <DashedBadge variant="blue">Sao kê: ngày {walletCard.statementDate}</DashedBadge>
           )}
 
-          {userCard.creditLimit && (
-            <DashedBadge>{userCard.creditLimit.toLocaleString('vi-VN')}đ</DashedBadge>
+          {walletCard.paymentDueDate && (
+            <DashedBadge variant="red">Đến hạn: ngày {walletCard.paymentDueDate}</DashedBadge>
           )}
         </div>
 
-        {userCard.note && (
-          <p className="text-xs text-slate-400 mt-1 truncate">{userCard.note}</p>
+        {walletCard.note && (
+          <p className="text-xs text-slate-400 mt-1 truncate">{walletCard.note}</p>
         )}
       </div>
     </button>
   );
 }
 
-// ─── Plain row (used when sorted) ────────────────────────────────────────────
+// ─── Plain row (sorted mode) ──────────────────────────────────────────────────
 
 export function WalletCardRow({
-  userCard,
+  walletCard,
   catalogCard,
   bank,
+  creditBadge,
   onEdit,
 }: {
-  userCard: UserCard;
+  walletCard: WalletCard;
   catalogCard: Card | undefined;
   bank: Bank | undefined;
-  onEdit: (userCard: UserCard) => void;
+  creditBadge?: CreditBadge;
+  onEdit: (walletCard: WalletCard) => void;
 }) {
   return (
     <div className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm bg-white hover:border-slate-300 transition-colors">
-      <WalletCardContent userCard={userCard} catalogCard={catalogCard} bank={bank} onEdit={onEdit} />
+      <WalletCardContent walletCard={walletCard} catalogCard={catalogCard} bank={bank} creditBadge={creditBadge} onEdit={onEdit} />
     </div>
   );
 }
 
-// ─── Sortable row (used in custom order mode) ─────────────────────────────────
+// ─── Sortable row (custom order mode) ────────────────────────────────────────
 
 export function SortableWalletCard({
-  userCard,
+  walletCard,
   catalogCard,
   bank,
+  creditBadge,
   onEdit,
 }: {
-  userCard: UserCard;
+  walletCard: WalletCard;
   catalogCard: Card | undefined;
   bank: Bank | undefined;
-  onEdit: (userCard: UserCard) => void;
+  creditBadge?: CreditBadge;
+  onEdit: (walletCard: WalletCard) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: userCard.id!,
+    id: walletCard.id,
   });
 
   return (
@@ -134,7 +148,7 @@ export function SortableWalletCard({
       style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }}
       className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm bg-white hover:border-slate-300 transition-colors"
     >
-      <WalletCardContent userCard={userCard} catalogCard={catalogCard} bank={bank} onEdit={onEdit} />
+      <WalletCardContent walletCard={walletCard} catalogCard={catalogCard} bank={bank} creditBadge={creditBadge} onEdit={onEdit} />
       <button
         {...attributes}
         {...listeners}

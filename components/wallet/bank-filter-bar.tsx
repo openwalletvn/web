@@ -1,29 +1,25 @@
 'use client';
 
-import { getBankImageUrl, type Bank, type Card } from '@/lib/api';
-import type { UserCard } from '@/lib/db';
+import { getBankImageUrl, type Bank } from '@/lib/api';
+import type { WalletCard } from '@/lib/db';
 
 interface Props {
-  userCards: UserCard[];
+  walletCards: WalletCard[];
   banks: Record<string, Bank>;
-  catalogCards: Record<string, Card>;
   selectedBankId: string | null;
   onSelect: (bankId: string | null) => void;
 }
 
-export function BankFilterBar({ userCards, banks, catalogCards, selectedBankId, onSelect }: Props) {
-  // Count cards per bank using resolved catalog data
+export function BankFilterBar({ walletCards, banks, selectedBankId, onSelect }: Props) {
+  // Count cards per bank — bankId is now denormalized on WalletCard
   const bankCardCounts = new Map<string, number>();
-  for (const userCard of userCards) {
-    const catalogCard = catalogCards[userCard.catalogId];
-    if (!catalogCard) continue;
-    const count = bankCardCounts.get(catalogCard.bank_id) ?? 0;
-    bankCardCounts.set(catalogCard.bank_id, count + 1);
+  for (const walletCard of walletCards) {
+    const count = bankCardCounts.get(walletCard.bankId) ?? 0;
+    bankCardCounts.set(walletCard.bankId, count + 1);
   }
 
   const bankIds = [...bankCardCounts.keys()];
 
-  // Only render when there are 2+ banks
   if (bankIds.length < 2) return null;
 
   return (

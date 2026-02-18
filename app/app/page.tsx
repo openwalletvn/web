@@ -19,11 +19,11 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { IconPlus, IconCreditCard } from '@tabler/icons-react';
-import { db, type UserCard } from '@/lib/db';
+import { db, type WalletCard } from '@/lib/db';
 import { reorderCards } from '@/lib/wallet';
 import { getBanks, getCard, type Card, type Bank } from '@/lib/api';
 import { CardFormDialog } from '@/components/wallet/card-form-dialog';
-import { SortableWalletCard, WalletCardRow } from '@/components/wallet/wallet-card-row';
+import { SortableWalletCard, WalletCardRow, type CreditBadge } from '@/components/wallet/wallet-card-row';
 import { BankFilterBar } from '@/components/wallet/bank-filter-bar';
 import { StatsWidget } from '@/components/wallet/widgets/stats-widget';
 import { BanksWidget } from '@/components/wallet/widgets/banks-widget';
@@ -40,11 +40,15 @@ const SORT_LABELS: Record<SortOption, string> = {
   due_date:     'Ngày đến hạn',
 };
 
-function applySortOrder(cards: UserCard[], sortBy: SortOption): UserCard[] {
+function applySortOrder(
+  cards: WalletCard[],
+  sortBy: SortOption,
+  creditLimitMap: Map<string, number>,
+): WalletCard[] {
   if (sortBy === 'custom') return cards;
   const sorted = [...cards];
   if (sortBy === 'credit_limit') {
-    sorted.sort((a, b) => (b.creditLimit ?? -1) - (a.creditLimit ?? -1));
+    sorted.sort((a, b) => (creditLimitMap.get(b.creditAccountId ?? '') ?? -1) - (creditLimitMap.get(a.creditAccountId ?? '') ?? -1));
   } else if (sortBy === 'added') {
     sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   } else if (sortBy === 'updated') {
@@ -63,10 +67,11 @@ function applySortOrder(cards: UserCard[], sortBy: SortOption): UserCard[] {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function WalletPage() {
-  const userCards = useLiveQuery(() => db.userCards.orderBy('order').toArray());
+  const walletCards = useLiveQuery(() => db.walletCards.orderBy('order').toArray());
+  const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [], []);
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
   const [banks, setBanks] = useState<Record<string, Bank>>({});
-  const [editingCard, setEditingCard] = useState<UserCard | null>(null);
+  const [editingCard, setEditingCard] = useState<WalletCard | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('custom');
   const [bankFilter, setBankFilter] = useState<string | null>(null);
 
@@ -82,13 +87,13 @@ export default function WalletPage() {
   }, []);
 
   useEffect(() => {
-    if (!userCards?.length) return;
-    const missing = userCards.filter((userCard) => !catalogCards[userCard.catalogId]);
+    if (!walletCards?.length) return;
+    const missing = walletCards.filter((walletCard) => !catalogCards[walletCard.cardId]);
     if (!missing.length) return;
     Promise.all(
-      missing.map((userCard) =>
-        getCard(userCard.catalogId)
-          .then((card) => [userCard.catalogId, card] as const)
+      missing.map((walletCard) =>
+        getCard(walletCard.cardId)
+          .then((card) => [walletCard.cardId, card] as const)
           .catch(() => null),
       ),
     ).then((results) => {
@@ -97,44 +102,61 @@ export default function WalletPage() {
       );
       setCatalogCards((previous) => ({ ...previous, ...entries }));
     });
-  }, [userCards]);
+  }, [walletCards]);
 
-  // Unique bank count for sidebar widget
+  // Map creditAccountId → creditLimit for sorting
+  const creditLimitMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const account of creditAccounts ?? []) {
+      map.set(account.id, account.creditLimit);
+    }
+    return map;
+  }, [creditAccounts]);
+
+  // Count cards per credit account for badge computation
+  const cardsPerAccount = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const walletCard of walletCards ?? []) {
+      if (walletCard.creditAccountId) {
+        map.set(walletCard.creditAccountId, (map.get(walletCard.creditAccountId) ?? 0) + 1);
+      }
+    }
+    return map;
+  }, [walletCards]);
+
+  function getCreditBadge(walletCard: WalletCard): CreditBadge | undefined {
+    if (!walletCard.creditAccountId) return undefined;
+    if (walletCard.isSupplementary) return 'supplementary';
+    const count = cardsPerAccount.get(walletCard.creditAccountId) ?? 0;
+    return count >= 2 ? 'primary_shared' : undefined;
+  }
+
+  // Unique bank count for sidebar
   const uniqueBankCount = useMemo(() => {
-    if (!userCards) return 0;
-    const bankIds = new Set(
-      userCards.map((userCard) => catalogCards[userCard.catalogId]?.bank_id).filter(Boolean),
-    );
+    const bankIds = new Set((walletCards ?? []).map((c) => c.bankId));
     return bankIds.size;
-  }, [userCards, catalogCards]);
+  }, [walletCards]);
 
   // Apply bank filter then sort
   const displayCards = useMemo(() => {
-    let cards = userCards ?? [];
+    let cards = walletCards ?? [];
     if (bankFilter) {
-      cards = cards.filter(
-        (userCard) => catalogCards[userCard.catalogId]?.bank_id === bankFilter,
-      );
+      cards = cards.filter((walletCard) => walletCard.bankId === bankFilter);
     }
-    return applySortOrder(cards, sortBy);
-  }, [userCards, catalogCards, bankFilter, sortBy]);
+    return applySortOrder(cards, sortBy, creditLimitMap);
+  }, [walletCards, bankFilter, sortBy, creditLimitMap]);
 
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-    if (!over || active.id === over.id || !userCards) return;
-    const oldIndex = userCards.findIndex((card) => card.id === (active.id as number));
-    const newIndex = userCards.findIndex((card) => card.id === (over.id as number));
-    await reorderCards(arrayMove(userCards, oldIndex, newIndex));
+    if (!over || active.id === over.id || !walletCards) return;
+    const oldIndex = walletCards.findIndex((card) => card.id === (active.id as string));
+    const newIndex = walletCards.findIndex((card) => card.id === (over.id as string));
+    await reorderCards(arrayMove(walletCards, oldIndex, newIndex));
   }
 
-  const isLoading = userCards === undefined;
-  const editingCatalogCard = editingCard ? catalogCards[editingCard.catalogId] : null;
+  const isLoading = walletCards === undefined;
+  const editingCatalogCard = editingCard ? catalogCards[editingCard.cardId] : null;
   const isSorted = sortBy !== 'custom';
-
-  function getCardBank(userCard: UserCard): Bank | undefined {
-    const catalogCard = catalogCards[userCard.catalogId];
-    return catalogCard ? banks[catalogCard.bank_id] : undefined;
-  }
 
   return (
     <div className="px-4 py-8 max-w-6xl mx-auto">
@@ -142,12 +164,11 @@ export default function WalletPage() {
 
         {/* ── Main column ── */}
         <div>
-          {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Ví của tôi</h1>
-              {!isLoading && userCards.length > 0 && (
-                <p className="text-sm text-slate-400 mt-0.5">{userCards.length} thẻ</p>
+              {!isLoading && walletCards.length > 0 && (
+                <p className="text-sm text-slate-400 mt-0.5">{walletCards.length} thẻ</p>
               )}
             </div>
             <Link
@@ -159,19 +180,18 @@ export default function WalletPage() {
             </Link>
           </div>
 
-          {/* Bank filter row */}
-          {!isLoading && userCards.length > 0 && (
+          {/* Bank filter */}
+          {!isLoading && walletCards.length > 0 && (
             <BankFilterBar
-              userCards={userCards}
+              walletCards={walletCards}
               banks={banks}
-              catalogCards={catalogCards}
               selectedBankId={bankFilter}
               onSelect={setBankFilter}
             />
           )}
 
           {/* Sort bar */}
-          {!isLoading && userCards.length > 1 && (
+          {!isLoading && walletCards.length > 1 && (
             <div className="flex items-center gap-2 mb-6">
               <span className="text-xs text-slate-400 shrink-0">Sắp xếp:</span>
               <div className="flex flex-wrap gap-1.5">
@@ -208,7 +228,7 @@ export default function WalletPage() {
           )}
 
           {/* Empty state */}
-          {!isLoading && userCards.length === 0 && (
+          {!isLoading && walletCards.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <div className="w-16 h-16 border border-dashed border-slate-200 rounded-sm flex items-center justify-center mb-5">
                 <IconCreditCard size={26} className="text-slate-300" />
@@ -225,29 +245,31 @@ export default function WalletPage() {
           )}
 
           {/* Card list */}
-          {!isLoading && userCards.length > 0 && (
+          {!isLoading && walletCards.length > 0 && (
             isSorted || bankFilter ? (
               <div className="space-y-2">
-                {displayCards.map((userCard) => (
+                {displayCards.map((walletCard) => (
                   <WalletCardRow
-                    key={userCard.id}
-                    userCard={userCard}
-                    catalogCard={catalogCards[userCard.catalogId]}
-                    bank={getCardBank(userCard)}
+                    key={walletCard.id}
+                    walletCard={walletCard}
+                    catalogCard={catalogCards[walletCard.cardId]}
+                    bank={banks[walletCard.bankId]}
+                    creditBadge={getCreditBadge(walletCard)}
                     onEdit={setEditingCard}
                   />
                 ))}
               </div>
             ) : (
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={displayCards.map((card) => card.id!)} strategy={verticalListSortingStrategy}>
+                <SortableContext items={displayCards.map((card) => card.id)} strategy={verticalListSortingStrategy}>
                   <div className="space-y-2">
-                    {displayCards.map((userCard) => (
+                    {displayCards.map((walletCard) => (
                       <SortableWalletCard
-                        key={userCard.id}
-                        userCard={userCard}
-                        catalogCard={catalogCards[userCard.catalogId]}
-                        bank={getCardBank(userCard)}
+                        key={walletCard.id}
+                        walletCard={walletCard}
+                        catalogCard={catalogCards[walletCard.cardId]}
+                        bank={banks[walletCard.bankId]}
+                        creditBadge={getCreditBadge(walletCard)}
                         onEdit={setEditingCard}
                       />
                     ))}
@@ -263,7 +285,6 @@ export default function WalletPage() {
           <div className="sticky top-[57px] space-y-4">
             <StatsWidget />
             <BanksWidget count={uniqueBankCount} />
-            {/* Future widgets go here */}
           </div>
         </aside>
       </div>
@@ -272,7 +293,7 @@ export default function WalletPage() {
       {editingCard && editingCatalogCard && (
         <CardFormDialog
           card={editingCatalogCard}
-          userCard={editingCard}
+          walletCard={editingCard}
           open={!!editingCard}
           onClose={() => setEditingCard(null)}
           onAfterDelete={() => setEditingCard(null)}

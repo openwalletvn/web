@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { addCard } from '@/lib/wallet';
+import { createCreditAccount } from '@/lib/credit-account';
 import { getBanks, getCards, getBankImageUrl, getCardImageUrl, type Bank, type Card } from '@/lib/api';
 import type { CardStatus } from '@/lib/db';
+import { CreditPoolSelector, type PoolSelection } from '@/components/wallet/credit-pool-selector';
 
 // ─── Day select helper ────────────────────────────────────────────────────────
 
@@ -31,9 +33,7 @@ function DaySelect({
       >
         <option value="">— chọn ngày —</option>
         {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-          <option key={d} value={String(d)}>
-            Ngày {d}
-          </option>
+          <option key={d} value={String(d)}>Ngày {d}</option>
         ))}
       </select>
     </div>
@@ -55,10 +55,11 @@ export default function AddCardPage() {
   const [cardsLoading, setCardsLoading] = useState(false);
 
   // Step 3 form
+  const [nickname, setNickname] = useState('');
   const [last4, setLast4] = useState('');
   const [issueDate, setIssueDate] = useState('');
   const [validThru, setValidThru] = useState('');
-  const [creditLimit, setCreditLimit] = useState('');
+  const [poolSelection, setPoolSelection] = useState<PoolSelection>({ poolChoice: 'new', creditLimit: '', isSupplementary: false });
   const [statementDate, setStatementDate] = useState('');
   const [paymentDueDate, setPaymentDueDate] = useState('');
   const [dueDateOverridden, setDueDateOverridden] = useState(false);
@@ -84,7 +85,7 @@ export default function AddCardPage() {
       .finally(() => setCardsLoading(false));
   }, [selectedBank]);
 
-  // Auto-calc payment due date from statement date + interest_free_days
+  // Auto-calc payment due date
   useEffect(() => {
     if (dueDateOverridden || !statementDate || !selectedCard?.interest_free_days) return;
     const raw = (parseInt(statementDate) + selectedCard.interest_free_days) % 30;
@@ -111,11 +112,11 @@ export default function AddCardPage() {
   function selectCard(card: Card) {
     setSelectedCard(card);
     setStep(3);
-    // Reset form
+    setNickname('');
     setLast4('');
     setIssueDate('');
     setValidThru('');
-    setCreditLimit('');
+    setPoolSelection({ poolChoice: 'new', creditLimit: '', isSupplementary: false });
     setStatementDate('');
     setPaymentDueDate('');
     setDueDateOverridden(false);
@@ -125,21 +126,46 @@ export default function AddCardPage() {
   }
 
   async function handleSave() {
-    if (!selectedCard) return;
+    if (!selectedCard || !selectedBank) return;
     setSaving(true);
     try {
+      const showCreditFields =
+        selectedCard.card_type.includes('credit') || selectedCard.card_type.includes('2in1');
+
+      let creditAccountId: string | undefined;
+
+      if (showCreditFields) {
+        if (poolSelection.poolChoice === 'new') {
+          const newAccount = await createCreditAccount(
+            selectedBank.id,
+            parseInt(poolSelection.creditLimit) || 0,
+          );
+          creditAccountId = newAccount.id;
+        } else {
+          creditAccountId = poolSelection.poolChoice;
+        }
+      }
+
       await addCard({
-        catalogId: selectedCard.id,
+        cardId: selectedCard.id,
+        bankId: selectedBank.id,
+        cardType: selectedCard.card_type.includes('credit') ? 'credit'
+          : selectedCard.card_type.includes('2in1') ? '2in1'
+          : selectedCard.card_type.includes('debit') ? 'debit'
+          : 'prepaid',
+        nickname: nickname || undefined,
+        creditAccountId,
+        isSupplementary: showCreditFields ? poolSelection.isSupplementary : undefined,
         last4: last4 || undefined,
         issueDate: issueDate || undefined,
         validThru: validThru || undefined,
-        creditLimit: creditLimit ? parseInt(creditLimit) : undefined,
         statementDate: statementDate ? parseInt(statementDate) : undefined,
         paymentDueDate: paymentDueDate ? parseInt(paymentDueDate) : undefined,
         status,
         statusNote: status !== 'active' ? (statusNote || undefined) : undefined,
         note: note || undefined,
       });
+
       router.push('/app');
     } finally {
       setSaving(false);
@@ -180,10 +206,7 @@ export default function AddCardPage() {
           {banksLoading ? (
             <div className="grid grid-cols-3 gap-3">
               {Array.from({ length: 9 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm"
-                >
+                <div key={i} className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm">
                   <div className="w-12 h-12 bg-slate-100 rounded-sm animate-pulse" />
                   <div className="w-14 h-3 bg-slate-100 rounded animate-pulse" />
                 </div>
@@ -197,11 +220,7 @@ export default function AddCardPage() {
                   onClick={() => selectBank(bank)}
                   className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm hover:border-brand-blue hover:bg-blue-50/40 transition-colors text-center"
                 >
-                  <img
-                    src={getBankImageUrl(bank.logo_url)}
-                    alt={bank.name}
-                    className="w-12 h-12 object-contain"
-                  />
+                  <img src={getBankImageUrl(bank.logo_url)} alt={bank.name} className="w-12 h-12 object-contain" />
                   <span className="text-xs text-slate-600 leading-tight">{bank.name}</span>
                 </button>
               ))}
@@ -213,23 +232,15 @@ export default function AddCardPage() {
       {/* ── Step 2: Choose Card ── */}
       {step === 2 && selectedBank && (
         <div>
-          {/* Selected bank chip */}
           <div className="flex items-center gap-2 mb-5 p-2.5 border border-dashed border-slate-200 rounded-sm w-fit">
-            <img
-              src={getBankImageUrl(selectedBank.logo_url)}
-              alt={selectedBank.name}
-              className="w-7 h-7 object-contain"
-            />
+            <img src={getBankImageUrl(selectedBank.logo_url)} alt={selectedBank.name} className="w-7 h-7 object-contain" />
             <span className="text-sm font-medium text-slate-700">{selectedBank.name}</span>
           </div>
           <p className="text-sm text-slate-500 mb-4">Chọn thẻ của bạn</p>
           {cardsLoading ? (
             <div className="grid grid-cols-2 gap-3">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="border border-dashed border-slate-200 rounded-sm p-3"
-                >
+                <div key={i} className="border border-dashed border-slate-200 rounded-sm p-3">
                   <div className="w-full aspect-[16/10] bg-slate-100 rounded-sm animate-pulse mb-2" />
                   <div className="h-4 w-3/4 bg-slate-100 rounded animate-pulse" />
                 </div>
@@ -246,15 +257,9 @@ export default function AddCardPage() {
                   className="flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded-sm hover:border-brand-blue hover:bg-blue-50/40 transition-colors text-left"
                 >
                   <div className="w-full aspect-[16/10] bg-slate-50 overflow-hidden rounded-sm">
-                    <img
-                      src={getCardImageUrl(card)}
-                      alt={card.name}
-                      className="w-full h-full object-contain"
-                    />
+                    <img src={getCardImageUrl(card)} alt={card.name} className="w-full h-full object-contain" />
                   </div>
-                  <span className="text-xs font-medium text-slate-800 leading-tight">
-                    {card.name}
-                  </span>
+                  <span className="text-xs font-medium text-slate-800 leading-tight">{card.name}</span>
                 </button>
               ))}
             </div>
@@ -268,11 +273,7 @@ export default function AddCardPage() {
           {/* Card preview */}
           <div className="flex items-center gap-4 mb-6 p-4 border border-dashed border-slate-200 rounded-sm">
             <div className="w-24 aspect-[16/10] bg-slate-50 rounded-sm overflow-hidden shrink-0">
-              <img
-                src={getCardImageUrl(selectedCard)}
-                alt={selectedCard.name}
-                className="w-full h-full object-contain"
-              />
+              <img src={getCardImageUrl(selectedCard)} alt={selectedCard.name} className="w-full h-full object-contain" />
             </div>
             <div>
               <p className="font-bold text-slate-900 text-sm">{selectedCard.name}</p>
@@ -286,72 +287,51 @@ export default function AddCardPage() {
           <p className="text-xs text-slate-400 mb-6">Tất cả các trường đều không bắt buộc</p>
 
           <div className="space-y-5">
+            {/* Nickname */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Tên gợi nhớ</label>
+              <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)}
+                placeholder="Thẻ chính, thẻ công ty..."
+                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
+            </div>
+
             {/* Last 4 digits */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                4 số cuối thẻ
-              </label>
-              <input
-                type="number"
-                value={last4}
-                onChange={(e) => setLast4(e.target.value.slice(0, 4))}
+              <label className="block text-sm font-medium text-slate-700 mb-1">4 số cuối thẻ</label>
+              <input type="number" value={last4} onChange={(e) => setLast4(e.target.value.slice(0, 4))}
                 placeholder="1234"
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
-              />
+                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
             </div>
 
             {/* Issue date + valid thru */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Ngày phát hành</label>
-                <input
-                  type="text"
-                  value={issueDate}
-                  onChange={(e) => setIssueDate(e.target.value)}
-                  placeholder="MM/YY"
-                  maxLength={5}
-                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
-                />
+                <input type="text" value={issueDate} onChange={(e) => setIssueDate(e.target.value)}
+                  placeholder="MM/YY" maxLength={5}
+                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Hiệu lực đến</label>
-                <input
-                  type="text"
-                  value={validThru}
-                  onChange={(e) => setValidThru(e.target.value)}
-                  placeholder="MM/YY"
-                  maxLength={5}
-                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
-                />
+                <input type="text" value={validThru} onChange={(e) => setValidThru(e.target.value)}
+                  placeholder="MM/YY" maxLength={5}
+                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
               </div>
             </div>
 
-            {/* Credit limit — credit/2in1 only */}
-            {showCreditFields && (
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Hạn mức tín dụng (VND)
-                </label>
-                <input
-                  type="number"
-                  value={creditLimit}
-                  onChange={(e) => setCreditLimit(e.target.value)}
-                  placeholder="50.000.000"
-                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
-                />
-              </div>
-            )}
-
-            {/* Statement date + payment due date — credit/2in1 only */}
+            {/* Credit pool + statement dates */}
             {showCreditFields && (
               <>
+                <CreditPoolSelector
+                  bankId={selectedBank!.id}
+                  value={poolSelection}
+                  onChange={setPoolSelection}
+                />
+
                 <DaySelect
                   label="Ngày sao kê"
                   value={statementDate}
-                  onChange={(v) => {
-                    setStatementDate(v);
-                    setDueDateOverridden(false);
-                  }}
+                  onChange={(v) => { setStatementDate(v); setDueDateOverridden(false); }}
                 />
 
                 <DaySelect
@@ -362,10 +342,7 @@ export default function AddCardPage() {
                       : undefined
                   }
                   value={paymentDueDate}
-                  onChange={(v) => {
-                    setPaymentDueDate(v);
-                    setDueDateOverridden(true);
-                  }}
+                  onChange={(v) => { setPaymentDueDate(v); setDueDateOverridden(true); }}
                 />
               </>
             )}
@@ -373,11 +350,8 @@ export default function AddCardPage() {
             {/* Status */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Trạng thái thẻ</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as CardStatus)}
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 focus:outline-none focus:border-brand-blue text-sm"
-              >
+              <select value={status} onChange={(e) => setStatus(e.target.value as CardStatus)}
+                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 focus:outline-none focus:border-brand-blue text-sm">
                 <option value="active">Đang dùng</option>
                 <option value="expired">Hết hạn</option>
                 <option value="canceled">Đã huỷ</option>
@@ -387,26 +361,18 @@ export default function AddCardPage() {
             {status !== 'active' && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Lý do</label>
-                <input
-                  type="text"
-                  value={statusNote}
-                  onChange={(e) => setStatusNote(e.target.value)}
-                  placeholder="Ví dụ: hết hạn tháng 12/2024, huỷ theo yêu cầu..."
-                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
-                />
+                <input type="text" value={statusNote} onChange={(e) => setStatusNote(e.target.value)}
+                  placeholder="Ví dụ: hết hạn tháng 12/2024..."
+                  className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm" />
               </div>
             )}
 
             {/* Note */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Ghi chú</label>
-              <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Thẻ chính, thẻ công ty..."
-                rows={3}
-                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm resize-none"
-              />
+              <textarea value={note} onChange={(e) => setNote(e.target.value)}
+                placeholder="Thẻ chính, thẻ công ty..." rows={3}
+                className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm resize-none" />
             </div>
           </div>
 
