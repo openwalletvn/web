@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Github } from 'lucide-react';
+import { IconBrandGithub } from '@tabler/icons-react';
 import { getBanks } from '@/lib/api';
 import { Nav } from './nav';
 import { MobileNav } from './mobile-nav';
@@ -30,7 +30,7 @@ export async function Header() {
             className="p-2 text-slate-500 hover:text-slate-900 transition-colors"
             aria-label="GitHub"
           >
-            <Github className="w-5 h-5" />
+            <IconBrandGithub className="w-5 h-5" />
           </a>
           <div className="md:hidden">
             <MobileNav banks={banks} />

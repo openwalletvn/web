@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
-import { Landmark, CreditCard, Infinity } from 'lucide-react';
+import { IconBuildingBank, IconCreditCard, IconInfinity } from '@tabler/icons-react';
 import { BanksSection, BanksSectionSkeleton } from './_components/banks-section';
 import { CardsSection, CardsSectionSkeleton } from './_components/cards-section';
 
@@ -101,17 +101,17 @@ export default async function HomePage() {
           {/* Stats row */}
           <div className="flex items-center justify-center gap-8 text-slate-500">
             <div className="flex items-center gap-2">
-              <Landmark className="w-5 h-5 text-slate-400" />
+              <IconBuildingBank className="w-5 h-5 text-slate-400" aria-hidden="true" />
               <span>{hero('stats.banks')}</span>
             </div>
             <div className="w-px h-5 bg-slate-200" />
             <div className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-slate-400" />
+              <IconCreditCard className="w-5 h-5 text-slate-400" aria-hidden="true" />
               <span>{hero('stats.cards')}</span>
             </div>
             <div className="w-px h-5 bg-slate-200" />
             <div className="flex items-center gap-2">
-              <Infinity className="w-5 h-5 text-slate-400" />
+              <IconInfinity className="w-5 h-5 text-slate-400" aria-hidden="true" />
               <span>{hero('stats.free')}</span>
             </div>
           </div>
