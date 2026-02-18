@@ -1,39 +1,83 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { IconArrowLeft, IconSettings, IconCreditCard, IconLayoutDashboard } from '@tabler/icons-react';
-import { db } from '@/lib/db';
+import {usePathname} from 'next/navigation';
+import {useLiveQuery} from 'dexie-react-hooks';
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarRail,
-  SidebarTrigger,
+    IconCalendarDue,
+    IconCreditCard,
+    IconHome,
+    IconLayoutDashboard,
+    IconPlus,
+    IconSettings
+} from '@tabler/icons-react';
+import {db} from '@/lib/db';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarHeader,
+    SidebarInset,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarProvider,
+    SidebarRail,
+    SidebarSeparator,
+    SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import {TooltipProvider} from '@/components/ui/tooltip';
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
 const NAV_ITEMS = [
   { label: 'Tổng quan', href: '/app', icon: IconLayoutDashboard },
-  { label: 'Thẻ', href: '/app/cards', icon: IconCreditCard },
+    {label: 'Thẻ của tôi', href: '/app/my-cards', icon: IconCreditCard},
+    {label: 'Đến hạn', href: '/app/upcoming', icon: IconCalendarDue},
 ] as const;
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
-function AppSidebar({ pathname }: { pathname: string }) {
+function AppSidebar({pathname, walletName}: { pathname: string; walletName: string }) {
   return (
     <Sidebar collapsible="icon">
+
+        {/* Top: logo + wallet name → /app */}
+        <SidebarHeader>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton size="lg" asChild tooltip={walletName}>
+                        <Link href="/app">
+                            <img src="/logo.png" alt="OpenWallet" className="h-6 w-6 object-contain shrink-0"/>
+                            <span className="font-bold text-slate-900 truncate">{walletName}</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarHeader>
+
       <SidebarContent>
+          {/* Add card button */}
+          <SidebarGroup>
+              <SidebarGroupContent>
+                  <SidebarMenu>
+                      <SidebarMenuItem>
+                          <SidebarMenuButton asChild tooltip="Thêm thẻ">
+                              <Link href="/app/add">
+                                  <IconPlus size={16}/>
+                                  <span>Thêm thẻ</span>
+                              </Link>
+                          </SidebarMenuButton>
+                      </SidebarMenuItem>
+                  </SidebarMenu>
+              </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarSeparator className="mx-0"/>
+
+          {/* Nav */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -59,6 +103,29 @@ function AppSidebar({ pathname }: { pathname: string }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+        {/* Bottom: settings + back to home */}
+        <SidebarFooter>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Cài đặt">
+                        <Link href="/app/settings">
+                            <IconSettings size={16}/>
+                            <span>Cài đặt</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Về trang chủ">
+                        <Link href="/">
+                            <IconHome size={16}/>
+                            <span>Về trang chủ</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );
@@ -77,35 +144,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <AppSidebar pathname={pathname} />
+          <AppSidebar pathname={pathname} walletName={walletName ?? 'My Wallet'}/>
 
         <SidebarInset>
-          {/* App header */}
-          <header className="flex h-14 items-center gap-2 border-b border-dashed border-slate-200 px-4 sticky top-0 bg-white z-10 shrink-0">
+            {/* Mobile-only trigger bar — desktop uses the SidebarRail */}
+            <div
+                className="md:hidden sticky top-0 z-10 flex h-10 items-center gap-2 px-3 bg-white border-b border-dashed border-slate-100">
             <SidebarTrigger className="text-slate-400 hover:text-slate-600 transition-colors" />
-            <Separator orientation="vertical" className="h-4" />
-            <Link
-              href="/"
-              className="p-1 text-slate-400 hover:text-slate-600 transition-colors"
-              title="Trang chủ"
-            >
-              <IconArrowLeft size={16} />
-            </Link>
-            <img src="/logo.png" alt="OpenWallet" className="h-6 w-6 object-contain" />
-            <span className="font-bold text-slate-900 text-sm">{walletName}</span>
-
-            <div className="ml-auto">
-              <Link
-                href="/app/settings"
-                className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors"
-                title="Cài đặt"
-              >
-                <IconSettings size={18} />
-              </Link>
             </div>
-          </header>
 
-          {/* Page content */}
           <main className="flex-1">
             {children}
           </main>
