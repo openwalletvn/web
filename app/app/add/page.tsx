@@ -117,7 +117,7 @@ export default function AddCardPage() {
     setIssueDate('');
     setValidThru('');
     setPoolSelection({ poolChoice: 'new', creditLimit: '', isSupplementary: false });
-    setStatementDate('');
+    setStatementDate(card.statement_date ? String(card.statement_date) : '');
     setPaymentDueDate('');
     setDueDateOverridden(false);
     setStatus('active');
@@ -292,6 +292,11 @@ export default function AddCardPage() {
 
                 <DaySelect
                   label="Ngày sao kê"
+                  hint={
+                    selectedCard.statement_date && statementDate === String(selectedCard.statement_date)
+                      ? 'Mặc định của ngân hàng — bạn có thể thay đổi nếu khác'
+                      : undefined
+                  }
                   value={statementDate}
                   onChange={(v) => { setStatementDate(v); setDueDateOverridden(false); }}
                 />

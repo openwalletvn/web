@@ -33,7 +33,8 @@
       "Bash(git -C /Users/bmp/PHUC-LOCAL/openwalletvn/web add app/\\\\\\(marketing\\\\\\)/blog/ components/blog/ content/ lib/mdx.ts scripts/ app/globals.css app/sitemap.ts components/layout/footer.tsx components/layout/header.tsx components/layout/mobile-nav.tsx components/layout/nav.tsx lib/api.ts messages/en.json messages/vi.json package.json pnpm-lock.yaml)",
       "Bash(git -C /Users/bmp/PHUC-LOCAL/openwalletvn/web add app/\\\\\\(marketing\\\\\\)/blog/ components/blog/ content/ lib/mdx.ts scripts/ app/globals.css app/sitemap.ts components/layout/footer.tsx components/layout/header.tsx components/layout/mobile-nav.tsx components/layout/nav.tsx lib/api.ts messages/en.json messages/vi.json package.json)",
       "Bash(git -C:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(grep:*)"
     ]
   }
 }

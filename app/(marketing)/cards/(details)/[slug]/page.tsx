@@ -6,6 +6,7 @@ import {Badge} from '@/components/ui/badge';
 import {getBank, getBankImageUrl, getCard, getCardImageUrl, getCards} from '@/lib/api';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {AddToWalletButton} from './_add-to-wallet-button';
+import {CoBrandDisplay} from '@/components/cards/co-brand-display';
 
 export async function generateStaticParams() {
   const cards = await getCards();
@@ -112,10 +113,31 @@ export default async function CardPage({ params }: Props) {
                   <dd className="text-slate-900 font-medium">{t('days', { count: card.interest_free_days })}</dd>
                 </>
               )}
+              {card.statement_date !== undefined && (
+                <>
+                  <dt className="text-slate-500">{t('statement_date')}</dt>
+                  <dd className="text-slate-900 font-medium">{t('statement_date_value', { day: card.statement_date })}</dd>
+                </>
+              )}
+              {card.statement_date !== undefined && card.interest_free_days !== undefined && (() => {
+                const raw = (card.statement_date + card.interest_free_days) % 30;
+                const due = raw === 0 ? 30 : raw;
+                return (
+                  <>
+                    <dt className="text-slate-500">{t('payment_due_date')}</dt>
+                    <dd className="text-slate-900 font-medium">{t('statement_date_value', { day: due })}</dd>
+                  </>
+                );
+              })()}
               {card.co_brand && (
                 <>
                   <dt className="text-slate-500">{t('co_brand_label')}</dt>
-                  <dd className="text-slate-900 font-medium">{card.co_brand}</dd>
+                  <dd>
+                    {card.co_brand_data
+                      ? <CoBrandDisplay brand={card.co_brand_data} fallback={card.co_brand} />
+                      : <span className="text-slate-900 font-medium">{card.co_brand}</span>
+                    }
+                  </dd>
                 </>
               )}
             </dl>

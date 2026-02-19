@@ -14,13 +14,12 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
-import { getBankImageUrl, type Bank } from '@/lib/api';
+import { getBankImageUrl, getBrandImageUrl, type Bank, type Brand } from '@/lib/api';
 
 const CARD_TYPE_ITEMS = [
-  { navKey: 'type_credit',     href: '/cards/credit' },
-  { navKey: 'type_debit',      href: '/cards/debit' },
-  { navKey: 'type_2in1',       href: '/cards/2in1' },
-  { navKey: 'type_co_branded', href: '/cards/co-branded' },
+  { navKey: 'type_credit', href: '/cards/credit' },
+  { navKey: 'type_debit',  href: '/cards/debit' },
+  { navKey: 'type_2in1',   href: '/cards/2in1' },
 ] as const;
 
 const CARD_NETWORK_ITEMS = [
@@ -34,9 +33,10 @@ const CARD_NETWORK_ITEMS = [
 
 interface Props {
   banks: Bank[];
+  brands: Brand[];
 }
 
-export function Nav({ banks }: Props) {
+export function Nav({ banks, brands }: Props) {
   const pathname = usePathname();
   const t = useTranslations('Nav');
 
@@ -93,7 +93,8 @@ export function Nav({ banks }: Props) {
             {t('cards')}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="w-[400px] p-4 grid grid-cols-2 gap-6">
+            <div className="w-[560px] p-4 grid grid-cols-3 gap-6">
+              {/* By type */}
               <div>
                 <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
                   {t('by_type')}
@@ -117,6 +118,8 @@ export function Nav({ banks }: Props) {
                   ))}
                 </ul>
               </div>
+
+              {/* By network */}
               <div>
                 <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
                   {t('by_network')}
@@ -131,6 +134,41 @@ export function Nav({ banks }: Props) {
                       </NavigationMenuLink>
                     </li>
                   ))}
+                </ul>
+              </div>
+
+              {/* Co-branded */}
+              <div>
+                <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                  {t('type_co_branded')}
+                </p>
+                <ul className="space-y-1">
+                  {brands.map((brand) => (
+                    <li key={brand.id}>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href={`/cards/co-branded/${brand.id}`}
+                          className="flex items-center gap-2 text-base text-slate-700 hover:text-brand-red py-1 transition-colors"
+                        >
+                          <img
+                            src={getBrandImageUrl(brand.logo_url)}
+                            alt=""
+                            width={16}
+                            height={16}
+                            className="object-contain shrink-0"
+                          />
+                          {brand.name}
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  ))}
+                  <li>
+                    <NavigationMenuLink asChild>
+                      <Link href="/cards/co-branded" className="block text-base text-brand-red hover:underline py-1 font-medium">
+                        {t('view_all_co_branded')}
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
                 </ul>
               </div>
             </div>

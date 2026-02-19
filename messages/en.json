@@ -45,6 +45,7 @@
     "api_docs": "API Docs",
     "view_all_banks": "View all banks →",
     "view_all_cards": "View all cards →",
+    "view_all_co_branded": "View all →",
     "by_type": "By Type",
     "by_network": "By Network",
     "all_cards": "All Cards",
@@ -73,6 +74,18 @@
     "banks": "Banks",
     "cards": "Cards",
     "blog": "Blog"
+  },
+  "BrandsPage": {
+    "title": "Co-branded Cards",
+    "subtitle": "Co-branded bank cards in Vietnam",
+    "count": "{count} brands",
+    "not_found": "Brand not found",
+    "back": "← Back to Co-branded",
+    "cards_title": "Cards from this brand",
+    "visit_brand": "Visit brand website ↗",
+    "meta_title": "Co-branded Cards | Open Wallet",
+    "meta_description": "Co-branded bank cards in Vietnam — Shopee, Vietnam Airlines, Lazada and more.",
+    "brand_meta_description": "All {brand} co-branded cards in Vietnam on Open Wallet."
   },
   "BanksPage": {
     "title": "Banks",
@@ -118,6 +131,18 @@
     "description": "Explore credit, debit, and prepaid cards from leading Vietnamese banks.",
     "view_all": "View all {count} cards →",
     "no_cards": "No cards found."
+  },
+  "BrandsPage": {
+    "title": "Co-branded Cards",
+    "subtitle": "Co-branded bank cards in Vietnam",
+    "count": "{count} brands",
+    "not_found": "Brand not found",
+    "back": "← Back to Co-branded",
+    "cards_title": "Cards from this brand",
+    "visit_brand": "Visit brand website ↗",
+    "meta_title": "Co-branded Cards | Open Wallet",
+    "meta_description": "Co-branded bank cards in Vietnam — Shopee, Vietnam Airlines, Lazada and more.",
+    "brand_meta_description": "All {brand} co-branded cards in Vietnam on Open Wallet."
   },
   "CardsFilter": {
     "all_types": "All types",
@@ -165,6 +190,9 @@
     "free": "Free",
     "interest_free_days": "Interest-free days",
     "days": "{count} days",
+    "statement_date": "Statement date",
+    "statement_date_value": "Day {day} of every month",
+    "payment_due_date": "Payment due date",
     "co_brand_label": "Co-brand",
     "view_details": "View card details ↗",
     "not_found": "Card not found",

@@ -1,11 +1,14 @@
 import Link from 'next/link';
-import { getBanks } from '@/lib/api';
+import { getBanks, getBrands } from '@/lib/api';
 import { Nav } from './nav';
 import { MobileNav } from './mobile-nav';
 import { WalletNavButton } from './wallet-nav-button';
 
 export async function Header() {
-  const banks = await getBanks().catch(() => []);
+  const [banks, brands] = await Promise.all([
+    getBanks().catch(() => []),
+    getBrands().catch(() => []),
+  ]);
 
   return (
     <header className="bg-white border-b border-slate-200">
@@ -17,7 +20,7 @@ export async function Header() {
             <img src="/logo.png" alt="Open Wallet" className="h-8 w-8" />
           </Link>
           <div className="hidden md:flex">
-            <Nav banks={banks} />
+            <Nav banks={banks} brands={brands} />
           </div>
         </div>
 

@@ -222,7 +222,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
       setLast4('');
       setIssueDate('');
       setValidThru('');
-      setStatementDate('');
+      setStatementDate(card.statement_date ? String(card.statement_date) : '');
       setPaymentDueDate('');
       setDueDateOverridden(false);
       setIsSupplementary(false);
@@ -459,7 +459,14 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                   />
                 )}
 
-                <FormField label="Ngày sao kê">
+                <FormField
+                  label="Ngày sao kê"
+                  hint={
+                    !isEdit && card.statement_date && statementDate === String(card.statement_date)
+                      ? 'Mặc định của ngân hàng — bạn có thể thay đổi nếu khác'
+                      : undefined
+                  }
+                >
                   <select
                     value={statementDate}
                     onChange={(e) => { setStatementDate(e.target.value); setDueDateOverridden(false); }}

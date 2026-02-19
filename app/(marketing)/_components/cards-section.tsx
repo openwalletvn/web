@@ -15,7 +15,9 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
 
   let cards = allCards;
 
-  if (filters?.co_brand) {
+  if (typeof filters?.co_brand === 'string') {
+    cards = cards.filter((c) => c.co_brand === filters.co_brand);
+  } else if (filters?.co_brand === true) {
     cards = cards.filter((c) => !!c.co_brand);
   }
   if (filters?.sort === 'fee_asc') {

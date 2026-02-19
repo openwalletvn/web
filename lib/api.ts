@@ -1,3 +1,10 @@
+export interface Brand {
+    id: string;
+    name: string;
+    logo_url: string;
+    link?: string;
+}
+
 export interface Bank {
     id: string;
     name: string;
@@ -32,11 +39,13 @@ export interface Card {
     card_network: CardNetwork;
     card_tier?: string;
     co_brand?: string;
+    co_brand_data?: Brand;
     card_type: CardType[];
     image_orientation: ImageOrientation;
     annual_fee?: number;
     currency?: string;
     interest_free_days?: number;
+    statement_date?: number;
     card_link?: string;
     status?: 'published' | 'draft';
 }
@@ -47,7 +56,7 @@ export interface CardFilters {
     type?: CardType;
     network?: CardNetwork;
     bank_id?: string;
-    co_brand?: boolean;
+    co_brand?: boolean | string; // true = any co-branded; string = specific brand ID
     sort?: CardSort;
 }
 
@@ -80,6 +89,10 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 const fetchOptions: RequestInit = process.env.NODE_ENV === 'development' ? { cache: 'no-store' } : {};
 
 export function getBankImageUrl(logoUrl: string): string {
+    return `${apiUrl}${logoUrl}`;
+}
+
+export function getBrandImageUrl(logoUrl: string): string {
     return `${apiUrl}${logoUrl}`;
 }
 
@@ -120,5 +133,30 @@ export async function getCard(id: string): Promise<Card> {
     const res = await fetch(`${apiUrl}/api/v1/cards/${id}`, fetchOptions);
     const json = (await res.json()) as CardDetailResponse;
     if (!json.success) throw new Error(`Failed to fetch card: ${id}`);
+    return json.data;
+}
+
+interface BrandListResponse {
+    success: boolean;
+    data: Brand[];
+    meta: { total: number };
+}
+
+interface BrandDetailResponse {
+    success: boolean;
+    data: Brand;
+}
+
+export async function getBrands(): Promise<Brand[]> {
+    const res = await fetch(`${apiUrl}/api/v1/brands`, fetchOptions);
+    const json = (await res.json()) as BrandListResponse;
+    if (!json.success) throw new Error('Failed to fetch brands');
+    return json.data;
+}
+
+export async function getBrand(id: string): Promise<Brand> {
+    const res = await fetch(`${apiUrl}/api/v1/brands/${id}`, fetchOptions);
+    const json = (await res.json()) as BrandDetailResponse;
+    if (!json.success) throw new Error(`Failed to fetch brand: ${id}`);
     return json.data;
 }
