@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getBanks, getCards } from '@/lib/api';
+import { getBanks, getCards, getBrands, getNetworks } from '@/lib/api';
 import { getAllPosts, getAllCategories, getAllTags } from '@/lib/mdx';
 
 export const dynamic = 'force-static';
@@ -7,7 +7,7 @@ export const dynamic = 'force-static';
 const BASE_URL = 'https://openwallet.vn';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [banks, cards] = await Promise.all([getBanks(), getCards()]);
+  const [banks, cards, brands, networks] = await Promise.all([getBanks(), getCards(), getBrands().catch(() => []), getNetworks().catch(() => [])]);
 
   const posts = getAllPosts();
   const categories = getAllCategories();
@@ -21,12 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/cards/debit`,             changeFrequency: 'weekly',  priority: 0.7 },
     { url: `${BASE_URL}/cards/2in1`,              changeFrequency: 'weekly',  priority: 0.7 },
     { url: `${BASE_URL}/cards/co-branded`,        changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/visa`,              changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/mastercard`,        changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/jcb`,               changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/napas`,             changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/amex`,              changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/unionpay`,          changeFrequency: 'weekly',  priority: 0.7 },
+    { url: `${BASE_URL}/cards/networks`,          changeFrequency: 'weekly',  priority: 0.7 },
     { url: `${BASE_URL}/docs`,                    changeFrequency: 'monthly', priority: 0.5 },
     { url: `${BASE_URL}/blog`,                    changeFrequency: 'weekly',  priority: 0.8 },
   ];
@@ -41,6 +36,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${BASE_URL}/cards/${card.id}`,
     changeFrequency: 'weekly',
     priority: 0.6,
+  }));
+
+  const brandRoutes: MetadataRoute.Sitemap = brands.map((brand) => ({
+    url: `${BASE_URL}/cards/co-branded/${brand.id}`,
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }));
+
+  const networkRoutes: MetadataRoute.Sitemap = networks.map((network) => ({
+    url: `${BASE_URL}/cards/networks/${network.id}`,
+    changeFrequency: 'weekly',
+    priority: 0.7,
   }));
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
@@ -62,5 +69,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  return [...staticRoutes, ...bankRoutes, ...cardRoutes, ...postRoutes, ...categoryRoutes, ...tagRoutes];
+  return [...staticRoutes, ...bankRoutes, ...cardRoutes, ...brandRoutes, ...networkRoutes, ...postRoutes, ...categoryRoutes, ...tagRoutes];
 }

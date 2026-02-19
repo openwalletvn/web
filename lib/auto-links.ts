@@ -9,12 +9,12 @@
  */
 export const AUTO_LINKS: [keyword: string, url: string][] = [
   // Card networks
-  ['American Express', '/cards/amex'],
-  ['Mastercard', '/cards/mastercard'],
-  ['UnionPay', '/cards/unionpay'],
-  ['NAPAS', '/cards/napas'],
-  ['Visa', '/cards/visa'],
-  ['JCB', '/cards/jcb'],
+  ['American Express', '/cards/networks/amex'],
+  ['Mastercard', '/cards/networks/mastercard'],
+  ['UnionPay', '/cards/networks/unionpay'],
+  ['NAPAS', '/cards/networks/napas'],
+  ['Visa', '/cards/networks/visa'],
+  ['JCB', '/cards/networks/jcb'],
 
   // Card types — longer phrases first
   ['thẻ 2 trong 1', '/cards/2in1'],

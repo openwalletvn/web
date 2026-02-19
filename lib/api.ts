@@ -68,17 +68,11 @@ export interface CardFilters {
     sort?: CardSort;
 }
 
-export const SEGMENT_FILTERS: Record<string, Pick<CardFilters, 'type' | 'network'>> = {
-    credit:         { type: 'credit' },
-    debit:          { type: 'debit' },
-    '2in1':         { type: '2in1' },
-    'co-branded':   { type: 'co-branded' },
-    visa:           { network: 'visa' },
-    mastercard:     { network: 'mastercard' },
-    jcb:            { network: 'jcb' },
-    napas:          { network: 'napas' },
-    amex:           { network: 'amex' },
-    unionpay:       { network: 'unionpay' },
+export const SEGMENT_FILTERS: Record<string, Pick<CardFilters, 'type'>> = {
+    credit:       { type: 'credit' },
+    debit:        { type: 'debit' },
+    '2in1':       { type: '2in1' },
+    'co-branded': { type: 'co-branded' },
 };
 
 interface CardListResponse {

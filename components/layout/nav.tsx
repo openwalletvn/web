@@ -125,7 +125,7 @@ export function Nav({ banks, brands, networks }: Props) {
                     {networks.map((network) => (
                       <NavigationMenuLink asChild key={network.id}>
                         <Link
-                          href={`/cards/${network.id}`}
+                          href={`/cards/networks/${network.id}`}
                           className="flex flex-col items-center gap-1.5 p-2 rounded-md hover:bg-slate-100 transition-colors"
                         >
                           <div className="relative w-10 h-10">

@@ -144,6 +144,17 @@
     "meta_description": "Co-branded bank cards in Vietnam — Shopee, Vietnam Airlines, Lazada and more.",
     "brand_meta_description": "All {brand} co-branded cards in Vietnam on Open Wallet."
   },
+  "NetworksPage": {
+    "title": "Card Networks",
+    "count": "{count} networks",
+    "not_found": "Network not found",
+    "back": "← Back to Networks",
+    "cards_title": "Cards on this network",
+    "visit_network": "Visit network website ↗",
+    "meta_title": "Card Networks | Open Wallet",
+    "meta_description": "Browse cards by payment network — Visa, Mastercard, JCB, Napas and more.",
+    "network_meta_description": "All {network} cards in Vietnam on Open Wallet."
+  },
   "CardsFilter": {
     "all_types": "All types",
     "all_networks": "All networks",

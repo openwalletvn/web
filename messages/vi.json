@@ -134,6 +134,17 @@
     "meta_description": "Danh sách thẻ đồng thương hiệu tại Việt Nam — Shopee, Vietnam Airlines, Lazada và nhiều hơn nữa.",
     "brand_meta_description": "Tất cả thẻ đồng thương hiệu {brand} tại Việt Nam trên Open Wallet."
   },
+  "NetworksPage": {
+    "title": "Mạng thanh toán",
+    "count": "{count} mạng",
+    "not_found": "Không tìm thấy mạng thanh toán",
+    "back": "← Quay lại Mạng thanh toán",
+    "cards_title": "Thẻ trên mạng này",
+    "visit_network": "Xem trang mạng thanh toán ↗",
+    "meta_title": "Mạng thanh toán | Open Wallet",
+    "meta_description": "Khám phá thẻ theo mạng thanh toán — Visa, Mastercard, JCB, Napas và nhiều hơn nữa.",
+    "network_meta_description": "Tất cả thẻ {network} tại Việt Nam trên Open Wallet."
+  },
   "CardsFilter": {
     "all_types": "Tất cả loại",
     "all_networks": "Tất cả mạng",

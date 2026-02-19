@@ -19,12 +19,12 @@ const CARD_TYPE_ITEMS = [
 ] as const;
 
 const CARD_NETWORK_ITEMS = [
-  { navKey: 'network_visa',       href: '/cards/visa' },
-  { navKey: 'network_mastercard', href: '/cards/mastercard' },
-  { navKey: 'network_jcb',        href: '/cards/jcb' },
-  { navKey: 'network_napas',      href: '/cards/napas' },
-  { navKey: 'network_amex',       href: '/cards/amex' },
-  { navKey: 'network_unionpay',   href: '/cards/unionpay' },
+  { navKey: 'network_visa',       href: '/cards/networks/visa' },
+  { navKey: 'network_mastercard', href: '/cards/networks/mastercard' },
+  { navKey: 'network_jcb',        href: '/cards/networks/jcb' },
+  { navKey: 'network_napas',      href: '/cards/networks/napas' },
+  { navKey: 'network_amex',       href: '/cards/networks/amex' },
+  { navKey: 'network_unionpay',   href: '/cards/networks/unionpay' },
 ] as const;
 
 interface Props {
