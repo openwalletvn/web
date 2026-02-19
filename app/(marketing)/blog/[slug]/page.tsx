@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { getTranslations } from 'next-intl/server';
 import { getAllPosts, getPostBySlug, getRelatedPosts } from '@/lib/mdx';
 import { RelatedPosts } from '@/components/blog/related-posts';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
@@ -18,10 +19,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug);
-  if (!post) return { title: 'Không tìm thấy | OpenWallet' };
+  const t = await getTranslations('BlogPage');
+  if (!post) return { title: t('post_not_found') };
 
+  const title = `${post.frontmatter.title} ${t('post_title_suffix')}`;
   return {
-    title: `${post.frontmatter.title} | OpenWallet Blog`,
+    title,
     description: post.frontmatter.description,
     openGraph: {
       title: post.frontmatter.title,
@@ -29,6 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'article',
       publishedTime: post.frontmatter.date,
       tags: post.frontmatter.tags,
+    },
+    twitter: {
+      title: post.frontmatter.title,
+      description: post.frontmatter.description,
     },
   };
 }
@@ -38,6 +45,11 @@ export default async function BlogPostPage({ params }: Props) {
   const post = getPostBySlug(slug);
   if (!post) notFound();
 
+  const [t, breadcrumbs] = await Promise.all([
+    getTranslations('BlogPage'),
+    getTranslations('Breadcrumbs'),
+  ]);
+
   const related = getRelatedPosts(post);
   const { frontmatter, content, readingTime, categorySlug, tagSlugs } = post;
 
@@ -46,8 +58,8 @@ export default async function BlogPostPage({ params }: Props) {
       <div className="max-w-3xl mx-auto">
         <Breadcrumbs
           items={[
-            { label: 'Trang chủ', href: '/' },
-            { label: 'Blog', href: '/blog' },
+            { label: breadcrumbs('home'), href: '/' },
+            { label: breadcrumbs('blog'), href: '/blog' },
             { label: frontmatter.category, href: `/blog/category/${categorySlug}` },
             { label: frontmatter.title },
           ]}
@@ -120,7 +132,7 @@ export default async function BlogPostPage({ params }: Props) {
             href="/blog"
             className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors text-sm"
           >
-            ← Về trang Blog
+            {t('back')}
           </Link>
         </div>
       </div>

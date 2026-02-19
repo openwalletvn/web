@@ -74,7 +74,8 @@
   "Breadcrumbs": {
     "home": "Home",
     "banks": "Banks",
-    "cards": "Cards"
+    "cards": "Cards",
+    "blog": "Blog"
   },
   "BanksPage": {
     "title": "Banks",
@@ -141,6 +142,26 @@
     "network_napas": "Napas",
     "network_amex": "Amex",
     "network_unionpay": "UnionPay"
+  },
+  "BlogPage": {
+    "meta_title": "Blog — Personal Finance Knowledge | OpenWallet",
+    "meta_description": "Guides on managing bank cards, optimising rewards, and personal finance knowledge for Vietnamese.",
+    "title": "Blog",
+    "subtitle": "Personal finance knowledge, card usage guides, and spending management tips.",
+    "empty": "No posts yet. Check back soon!",
+    "back": "← Back to Blog",
+    "post_not_found": "Not found | OpenWallet",
+    "post_title_suffix": "| OpenWallet Blog",
+    "category_meta_title": "{name} — Blog | OpenWallet",
+    "category_meta_description": "Posts about \"{name}\" on OpenWallet Blog.",
+    "category_count": "{count} posts in this category",
+    "category_empty": "No posts in \"{name}\" yet.",
+    "tag_meta_title": "#{name} — Blog | OpenWallet",
+    "tag_meta_description": "Posts tagged \"{name}\" on OpenWallet Blog.",
+    "tag_count": "{count} posts with this tag",
+    "tag_empty": "No posts tagged \"{name}\" yet.",
+    "other_tags": "Other tags",
+    "topics": "Topics"
   },
   "CardDetail": {
     "annual_fee": "Annual fee",

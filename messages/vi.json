@@ -74,7 +74,8 @@
   "Breadcrumbs": {
     "home": "Trang chủ",
     "banks": "Ngân hàng",
-    "cards": "Thẻ"
+    "cards": "Thẻ",
+    "blog": "Blog"
   },
   "BanksPage": {
     "title": "Ngân hàng",
@@ -143,6 +144,26 @@
     "network_napas": "Napas",
     "network_amex": "Amex",
     "network_unionpay": "UnionPay"
+  },
+  "BlogPage": {
+    "meta_title": "Blog — Kiến thức tài chính cá nhân | OpenWallet",
+    "meta_description": "Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.",
+    "title": "Blog",
+    "subtitle": "Kiến thức tài chính cá nhân, hướng dẫn sử dụng thẻ và mẹo quản lý chi tiêu.",
+    "empty": "Chưa có bài viết nào. Quay lại sớm nhé!",
+    "back": "← Về trang Blog",
+    "post_not_found": "Không tìm thấy | OpenWallet",
+    "post_title_suffix": "| OpenWallet Blog",
+    "category_meta_title": "{name} — Blog | OpenWallet",
+    "category_meta_description": "Bài viết về chủ đề \"{name}\" trên OpenWallet Blog.",
+    "category_count": "{count} bài viết trong chủ đề này",
+    "category_empty": "Chưa có bài viết nào trong chủ đề \"{name}\".",
+    "tag_meta_title": "#{name} — Blog | OpenWallet",
+    "tag_meta_description": "Bài viết được gắn thẻ \"{name}\" trên OpenWallet Blog.",
+    "tag_count": "{count} bài viết với thẻ này",
+    "tag_empty": "Chưa có bài viết nào với thẻ \"{name}\".",
+    "other_tags": "Các thẻ khác",
+    "topics": "Chủ đề"
   },
   "CardDetail": {
     "annual_fee": "Phí thường niên",
