@@ -1,8 +1,8 @@
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
-import { getTranslations } from 'next-intl/server';
-import { CardsSection, CardsSectionSkeleton } from '../../../_components/cards-section';
-import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import type {Metadata} from 'next';
+import {Suspense} from 'react';
+import {getTranslations} from 'next-intl/server';
+import {CardsSection, CardsSectionSkeleton} from '../../../_components/cards-section';
+import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -10,6 +10,14 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: `${cardsPage('type_credit')} | Open Wallet`,
     alternates: { canonical: '/cards/credit' },
+      openGraph: {
+          title: `${cardsPage('type_credit')} | Open Wallet`,
+          description: cardsPage('meta_description'),
+      },
+      twitter: {
+          title: `${cardsPage('type_credit')} | Open Wallet`,
+          description: cardsPage('meta_description'),
+      },
   };
 }
 

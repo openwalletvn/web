@@ -1,12 +1,14 @@
-import { createOgImage, OG_SIZE } from '@/lib/og';
+import {createOgImage, OG_SIZE} from '@/lib/og';
+import {getTranslations} from "next-intl/server";
 
 export const dynamic = 'force-static';
 export const size = OG_SIZE;
 export const contentType = 'image/png';
 
-export default function Image() {
-  return createOgImage({
-    title: 'Ngan hang',
-    description: 'Danh sach ngan hang Viet Nam tren Open Wallet.',
-  });
+export default async function Image() {
+    const t = await getTranslations('BanksPage');
+    return createOgImage({
+        title: t('title'),
+        description: t('meta_description'),
+    });
 }

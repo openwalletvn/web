@@ -1,11 +1,11 @@
-import type { Metadata } from 'next';
+import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Suspense } from 'react';
-import { getTranslations } from 'next-intl/server';
-import { getBanks, getBank, getBankImageUrl } from '@/lib/api';
-import { Breadcrumbs } from '@/components/layout/breadcrumbs';
-import { CardsSection, CardsSectionSkeleton } from '../../_components/cards-section';
+import {Suspense} from 'react';
+import {getTranslations} from 'next-intl/server';
+import {getBank, getBankImageUrl, getBanks} from '@/lib/api';
+import {Breadcrumbs} from '@/components/layout/breadcrumbs';
+import {CardsSection, CardsSectionSkeleton} from '../../_components/cards-section';
 
 export async function generateStaticParams() {
   const banks = await getBanks();
@@ -25,11 +25,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${bank.name} | Open Wallet`,
       description,
       openGraph: {
-        title: bank.name,
+          title: `${bank.name} | Open Wallet`,
         description,
       },
       twitter: {
-        title: bank.name,
+          title: `${bank.name} | Open Wallet`,
         description,
       },
     };

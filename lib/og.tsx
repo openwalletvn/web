@@ -19,7 +19,7 @@ export function createOgImage({ title, description, rightSlot }: OgImageOptions)
           display: 'flex',
           alignItems: 'flex-end',
           justifyContent: 'space-between',
-          backgroundColor: '#DC2626',
+          backgroundColor: '#0f172a',
           padding: '0 72px 56px',
           position: 'relative',
         }}
@@ -31,8 +31,8 @@ export function createOgImage({ title, description, rightSlot }: OgImageOptions)
             left: 0,
             right: 0,
             bottom: 0,
-            height: '6px',
-            backgroundColor: 'rgba(255,255,255,0.4)',
+            height: '10px',
+            backgroundColor: '#dc2626',
           }}
         />
 
@@ -43,12 +43,12 @@ export function createOgImage({ title, description, rightSlot }: OgImageOptions)
             top: '56px',
             left: '72px',
             color: 'rgba(255,255,255,0.8)',
-            fontSize: '22px',
-            fontWeight: 700,
+            fontSize: '26px',
+            fontWeight: 800,
             letterSpacing: '0.02em',
           }}
         >
-          Open Wallet
+          OpenWallet.vn
         </div>
 
         {/* Left: title + description, anchored to bottom-left */}
@@ -65,7 +65,7 @@ export function createOgImage({ title, description, rightSlot }: OgImageOptions)
           <div
             style={{
               color: '#FFFFFF',
-              fontSize: '64px',
+              fontSize: '80px',
               fontWeight: 700,
               lineHeight: 1.05,
               maxWidth: rightSlot ? '620px' : '1000px',
@@ -79,7 +79,7 @@ export function createOgImage({ title, description, rightSlot }: OgImageOptions)
             <div
               style={{
                 color: 'rgba(255,255,255,0.72)',
-                fontSize: '24px',
+                fontSize: '26px',
                 lineHeight: 1.45,
                 maxWidth: rightSlot ? '580px' : '860px',
               }}

@@ -1,14 +1,22 @@
-import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
-import { getBanks } from '@/lib/api';
-import { BankItem } from '../_components/bank-item';
-import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import type {Metadata} from 'next';
+import {getTranslations} from 'next-intl/server';
+import {getBanks} from '@/lib/api';
+import {BankItem} from '../_components/bank-item';
+import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('BanksPage');
   return {
     title: t('meta_title'),
     description: t('meta_description'),
+      openGraph: {
+          title: t('meta_title'),
+          description: t('meta_description'),
+      },
+      twitter: {
+          title: t('meta_title'),
+          description: t('meta_description'),
+      },
   };
 }
 

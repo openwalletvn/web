@@ -7,11 +7,19 @@ import { CardsSectionSkeleton } from '../_components/cards-section';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('CardsPage');
-  return {
-    title: `${t('title')} | Open Wallet`,
-    description: `Khám phá thẻ ngân hàng Việt Nam trên Open Wallet.`,
-  };
+    const t = await getTranslations('CardsPage');
+    return {
+        title: t('meta_title'),
+        description: t('meta_description'),
+        openGraph: {
+            title: t('meta_title'),
+            description: t('meta_description'),
+        },
+        twitter: {
+            title: t('meta_title'),
+            description: t('meta_description'),
+        },
+    };
 }
 
 export default async function CardsPage() {
