@@ -14,7 +14,7 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { cn } from '@/lib/utils';
-import { getBankImageUrl, getBrandImageUrl, type Bank, type Brand } from '@/lib/api';
+import { getBankImageUrl, getBrandImageUrl, getNetworkImageUrl, type Bank, type Brand, type Network } from '@/lib/api';
 
 const CARD_TYPE_ITEMS = [
   { navKey: 'type_credit', href: '/cards/credit' },
@@ -22,21 +22,14 @@ const CARD_TYPE_ITEMS = [
   { navKey: 'type_2in1',   href: '/cards/2in1' },
 ] as const;
 
-const CARD_NETWORK_ITEMS = [
-  { navKey: 'network_visa',       href: '/cards/visa' },
-  { navKey: 'network_mastercard', href: '/cards/mastercard' },
-  { navKey: 'network_jcb',        href: '/cards/jcb' },
-  { navKey: 'network_napas',      href: '/cards/napas' },
-  { navKey: 'network_amex',       href: '/cards/amex' },
-  { navKey: 'network_unionpay',   href: '/cards/unionpay' },
-] as const;
 
 interface Props {
   banks: Bank[];
   brands: Brand[];
+  networks: Network[];
 }
 
-export function Nav({ banks, brands }: Props) {
+export function Nav({ banks, brands, networks }: Props) {
   const pathname = usePathname();
   const t = useTranslations('Nav');
 
@@ -93,83 +86,89 @@ export function Nav({ banks, brands }: Props) {
             {t('cards')}
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="w-[560px] p-4 grid grid-cols-3 gap-6">
-              {/* By type */}
-              <div>
-                <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                  {t('by_type')}
-                </p>
-                <ul className="space-y-1">
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <Link href="/cards" className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
-                        {t('all_cards')}
-                      </Link>
-                    </NavigationMenuLink>
-                  </li>
-                  {CARD_TYPE_ITEMS.map(({ navKey, href }) => (
-                    <li key={navKey}>
+            <div className="w-[680px] p-5">
+              <div className="flex gap-6">
+
+                {/* Card types — text list */}
+                <div className="shrink-0 w-28">
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">
+                    {t('by_type')}
+                  </p>
+                  <ul className="space-y-0.5">
+                    <li>
                       <NavigationMenuLink asChild>
-                        <Link href={href} className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
-                          {t(navKey)}
+                        <Link href="/cards" className="block text-sm text-slate-700 hover:text-brand-red py-1.5 transition-colors">
+                          {t('all_cards')}
                         </Link>
                       </NavigationMenuLink>
                     </li>
-                  ))}
-                </ul>
-              </div>
+                    {CARD_TYPE_ITEMS.map(({ navKey, href }) => (
+                      <li key={navKey}>
+                        <NavigationMenuLink asChild>
+                          <Link href={href} className="block text-sm text-slate-700 hover:text-brand-red py-1.5 transition-colors">
+                            {t(navKey)}
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              {/* By network */}
-              <div>
-                <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                  {t('by_network')}
-                </p>
-                <ul className="space-y-1">
-                  {CARD_NETWORK_ITEMS.map(({ navKey, href }) => (
-                    <li key={navKey}>
-                      <NavigationMenuLink asChild>
-                        <Link href={href} className="block text-base text-slate-700 hover:text-brand-red py-1 transition-colors">
-                          {t(navKey)}
+                <div className="w-px bg-slate-100 shrink-0" />
+
+                {/* Networks — logo + name grid */}
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">
+                    {t('by_network')}
+                  </p>
+                  <div className="grid grid-cols-3 gap-1">
+                    {networks.map((network) => (
+                      <NavigationMenuLink asChild key={network.id}>
+                        <Link
+                          href={`/cards/${network.id}`}
+                          className="flex flex-col items-center gap-1.5 p-2 rounded-md hover:bg-slate-100 transition-colors"
+                        >
+                          <div className="relative w-10 h-10">
+                            <Image src={getNetworkImageUrl(network.logo_url)} alt="" fill className="object-contain" />
+                          </div>
+                          <span className="text-xs text-slate-600 text-center leading-tight">{network.name}</span>
                         </Link>
                       </NavigationMenuLink>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                    ))}
+                  </div>
+                </div>
 
-              {/* Co-branded */}
-              <div>
-                <p className="text-base font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                  {t('type_co_branded')}
-                </p>
-                <ul className="space-y-1">
-                  {brands.map((brand) => (
-                    <li key={brand.id}>
-                      <NavigationMenuLink asChild>
+                <div className="w-px bg-slate-100 shrink-0" />
+
+                {/* Brands — logo + name grid */}
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">
+                    {t('type_co_branded')}
+                  </p>
+                  <div className="grid grid-cols-3 gap-1">
+                    {brands.map((brand) => (
+                      <NavigationMenuLink asChild key={brand.id}>
                         <Link
                           href={`/cards/co-branded/${brand.id}`}
-                          className="flex items-center gap-2 text-base text-slate-700 hover:text-brand-red py-1 transition-colors"
+                          className="flex flex-col items-center gap-1.5 p-2 rounded-md hover:bg-slate-100 transition-colors"
                         >
-                          <img
-                            src={getBrandImageUrl(brand.logo_url)}
-                            alt=""
-                            width={16}
-                            height={16}
-                            className="object-contain shrink-0"
-                          />
-                          {brand.name}
+                          <div className="relative w-10 h-10">
+                            <Image src={getBrandImageUrl(brand.logo_url)} alt="" fill className="object-contain" />
+                          </div>
+                          <span className="text-xs text-slate-600 text-center leading-tight line-clamp-2">{brand.name}</span>
                         </Link>
                       </NavigationMenuLink>
-                    </li>
-                  ))}
-                  <li>
+                    ))}
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-slate-100">
                     <NavigationMenuLink asChild>
-                      <Link href="/cards/co-branded" className="block text-base text-brand-red hover:underline py-1 font-medium">
+                      <Link href="/cards/co-branded" className="text-xs text-brand-red hover:underline font-medium">
                         {t('view_all_co_branded')}
                       </Link>
                     </NavigationMenuLink>
-                  </li>
-                </ul>
+                  </div>
+                </div>
+
               </div>
             </div>
           </NavigationMenuContent>

@@ -5,6 +5,13 @@ export interface Brand {
     link?: string;
 }
 
+export interface Network {
+    id: string;
+    name: string;
+    logo_url: string;
+    link?: string;
+}
+
 export interface Bank {
     id: string;
     name: string;
@@ -40,6 +47,7 @@ export interface Card {
     card_tier?: string;
     co_brand?: string;
     co_brand_data?: Brand;
+    card_network_data?: Network;
     card_type: CardType[];
     image_orientation: ImageOrientation;
     annual_fee?: number;
@@ -96,6 +104,10 @@ export function getBrandImageUrl(logoUrl: string): string {
     return `${apiUrl}${logoUrl}`;
 }
 
+export function getNetworkImageUrl(logoUrl: string): string {
+    return `${apiUrl}${logoUrl}`;
+}
+
 export function getCardImageUrl(card: Card): string {
     const path = card.image_orientation === 'vertical'
         ? card.image_vertical_url
@@ -136,6 +148,16 @@ export async function getCard(id: string): Promise<Card> {
     return json.data;
 }
 
+interface NetworkListResponse {
+    success: boolean;
+    data: Network[];
+}
+
+interface NetworkDetailResponse {
+    success: boolean;
+    data: Network;
+}
+
 interface BrandListResponse {
     success: boolean;
     data: Brand[];
@@ -158,5 +180,19 @@ export async function getBrand(id: string): Promise<Brand> {
     const res = await fetch(`${apiUrl}/api/v1/brands/${id}`, fetchOptions);
     const json = (await res.json()) as BrandDetailResponse;
     if (!json.success) throw new Error(`Failed to fetch brand: ${id}`);
+    return json.data;
+}
+
+export async function getNetworks(): Promise<Network[]> {
+    const res = await fetch(`${apiUrl}/api/v1/networks`, fetchOptions);
+    const json = (await res.json()) as NetworkListResponse;
+    if (!json.success) throw new Error('Failed to fetch networks');
+    return json.data;
+}
+
+export async function getNetwork(id: string): Promise<Network> {
+    const res = await fetch(`${apiUrl}/api/v1/networks/${id}`, fetchOptions);
+    const json = (await res.json()) as NetworkDetailResponse;
+    if (!json.success) throw new Error(`Failed to fetch network: ${id}`);
     return json.data;
 }

@@ -1,13 +1,14 @@
 import Link from 'next/link';
-import { getBanks, getBrands } from '@/lib/api';
+import { getBanks, getBrands, getNetworks } from '@/lib/api';
 import { Nav } from './nav';
 import { MobileNav } from './mobile-nav';
 import { WalletNavButton } from './wallet-nav-button';
 
 export async function Header() {
-  const [banks, brands] = await Promise.all([
+  const [banks, brands, networks] = await Promise.all([
     getBanks().catch(() => []),
     getBrands().catch(() => []),
+    getNetworks().catch(() => []),
   ]);
 
   return (
@@ -20,7 +21,7 @@ export async function Header() {
             <img src="/logo.png" alt="Open Wallet" className="h-8 w-8" />
           </Link>
           <div className="hidden md:flex">
-            <Nav banks={banks} brands={brands} />
+            <Nav banks={banks} brands={brands} networks={networks} />
           </div>
         </div>
 
