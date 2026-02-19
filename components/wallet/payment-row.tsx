@@ -52,12 +52,12 @@ export function PaymentRow({
       {/* Card info */}
       <div className="flex-1 min-w-0">
         <p className="font-medium text-slate-900 truncate">
-          {walletCard.nickname ?? catalogCard?.name ?? '—'}
+          {walletCard.nickname ?? catalogCard?.name ?? '-'}
         </p>
         {walletCard.nickname && catalogCard?.name && (
           <p className="text-xs text-slate-400 truncate">{catalogCard.name}</p>
         )}
-        <p className="text-xs text-slate-400 mt-0.5">{bank?.name ?? '—'}</p>
+        <p className="text-xs text-slate-400 mt-0.5">{bank?.name ?? '-'}</p>
       </div>
 
       {/* Days badge */}

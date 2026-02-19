@@ -34,7 +34,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
       card.image_orientation === 'vertical' ? card.image_vertical_url : card.image_horizontal_url;
     const cardImageUrl = imagePath ? `${apiUrl}${imagePath}` : null;
 
-    // Satori doesn't support WebP — skip non-PNG/JPG images
+    // Satori doesn't support WebP - skip non-PNG/JPG images
     const isWebp = cardImageUrl?.match(/\.webp(\?|$)/i);
 
     let imageOk = false;

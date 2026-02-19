@@ -58,7 +58,7 @@ export function useActiveWallet(): AppWallet {
   return useWalletDbContext().wallet;
 }
 
-/** Switch to a different wallet — triggers page reload so all queries re-initialise. */
+/** Switch to a different wallet - triggers page reload so all queries re-initialise. */
 export async function switchWallet(walletId: string): Promise<void> {
   await appDb.config.put({ key: 'activeWalletId', value: walletId });
   window.location.reload();

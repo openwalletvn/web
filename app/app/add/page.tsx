@@ -35,7 +35,7 @@ function DaySelect({
         onChange={(e) => onChange(e.target.value)}
         className={inputClass}
       >
-        <option value="">— chọn ngày —</option>
+        <option value="">- chọn ngày -</option>
         {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
           <option key={d} value={String(d)}>Ngày {d}</option>
         ))}

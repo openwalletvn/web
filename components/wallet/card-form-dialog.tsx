@@ -135,7 +135,7 @@ function ReassignSection({
         onChange={(e) => { if (e.target.value) onReassign(e.target.value); }}
         className={inputClass}
       >
-        <option value="">— giữ nguyên —</option>
+        <option value="">- giữ nguyên -</option>
         {otherAccounts.map((account) => (
           <option key={account.id} value={account.id}>
             Pool {account.creditLimit.toLocaleString('vi-VN')}đ ({cardCounts[account.id] ?? 0} thẻ)
@@ -465,7 +465,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                     onChange={(e) => { setStatementDate(e.target.value); setDueDateOverridden(false); }}
                     className={inputClass}
                   >
-                    <option value="">— chọn ngày —</option>
+                    <option value="">- chọn ngày -</option>
                     {dayOptions.map((d) => <option key={d} value={String(d)}>Ngày {d}</option>)}
                   </select>
                 </FormField>
@@ -483,7 +483,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                     onChange={(e) => { setPaymentDueDate(e.target.value); setDueDateOverridden(true); }}
                     className={inputClass}
                   >
-                    <option value="">— chọn ngày —</option>
+                    <option value="">- chọn ngày -</option>
                     {dayOptions.map((d) => <option key={d} value={String(d)}>Ngày {d}</option>)}
                   </select>
                 </FormField>

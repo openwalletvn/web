@@ -36,7 +36,7 @@ export function createOgImage({ title, description, rightSlot }: OgImageOptions)
           }}
         />
 
-        {/* Site name — top-left, absolute so it doesn't affect bottom alignment */}
+        {/* Site name - top-left, absolute so it doesn't affect bottom alignment */}
         <div
           style={{
             position: 'absolute',
@@ -89,7 +89,7 @@ export function createOgImage({ title, description, rightSlot }: OgImageOptions)
           )}
         </div>
 
-        {/* Right slot — anchored to bottom-right */}
+        {/* Right slot - anchored to bottom-right */}
         {rightSlot && (
           <div
             style={{

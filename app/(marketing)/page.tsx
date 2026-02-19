@@ -1,15 +1,18 @@
 import Link from 'next/link';
-import { Suspense } from 'react';
-import { getTranslations } from 'next-intl/server';
-import { BanksSection, BanksSectionSkeleton } from './_components/banks-section';
-import { CardsSection, CardsSectionSkeleton } from './_components/cards-section';
+import {Suspense} from 'react';
+import {getTranslations} from 'next-intl/server';
+import {getBanks, getCards} from '@/lib/api';
+import {BanksSection, BanksSectionSkeleton} from './_components/banks-section';
+import {CardsSection, CardsSectionSkeleton} from './_components/cards-section';
 
 export default async function HomePage() {
-  const [hero, heroTitle, metadata, organization] = await Promise.all([
+    const [hero, heroTitle, metadata, organization, banks, cards] = await Promise.all([
     getTranslations('hero'),
     getTranslations('Hero'),
     getTranslations('metadata'),
     getTranslations('organization'),
+        getBanks().catch(() => []),
+        getCards().catch(() => []),
   ]);
 
   const jsonLd = {
@@ -42,7 +45,7 @@ export default async function HomePage() {
       <section className="w-full min-h-[calc(100vh-4rem)] flex items-center px-4 py-20">
         <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 lg:gap-20 items-center">
 
-          {/* Left — identity + type */}
+          {/* Left - identity + type */}
           <div>
             <img
               src="/logo.png"
@@ -62,24 +65,23 @@ export default async function HomePage() {
             <p className="text-base text-slate-400 mb-10">
               {hero('subtext')}
             </p>
-
-            {/* Stats — text only, em-dash separated */}
-            <p className="text-base text-slate-500">
-              {hero('stats.banks')} — {hero('stats.cards')} — {hero('stats.free')}
-            </p>
           </div>
 
-          {/* Right — product panels */}
+          {/* Right - product panels */}
           <div className="flex flex-col gap-4">
 
-            {/* Card Database */}
+              {/* Cards API */}
             <div className="border-l-2 border-dashed border-brand-red bg-red-50/40 p-6">
               <h2 className="text-lg font-bold text-slate-900 mb-1">
                 {hero('db.title')}
               </h2>
-              <p className="text-base text-slate-500 mb-5">
+              <p className="text-base text-slate-500">
                 {hero('db.description')}
               </p>
+                {/* Stats - live counts from API */}
+                <p className="text-base text-slate-500 mb-5">
+                    {hero('stats.banks', {count: banks.length})} - {hero('stats.cards', {count: cards.length})}
+                </p>
               <Link
                 href="/docs"
                 className="text-base font-semibold text-brand-red hover:underline underline-offset-4"
@@ -88,32 +90,20 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            {/* Card Manager */}
+              {/* Ví thẻ */}
             <div className="border-l-2 border-dashed border-brand-blue bg-blue-50/40 p-6">
-              <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-lg font-bold text-slate-900">
-                  {hero('app.title')}
+                <h2 className="text-lg font-bold text-slate-900 mb-1">
+                    {hero('app.title')}
                 </h2>
-                <span className="px-2 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm">
-                  {hero('app.badge')}
-                </span>
-              </div>
               <p className="text-base text-slate-500 mb-5">
                 {hero('app.description')}
               </p>
-              <form className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder={hero('app.placeholder')}
-                  className="flex-1 min-w-0 px-3 py-2 bg-white border border-slate-200 rounded-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-blue text-base"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-brand-blue hover:bg-blue-700 text-white rounded-sm font-medium transition-colors shrink-0 text-base"
+                <Link
+                    href="/app"
+                    className="text-base font-semibold text-brand-blue hover:underline underline-offset-4"
                 >
-                  {hero('app.cta')}
-                </button>
-              </form>
+                    {hero('app.ctanow')}
+                </Link>
             </div>
 
           </div>

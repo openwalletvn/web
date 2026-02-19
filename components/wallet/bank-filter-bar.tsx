@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function BankFilterBar({ walletCards, banks, selectedBankId, onSelect }: Props) {
-  // Count cards per bank — bankId is now denormalized on WalletCard
+  // Count cards per bank - bankId is now denormalized on WalletCard
   const bankCardCounts = new Map<string, number>();
   for (const walletCard of walletCards) {
     const count = bankCardCounts.get(walletCard.bankId) ?? 0;

@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   try {
     const bank = await getBank(slug);
-    const description = `${bank.full_name} — thẻ và thông tin chi tiết trên Open Wallet.`;
+    const description = `${bank.full_name} - thẻ và thông tin chi tiết trên Open Wallet.`;
     return {
       title: `${bank.name} | Open Wallet`,
       description,

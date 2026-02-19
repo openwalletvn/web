@@ -13,23 +13,20 @@
   },
   "hero": {
     "tagline": "Find Cards. Manage Cards.",
-    "subtext": "Free, secure, open source.",
+    "subtext": "Secure, open source.",
     "db": {
-      "title": "Card Database",
-      "description": "Look up Vietnamese bank card information",
+      "title": "Cards API",
+      "description": "Vietnamese bank card data via REST API",
       "ctanow": "View API docs →"
     },
     "app": {
-      "title": "Card Manager",
-      "badge": "Coming Soon",
-      "description": "Manage credit cards, track statement dates",
-      "placeholder": "Your email",
-      "cta": "Notify me"
+      "title": "Ví thẻ",
+      "description": "Manage your cards, track statement dates and payment deadlines",
+      "ctanow": "Open Ví thẻ →"
     },
     "stats": {
-      "banks": "30 banks",
-      "cards": "200+ cards",
-      "free": "Free forever"
+      "banks": "{count} banks",
+      "cards": "{count} cards"
     }
   },
   "Hero": {

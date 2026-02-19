@@ -60,7 +60,7 @@ export function WalletCardContent({
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className="text-slate-400 truncate">{bank?.name ?? '—'}</p>
+          <p className="text-slate-400 truncate">{bank?.name ?? '-'}</p>
           <p className={`font-medium leading-tight truncate text-sm ${isInactive ? 'text-slate-400' : 'text-slate-900'}`}>
             {walletCard.nickname ?? catalogCard?.name ?? (
               <span className="inline-block w-28 h-4 bg-slate-100 rounded animate-pulse" />

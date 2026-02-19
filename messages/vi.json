@@ -6,30 +6,27 @@
     "tagline": "Tra cứu thẻ. Quản lý thẻ."
   },
   "og": {
-    "description": "Tra cứu thông tin thẻ tín dụng, thẻ ghi nợ Việt Nam. Nhắc ngày sao kê, quản lý thẻ cá nhân. Miễn phí mãi mãi."
+    "description": "Tra cứu thông tin thẻ tín dụng, thẻ ghi nợ Việt Nam. Theo dõi ngày sao kê, quản lý thẻ cá nhân."
   },
   "organization": {
-    "description": "Nguồn dữ liệu thẻ ngân hàng Việt Nam mã nguồn mở – miễn phí cho mọi người."
+    "description": "Nguồn dữ liệu thẻ ngân hàng Việt Nam mã nguồn mở."
   },
   "hero": {
     "tagline": "Tra cứu thẻ. Quản lý thẻ.",
-    "subtext": "Miễn phí, bảo mật, mã nguồn mở.",
+    "subtext": "Bảo mật, mã nguồn mở.",
     "db": {
-      "title": "Card Database",
-      "description": "Tra cứu thông tin thẻ ngân hàng Việt Nam",
+      "title": "Cards API",
+      "description": "Dữ liệu thẻ ngân hàng Việt Nam qua REST API",
       "ctanow": "Xem tài liệu API →"
     },
     "app": {
-      "title": "Card Manager",
-      "badge": "Coming Soon",
-      "description": "Quản lý thẻ tín dụng, nhắc ngày sao kê",
-      "placeholder": "Email của bạn",
-      "cta": "Thông báo tôi"
+      "title": "Ví thẻ",
+      "description": "Quản lý thẻ tín dụng, theo dõi ngày sao kê và hạn thanh toán",
+      "ctanow": "Mở Ví thẻ →"
     },
     "stats": {
-      "banks": "30 ngân hàng",
-      "cards": "200+ thẻ",
-      "free": "Miễn phí mãi mãi"
+      "banks": "{count} ngân hàng",
+      "cards": "{count} thẻ"
     }
   },
   "Hero": {
@@ -44,7 +41,7 @@
     "home": "Trang chủ",
     "banks": "Ngân hàng",
     "cards": "Thẻ",
-    "blog": "Blog",
+    "blog": "Tin tức",
     "api_docs": "Tài liệu API",
     "view_all_banks": "Xem tất cả ngân hàng →",
     "view_all_cards": "Xem tất cả thẻ →",
@@ -67,7 +64,7 @@
     "home": "Trang chủ",
     "banks": "Ngân hàng",
     "cards": "Thẻ",
-    "blog": "Blog",
+    "blog": "Tin tức",
     "api_docs": "Tài liệu API",
     "github": "GitHub"
   },
@@ -75,7 +72,7 @@
     "home": "Trang chủ",
     "banks": "Ngân hàng",
     "cards": "Thẻ",
-    "blog": "Blog"
+    "blog": "Tin tức"
   },
   "BanksPage": {
     "title": "Ngân hàng",
@@ -148,7 +145,7 @@
   "BlogPage": {
     "meta_title": "Blog — Kiến thức tài chính cá nhân | OpenWallet",
     "meta_description": "Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.",
-    "title": "Blog",
+    "title": "Tin tức",
     "subtitle": "Kiến thức tài chính cá nhân, hướng dẫn sử dụng thẻ và mẹo quản lý chi tiêu.",
     "empty": "Chưa có bài viết nào. Quay lại sớm nhé!",
     "back": "← Về trang Blog",
