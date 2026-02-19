@@ -7,6 +7,7 @@ import { getAllPosts, getPostBySlug, getRelatedPosts, extractHeadings } from '@/
 import { RelatedPosts } from '@/components/blog/related-posts';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { BlogToc } from '@/components/blog/blog-toc';
+import { AiBadge } from '@/components/blog/ai-badge';
 import { SidebarRelatedCards } from '@/components/blog/sidebar-related-cards';
 import { mdxComponents } from '@/components/blog/mdx-components';
 
@@ -83,6 +84,7 @@ export default async function BlogPostPage({ params }: Props) {
                   {frontmatter.category}
                 </Link>
                 <span className="text-sm text-slate-400">{readingTime}</span>
+                {frontmatter.ai_generated && <AiBadge size="md" />}
               </div>
 
               <h1 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight mb-4">

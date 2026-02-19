@@ -24,6 +24,7 @@ tags:                            # Free-form tags: bank names, card names, topic
   - Vietcombank
   - thẻ tín dụng
   - hoàn tiền
+ai_generated: true               # Optional. true = show ◇ AI badge. Omit for human-written posts.
 card_slugs:                      # Optional. Card IDs from the catalog API.
   - bidv-visa-cashback-online    # These appear in the right sidebar as "Thẻ liên quan".
   - vpbank-stepup                # Only include cards directly relevant to the post content.
@@ -51,10 +52,11 @@ status: "published"              # "published" | "draft". Only "published" posts
 
 | Field          | Notes                                                                   |
 |----------------|-------------------------------------------------------------------------|
-| `author`       | Defaults to hidden if omitted.                                          |
-| `card_slugs`   | Array of card IDs. Creates "Thẻ liên quan" sidebar. Get IDs from API:  |
-|                | `GET https://api.openwallet.vn/api/v1/cards` → use `id` field.         |
-| `cover_image`  | Not currently displayed but reserved for future use.                    |
+| `author`        | Defaults to hidden if omitted.                                          |
+| `ai_generated`  | Set to `true` when the post is written or summarised with AI assistance. Renders a ◇ AI badge next to the category pill on cards and in the post header. Omit or set `false` for human-written posts. **Always set this honestly.** |
+| `card_slugs`    | Array of card IDs. Creates "Thẻ liên quan" sidebar. Get IDs from API:  |
+|                 | `GET https://api.openwallet.vn/api/v1/cards` → use `id` field.         |
+| `cover_image`   | Not currently displayed but reserved for future use.                    |
 
 ---
 

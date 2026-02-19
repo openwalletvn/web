@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Post } from '@/lib/mdx';
+import { AiBadge } from './ai-badge';
 
 interface Props {
   post: Post;
@@ -18,6 +19,7 @@ export function PostCard({ post }: Props) {
           {frontmatter.category}
         </span>
         <span className="text-xs text-slate-400">{readingTime}</span>
+        {frontmatter.ai_generated && <AiBadge size="sm" />}
       </div>
 
       <h2 className="text-lg font-bold text-slate-900 leading-snug line-clamp-2">

@@ -20,6 +20,7 @@ export interface PostFrontmatter {
   tags: string[];
   card_slugs?: string[];
   cover_image?: string;
+  ai_generated?: boolean;
   status: 'published' | 'draft';
 }
 
