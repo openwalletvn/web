@@ -5,6 +5,12 @@ import readingTime from 'reading-time';
 
 const POSTS_DIR = path.join(process.cwd(), 'content/posts');
 
+export interface TocHeading {
+  level: number; // 2 | 3 | 4
+  text: string;
+  id: string;
+}
+
 export interface PostFrontmatter {
   title: string;
   description: string;
@@ -43,6 +49,26 @@ export function slugify(text: string): string {
   let s = text.toLowerCase();
   for (const [re, repl] of VN_MAP) s = s.replace(re, repl);
   return s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+// ─── TOC extraction ──────────────────────────────────────────────────────────
+
+export function extractHeadings(content: string): TocHeading[] {
+  return content
+    .split('\n')
+    .filter((line) => /^#{2,4}\s/.test(line))
+    .map((line) => {
+      const match = line.match(/^(#{2,4})\s+(.+)$/);
+      if (!match) return null;
+      const level = match[1].length;
+      const text = match[2]
+        .replace(/\*\*(.+?)\*\*/g, '$1')
+        .replace(/\*(.+?)\*/g, '$1')
+        .replace(/`(.+?)`/g, '$1')
+        .trim();
+      return { level, text, id: slugify(text) };
+    })
+    .filter((h): h is TocHeading => h !== null);
 }
 
 // ─── File helpers ────────────────────────────────────────────────────────────

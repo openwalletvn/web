@@ -1,0 +1,162 @@
+# OpenWallet Blog — Content Guide for LLMs
+
+This file guides AI assistants on how to create well-structured blog posts for OpenWallet.
+
+---
+
+## File Location
+
+All posts live in `/content/posts/<slug>.mdx`.
+The filename becomes the URL slug: `gioi-thieu-openwallet.mdx` → `/blog/gioi-thieu-openwallet`
+
+---
+
+## Frontmatter Schema
+
+```yaml
+---
+title: "String — full post title, shown in <h1> and <title> tag"
+description: "1–2 sentence summary. Used in meta description and post header."
+date: "YYYY-MM-DD"               # ISO date, used for sorting and display
+author: "Author Name"            # Optional. Shown below the title.
+category: "Hướng dẫn"           # MUST be one of: "Review thẻ" | "Hướng dẫn" | "Tin tức" | "So sánh thẻ"
+tags:                            # Free-form tags: bank names, card names, topics, keywords, etc.
+  - Vietcombank
+  - thẻ tín dụng
+  - hoàn tiền
+card_slugs:                      # Optional. Card IDs from the catalog API.
+  - bidv-visa-cashback-online    # These appear in the right sidebar as "Thẻ liên quan".
+  - vpbank-stepup                # Only include cards directly relevant to the post content.
+cover_image: "/images/..."       # Optional. Relative path to a cover image (not yet used in UI).
+status: "published"              # "published" | "draft". Only "published" posts appear on site.
+---
+```
+
+---
+
+## Required Fields
+
+| Field         | Required | Notes                                                        |
+|---------------|----------|--------------------------------------------------------------|
+| `title`       | Yes      | Keep under 80 chars. Avoid clickbait.                        |
+| `description` | Yes      | 120–160 chars. Used as meta description.                     |
+| `date`        | Yes      | ISO 8601 format: `"2026-01-15"`                              |
+| `category`    | Yes      | Must be one of the 4 fixed values. Do NOT invent new ones.  |
+| `tags`        | Yes      | 2–8 free-form tags. Bank names, card names, topics, etc.    |
+| `status`      | Yes      | Set to `"draft"` while writing, `"published"` when ready.   |
+
+---
+
+## Optional Fields
+
+| Field          | Notes                                                                   |
+|----------------|-------------------------------------------------------------------------|
+| `author`       | Defaults to hidden if omitted.                                          |
+| `card_slugs`   | Array of card IDs. Creates "Thẻ liên quan" sidebar. Get IDs from API:  |
+|                | `GET https://api.openwallet.vn/api/v1/cards` → use `id` field.         |
+| `cover_image`  | Not currently displayed but reserved for future use.                    |
+
+---
+
+## Content Conventions
+
+### Language
+- Posts are written in **Vietnamese** (primary audience).
+- Technical terms (API, JSON, Visa, Mastercard) stay in English.
+- Monetary amounts: `200.000 VNĐ` or `200k`.
+
+### Headings
+- Use `##` for main sections, `###` for subsections, `####` sparingly.
+- Do NOT use `#` (h1) — the post title is already rendered as h1.
+- The Table of Contents is **auto-generated** from `##`, `###`, `####` headings.
+- Heading text becomes anchor IDs via Vietnamese slugification:
+  `"Bắt đầu sử dụng"` → `#bat-dau-su-dung`
+
+### Links
+- Internal links: use relative paths `/cards/bidv-visa-classic` or `/banks/bidv`
+- External links: absolute URLs with descriptive text
+
+### Code blocks
+- Use fenced code blocks with language identifier: ` ```json `, ` ```bash `
+
+### Lists
+- Prefer `- ` (dash) for unordered lists
+- Numbered lists for step-by-step instructions
+
+---
+
+## Card Slugs
+
+To find card IDs for `card_slugs`:
+1. Call `GET https://api.openwallet.vn/api/v1/cards`
+2. Filter by bank, network, or type using query params: `?bank_id=bidv&type=credit`
+3. Use the `id` field (e.g. `"bidv-visa-cashback-online"`)
+
+Cards in `card_slugs` are shown in the sidebar as linked cards with image, name, and type badges.
+Only add cards that are **directly discussed** or **recommended** in the post.
+
+---
+
+## Categories
+
+There are **exactly 4 categories**. You MUST use one of these values verbatim. Do NOT create new categories.
+
+| Value           | Use for                                                              | Example titles |
+|-----------------|----------------------------------------------------------------------|----------------|
+| `Review thẻ`   | In-depth reviews of a specific card after real use                  | "Vietcombank Cashback Platinum: Có thực sự đáng không?", "Review MB Bank Visa Signature sau 6 tháng dùng thực tế" |
+| `Hướng dẫn`    | How-to guides, tips, tutorials on using cards or managing finances  | "Top 5 thẻ tín dụng tốt nhất cho tín đồ Shopee", "Cách đọc sao kê thẻ tín dụng không bị nhầm", "Mở thẻ tín dụng đầu tiên: Nên chọn ngân hàng nào?" |
+| `Tin tức`       | Banking industry news, new card launches, regulatory updates        | "Ngân hàng Nhà nước siết quy định hoàn tiền thẻ tín dụng 2025", "VPBank ra mắt thẻ mới dành riêng cho Gen Z" |
+| `So sánh thẻ`  | Head-to-head comparisons between cards, networks, or strategies     | "Shopee Card vs VIB Online Plus: Mua sắm online chọn thẻ nào?", "Cashback vs Điểm thưởng: Loại thẻ nào lợi hơn cho bạn?" |
+
+---
+
+## Tags
+
+Tags are **free-form** — use whatever is relevant to the post content. Good tag candidates:
+- Bank names: `Vietcombank`, `MB Bank`, `VPBank`, `Techcombank`, `BIDV`, `VIB`, `TPBank`, `ACB`…
+- Card names: `Visa Signature`, `Shopee Card`, `VIB Online Plus`…
+- Topics: `hoàn tiền`, `cashback`, `điểm thưởng`, `phí thường niên`, `sao kê`, `Shopee`, `mua sắm online`…
+- Card types: `thẻ tín dụng`, `thẻ ghi nợ`, `thẻ visa`, `thẻ mastercard`…
+
+Use 2–8 tags per post. No restrictions on Vietnamese or English.
+
+---
+
+## Example Post
+
+```mdx
+---
+title: "Shopee Card vs VIB Online Plus: Mua sắm online chọn thẻ nào?"
+description: "So sánh chi tiết Shopee Card và VIB Online Plus về cashback, điều kiện và phí — giúp tín đồ mua sắm online chọn đúng thẻ."
+date: "2026-02-10"
+author: "OpenWallet Team"
+category: "So sánh thẻ"
+tags:
+  - Shopee Card
+  - VIB Online Plus
+  - VIB
+  - hoàn tiền
+  - mua sắm online
+  - thẻ tín dụng
+card_slugs:
+  - shopee-card
+  - vib-online-plus-2
+status: "published"
+---
+
+## Tổng quan
+
+...
+
+## So sánh cashback
+
+### Shopee Card
+
+...
+
+### VIB Online Plus
+
+...
+
+## Kết luận
+```
