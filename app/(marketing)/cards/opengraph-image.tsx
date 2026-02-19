@@ -9,6 +9,6 @@ export default async function Image() {
     const t = await getTranslations('CardsPage');
     return createOgImage({
         title: t('title'),
-        description: t('meta_description'),
+        description: t('meta_description', {card: t('title')}),
     });
 }

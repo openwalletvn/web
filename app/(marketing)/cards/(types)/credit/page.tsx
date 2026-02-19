@@ -3,22 +3,11 @@ import {Suspense} from 'react';
 import {getTranslations} from 'next-intl/server';
 import {CardsSection, CardsSectionSkeleton} from '../../../_components/cards-section';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
+import { createTypeMetadata } from '../_helpers';
 
 
 export async function generateMetadata(): Promise<Metadata> {
-  const cardsPage = await getTranslations('CardsPage');
-  return {
-    title: `${cardsPage('type_credit')} | Open Wallet`,
-    alternates: { canonical: '/cards/credit' },
-      openGraph: {
-          title: `${cardsPage('type_credit')} | Open Wallet`,
-          description: cardsPage('meta_description'),
-      },
-      twitter: {
-          title: `${cardsPage('type_credit')} | Open Wallet`,
-          description: cardsPage('meta_description'),
-      },
-  };
+  return createTypeMetadata('type_credit', '/cards/credit');
 }
 
 export default async function CreditCardsPage() {

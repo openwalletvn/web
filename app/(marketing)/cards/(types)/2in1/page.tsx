@@ -1,16 +1,13 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
+import { createTypeMetadata } from '../_helpers';
 import { CardsSection, CardsSectionSkeleton } from '../../../_components/cards-section';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 
 
 export async function generateMetadata(): Promise<Metadata> {
-  const cardsPage = await getTranslations('CardsPage');
-  return {
-    title: `${cardsPage('type_2in1')} | Open Wallet`,
-    alternates: { canonical: '/cards/2in1' },
-  };
+  return createTypeMetadata('type_2in1', '/cards/2in1');
 }
 
 export default async function TwoInOneCardsPage() {

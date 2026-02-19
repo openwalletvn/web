@@ -97,7 +97,7 @@
   "CardsPage": {
     "title": "Thẻ ngân hàng",
     "meta_title": "Thẻ ngân hàng | Open Wallet",
-    "meta_description": "Danh sách tất cả các thẻ ngân hàng Việt Nam trên Open Wallet.",
+    "meta_description": "Danh sách tất cả các {card} Việt Nam trên Open Wallet.",
     "bank_cards": "Thẻ {bank}",
     "cobranded": "Thẻ Đồng Thương Hiệu",
     "type_credit": "Thẻ Tín dụng",

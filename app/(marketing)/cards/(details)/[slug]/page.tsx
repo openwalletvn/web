@@ -1,11 +1,11 @@
-import type { Metadata } from 'next';
+import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
-import { Badge } from '@/components/ui/badge';
-import { getCards, getCard, getBank, getCardImageUrl, getBankImageUrl } from '@/lib/api';
-import { Breadcrumbs } from '@/components/layout/breadcrumbs';
-import { AddToWalletButton } from './_add-to-wallet-button';
+import {getTranslations} from 'next-intl/server';
+import {Badge} from '@/components/ui/badge';
+import {getBank, getBankImageUrl, getCard, getCardImageUrl, getCards} from '@/lib/api';
+import {Breadcrumbs} from '@/components/layout/breadcrumbs';
+import {AddToWalletButton} from './_add-to-wallet-button';
 
 export async function generateStaticParams() {
   const cards = await getCards();
@@ -25,11 +25,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${card.name} | Open Wallet`,
       description,
       openGraph: {
-        title: card.name,
+          title: `${card.name} | Open Wallet`,
         description,
       },
       twitter: {
-        title: card.name,
+          title: `${card.name} | Open Wallet`,
         description,
       },
     };

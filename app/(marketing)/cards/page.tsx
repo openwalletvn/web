@@ -1,23 +1,23 @@
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
-import { getTranslations } from 'next-intl/server';
-import { getCards, getBanks } from '@/lib/api';
-import { CardsFilteredSection } from '../_components/cards-filtered-section';
-import { CardsSectionSkeleton } from '../_components/cards-section';
-import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import type {Metadata} from 'next';
+import {Suspense} from 'react';
+import {getTranslations} from 'next-intl/server';
+import {getBanks, getCards} from '@/lib/api';
+import {CardsFilteredSection} from '../_components/cards-filtered-section';
+import {CardsSectionSkeleton} from '../_components/cards-section';
+import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 
 export async function generateMetadata(): Promise<Metadata> {
     const t = await getTranslations('CardsPage');
     return {
         title: t('meta_title'),
-        description: t('meta_description'),
+        description: t('meta_description', {card: t('title')}),
         openGraph: {
             title: t('meta_title'),
-            description: t('meta_description'),
+            description: t('meta_description', {card: t('title')}),
         },
         twitter: {
             title: t('meta_title'),
-            description: t('meta_description'),
+            description: t('meta_description', {card: t('title')}),
         },
     };
 }
