@@ -142,11 +142,11 @@ export default async function CardPage({ params }: Props) {
               )}
             </dl>
 
-            {card.payment_wallets_data && card.payment_wallets_data.length > 0 && (
+            {card.contactless_methods_data && card.contactless_methods_data.length > 0 && (
               <div>
-                <h2 className="text-base font-semibold text-slate-700 mb-2">{t('payment_wallets')}</h2>
+                <h2 className="text-base font-semibold text-slate-700 mb-2">{t('contactless_methods')}</h2>
                 <div className="flex flex-wrap gap-2">
-                  {card.payment_wallets_data.map((wallet) => (
+                  {card.contactless_methods_data.map((wallet) => (
                     <div
                       key={wallet.id}
                       className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-200 rounded-sm"

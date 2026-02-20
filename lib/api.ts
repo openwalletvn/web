@@ -12,7 +12,7 @@ export interface Network {
     link?: string;
 }
 
-export interface PaymentWallet {
+export interface ContactlessMethod {
     id: string;
     name: string;
     logo_url: string;
@@ -63,8 +63,8 @@ export interface Card {
     statement_date?: number;
     card_link?: string;
     status?: 'published' | 'draft';
-    payment_wallets?: string[];
-    payment_wallets_data?: PaymentWallet[];
+    contactless_methods?: string[];
+    contactless_methods_data?: ContactlessMethod[];
 }
 
 export type CardSort = 'fee_asc' | 'fee_desc';
