@@ -205,6 +205,7 @@
     "statement_date_value": "Day {day} of every month",
     "payment_due_date": "Payment due date",
     "co_brand_label": "Co-brand",
+    "payment_wallets": "Payment Wallets",
     "view_details": "View card details ↗",
     "not_found": "Card not found",
     "back": "← Back to Cards"

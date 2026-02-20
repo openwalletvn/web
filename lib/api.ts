@@ -12,6 +12,13 @@ export interface Network {
     link?: string;
 }
 
+export interface PaymentWallet {
+    id: string;
+    name: string;
+    logo_url: string;
+    link?: string;
+}
+
 export interface Bank {
     id: string;
     name: string;
@@ -56,6 +63,8 @@ export interface Card {
     statement_date?: number;
     card_link?: string;
     status?: 'published' | 'draft';
+    payment_wallets?: string[];
+    payment_wallets_data?: PaymentWallet[];
 }
 
 export type CardSort = 'fee_asc' | 'fee_desc';
@@ -90,17 +99,14 @@ interface CardDetailResponse {
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 const fetchOptions: RequestInit = process.env.NODE_ENV === 'development' ? { cache: 'no-store' } : {};
 
-export function getBankImageUrl(logoUrl: string): string {
-    return `${apiUrl}${logoUrl}`;
+function getImageUrl(relativePath: string): string {
+    return `${apiUrl}${relativePath}`;
 }
 
-export function getBrandImageUrl(logoUrl: string): string {
-    return `${apiUrl}${logoUrl}`;
-}
-
-export function getNetworkImageUrl(logoUrl: string): string {
-    return `${apiUrl}${logoUrl}`;
-}
+export const getBankImageUrl = getImageUrl;
+export const getBrandImageUrl = getImageUrl;
+export const getNetworkImageUrl = getImageUrl;
+export const getWalletImageUrl = getImageUrl;
 
 export function getCardImageUrl(card: Card): string {
     const path = card.image_orientation === 'vertical'

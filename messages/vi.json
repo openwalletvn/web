@@ -195,6 +195,7 @@
     "statement_date_value": "Ngày {day} hàng tháng",
     "payment_due_date": "Ngày đến hạn thanh toán",
     "co_brand_label": "Thẻ đồng thương hiệu",
+    "payment_wallets": "Thanh toán không tiếp xúc (NFC)",
     "view_details": "Xem chi tiết thẻ ↗",
     "not_found": "Không tìm thấy thẻ",
     "back": "← Quay lại Thẻ"

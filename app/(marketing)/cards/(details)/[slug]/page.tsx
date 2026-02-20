@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
 import {Badge} from '@/components/ui/badge';
-import {getBank, getBankImageUrl, getCard, getCardImageUrl, getCards} from '@/lib/api';
+import {getBank, getBankImageUrl, getCard, getCardImageUrl, getCards, getWalletImageUrl} from '@/lib/api';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {AddToWalletButton} from './_add-to-wallet-button';
 import {CoBrandDisplay} from '@/components/cards/co-brand-display';
@@ -141,6 +141,25 @@ export default async function CardPage({ params }: Props) {
                 </>
               )}
             </dl>
+
+            {card.payment_wallets_data && card.payment_wallets_data.length > 0 && (
+              <div>
+                <h2 className="text-base font-semibold text-slate-700 mb-2">{t('payment_wallets')}</h2>
+                <div className="flex flex-wrap gap-2">
+                  {card.payment_wallets_data.map((wallet) => (
+                    <div
+                      key={wallet.id}
+                      className="flex items-center gap-2 px-3 py-2 border border-dashed border-slate-200 rounded-sm"
+                    >
+                      <div className="relative w-6 h-6">
+                        <Image src={getWalletImageUrl(wallet.logo_url)} alt="" fill className="object-contain" />
+                      </div>
+                      <span className="text-sm text-slate-700">{wallet.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {card.card_link && (
               <a href={card.card_link} target="_blank" rel="noopener noreferrer" className="text-brand-red hover:underline text-base">
