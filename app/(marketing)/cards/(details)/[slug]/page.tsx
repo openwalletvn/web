@@ -84,14 +84,28 @@ export default async function CardPage({ params }: Props) {
 
           <div className="flex-1 flex flex-col gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">{card.name}</h1>
-              <div className="flex flex-wrap gap-2 mt-2">
-                <Badge variant="secondary" className="capitalize bg-brand-blue text-white border-transparent">{card.card_network}</Badge>
-                {card.card_type.map((type) => (
-                  <Badge key={type} variant="outline" className="capitalize">{type}</Badge>
-                ))}
-                {card.card_tier && (
-                  <Badge variant="outline" className="capitalize">{card.card_tier}</Badge>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h1 className="text-3xl font-bold text-slate-900">{card.name}</h1>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge variant="secondary" className="capitalize bg-brand-blue text-white border-transparent">{card.card_network}</Badge>
+                    {card.card_type.map((type) => (
+                      <Badge key={type} variant="outline" className="capitalize">{type}</Badge>
+                    ))}
+                    {card.card_tier && (
+                      <Badge variant="outline" className="capitalize">{card.card_tier}</Badge>
+                    )}
+                  </div>
+                </div>
+                {process.env.NODE_ENV === 'development' && (
+                  <a
+                    href={`http://localhost:3003/edit-card.html?id=${card.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 px-3 py-1.5 text-xs border border-dashed border-orange-300 bg-orange-50 text-orange-700 rounded-sm hover:border-orange-400 hover:bg-orange-100 transition-colors font-medium"
+                  >
+                    Edit ✏️
+                  </a>
                 )}
               </div>
             </div>
