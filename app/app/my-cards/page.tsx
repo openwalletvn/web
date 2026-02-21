@@ -89,7 +89,7 @@ function WalletSortBar({
   if (cardCount <= 1) return null;
   return (
     <div className="flex items-center gap-2 mb-6">
-      <span className="text-slate-400 shrink-0">Sắp xếp:</span>
+      <span className="text-slate-500 shrink-0">Sắp xếp:</span>
       <div className="flex flex-wrap gap-1.5">
         {(Object.keys(SORT_LABELS) as SortOption[]).map((option) => (
           <button
@@ -279,7 +279,7 @@ export default function WalletPage() {
         <div className="flex items-baseline justify-between mb-2">
           <h1 className="text-2xl font-bold text-slate-900">Ví của tôi</h1>
           {!isLoading && (
-            <span className="text-sm text-slate-400">{walletCards.length} thẻ</span>
+            <span className="text-sm text-slate-500">{walletCards.length} thẻ</span>
           )}
         </div>
         <div className="border-t border-dashed border-slate-200 mb-6" />

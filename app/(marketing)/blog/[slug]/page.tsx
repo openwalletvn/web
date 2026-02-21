@@ -84,7 +84,7 @@ export default async function BlogPostPage({ params }: Props) {
                 >
                   {frontmatter.category}
                 </Link>
-                <span className="text-sm text-slate-400">{readingTime}</span>
+                <span className="text-sm text-slate-500">{readingTime}</span>
                 {frontmatter.ai_generated && <AiBadge size="md" />}
               </div>
 
@@ -101,7 +101,7 @@ export default async function BlogPostPage({ params }: Props) {
                   {frontmatter.author && (
                     <span className="text-sm text-slate-600 font-medium">{frontmatter.author}</span>
                   )}
-                  <time className="text-sm text-slate-400" dateTime={frontmatter.date}>
+                  <time className="text-sm text-slate-500" dateTime={frontmatter.date}>
                     {new Date(frontmatter.date).toLocaleDateString('vi-VN', {
                       day: 'numeric',
                       month: 'long',
@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: Props) {
                       <Link
                         key={tagSlugs[i]}
                         href={`/blog/tag/${tagSlugs[i]}`}
-                        className="text-xs px-2 py-0.5 border border-dashed border-slate-200 text-slate-400 rounded-sm hover:border-slate-400 hover:text-slate-600 transition-colors"
+                        className="text-xs px-2 py-0.5 border border-dashed border-slate-200 text-slate-500 rounded-sm hover:border-slate-400 hover:text-slate-600 transition-colors"
                       >
                         #{tag}
                       </Link>

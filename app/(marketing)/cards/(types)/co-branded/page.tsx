@@ -61,7 +61,7 @@ export default async function CoBrandedIndexPage() {
               </div>
               <span className="text-base text-slate-600 text-center leading-tight">{brand.name}</span>
               {cardCountByBrand.has(brand.id) && (
-                <span className="text-xs text-slate-400">{cardCountByBrand.get(brand.id)} thẻ</span>
+                <span className="text-xs text-slate-500">{cardCountByBrand.get(brand.id)} thẻ</span>
               )}
             </Link>
           ))}

@@ -157,7 +157,7 @@ export default function SettingsPage() {
       {/* Backup */}
       <section>
         <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-1">Sao lưu dữ liệu</h2>
-        <p className="text-slate-400 mb-5">
+        <p className="text-slate-500 mb-5">
           Dữ liệu ví được lưu trên thiết bị của bạn. Xuất file để sao lưu hoặc chuyển sang thiết bị khác.
         </p>
 
@@ -167,10 +167,10 @@ export default function SettingsPage() {
             onClick={() => exportWallet(db, activeWallet)}
             className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left"
           >
-            <IconDownload size={20} className="text-slate-400 shrink-0" />
+            <IconDownload size={20} className="text-slate-500 shrink-0" />
             <div>
               <p className="text-sm font-medium text-slate-800">Xuất ví (JSON)</p>
-              <p className="text-slate-400 mt-0.5">Tải file sao lưu về thiết bị</p>
+              <p className="text-slate-500 mt-0.5">Tải file sao lưu về thiết bị</p>
             </div>
           </button>
 
@@ -180,22 +180,22 @@ export default function SettingsPage() {
               onClick={exportAllWallets}
               className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left"
             >
-              <IconDownload size={20} className="text-slate-400 shrink-0" />
+              <IconDownload size={20} className="text-slate-500 shrink-0" />
               <div>
                 <p className="text-sm font-medium text-slate-800">Xuất tất cả ví (JSON)</p>
-                <p className="text-slate-400 mt-0.5">Sao lưu toàn bộ {wallets?.length} ví</p>
+                <p className="text-slate-500 mt-0.5">Sao lưu toàn bộ {wallets?.length} ví</p>
               </div>
             </button>
           )}
 
           {/* Import */}
           <label className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors cursor-pointer">
-            <IconUpload size={20} className="text-slate-400 shrink-0" />
+            <IconUpload size={20} className="text-slate-500 shrink-0" />
             <div>
               <p className="text-sm font-medium text-slate-800">
                 {importing ? 'Đang nhập...' : 'Nhập ví từ file'}
               </p>
-              <p className="text-slate-400 mt-0.5">Thêm ví mới từ file sao lưu</p>
+              <p className="text-slate-500 mt-0.5">Thêm ví mới từ file sao lưu</p>
             </div>
             <input
               ref={fileRef}
@@ -225,17 +225,17 @@ export default function SettingsPage() {
       {/* Debug / raw data */}
       <section>
         <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-1">Dữ liệu thô</h2>
-        <p className="text-slate-400 mb-5">
+        <p className="text-slate-500 mb-5">
           Xem toàn bộ dữ liệu ví dưới dạng JSON (hữu ích để kiểm tra hoặc gỡ lỗi).
         </p>
         <button
           onClick={handleOpenJsonDialog}
           className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left"
         >
-          <IconDatabase size={20} className="text-slate-400 shrink-0" />
+          <IconDatabase size={20} className="text-slate-500 shrink-0" />
           <div>
             <p className="text-sm font-medium text-slate-800">Xem dữ liệu JSON</p>
-            <p className="text-slate-400 mt-0.5">Hiện toàn bộ dữ liệu hiện tại trong ví</p>
+            <p className="text-slate-500 mt-0.5">Hiện toàn bộ dữ liệu hiện tại trong ví</p>
           </div>
         </button>
       </section>
@@ -255,7 +255,7 @@ export default function SettingsPage() {
                   {copied ? <IconCheck size={14} className="text-green-500" /> : <IconCopy size={14} />}
                   {copied ? 'Đã sao chép' : 'Sao chép'}
                 </button>
-                <Dialog.Close className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors">
+                <Dialog.Close className="p-1.5 text-slate-500 hover:text-slate-700 transition-colors">
                   <IconX size={18} />
                 </Dialog.Close>
               </div>

@@ -65,6 +65,7 @@ export interface Card {
     status?: 'published' | 'draft';
     contactless_methods?: string[];
     contactless_methods_data?: ContactlessMethod[];
+    last_modified?: string;
 }
 
 export type CardSort = 'fee_asc' | 'fee_desc';

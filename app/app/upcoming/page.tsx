@@ -54,7 +54,7 @@ export default function UpcomingPage() {
     <PageContainer>
       <div className="flex items-baseline justify-between mb-2">
         <h1 className="text-2xl font-bold text-slate-900">Đến hạn thanh toán</h1>
-        <span className="text-sm text-slate-400">{upcomingPayments.length} thẻ</span>
+        <span className="text-sm text-slate-500">{upcomingPayments.length} thẻ</span>
       </div>
       <div className="border-t border-dashed border-slate-200 mb-6" />
 

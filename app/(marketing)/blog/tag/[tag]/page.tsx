@@ -46,7 +46,7 @@ export default async function TagPage({ params }: Props) {
         />
 
         <h1 className="text-4xl font-bold text-slate-900 mb-1">
-          <span className="text-slate-400 font-normal">#</span>
+          <span className="text-slate-500 font-normal">#</span>
           {displayName}
         </h1>
         <p className="text-slate-500 mb-8">{t('tag_count', { count: posts.length })}</p>

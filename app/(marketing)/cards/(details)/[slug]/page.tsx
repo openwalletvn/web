@@ -1,7 +1,7 @@
 import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import {getTranslations} from 'next-intl/server';
+import {getTranslations, getLocale} from 'next-intl/server';
 import {Badge} from '@/components/ui/badge';
 import {getBank, getBankImageUrl, getCard, getCardImageUrl, getCards, getWalletImageUrl} from '@/lib/api';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -42,9 +42,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CardPage({ params }: Props) {
   const { slug } = await params;
-  const [t, tb] = await Promise.all([
+  const [t, tb, locale] = await Promise.all([
     getTranslations('CardDetail'),
     getTranslations('Breadcrumbs'),
+    getLocale(),
   ]);
 
   let card;
@@ -191,6 +192,16 @@ export default async function CardPage({ params }: Props) {
                 </div>
                 <span className="text-base font-medium text-slate-800">{bank.name}</span>
               </Link>
+            )}
+
+            {card.last_modified && (
+              <p className="text-xs text-slate-500 mt-4">
+                {t('last_updated')}: {new Date(card.last_modified).toLocaleDateString(locale, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </p>
             )}
           </div>
         </div>

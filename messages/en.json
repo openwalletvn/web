@@ -206,6 +206,7 @@
     "payment_due_date": "Payment due date",
     "co_brand_label": "Co-brand",
     "contactless_methods": "Contactless methods",
+    "last_updated": "Last updated",
     "view_details": "View card details ↗",
     "not_found": "Card not found",
     "back": "← Back to Cards"

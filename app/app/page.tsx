@@ -99,26 +99,26 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-baseline justify-between mb-2">
         <h1 className="text-2xl font-bold text-slate-900">Tổng quan</h1>
-        <span className="text-sm text-slate-400">{monthLabel}</span>
+        <span className="text-sm text-slate-500">{monthLabel}</span>
       </div>
       <div className="border-t border-dashed border-slate-200 mb-6" />
 
       {/* ── Top stats ── */}
       <div className="grid grid-cols-3 gap-3 mb-8">
         <div className="col-span-3 border border-dashed border-slate-200 rounded-sm p-4">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Tổng hạn mức tín dụng</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Tổng hạn mức tín dụng</p>
           <p className="text-4xl font-bold text-slate-900">{formatVND(totalCreditLimit)}</p>
         </div>
         <div className="border border-dashed border-slate-200 rounded-sm p-4">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Thẻ hoạt động</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Thẻ hoạt động</p>
           <p className="text-3xl font-bold text-slate-900">{activeCards.length}</p>
         </div>
         <div className="border border-dashed border-slate-200 rounded-sm p-4">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Ngân hàng</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Ngân hàng</p>
           <p className="text-3xl font-bold text-slate-900">{totalBanks}</p>
         </div>
         <div className="border border-dashed border-slate-200 rounded-sm p-4">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Đến hạn / 30 ngày</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Đến hạn / 30 ngày</p>
           <p className="text-3xl font-bold text-slate-900">{allUpcoming.length}</p>
         </div>
       </div>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
           {Object.entries(STATUS_LABELS).map(([status, label]) => (
             <div key={status} className="border border-dashed border-slate-200 rounded-sm p-3">
               <p className="text-2xl font-bold text-slate-900">{statusCounts[status] ?? 0}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{label}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{label}</p>
             </div>
           ))}
         </div>

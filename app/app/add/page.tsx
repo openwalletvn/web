@@ -182,12 +182,12 @@ export default function AddCardPage() {
       <div className="flex items-center gap-2 mb-6">
         <button
           onClick={handleBack}
-          className="p-1.5 -ml-1.5 text-slate-400 hover:text-slate-600 transition-colors"
+          className="p-1.5 -ml-1.5 text-slate-500 hover:text-slate-600 transition-colors"
         >
           <IconArrowLeft size={20} />
         </button>
         <h1 className="font-bold text-slate-900 flex-1">Thêm thẻ</h1>
-        <span className="text-sm text-slate-400">Bước {step} / 3</span>
+        <span className="text-sm text-slate-500">Bước {step} / 3</span>
       </div>
 
       {/* Step progress bar */}
@@ -228,14 +228,14 @@ export default function AddCardPage() {
             </div>
             <div>
               <p className="font-bold text-slate-900 text-sm">{selectedCard.name}</p>
-              <p className="text-slate-400 capitalize mt-0.5">
+              <p className="text-slate-500 capitalize mt-0.5">
                 {selectedCard.card_network} · {selectedCard.card_type.join(' / ')}
               </p>
             </div>
           </div>
 
           <div className="border-t border-dashed border-slate-200 mb-6" />
-          <p className="text-slate-400 mb-6">Tất cả các trường đều không bắt buộc</p>
+          <p className="text-slate-500 mb-6">Tất cả các trường đều không bắt buộc</p>
 
           <div className="space-y-5">
             <FormField label="Tên gợi nhớ">

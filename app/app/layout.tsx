@@ -74,7 +74,7 @@ function WalletSwitcher() {
         <span className="font-bold text-slate-900 truncate flex-1">{walletName}</span>
         <IconChevronDown
           size={14}
-          className={`text-slate-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`text-slate-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </SidebarMenuButton>
 
@@ -233,7 +233,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarInset>
             {/* Mobile-only trigger bar */}
             <div className="md:hidden sticky top-0 z-10 flex h-10 items-center gap-2 px-3 bg-white border-b border-dashed border-slate-100">
-              <SidebarTrigger className="text-slate-400 hover:text-slate-600 transition-colors" />
+              <SidebarTrigger className="text-slate-500 hover:text-slate-600 transition-colors" />
             </div>
             <main className="flex-1">{children}</main>
           </SidebarInset>

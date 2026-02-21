@@ -61,7 +61,7 @@ export default async function NetworksIndexPage() {
               </div>
               <span className="text-base text-slate-600 text-center leading-tight">{network.name}</span>
               {cardCountByNetwork.has(network.id) && (
-                <span className="text-xs text-slate-400">{cardCountByNetwork.get(network.id)} thẻ</span>
+                <span className="text-xs text-slate-500">{cardCountByNetwork.get(network.id)} thẻ</span>
               )}
             </Link>
           ))}

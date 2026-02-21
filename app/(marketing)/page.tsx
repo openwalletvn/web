@@ -62,7 +62,7 @@ export default async function HomePage() {
             <p className="text-2xl font-medium text-slate-700 mb-2">
               {hero('tagline')}
             </p>
-            <p className="text-base text-slate-400 mb-10">
+            <p className="text-base text-slate-500 mb-10">
               {hero('subtext')}
             </p>
           </div>
