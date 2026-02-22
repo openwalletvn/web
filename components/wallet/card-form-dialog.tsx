@@ -18,6 +18,7 @@ import {
 import { getCardImageUrl, getCard, type Card } from '@/lib/api';
 import type { WalletCard, CreditAccount, CardStatus } from '@/lib/db';
 import { FormField } from '@/components/ui/form-field';
+import posthog from 'posthog-js';
 import { CreditPoolSelector, type PoolSelection } from './credit-pool-selector';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 
@@ -291,8 +292,26 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
 
       if (isEdit && walletCard) {
         await updateCard(db, walletCard.id, data);
+        posthog.capture('card_updated', {
+          card_id: card.id,
+          card_name: card.name,
+          card_type: data.cardType,
+          card_network: card.card_network,
+          bank_id: card.bank_id,
+          has_nickname: !!data.nickname,
+          status: data.status,
+        });
       } else {
         await addCard(db, data);
+        posthog.capture('card_added_to_wallet', {
+          card_id: card.id,
+          card_name: card.name,
+          card_type: data.cardType,
+          card_network: card.card_network,
+          bank_id: card.bank_id,
+          has_nickname: !!data.nickname,
+          status: data.status,
+        });
       }
 
       onClose();
@@ -307,6 +326,12 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
     setDeleting(true);
     try {
       await removeCard(db, walletCard.id);
+      posthog.capture('card_deleted', {
+        card_id: card.id,
+        card_name: card.name,
+        card_network: card.card_network,
+        bank_id: card.bank_id,
+      });
       onClose();
       onAfterDelete?.();
     } finally {

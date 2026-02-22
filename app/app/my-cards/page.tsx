@@ -27,6 +27,7 @@ import { CardFormDialog } from '@/components/wallet/card-form-dialog';
 import { SortableWalletCard, WalletCardRow, type CreditBadge } from '@/components/wallet/wallet-card-row';
 import { BankFilterBar } from '@/components/wallet/bank-filter-bar';
 import { useWalletDb } from '@/providers/wallet-db-provider';
+import posthog from 'posthog-js';
 
 // ─── Sort ─────────────────────────────────────────────────────────────────────
 
@@ -259,6 +260,12 @@ export default function WalletPage() {
 
   async function handleStatusChange(walletCard: WalletCard, status: CardStatus) {
     await db.walletCards.update(walletCard.id, { status, updatedAt: new Date() });
+    posthog.capture('card_status_changed', {
+      card_id: walletCard.cardId,
+      bank_id: walletCard.bankId,
+      previous_status: walletCard.status ?? 'active',
+      new_status: status,
+    });
   }
 
   async function handleDragEnd(event: DragEndEvent) {
@@ -267,6 +274,12 @@ export default function WalletPage() {
     const oldIndex = walletCards.findIndex((card) => card.id === (active.id as string));
     const newIndex = walletCards.findIndex((card) => card.id === (over.id as string));
     await reorderCards(db, arrayMove(walletCards, oldIndex, newIndex));
+    posthog.capture('card_reordered', {
+      card_id: walletCards[oldIndex]?.cardId,
+      old_position: oldIndex,
+      new_position: newIndex,
+      total_cards: walletCards.length,
+    });
   }
 
   const isLoading = walletCards === undefined;

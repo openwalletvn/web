@@ -14,6 +14,7 @@ import { FormField } from '@/components/ui/form-field';
 import { BankSelectionStep } from '@/components/wallet/add/bank-selection-step';
 import { CardSelectionStep } from '@/components/wallet/add/card-selection-step';
 import { useWalletDb } from '@/providers/wallet-db-provider';
+import posthog from 'posthog-js';
 
 // ─── Day select helper ────────────────────────────────────────────────────────
 
@@ -106,11 +107,23 @@ export default function AddCardPage() {
   function selectBank(bank: Bank) {
     setSelectedBank(bank);
     setStep(2);
+    posthog.capture('add_card_wizard_bank_selected', {
+      bank_id: bank.id,
+      bank_name: bank.name,
+    });
   }
 
   function selectCard(card: Card) {
     setSelectedCard(card);
     setStep(3);
+    posthog.capture('add_card_wizard_card_selected', {
+      card_id: card.id,
+      card_name: card.name,
+      card_network: card.card_network,
+      card_type: card.card_type,
+      bank_id: selectedBank?.id,
+      bank_name: selectedBank?.name,
+    });
     hasCardWithSameCatalogId(db, card.id).then(setCanBeSupplementary);
     setNickname('');
     setLast4('');
@@ -147,13 +160,15 @@ export default function AddCardPage() {
         }
       }
 
+      const cardType = selectedCard.card_type.includes('credit') ? 'credit'
+        : selectedCard.card_type.includes('2in1') ? '2in1'
+        : selectedCard.card_type.includes('debit') ? 'debit'
+        : 'prepaid';
+
       await addCard(db, {
         cardId: selectedCard.id,
         bankId: selectedBank.id,
-        cardType: selectedCard.card_type.includes('credit') ? 'credit'
-          : selectedCard.card_type.includes('2in1') ? '2in1'
-          : selectedCard.card_type.includes('debit') ? 'debit'
-          : 'prepaid',
+        cardType,
         nickname: nickname || undefined,
         creditAccountId,
         isSupplementary: showCreditFields ? poolSelection.isSupplementary : undefined,
@@ -165,6 +180,19 @@ export default function AddCardPage() {
         status,
         statusNote: status !== 'active' ? (statusNote || undefined) : undefined,
         note: note || undefined,
+      });
+
+      posthog.capture('card_added_to_wallet', {
+        card_id: selectedCard.id,
+        card_name: selectedCard.name,
+        card_type: cardType,
+        card_network: selectedCard.card_network,
+        bank_id: selectedBank.id,
+        bank_name: selectedBank.name,
+        is_supplementary: showCreditFields ? poolSelection.isSupplementary : false,
+        has_nickname: !!nickname,
+        has_statement_date: !!statementDate,
+        status,
       });
 
       router.push('/app/my-cards');

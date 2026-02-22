@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { Bank, CardType, CardNetwork, CardSort } from '@/lib/api';
+import posthog from 'posthog-js';
 
 const SORT_KEYS: CardSort[] = ['fee_asc', 'fee_desc'];
 
@@ -32,16 +33,25 @@ export function CardsFilter({ banks, types, networks }: Props) {
       params.set(key, value);
     }
     router.push(`/cards?${params.toString()}`);
+    posthog.capture('catalog_filter_applied', {
+      filter_key: key,
+      filter_value: value === 'all' || value === 'default' ? null : value,
+    });
   }
 
   function toggleCoBrand() {
     const params = new URLSearchParams(searchParams.toString());
-    if (params.get('co_brand') === '1') {
+    const isEnabling = params.get('co_brand') !== '1';
+    if (!isEnabling) {
       params.delete('co_brand');
     } else {
       params.set('co_brand', '1');
     }
     router.push(`/cards?${params.toString()}`);
+    posthog.capture('catalog_filter_applied', {
+      filter_key: 'co_brand',
+      filter_value: isEnabling ? '1' : null,
+    });
   }
 
   const isCoBrand = searchParams.get('co_brand') === '1';

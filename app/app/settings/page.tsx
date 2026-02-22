@@ -10,6 +10,7 @@ import { appDb } from '@/lib/app-db';
 import { switchWallet } from '@/providers/wallet-db-provider';
 import { PageContainer } from '@/components/ui/page-container';
 import { useWalletDb, useActiveWallet } from '@/providers/wallet-db-provider';
+import posthog from 'posthog-js';
 
 export default function SettingsPage() {
   const db = useWalletDb();
@@ -54,10 +55,15 @@ export default function SettingsPage() {
     try {
       const newWalletId = await importAsNewWallet(file);
       setImportSuccess(true);
+      posthog.capture('wallet_imported', {
+        file_name: file.name,
+        file_size_bytes: file.size,
+      });
       const confirmed = window.confirm('Nhập ví thành công! Chuyển sang ví vừa nhập?');
       if (confirmed) await switchWallet(newWalletId);
     } catch (err) {
       setImportError(err instanceof Error ? err.message : 'Lỗi không xác định');
+      posthog.captureException(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setImporting(false);
       if (fileRef.current) fileRef.current.value = '';
@@ -164,7 +170,13 @@ export default function SettingsPage() {
         <div className="space-y-3">
           {/* Export current wallet */}
           <button
-            onClick={() => exportWallet(db, activeWallet)}
+            onClick={() => {
+            exportWallet(db, activeWallet);
+            posthog.capture('wallet_exported', {
+              wallet_id: activeWallet.id,
+              export_scope: 'single',
+            });
+          }}
             className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left"
           >
             <IconDownload size={20} className="text-slate-500 shrink-0" />
@@ -177,7 +189,14 @@ export default function SettingsPage() {
           {/* Export all wallets */}
           {(wallets ?? []).length > 1 && (
             <button
-              onClick={exportAllWallets}
+              onClick={() => {
+                exportAllWallets();
+                posthog.capture('wallet_exported', {
+                  wallet_id: activeWallet.id,
+                  export_scope: 'all',
+                  wallet_count: wallets?.length ?? 0,
+                });
+              }}
               className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left"
             >
               <IconDownload size={20} className="text-slate-500 shrink-0" />

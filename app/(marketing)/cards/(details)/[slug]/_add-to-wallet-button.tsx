@@ -6,6 +6,7 @@ import { IconWallet } from '@tabler/icons-react';
 import { CardFormDialog } from '@/components/wallet/card-form-dialog';
 import { WalletDbProvider } from '@/providers/wallet-db-provider';
 import type { Card } from '@/lib/api';
+import posthog from 'posthog-js';
 
 interface Props {
   card: Card;
@@ -18,7 +19,16 @@ export function AddToWalletButton({ card }: Props) {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true);
+          posthog.capture('catalog_card_added_to_wallet', {
+            card_id: card.id,
+            card_name: card.name,
+            card_network: card.card_network,
+            card_type: card.card_type,
+            bank_id: card.bank_id,
+          });
+        }}
         className="flex items-center gap-2 px-4 py-2 border border-dashed border-brand-blue text-brand-blue font-medium rounded-sm hover:bg-blue-50/60 transition-colors text-sm w-fit"
       >
         <IconWallet size={16} />
