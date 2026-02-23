@@ -10,9 +10,9 @@ export async function Footer() {
         <span className="text-slate-300">{t('copyright', { year: new Date().getFullYear() })}</span>
         <nav className="flex items-center gap-6">
           <Link href="/" className="hover:text-white transition-colors">{t('home')}</Link>
-          <Link href="/banks" className="hover:text-white transition-colors">{t('banks')}</Link>
-          <Link href="/cards" className="hover:text-white transition-colors">{t('cards')}</Link>
-          <Link href="/blog" className="hover:text-white transition-colors">{t('blog')}</Link>
+          <Link href="/ngan-hang" className="hover:text-white transition-colors">{t('banks')}</Link>
+          <Link href="/the" className="hover:text-white transition-colors">{t('cards')}</Link>
+          <Link href="/tin-tuc" className="hover:text-white transition-colors">{t('blog')}</Link>
           <Link href="/docs" className="hover:text-white transition-colors">{t('api_docs')}</Link>
           <a
             href="https://github.com/openwalletvn"

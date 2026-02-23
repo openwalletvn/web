@@ -42,7 +42,7 @@ export async function SidebarRelatedCards({ cardSlugs }: Props) {
           return (
             <Link
               key={card.id}
-              href={`/cards/${card.id}`}
+              href={`/the/${card.id}`}
               className={[
                 'flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50/60 transition-colors',
                 i > 0 ? 'border-t border-dashed border-slate-100' : '',

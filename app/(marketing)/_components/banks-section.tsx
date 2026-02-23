@@ -29,7 +29,7 @@ export async function BanksSection({ limit, showViewAll }: Props) {
       {showViewAll && (
         <div className="mt-8">
           <Link
-            href="/banks"
+            href="/ngan-hang"
             className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
           >
             {t('view_all', { count: banks.length })}

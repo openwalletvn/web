@@ -9,7 +9,7 @@ interface Props {
 export function BankItem({ bank }: Props) {
   return (
     <Link
-      href={`/banks/${bank.id}`}
+      href={`/ngan-hang/${bank.id}`}
       className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors"
     >
       <div className="relative w-14 h-14">

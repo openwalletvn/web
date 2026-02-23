@@ -11,7 +11,7 @@ export function CardItem({ card }: Props) {
 
   return (
     <Link
-      href={`/cards/${card.id}`}
+      href={`/the/${card.id}`}
       className="flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors block"
     >
       <div className={`relative w-full ${isVertical ? 'aspect-[2/3]' : 'aspect-[16/10]'} bg-slate-50 overflow-hidden`}>

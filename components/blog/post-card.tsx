@@ -11,7 +11,7 @@ export function PostCard({ post }: Props) {
 
   return (
     <Link
-      href={`/blog/${slug}`}
+      href={`/tin-tuc/${slug}`}
       className="flex flex-col gap-3 p-5 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors"
     >
       <div className="flex items-center gap-2 flex-wrap">

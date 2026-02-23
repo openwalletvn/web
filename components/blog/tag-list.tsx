@@ -13,7 +13,7 @@ export function TagList({ tags, activeSlug }: Props) {
       {tags.map(({ name, slug, count }) => (
         <Link
           key={slug}
-          href={`/blog/tag/${slug}`}
+          href={`/tin-tuc/tag/${slug}`}
           className={`inline-flex items-center gap-1 px-2.5 py-1 border border-dashed rounded-sm text-sm transition-colors ${
             activeSlug === slug
               ? 'border-brand-blue text-brand-blue bg-blue-50/60'

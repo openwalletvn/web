@@ -11,7 +11,7 @@ export function CategoryFilter({ categories, activeSlug }: Props) {
   return (
     <div className="flex flex-wrap gap-2">
       <Link
-        href="/blog"
+        href="/tin-tuc"
         className={`inline-flex items-center gap-1.5 px-3 py-1.5 border border-dashed rounded-sm text-sm transition-colors ${
           !activeSlug
             ? 'border-brand-blue text-brand-blue bg-blue-50/60'
@@ -23,7 +23,7 @@ export function CategoryFilter({ categories, activeSlug }: Props) {
       {categories.map(({ name, slug, count }) => (
         <Link
           key={slug}
-          href={`/blog/category/${slug}`}
+          href={`/tin-tuc/category/${slug}`}
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 border border-dashed rounded-sm text-sm transition-colors ${
             activeSlug === slug
               ? 'border-brand-blue text-brand-blue bg-blue-50/60'

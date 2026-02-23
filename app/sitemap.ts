@@ -1,73 +1,66 @@
-import type { MetadataRoute } from 'next';
-import { getBanks, getCards, getBrands, getNetworks } from '@/lib/api';
-import { getAllPosts, getAllCategories, getAllTags } from '@/lib/mdx';
+import fs from 'fs'
+import path from 'path'
+import { MetadataRoute } from 'next'
 
-export const dynamic = 'force-static';
+export const dynamic = 'force-static'
 
-const BASE_URL = 'https://openwallet.vn';
+const BASE_URL = 'https://openwallet.vn'
+
+// Folders handled separately or not pages
+const EXCLUDED_DIRS = ['ngan-hang', 'the', 'tin-tuc', 'docs']
+
+function getStaticPages(): string[] {
+  const dir = path.join(process.cwd(), 'app/(marketing)')
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter(d =>
+      d.isDirectory() &&
+      !d.name.startsWith('_') &&
+      !d.name.startsWith('[') &&
+      !d.name.startsWith('(') &&
+      !EXCLUDED_DIRS.includes(d.name) &&
+      fs.existsSync(path.join(dir, d.name, 'page.tsx'))
+    )
+    .map(d => d.name === 'page.tsx' ? '/' : `/${d.name}`)
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [banks, cards, brands, networks] = await Promise.all([getBanks(), getCards(), getBrands().catch(() => []), getNetworks().catch(() => [])]);
+  // 1. Static pages (marketing + SEO) from filesystem
+  const staticPages = getStaticPages().map(url => ({
+    url: `${BASE_URL}${url}`,
+    changeFrequency: 'monthly' as const,
+    priority: url === '/' ? 1 : 0.8,
+  }))
 
-  const posts = getAllPosts();
-  const categories = getAllCategories();
-  const tags = getAllTags();
+  // 2. Banks — dynamic from API
+  const banksRes = await fetch('https://api.openwallet.vn/api/v1/banks')
+  const banks = await banksRes.json()
+  const bankPages = [
+    { url: `${BASE_URL}/ngan-hang`, changeFrequency: 'weekly' as const, priority: 0.9 },
+    ...banks.data.map((b: { id: string }) => ({
+      url: `${BASE_URL}/ngan-hang/${b.id}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }))
+  ]
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    { url: BASE_URL,                              changeFrequency: 'weekly',  priority: 1.0 },
-    { url: `${BASE_URL}/banks`,                   changeFrequency: 'weekly',  priority: 0.8 },
-    { url: `${BASE_URL}/cards`,                   changeFrequency: 'weekly',  priority: 0.8 },
-    { url: `${BASE_URL}/cards/credit`,            changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/debit`,             changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/2in1`,              changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/co-branded`,        changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/cards/networks`,          changeFrequency: 'weekly',  priority: 0.7 },
-    { url: `${BASE_URL}/docs`,                    changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/blog`,                    changeFrequency: 'weekly',  priority: 0.8 },
-  ];
+  // 3. Cards — dynamic from API
+  const cardsRes = await fetch('https://api.openwallet.vn/api/v1/cards')
+  const cards = await cardsRes.json()
+  const cardPages = [
+    { url: `${BASE_URL}/the`, changeFrequency: 'weekly' as const, priority: 0.9 },
+    ...cards.data.map((c: { id: string }) => ({
+      url: `${BASE_URL}/the/${c.id}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }))
+  ]
 
-  const bankRoutes: MetadataRoute.Sitemap = banks.map((bank) => ({
-    url: `${BASE_URL}/banks/${bank.id}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
+  // 4. Blog — add when CMS is ready
+  // const blogPages = []
 
-  const cardRoutes: MetadataRoute.Sitemap = cards.map((card) => ({
-    url: `${BASE_URL}/cards/${card.id}`,
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
-
-  const brandRoutes: MetadataRoute.Sitemap = brands.map((brand) => ({
-    url: `${BASE_URL}/cards/co-branded/${brand.id}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
-
-  const networkRoutes: MetadataRoute.Sitemap = networks.map((network) => ({
-    url: `${BASE_URL}/cards/networks/${network.id}`,
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }));
-
-  const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${BASE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.frontmatter.date),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }));
-
-  const categoryRoutes: MetadataRoute.Sitemap = categories.map(({ slug }) => ({
-    url: `${BASE_URL}/blog/category/${slug}`,
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
-
-  const tagRoutes: MetadataRoute.Sitemap = tags.map(({ slug }) => ({
-    url: `${BASE_URL}/blog/tag/${slug}`,
-    changeFrequency: 'weekly',
-    priority: 0.5,
-  }));
-
-  return [...staticRoutes, ...bankRoutes, ...cardRoutes, ...brandRoutes, ...networkRoutes, ...postRoutes, ...categoryRoutes, ...tagRoutes];
+  return [
+    ...staticPages,
+    ...bankPages,
+    ...cardPages,
+  ]
 }
