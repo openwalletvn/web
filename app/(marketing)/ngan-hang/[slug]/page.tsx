@@ -5,7 +5,7 @@ import {Suspense} from 'react';
 import {getTranslations} from 'next-intl/server';
 import {getBank, getBankImageUrl, getBanks} from '@/lib/api';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
-import {CardsSection, CardsSectionSkeleton} from '../../_components/cards-section';
+import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
 
 export async function generateStaticParams() {
   const banks = await getBanks();

@@ -1,9 +1,7 @@
 import type {Metadata} from 'next';
-import {Suspense} from 'react';
 import {getTranslations} from 'next-intl/server';
 import {getBanks, getCards} from '@/lib/api';
-import {CardsFilteredSection} from '../_components/cards-filtered-section';
-import {CardsSectionSkeleton} from '../_components/cards-section';
+import {CardsGrid} from '@/components/cards/cards-grid';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -37,13 +35,11 @@ export default async function CardsPage() {
 
         <h1 className="text-4xl font-bold text-slate-900 mb-6">{t('title')}</h1>
 
-        <Suspense fallback={<CardsSectionSkeleton />}>
-          <CardsFilteredSection
-            allCards={allCards}
-            banks={banks}
-            noCardsLabel={t('no_cards')}
-          />
-        </Suspense>
+        <CardsGrid
+          cards={allCards}
+          banks={banks}
+          noCardsLabel={t('no_cards')}
+        />
       </div>
     </div>
   );

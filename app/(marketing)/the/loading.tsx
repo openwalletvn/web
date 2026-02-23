@@ -1,4 +1,4 @@
-import { CardsSectionSkeleton } from '../_components/cards-section';
+import { CardsSectionSkeleton } from '@/components/cards/cards-section';
 
 export default function CardsLoading() {
   return (

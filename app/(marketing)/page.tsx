@@ -3,7 +3,7 @@ import {Suspense} from 'react';
 import {getTranslations} from 'next-intl/server';
 import {getBanks, getCards} from '@/lib/api';
 import {BanksSection, BanksSectionSkeleton} from './_components/banks-section';
-import {CardsSection, CardsSectionSkeleton} from './_components/cards-section';
+import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
 
 export default async function HomePage() {
     const [hero, heroTitle, metadata, organization, banks, cards] = await Promise.all([
