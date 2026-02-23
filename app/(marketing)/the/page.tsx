@@ -32,7 +32,7 @@ export default async function CardsPage() {
 
   return (
     <div className="px-4 py-12">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-container mx-auto">
         <Breadcrumbs items={[{ label: tb('home'), href: '/' }, { label: tb('cards') }]} />
 
         <h1 className="text-4xl font-bold text-slate-900 mb-6">{t('title')}</h1>

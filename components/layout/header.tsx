@@ -9,7 +9,7 @@ export async function Header() {
 
   return (
     <header className="bg-white border-b border-slate-200">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-container mx-auto px-4 h-16 flex items-center justify-between gap-4">
 
         {/* Left: logo + desktop nav */}
         <div className="flex items-center gap-2">

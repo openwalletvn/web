@@ -67,7 +67,7 @@ export default async function CardPage({ params }: Props) {
 
   return (
     <div className="px-4 py-12">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-container mx-auto">
         <Breadcrumbs
           items={[
             { label: tb('home'), href: '/' },

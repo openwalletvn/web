@@ -11,6 +11,10 @@
   --color-brand-dark: #0f172a;
 }
 
+.max-w-container {
+    max-width:1800px;
+}
+
 body {
   font-family: var(--font-league-spartan), sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -43,7 +43,7 @@ export default async function HomePage() {
 
       {/* Hero */}
       <section className="w-full min-h-[calc(100vh-4rem)] flex items-center px-4 py-20">
-        <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 lg:gap-20 items-center">
+        <div className="max-w-container mx-auto w-full grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 lg:gap-20 items-center">
 
           {/* Left - identity + type */}
           <div>
