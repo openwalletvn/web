@@ -48,6 +48,7 @@
     "view_all_co_branded": "Xem tất cả →",
     "by_type": "Theo loại",
     "by_network": "Theo mạng",
+    "by_fee": "Theo phí",
     "all_cards": "Tất cả thẻ",
     "type_credit": "Tín dụng",
     "type_debit": "Ghi nợ",
@@ -56,9 +57,12 @@
     "network_visa": "Visa",
     "network_mastercard": "Mastercard",
     "network_jcb": "JCB",
-    "network_napas": "Napas",
+    "network_napas": "Nội địa",
     "network_amex": "Amex",
-    "network_unionpay": "UnionPay"
+    "network_unionpay": "UnionPay",
+    "fee_free": "Miễn phí thường niên",
+    "fee_low": "Phí thường niên thấp",
+    "debit_free": "Thẻ ghi nợ miễn phí"
   },
   "Footer": {
     "copyright": "© {year} Open Wallet Vietnam",

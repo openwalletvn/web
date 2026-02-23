@@ -37,7 +37,8 @@
       "Bash(grep:*)",
       "Bash(cd:*)",
       "Bash(cat:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(head:*)"
     ]
   }
 }
