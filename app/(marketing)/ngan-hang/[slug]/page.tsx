@@ -2,9 +2,10 @@ import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
-import {getBank, getBankImageUrl, getBanks, getCards, getNetworkImageUrl} from '@/lib/api';
+import {getBank, getBankImageUrl, getBanks, getCards} from '@/lib/api';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {CardsGrid} from '@/components/cards/cards-grid';
+import {NetworkDistributionBar} from '@/app/(marketing)/_components/network-distribution-bar';
 
 export async function generateStaticParams() {
   const banks = await getBanks();
@@ -98,35 +99,32 @@ export default async function BankPage({ params }: Props) {
                 {new URL(bank.link).hostname} ↗
               </a>
             )}
-            {(bank.networks_data?.length ?? 0) > 0 && (
-              <div className="flex items-center gap-3 mt-3">
-                {bank.networks_data!.map((n) => (
-                  <div key={n.id} className="relative w-8 h-8">
-                    <Image
-                      src={getNetworkImageUrl(n.logo_url)}
-                      alt={n.name ?? ''}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: 'Tổng số thẻ', value: cards.length },
-            { label: 'Tín dụng', value: creditCards.length },
-            { label: 'Ghi nợ', value: debitCards.length },
-          ].map(({ label, value }) => (
-            <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
-              <p className="text-2xl font-bold text-zinc-900">{value}</p>
-              <p className="text-xs text-zinc-500 mt-1">{label}</p>
-            </div>
-          ))}
+          <div className="space-y-5">
+              {/* Network Distribution */}
+              {bank.stats?.network_counts && bank.networks_data && (
+                  <NetworkDistributionBar
+                      networkCounts={bank.stats.network_counts}
+                      networksData={bank.networks_data}
+                      totalCards={bank.stats.card_count}
+                  />
+              )}
+
+              {/* Stats Row */}
+              <div className="grid grid-cols-3 gap-3">
+                  {[
+                      {label: 'Tổng số thẻ', value: cards.length},
+                      {label: 'Tín dụng', value: creditCards.length},
+                      {label: 'Ghi nợ', value: debitCards.length},
+                  ].map(({label, value}) => (
+                      <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
+                          <p className="text-2xl font-bold text-zinc-900">{value}</p>
+                          <p className="text-xs text-zinc-500 mt-1">{label}</p>
+                      </div>
+                  ))}
+              </div>
         </div>
 
         {/* Card Sections */}
