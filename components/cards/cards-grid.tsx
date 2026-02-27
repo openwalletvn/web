@@ -12,23 +12,35 @@ import {CardMasonry} from './card-masonry';
 interface Props {
     cards: Card[];
     banks: Bank[];
-    enabledFilters?: Array<'type' | 'network' | 'bank' | 'sort' | 'wallet' | 'fee' | 'co_brand'>;
     title?: string;
     limit?: number;
     showViewAll?: boolean;
     noCardsLabel?: string;
     useUrlState?: boolean;
+    hideTypeFilter?: boolean;
+    hideNetworkFilter?: boolean;
+    hideBankFilter?: boolean;
+    hideCoBrandFilter?: boolean;
+    hideContactlessFilter?: boolean;
+    hideFeeFilter?: boolean;
+    hideSortFilter?: boolean;
 }
 
 function CardsGridInner({
                             cards,
                             banks,
-                            enabledFilters = ['type', 'network', 'bank', 'fee', 'sort', 'co_brand'],
                             title,
                             limit,
                             showViewAll,
                             noCardsLabel,
                             useUrlState = false,
+                            hideTypeFilter,
+                            hideNetworkFilter,
+                            hideBankFilter,
+                            hideCoBrandFilter,
+                            hideContactlessFilter,
+                            hideFeeFilter,
+                            hideSortFilter,
                         }: Props) {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -42,7 +54,7 @@ function CardsGridInner({
     const [localBankId, setLocalBankId] = useState<string | null>(null);
     const [localCoBrand, setLocalCoBrand] = useState<string | null>(null);
     const [localSort, setLocalSort] = useState<string | null>(null);
-    const [localWallet, setLocalWallet] = useState<string | null>(null);
+    const [localContactless, setLocalContactless] = useState<string | null>(null);
     const [localFee, setLocalFee] = useState<string | null>(null);
 
     // Active filter values — from URL params or local state
@@ -51,7 +63,7 @@ function CardsGridInner({
     const bankId = useUrlState ? searchParams.get('bank') : localBankId;
     const coBrand = useUrlState ? searchParams.get('co_brand') : localCoBrand;
     const sort = (useUrlState ? searchParams.get('sort') : localSort) as CardSort | null;
-    const wallet = useUrlState ? searchParams.get('wallet') : localWallet;
+    const contactless = useUrlState ? searchParams.get('contactless') : localContactless;
     const fee = useUrlState ? searchParams.get('fee') : localFee;
 
     function handleUpdate(key: string, value: string) {
@@ -69,7 +81,7 @@ function CardsGridInner({
                 case 'bank': setLocalBankId(v); break;
                 case 'co_brand': setLocalCoBrand(v); break;
                 case 'sort': setLocalSort(v); break;
-                case 'wallet': setLocalWallet(v); break;
+                case 'contactless': setLocalContactless(v); break;
                 case 'fee': setLocalFee(v); break;
             }
         }
@@ -78,7 +90,7 @@ function CardsGridInner({
     function handleClearAll() {
         if (useUrlState) {
             const params = new URLSearchParams(searchParams.toString());
-            ['type', 'network', 'bank', 'co_brand', 'sort', 'wallet', 'fee'].forEach((k) => params.delete(k));
+            ['type', 'network', 'bank', 'co_brand', 'sort', 'contactless', 'fee'].forEach((k) => params.delete(k));
             startTransition(() => router.replace(`${pathname}?${params.toString()}`));
         } else {
             setLocalType(null);
@@ -86,7 +98,7 @@ function CardsGridInner({
             setLocalBankId(null);
             setLocalCoBrand(null);
             setLocalSort(null);
-            setLocalWallet(null);
+            setLocalContactless(null);
             setLocalFee(null);
         }
     }
@@ -127,14 +139,14 @@ function CardsGridInner({
     }, [cards]);
     const coBrandFilterUseful = availableBrands.length >= 1;
 
-    const availableWallets = useMemo(() => {
+    const availableContactless = useMemo(() => {
         const map = new Map<string, { id: string; name: string; logo_url: string }>();
         cards.forEach((c) => {
             c.contactless_methods_data?.forEach((w) => map.set(w.id, w));
         });
         return [...map.values()];
     }, [cards]);
-    const walletFilterUseful = availableWallets.length > 1;
+    const contactlessFilterUseful = availableContactless.length > 1;
 
     const feeFilterUseful = cards.some((c) => c.annual_fee != null && c.annual_fee > 0);
 
@@ -152,7 +164,7 @@ function CardsGridInner({
         if (network) result = result.filter((c) => c.card_network === network);
         if (bankId) result = result.filter((c) => c.bank_id === bankId);
         if (coBrand) result = result.filter((c) => c.co_brand === coBrand);
-        if (wallet) result = result.filter((c) => c.contactless_methods?.includes(wallet));
+        if (contactless) result = result.filter((c) => c.contactless_methods?.includes(contactless));
         if (fee === 'free') result = result.filter((c) => c.annual_fee === 0);
         const bucket = FEE_BUCKETS.find((b) => b.value === fee);
         if (bucket) {
@@ -171,7 +183,7 @@ function CardsGridInner({
         }
 
         return result;
-    }, [cards, type, network, bankId, coBrand, wallet, fee, sort]);
+    }, [cards, type, network, bankId, coBrand, contactless, fee, sort]);
 
     const displayed = limit ? filteredCards.slice(0, limit) : filteredCards;
     const heading = title;
@@ -183,9 +195,11 @@ function CardsGridInner({
         bankId,
         coBrand,
         sort: sort ?? 'default',
-        wallet,
+        contactless,
         fee,
     };
+
+    const anyFilterShown = !(hideTypeFilter && hideNetworkFilter && hideBankFilter && hideCoBrandFilter && hideContactlessFilter && hideFeeFilter && hideSortFilter);
 
     return (
         <div>
@@ -205,21 +219,27 @@ function CardsGridInner({
             )}
 
             {/*filter*/}
-            {enabledFilters.length > 0 && cards.length > 5 && (
+            {anyFilterShown && cards.length > 5 && (
                 <div className="mb-8">
                     <CardsFilter
                         banks={banks}
-                        enabledFilters={enabledFilters}
+                        hideTypeFilter={hideTypeFilter}
+                        hideNetworkFilter={hideNetworkFilter}
+                        hideBankFilter={hideBankFilter}
+                        hideCoBrandFilter={hideCoBrandFilter}
+                        hideContactlessFilter={hideContactlessFilter}
+                        hideFeeFilter={hideFeeFilter}
+                        hideSortFilter={hideSortFilter}
                         typeFilterUseful={typeFilterUseful}
                         networkFilterUseful={networkFilterUseful}
                         bankFilterUseful={bankFilterUseful}
-                        walletFilterUseful={walletFilterUseful}
+                        contactlessFilterUseful={contactlessFilterUseful}
                         feeFilterUseful={feeFilterUseful}
                         sortFilterUseful={sortFilterUseful}
                         coBrandFilterUseful={coBrandFilterUseful}
                         availableNetworks={availableNetworks}
                         availableBrands={availableBrands}
-                        availableWallets={availableWallets}
+                        availableContactless={availableContactless}
                         filterValues={filterValues}
                         onUpdate={handleUpdate}
                         onClearAll={handleClearAll}

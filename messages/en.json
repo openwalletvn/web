@@ -177,7 +177,7 @@
     "network_unionpay": "UnionPay",
     "sort_fee_asc": "Annual fee ↑",
     "sort_fee_desc": "Annual fee ↓",
-    "all_wallets": "All wallets",
+    "all_contactless_methods": "All contactless methods",
     "all_fees": "All fees",
     "fee_free": "Free",
     "clear_all": "Clear all",

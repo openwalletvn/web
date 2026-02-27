@@ -47,7 +47,7 @@ export default async function CreditFreePage() {
         <CardsGrid
           cards={filteredCards}
           banks={banks}
-          enabledFilters={['network', 'bank']}
+          hideTypeFilter hideSortFilter hideCoBrandFilter hideContactlessFilter hideFeeFilter
           noCardsLabel={t('no_cards')}
         />
       </div>

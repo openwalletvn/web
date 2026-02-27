@@ -43,7 +43,7 @@ export default async function DebitJcbPage() {
         <CardsGrid
           cards={cards}
           banks={banks}
-          enabledFilters={['bank', 'sort']}
+          hideTypeFilter hideNetworkFilter hideCoBrandFilter hideContactlessFilter hideFeeFilter
           noCardsLabel={t('no_cards')}
         />
       </div>

@@ -43,7 +43,7 @@ export default async function TwoInOneCardsPage() {
         <CardsGrid
           cards={cards}
           banks={banks}
-          enabledFilters={['network', 'bank', 'sort']}
+          hideTypeFilter
           noCardsLabel={t('no_cards')}
         />
       </div>

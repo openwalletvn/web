@@ -10,7 +10,7 @@ import {
   NetworkSelect,
   BankCombobox,
   CoBrandSelect,
-  WalletSelect,
+  ContactlessSelect,
   FeeSelect,
   SortSelect,
   FilterChip,
@@ -22,23 +22,29 @@ interface FilterValues {
   bankId: string | null;
   coBrand: string | null;
   sort: string;
-  wallet: string | null;
+  contactless: string | null;
   fee: string | null;
 }
 
 interface Props {
   banks: Bank[];
-  enabledFilters: Array<'type' | 'network' | 'bank' | 'sort' | 'wallet' | 'fee' | 'co_brand'>;
+  hideTypeFilter?: boolean;
+  hideNetworkFilter?: boolean;
+  hideBankFilter?: boolean;
+  hideCoBrandFilter?: boolean;
+  hideContactlessFilter?: boolean;
+  hideFeeFilter?: boolean;
+  hideSortFilter?: boolean;
   typeFilterUseful: boolean;
   networkFilterUseful: boolean;
   bankFilterUseful: boolean;
-  walletFilterUseful: boolean;
+  contactlessFilterUseful: boolean;
   feeFilterUseful: boolean;
   sortFilterUseful: boolean;
   coBrandFilterUseful: boolean;
   availableNetworks: Array<{ id: string; name: string; logo_url: string }>;
   availableBrands: Array<{ id: string; name: string; logo_url: string }>;
-  availableWallets: Array<{ id: string; name: string; logo_url: string }>;
+  availableContactless: Array<{ id: string; name: string; logo_url: string }>;
   filterValues: FilterValues;
   onUpdate: (key: string, value: string) => void;
   onClearAll: () => void;
@@ -47,17 +53,23 @@ interface Props {
 
 export function CardsFilter({
   banks,
-  enabledFilters,
+  hideTypeFilter,
+  hideNetworkFilter,
+  hideBankFilter,
+  hideCoBrandFilter,
+  hideContactlessFilter,
+  hideFeeFilter,
+  hideSortFilter,
   typeFilterUseful,
   networkFilterUseful,
   bankFilterUseful,
-  walletFilterUseful,
+  contactlessFilterUseful,
   feeFilterUseful,
   sortFilterUseful,
   coBrandFilterUseful,
   availableNetworks,
   availableBrands,
-  availableWallets,
+  availableContactless,
   filterValues,
   onUpdate,
   onClearAll,
@@ -78,7 +90,7 @@ export function CardsFilter({
     posthog.capture('catalog_filter_cleared');
   }
 
-  const { type: activeType, network: activeNetwork, bankId: activeBankId, coBrand, sort: sortValue, wallet, fee } = filterValues;
+  const { type: activeType, network: activeNetwork, bankId: activeBankId, coBrand, sort: sortValue, contactless, fee } = filterValues;
 
   const hasFilter = !!(
     activeType ||
@@ -86,7 +98,7 @@ export function CardsFilter({
     activeBankId ||
     coBrand ||
     sortValue !== 'default' ||
-    wallet ||
+    contactless ||
     fee
   );
 
@@ -94,17 +106,17 @@ export function CardsFilter({
   const networkChipData = activeNetwork ? availableNetworks.find((n) => n.id === activeNetwork) : null;
   const bankChipData = activeBankId ? banks.find((b) => b.id === activeBankId) : null;
   const brandChipData = coBrand ? availableBrands.find((b) => b.id === coBrand) : null;
-  const walletChipData = wallet ? availableWallets.find((w) => w.id === wallet) : null;
+  const contactlessChipData = contactless ? availableContactless.find((w) => w.id === contactless) : null;
 
   return (
     <div className={`space-y-3 transition-opacity${isPending ? ' opacity-60 pointer-events-none' : ''}`}>
       {/* Filter controls */}
       <div className="flex gap-2 flex-wrap items-center">
-        {enabledFilters.includes('type') && typeFilterUseful && (
+        {!hideTypeFilter && typeFilterUseful && (
           <TypeSelect value={activeType} onChange={(v) => update('type', v)} />
         )}
 
-        {enabledFilters.includes('network') && networkFilterUseful && (
+        {!hideNetworkFilter && networkFilterUseful && (
           <NetworkSelect
             value={activeNetwork}
             networks={availableNetworks}
@@ -112,7 +124,7 @@ export function CardsFilter({
           />
         )}
 
-        {enabledFilters.includes('bank') && bankFilterUseful && (
+        {!hideBankFilter && bankFilterUseful && (
           <BankCombobox
             value={activeBankId}
             banks={banks}
@@ -123,7 +135,7 @@ export function CardsFilter({
           />
         )}
 
-        {enabledFilters.includes('co_brand') && coBrandFilterUseful && (
+        {!hideCoBrandFilter && coBrandFilterUseful && (
           <CoBrandSelect
             value={coBrand}
             brands={availableBrands}
@@ -131,19 +143,19 @@ export function CardsFilter({
           />
         )}
 
-        {enabledFilters.includes('wallet') && walletFilterUseful && (
-          <WalletSelect
-            value={wallet}
-            wallets={availableWallets}
-            onChange={(v) => update('wallet', v)}
+        {!hideContactlessFilter && contactlessFilterUseful && (
+          <ContactlessSelect
+            value={contactless}
+            wallets={availableContactless}
+            onChange={(v) => update('contactless', v)}
           />
         )}
 
-        {enabledFilters.includes('fee') && feeFilterUseful && (
+        {!hideFeeFilter && feeFilterUseful && (
           <FeeSelect value={fee} onChange={(v) => update('fee', v)} />
         )}
 
-        {enabledFilters.includes('sort') && sortFilterUseful && (
+        {!hideSortFilter && sortFilterUseful && (
           <SortSelect value={sortValue} onChange={(v) => update('sort', v)} />
         )}
       </div>
@@ -178,11 +190,11 @@ export function CardsFilter({
               onRemove={() => update('co_brand', 'all')}
             />
           )}
-          {wallet && (
+          {contactless && (
             <FilterChip
-              label={walletChipData?.name ?? wallet}
-              logoUrl={walletChipData?.logo_url ? getWalletImageUrl(walletChipData.logo_url) : undefined}
-              onRemove={() => update('wallet', 'all')}
+              label={contactlessChipData?.name ?? contactless}
+              logoUrl={contactlessChipData?.logo_url ? getWalletImageUrl(contactlessChipData.logo_url) : undefined}
+              onRemove={() => update('contactless', 'all')}
             />
           )}
           {fee && (

@@ -43,7 +43,6 @@ export default async function CoBrandedCardsPage() {
         <CardsGrid
           cards={cards}
           banks={banks}
-          enabledFilters={['type', 'network', 'bank', 'sort']}
           noCardsLabel={t('no_cards')}
         />
       </div>

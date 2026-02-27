@@ -43,6 +43,7 @@ export default async function DebitCardsPage() {
         <CardsGrid
           cards={cards}
           banks={banks}
+          hideTypeFilter={true}
           noCardsLabel={t('no_cards')}
         />
       </div>

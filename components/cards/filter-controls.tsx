@@ -209,21 +209,21 @@ export function CoBrandSelect({ value, brands, onChange }: CoBrandSelectProps) {
   );
 }
 
-// ── WalletSelect ──────────────────────────────────────────────────────────────
+// ── ContactlessSelect ──────────────────────────────────────────────────────────────
 
-export interface WalletSelectProps {
+export interface ContactlessSelectProps {
   value: string | null;
   wallets: Array<{ id: string; name: string; logo_url: string }>;
   onChange: (value: string) => void;
 }
 
-export function WalletSelect({ value, wallets, onChange }: WalletSelectProps) {
+export function ContactlessSelect({ value, wallets, onChange }: ContactlessSelectProps) {
   const t = useTranslations('CardsFilter');
   const selected = value ? wallets.find((w) => w.id === value) : null;
 
   return (
     <Select value={value ?? 'all'} onValueChange={onChange}>
-      <SelectTrigger className="w-40">
+      <SelectTrigger className="w-60">
         <SelectValue>
           {selected ? (
             <span className="flex items-center gap-2">
@@ -231,12 +231,12 @@ export function WalletSelect({ value, wallets, onChange }: WalletSelectProps) {
               <span>{selected.name}</span>
             </span>
           ) : (
-            <span className="text-muted-foreground">{t('all_wallets')}</span>
+            <span className="text-muted-foreground">{t('all_contactless_methods')}</span>
           )}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">{t('all_wallets')}</SelectItem>
+        <SelectItem value="all">{t('all_contactless_methods')}</SelectItem>
         {wallets.map((w) => (
           <SelectItem key={w.id} value={w.id}>
             <span className="flex items-center gap-2">
