@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { Card } from '@/lib/api';
 import { CardImage } from '@/components/cards/card-image';
+import { ShimmerLayer } from '@/components/phucbm/shimmer-layer';
 
 interface Props {
   card: Card;
@@ -15,7 +16,7 @@ export function CardItem({ card }: Props) {
   return (
     <Link
       href={`/the/${card.id}`}
-      className="flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors block"
+      className="flex flex-col gap-2 group/shimmer overflow-hidden relative"
     >
       <CardImage card={card} />
 
@@ -39,6 +40,7 @@ export function CardItem({ card }: Props) {
           ))}
         </div>
       </div>
+      <ShimmerLayer />
     </Link>
   );
 }

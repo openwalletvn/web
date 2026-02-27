@@ -19,5 +19,7 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "registries": {}
+  "registries": {
+    "@phucbm": "https://phucbm.com/r/{name}.json"
+  }
 }

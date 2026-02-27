@@ -107,9 +107,9 @@ export function CardsGrid({
       {displayed.length === 0 ? (
         <p className="text-slate-500">{emptyMessage}</p>
       ) : (
-        <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4">
+        <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 sm:gap-6 gap-4">
           {displayed.map((card) => (
-            <div key={card.id} className="break-inside-avoid mb-4">
+            <div key={card.id} className="break-inside-avoid mb-8">
               <CardItem card={card} />
             </div>
           ))}
