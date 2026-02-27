@@ -213,13 +213,13 @@ export function CoBrandSelect({ value, brands, onChange }: CoBrandSelectProps) {
 
 export interface ContactlessSelectProps {
   value: string | null;
-  wallets: Array<{ id: string; name: string; logo_url: string }>;
+  contactless: Array<{ id: string; name: string; logo_url: string }>;
   onChange: (value: string) => void;
 }
 
-export function ContactlessSelect({ value, wallets, onChange }: ContactlessSelectProps) {
+export function ContactlessSelect({ value, contactless, onChange }: ContactlessSelectProps) {
   const t = useTranslations('CardsFilter');
-  const selected = value ? wallets.find((w) => w.id === value) : null;
+  const selected = value ? contactless.find((w) => w.id === value) : null;
 
   return (
     <Select value={value ?? 'all'} onValueChange={onChange}>
@@ -237,7 +237,7 @@ export function ContactlessSelect({ value, wallets, onChange }: ContactlessSelec
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="all">{t('all_contactless_methods')}</SelectItem>
-        {wallets.map((w) => (
+        {contactless.map((w) => (
           <SelectItem key={w.id} value={w.id}>
             <span className="flex items-center gap-2">
               {w.logo_url && <img src={getWalletImageUrl(w.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-center shrink-0" />}

@@ -146,7 +146,7 @@ export function CardsFilter({
         {!hideContactlessFilter && contactlessFilterUseful && (
           <ContactlessSelect
             value={contactless}
-            wallets={availableContactless}
+            contactless={availableContactless}
             onChange={(v) => update('contactless', v)}
           />
         )}

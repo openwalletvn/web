@@ -89,7 +89,7 @@ export interface CardFilters {
     network?: CardNetwork;
     bank_id?: string;
     co_brand?: boolean | string; // true = any co-branded; string = specific brand ID
-    wallet?: string;
+    contactless?: string;
     sort?: CardSort;
 }
 
@@ -152,7 +152,7 @@ export async function getCards(filters?: CardFilters): Promise<Card[]> {
     if (filters?.bank_id) params.set('bank_id', filters.bank_id);
     if (filters?.co_brand === true) params.set('co_brand', 'true');
     else if (typeof filters?.co_brand === 'string') params.set('co_brand', filters.co_brand);
-    if (filters?.wallet) params.set('wallet', filters.wallet);
+    if (filters?.contactless) params.set('contactless', filters.contactless);
     const query = params.size > 0 ? `?${params.toString()}` : '';
     const res = await fetch(`${apiUrl}/api/v1/cards${query}`, fetchOptions);
     const json = (await res.json()) as CardListResponse;
