@@ -11,6 +11,7 @@ import {
   BankCombobox,
   CoBrandSelect,
   ContactlessSelect,
+  TierSelect,
   FeeSelect,
   SortSelect,
   FilterChip,
@@ -24,6 +25,7 @@ interface FilterValues {
   sort: string;
   contactless: string | null;
   fee: string | null;
+  tier: string | null;
 }
 
 interface Props {
@@ -33,18 +35,21 @@ interface Props {
   hideBankFilter?: boolean;
   hideCoBrandFilter?: boolean;
   hideContactlessFilter?: boolean;
+  hideTierFilter?: boolean;
   hideFeeFilter?: boolean;
   hideSortFilter?: boolean;
   typeFilterUseful: boolean;
   networkFilterUseful: boolean;
   bankFilterUseful: boolean;
   contactlessFilterUseful: boolean;
+  tierFilterUseful: boolean;
   feeFilterUseful: boolean;
   sortFilterUseful: boolean;
   coBrandFilterUseful: boolean;
   availableNetworks: Array<{ id: string; name: string; logo_url: string }>;
   availableBrands: Array<{ id: string; name: string; logo_url: string }>;
   availableContactless: Array<{ id: string; name: string; logo_url: string }>;
+  availableTiers: Array<{ id: string; rank: number; logo_url: string }>;
   filterValues: FilterValues;
   onUpdate: (key: string, value: string) => void;
   onClearAll: () => void;
@@ -58,18 +63,21 @@ export function CardsFilter({
   hideBankFilter,
   hideCoBrandFilter,
   hideContactlessFilter,
+  hideTierFilter,
   hideFeeFilter,
   hideSortFilter,
   typeFilterUseful,
   networkFilterUseful,
   bankFilterUseful,
   contactlessFilterUseful,
+  tierFilterUseful,
   feeFilterUseful,
   sortFilterUseful,
   coBrandFilterUseful,
   availableNetworks,
   availableBrands,
   availableContactless,
+  availableTiers,
   filterValues,
   onUpdate,
   onClearAll,
@@ -90,7 +98,7 @@ export function CardsFilter({
     posthog.capture('catalog_filter_cleared');
   }
 
-  const { type: activeType, network: activeNetwork, bankId: activeBankId, coBrand, sort: sortValue, contactless, fee } = filterValues;
+  const { type: activeType, network: activeNetwork, bankId: activeBankId, coBrand, sort: sortValue, contactless, fee, tier: activeTier } = filterValues;
 
   const hasFilter = !!(
     activeType ||
@@ -99,7 +107,8 @@ export function CardsFilter({
     coBrand ||
     sortValue !== 'default' ||
     contactless ||
-    fee
+    fee ||
+    activeTier
   );
 
   // Chip lookup data
@@ -151,6 +160,14 @@ export function CardsFilter({
           />
         )}
 
+        {!hideTierFilter && tierFilterUseful && (
+          <TierSelect
+            value={activeTier}
+            tiers={availableTiers}
+            onChange={(v) => update('tier', v)}
+          />
+        )}
+
         {!hideFeeFilter && feeFilterUseful && (
           <FeeSelect value={fee} onChange={(v) => update('fee', v)} />
         )}
@@ -197,6 +214,12 @@ export function CardsFilter({
               onRemove={() => update('contactless', 'all')}
             />
           )}
+          {activeTier && (
+            <FilterChip
+              label={activeTier.charAt(0).toUpperCase() + activeTier.slice(1)}
+              onRemove={() => update('tier', 'all')}
+            />
+          )}
           {fee && (
             <FilterChip
               label={fee === 'free' ? t('fee_free') : (FEE_BUCKETS.find((b) => b.value === fee)?.label ?? fee)}
@@ -205,7 +228,7 @@ export function CardsFilter({
           )}
           {sortValue !== 'default' && (
             <FilterChip
-              label={sortValue === 'fee_asc' ? t('sort_fee_asc') : t('sort_fee_desc')}
+              label={sortValue === 'fee_asc' ? t('sort_fee_asc') : sortValue === 'fee_desc' ? t('sort_fee_desc') : t('sort_tier_asc')}
               onRemove={() => update('sort', 'default')}
             />
           )}

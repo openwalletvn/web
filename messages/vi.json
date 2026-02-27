@@ -171,6 +171,8 @@
     "network_unionpay": "UnionPay",
     "sort_fee_asc": "Phí thường niên ↑",
     "sort_fee_desc": "Phí thường niên ↓",
+    "sort_tier_asc": "Hạng thẻ (cao → thấp)",
+    "all_tiers": "Tất cả hạng",
     "all_contactless_methods": "Tất cả phương thức thanh toán",
     "all_fees": "Tất cả phí",
     "fee_free": "Miễn phí",

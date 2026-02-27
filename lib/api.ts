@@ -1,3 +1,10 @@
+export interface CardTierData {
+    id: string;
+    rank: number | null;
+}
+
+export type CardTierOrder = Record<string, string[]>;
+
 export interface Brand {
     id: string;
     name: string;
@@ -66,6 +73,7 @@ export interface Card {
     bank_data?: Bank;
     card_network: CardNetwork;
     card_tier?: string;
+    card_tier_data?: CardTierData;
     co_brand?: string;
     co_brand_data?: Brand;
     card_network_data?: Network;
@@ -90,6 +98,7 @@ export interface CardFilters {
     bank_id?: string;
     co_brand?: boolean | string; // true = any co-branded; string = specific brand ID
     contactless?: string;
+    tier?: string;
     sort?: CardSort;
 }
 
@@ -153,6 +162,7 @@ export async function getCards(filters?: CardFilters): Promise<Card[]> {
     if (filters?.co_brand === true) params.set('co_brand', 'true');
     else if (typeof filters?.co_brand === 'string') params.set('co_brand', filters.co_brand);
     if (filters?.contactless) params.set('contactless', filters.contactless);
+    if (filters?.tier) params.set('tier', filters.tier);
     const query = params.size > 0 ? `?${params.toString()}` : '';
     const res = await fetch(`${apiUrl}/api/v1/cards${query}`, fetchOptions);
     const json = (await res.json()) as CardListResponse;
@@ -213,5 +223,17 @@ export async function getNetwork(id: string): Promise<Network> {
     const res = await fetch(`${apiUrl}/api/v1/networks/${id}`, fetchOptions);
     const json = (await res.json()) as NetworkDetailResponse;
     if (!json.success) throw new Error(`Failed to fetch network: ${id}`);
+    return json.data;
+}
+
+interface TierOrderResponse {
+    success: boolean;
+    data: CardTierOrder;
+}
+
+export async function getTiers(): Promise<CardTierOrder> {
+    const res = await fetch(`${apiUrl}/api/v1/tiers`, fetchOptions);
+    const json = (await res.json()) as TierOrderResponse;
+    if (!json.success) throw new Error('Failed to fetch tiers');
     return json.data;
 }

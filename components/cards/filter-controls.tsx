@@ -250,6 +250,47 @@ export function ContactlessSelect({ value, contactless, onChange }: ContactlessS
   );
 }
 
+// ── TierSelect ────────────────────────────────────────────────────────────────
+
+export interface TierSelectProps {
+  value: string | null;
+  tiers: Array<{ id: string; rank: number; logo_url: string }>;
+  onChange: (value: string) => void;
+}
+
+export function TierSelect({ value, tiers, onChange }: TierSelectProps) {
+  const t = useTranslations('CardsFilter');
+  const selected = value ? tiers.find((t) => t.id === value) : null;
+
+  return (
+    <Select value={value ?? 'all'} onValueChange={onChange}>
+      <SelectTrigger className="w-36">
+        <SelectValue>
+          {selected ? (
+            <span className="flex items-center gap-2">
+              {selected.logo_url && <img src={getNetworkImageUrl(selected.logo_url)} alt="" className="w-auto h-[20px] object-contain shrink-0" />}
+              <span>{selected.id.charAt(0).toUpperCase() + selected.id.slice(1)}</span>
+            </span>
+          ) : (
+            <span className="text-muted-foreground">{t('all_tiers')}</span>
+          )}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">{t('all_tiers')}</SelectItem>
+        {tiers.map((tier) => (
+          <SelectItem key={tier.id} value={tier.id}>
+            <span className="flex items-center gap-2">
+              {tier.logo_url && <img src={getNetworkImageUrl(tier.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-center shrink-0" />}
+              <span>{tier.id.charAt(0).toUpperCase() + tier.id.slice(1)}</span>
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 // ── FeeSelect ─────────────────────────────────────────────────────────────────
 
 export interface FeeSelectProps {
@@ -294,6 +335,7 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
         <SelectItem value="default">{t('default_order')}</SelectItem>
         <SelectItem value="fee_asc">{t('sort_fee_asc')}</SelectItem>
         <SelectItem value="fee_desc">{t('sort_fee_desc')}</SelectItem>
+        <SelectItem value="tier_asc">{t('sort_tier_asc')}</SelectItem>
       </SelectContent>
     </Select>
   );

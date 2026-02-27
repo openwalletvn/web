@@ -22,6 +22,7 @@ interface Props {
     hideBankFilter?: boolean;
     hideCoBrandFilter?: boolean;
     hideContactlessFilter?: boolean;
+    hideTierFilter?: boolean;
     hideFeeFilter?: boolean;
     hideSortFilter?: boolean;
 }
@@ -39,6 +40,7 @@ function CardsGridInner({
                             hideBankFilter,
                             hideCoBrandFilter,
                             hideContactlessFilter,
+                            hideTierFilter,
                             hideFeeFilter,
                             hideSortFilter,
                         }: Props) {
@@ -56,6 +58,7 @@ function CardsGridInner({
     const [localSort, setLocalSort] = useState<string | null>(null);
     const [localContactless, setLocalContactless] = useState<string | null>(null);
     const [localFee, setLocalFee] = useState<string | null>(null);
+    const [localTier, setLocalTier] = useState<string | null>(null);
 
     // Active filter values — from URL params or local state
     const type = (useUrlState ? searchParams.get('type') : localType) as CardType | null;
@@ -65,6 +68,7 @@ function CardsGridInner({
     const sort = (useUrlState ? searchParams.get('sort') : localSort) as CardSort | null;
     const contactless = useUrlState ? searchParams.get('contactless') : localContactless;
     const fee = useUrlState ? searchParams.get('fee') : localFee;
+    const tier = useUrlState ? searchParams.get('tier') : localTier;
 
     function handleUpdate(key: string, value: string) {
         const isEmpty = value === 'all' || value === '' || value === 'default';
@@ -83,6 +87,7 @@ function CardsGridInner({
                 case 'sort': setLocalSort(v); break;
                 case 'contactless': setLocalContactless(v); break;
                 case 'fee': setLocalFee(v); break;
+                case 'tier': setLocalTier(v); break;
             }
         }
     }
@@ -90,7 +95,7 @@ function CardsGridInner({
     function handleClearAll() {
         if (useUrlState) {
             const params = new URLSearchParams(searchParams.toString());
-            ['type', 'network', 'bank', 'co_brand', 'sort', 'contactless', 'fee'].forEach((k) => params.delete(k));
+            ['type', 'network', 'bank', 'co_brand', 'sort', 'contactless', 'fee', 'tier'].forEach((k) => params.delete(k));
             startTransition(() => router.replace(`${pathname}?${params.toString()}`));
         } else {
             setLocalType(null);
@@ -100,6 +105,7 @@ function CardsGridInner({
             setLocalSort(null);
             setLocalContactless(null);
             setLocalFee(null);
+            setLocalTier(null);
         }
     }
 
@@ -148,6 +154,21 @@ function CardsGridInner({
     }, [cards]);
     const contactlessFilterUseful = availableContactless.length > 1;
 
+    const availableTiers = useMemo(() => {
+        const map = new Map<string, { id: string; rank: number; logo_url: string }>();
+        cards.forEach((c) => {
+            if (c.card_tier && c.card_tier_data?.rank != null && !map.has(c.card_tier)) {
+                map.set(c.card_tier, {
+                    id: c.card_tier,
+                    rank: c.card_tier_data.rank,
+                    logo_url: c.card_network_data?.logo_url ?? '',
+                });
+            }
+        });
+        return [...map.values()].sort((a, b) => a.rank - b.rank);
+    }, [cards]);
+    const tierFilterUseful = availableTiers.length > 1;
+
     const feeFilterUseful = cards.some((c) => c.annual_fee != null && c.annual_fee > 0);
 
     const sortFilterUseful = useMemo(
@@ -162,6 +183,7 @@ function CardsGridInner({
 
         if (type) result = result.filter((c) => c.card_type.includes(type));
         if (network) result = result.filter((c) => c.card_network === network);
+        if (tier) result = result.filter((c) => c.card_tier === tier);
         if (bankId) result = result.filter((c) => c.bank_id === bankId);
         if (coBrand) result = result.filter((c) => c.co_brand === coBrand);
         if (contactless) result = result.filter((c) => c.contactless_methods?.includes(contactless));
@@ -180,10 +202,12 @@ function CardsGridInner({
             result = [...result].sort((a, b) => (a.annual_fee ?? 0) - (b.annual_fee ?? 0));
         } else if (sort === 'fee_desc') {
             result = [...result].sort((a, b) => (b.annual_fee ?? 0) - (a.annual_fee ?? 0));
+        } else if (sort === 'tier_asc') {
+            result = [...result].sort((a, b) => (a.card_tier_data?.rank ?? Infinity) - (b.card_tier_data?.rank ?? Infinity));
         }
 
         return result;
-    }, [cards, type, network, bankId, coBrand, contactless, fee, sort]);
+    }, [cards, type, network, bankId, coBrand, contactless, fee, tier, sort]);
 
     const displayed = limit ? filteredCards.slice(0, limit) : filteredCards;
     const heading = title;
@@ -197,9 +221,10 @@ function CardsGridInner({
         sort: sort ?? 'default',
         contactless,
         fee,
+        tier,
     };
 
-    const anyFilterShown = !(hideTypeFilter && hideNetworkFilter && hideBankFilter && hideCoBrandFilter && hideContactlessFilter && hideFeeFilter && hideSortFilter);
+    const anyFilterShown = !(hideTypeFilter && hideNetworkFilter && hideBankFilter && hideCoBrandFilter && hideContactlessFilter && hideTierFilter && hideFeeFilter && hideSortFilter);
 
     return (
         <div>
@@ -228,32 +253,35 @@ function CardsGridInner({
                         hideBankFilter={hideBankFilter}
                         hideCoBrandFilter={hideCoBrandFilter}
                         hideContactlessFilter={hideContactlessFilter}
+                        hideTierFilter={hideTierFilter}
                         hideFeeFilter={hideFeeFilter}
                         hideSortFilter={hideSortFilter}
                         typeFilterUseful={typeFilterUseful}
                         networkFilterUseful={networkFilterUseful}
                         bankFilterUseful={bankFilterUseful}
                         contactlessFilterUseful={contactlessFilterUseful}
+                        tierFilterUseful={tierFilterUseful}
                         feeFilterUseful={feeFilterUseful}
                         sortFilterUseful={sortFilterUseful}
                         coBrandFilterUseful={coBrandFilterUseful}
                         availableNetworks={availableNetworks}
                         availableBrands={availableBrands}
                         availableContactless={availableContactless}
+                        availableTiers={availableTiers}
                         filterValues={filterValues}
                         onUpdate={handleUpdate}
                         onClearAll={handleClearAll}
                         isPending={isPending}
                     />
+                </div>
+            )}
 
-                    {/*card count*/}
-                    {anyFilterShown && (
-                        <div className="">
-                            {limit && displayed.length < filteredCards.length
-                                ? `Hiển thị ${displayed.length} / ${filteredCards.length} thẻ`
-                                : `${filteredCards.length} thẻ`}
-                        </div>
-                    )}
+            {/*card count*/}
+            {anyFilterShown && (
+                <div className="mb-8">
+                    {limit && displayed.length < filteredCards.length
+                        ? `Hiển thị ${displayed.length} / ${filteredCards.length} thẻ`
+                        : `${filteredCards.length} thẻ`}
                 </div>
             )}
 

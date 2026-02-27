@@ -177,6 +177,8 @@
     "network_unionpay": "UnionPay",
     "sort_fee_asc": "Annual fee ↑",
     "sort_fee_desc": "Annual fee ↓",
+    "sort_tier_asc": "Card tier (high → low)",
+    "all_tiers": "All tiers",
     "all_contactless_methods": "All contactless methods",
     "all_fees": "All fees",
     "fee_free": "Free",
