@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import type { Bank } from '@/lib/api';
 import { getBankImageUrl, getBrandImageUrl, getNetworkImageUrl, getWalletImageUrl } from '@/lib/api';
@@ -17,6 +16,16 @@ import {
   FilterChip,
 } from './filter-controls';
 
+interface FilterValues {
+  type: string | null;
+  network: string | null;
+  bankId: string | null;
+  coBrand: string | null;
+  sort: string;
+  wallet: string | null;
+  fee: string | null;
+}
+
 interface Props {
   banks: Bank[];
   enabledFilters: Array<'type' | 'network' | 'bank' | 'sort' | 'wallet' | 'fee' | 'co_brand'>;
@@ -30,9 +39,10 @@ interface Props {
   availableNetworks: Array<{ id: string; name: string; logo_url: string }>;
   availableBrands: Array<{ id: string; name: string; logo_url: string }>;
   availableWallets: Array<{ id: string; name: string; logo_url: string }>;
-  wallet: string | null;
-  fee: string | null;
-  coBrand: string | null;
+  filterValues: FilterValues;
+  onUpdate: (key: string, value: string) => void;
+  onClearAll: () => void;
+  isPending?: boolean;
 }
 
 export function CardsFilter({
@@ -48,23 +58,15 @@ export function CardsFilter({
   availableNetworks,
   availableBrands,
   availableWallets,
-  wallet,
-  fee,
-  coBrand,
+  filterValues,
+  onUpdate,
+  onClearAll,
+  isPending,
 }: Props) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
   const t = useTranslations('CardsFilter');
 
   function update(key: string, value: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value === 'all' || value === '' || value === 'default') {
-      params.delete(key);
-    } else {
-      params.set(key, value);
-    }
-    router.push(`${pathname}?${params.toString()}`);
+    onUpdate(key, value);
     posthog.capture('catalog_filter_applied', {
       filter_key: key,
       filter_value: value === 'all' || value === 'default' ? null : value,
@@ -72,16 +74,11 @@ export function CardsFilter({
   }
 
   function clearAll() {
-    const params = new URLSearchParams(searchParams.toString());
-    ['type', 'network', 'bank', 'co_brand', 'sort', 'wallet', 'fee'].forEach((k) => params.delete(k));
-    router.push(`${pathname}?${params.toString()}`);
+    onClearAll();
     posthog.capture('catalog_filter_cleared');
   }
 
-  const sortValue = searchParams.get('sort') ?? 'default';
-  const activeType = searchParams.get('type');
-  const activeNetwork = searchParams.get('network');
-  const activeBankId = searchParams.get('bank');
+  const { type: activeType, network: activeNetwork, bankId: activeBankId, coBrand, sort: sortValue, wallet, fee } = filterValues;
 
   const hasFilter = !!(
     activeType ||
@@ -100,7 +97,7 @@ export function CardsFilter({
   const walletChipData = wallet ? availableWallets.find((w) => w.id === wallet) : null;
 
   return (
-    <div className="space-y-3">
+    <div className={`space-y-3 transition-opacity${isPending ? ' opacity-60 pointer-events-none' : ''}`}>
       {/* Filter controls */}
       <div className="flex gap-2 flex-wrap items-center">
         {enabledFilters.includes('type') && typeFilterUseful && (

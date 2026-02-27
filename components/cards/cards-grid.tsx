@@ -1,7 +1,7 @@
 'use client';
 
-import {useSearchParams} from 'next/navigation';
-import {Suspense, useMemo} from 'react';
+import {useSearchParams, useRouter, usePathname} from 'next/navigation';
+import {Suspense, useMemo, useState, useTransition} from 'react';
 import Link from 'next/link';
 import {useTranslations} from 'next-intl';
 import type {Bank, Card, CardSort, CardType} from '@/lib/api';
@@ -17,6 +17,7 @@ interface Props {
     limit?: number;
     showViewAll?: boolean;
     noCardsLabel?: string;
+    useUrlState?: boolean;
 }
 
 function CardsGridInner({
@@ -27,17 +28,68 @@ function CardsGridInner({
                             limit,
                             showViewAll,
                             noCardsLabel,
+                            useUrlState = false,
                         }: Props) {
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const [isPending, startTransition] = useTransition();
     const t = useTranslations('CardsSection');
 
-    const type = searchParams.get('type') as CardType | null;
-    const network = searchParams.get('network');
-    const bankId = searchParams.get('bank');
-    const coBrand = searchParams.get('co_brand');
-    const sort = searchParams.get('sort') as CardSort | null;
-    const wallet = searchParams.get('wallet');
-    const fee = searchParams.get('fee');
+    // Local state (used when useUrlState=false)
+    const [localType, setLocalType] = useState<string | null>(null);
+    const [localNetwork, setLocalNetwork] = useState<string | null>(null);
+    const [localBankId, setLocalBankId] = useState<string | null>(null);
+    const [localCoBrand, setLocalCoBrand] = useState<string | null>(null);
+    const [localSort, setLocalSort] = useState<string | null>(null);
+    const [localWallet, setLocalWallet] = useState<string | null>(null);
+    const [localFee, setLocalFee] = useState<string | null>(null);
+
+    // Active filter values — from URL params or local state
+    const type = (useUrlState ? searchParams.get('type') : localType) as CardType | null;
+    const network = useUrlState ? searchParams.get('network') : localNetwork;
+    const bankId = useUrlState ? searchParams.get('bank') : localBankId;
+    const coBrand = useUrlState ? searchParams.get('co_brand') : localCoBrand;
+    const sort = (useUrlState ? searchParams.get('sort') : localSort) as CardSort | null;
+    const wallet = useUrlState ? searchParams.get('wallet') : localWallet;
+    const fee = useUrlState ? searchParams.get('fee') : localFee;
+
+    function handleUpdate(key: string, value: string) {
+        const isEmpty = value === 'all' || value === '' || value === 'default';
+
+        if (useUrlState) {
+            const params = new URLSearchParams(searchParams.toString());
+            if (isEmpty) params.delete(key); else params.set(key, value);
+            startTransition(() => router.replace(`${pathname}?${params.toString()}`));
+        } else {
+            const v = isEmpty ? null : value;
+            switch (key) {
+                case 'type': setLocalType(v); break;
+                case 'network': setLocalNetwork(v); break;
+                case 'bank': setLocalBankId(v); break;
+                case 'co_brand': setLocalCoBrand(v); break;
+                case 'sort': setLocalSort(v); break;
+                case 'wallet': setLocalWallet(v); break;
+                case 'fee': setLocalFee(v); break;
+            }
+        }
+    }
+
+    function handleClearAll() {
+        if (useUrlState) {
+            const params = new URLSearchParams(searchParams.toString());
+            ['type', 'network', 'bank', 'co_brand', 'sort', 'wallet', 'fee'].forEach((k) => params.delete(k));
+            startTransition(() => router.replace(`${pathname}?${params.toString()}`));
+        } else {
+            setLocalType(null);
+            setLocalNetwork(null);
+            setLocalBankId(null);
+            setLocalCoBrand(null);
+            setLocalSort(null);
+            setLocalWallet(null);
+            setLocalFee(null);
+        }
+    }
 
     // ── Auto-hide flags ────────────────────────────────────────────────────────
 
@@ -125,14 +177,27 @@ function CardsGridInner({
     const heading = title;
     const emptyMessage = noCardsLabel ?? t('no_cards');
 
+    const filterValues = {
+        type,
+        network,
+        bankId,
+        coBrand,
+        sort: sort ?? 'default',
+        wallet,
+        fee,
+    };
+
     return (
         <div>
             {heading && (
                 <div className="mb-8">
 
-                    <div className="flex relative">
-                        <h2 className="text-3xl font-bold text-slate-900 relative z-10 bg-white pr-6">{heading}</h2>
-                        <div className="border-t border-dashed border-slate-300 absolute top-1/2 left-0 right-0"/>
+                    <div className="flex relative overflow-hidden">
+                        <h2 className="text-3xl font-bold text-slate-900 relative">
+                            <span>{heading}</span>
+
+                            <div className="border-t border-dashed border-slate-300 absolute top-1/2 left-full w-screen ml-6"/>
+                        </h2>
                     </div>
 
                     {showViewAll && <p className="text-slate-500 mt-3">{t('description')}</p>}
@@ -140,7 +205,7 @@ function CardsGridInner({
             )}
 
             {/*filter*/}
-            {enabledFilters.length > 0 && (
+            {enabledFilters.length > 0 && cards.length > 5 && (
                 <div className="mb-8">
                     <CardsFilter
                         banks={banks}
@@ -155,9 +220,10 @@ function CardsGridInner({
                         availableNetworks={availableNetworks}
                         availableBrands={availableBrands}
                         availableWallets={availableWallets}
-                        wallet={wallet}
-                        fee={fee}
-                        coBrand={coBrand}
+                        filterValues={filterValues}
+                        onUpdate={handleUpdate}
+                        onClearAll={handleClearAll}
+                        isPending={isPending}
                     />
                 </div>
             )}
