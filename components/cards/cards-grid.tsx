@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { Bank, Card, CardType, CardNetwork, CardSort } from '@/lib/api';
@@ -18,7 +18,7 @@ interface Props {
   noCardsLabel?: string;
 }
 
-export function CardsGrid({
+function CardsGridInner({
   cards,
   banks,
   enabledFilters = ['type', 'network', 'bank', 'sort'],
@@ -127,5 +127,13 @@ export function CardsGrid({
         </div>
       )}
     </>
+  );
+}
+
+export function CardsGrid(props: Props) {
+  return (
+    <Suspense>
+      <CardsGridInner {...props} />
+    </Suspense>
   );
 }

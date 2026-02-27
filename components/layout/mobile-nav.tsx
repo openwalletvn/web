@@ -85,7 +85,7 @@ export function MobileNav({ banks }: Props) {
                 const isActive = pathPrefix && pathname.startsWith(`/${pathPrefix}`);
 
                 return (
-                  <Collapsible key={index} defaultOpen={isActive}>
+                  <Collapsible key={index} defaultOpen={!!isActive}>
                     <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
                       <span className={cn(isActive && 'text-brand-red')}>
                         {item.label}
