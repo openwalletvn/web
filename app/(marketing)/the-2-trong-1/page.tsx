@@ -21,15 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function TwoInOneCardsPage() {
-  const [allCards, banks, t, tb] = await Promise.all([
-    getCards(),
+  const [cards, banks, t, tb] = await Promise.all([
+    getCards({ type: '2in1' }),
     getBanks(),
     getTranslations('SeoPages'),
     getTranslations('Breadcrumbs'),
   ]);
-
-  // Filter for 2-in-1 cards
-  const filteredCards = allCards.filter((c) => c.card_type.includes('2in1'));
 
   return (
     <div className="px-4 py-12">
@@ -44,7 +41,7 @@ export default async function TwoInOneCardsPage() {
         <p className="text-slate-500 mb-8">{t('2in1_cards_subtitle')}</p>
 
         <CardsGrid
-          cards={filteredCards}
+          cards={cards}
           banks={banks}
           enabledFilters={['network', 'bank', 'sort']}
           noCardsLabel={t('no_cards')}

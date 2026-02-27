@@ -21,15 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DebitCardsPage() {
-  const [allCards, banks, t, tb] = await Promise.all([
-    getCards(),
+  const [cards, banks, t, tb] = await Promise.all([
+    getCards({ type: 'debit' }),
     getBanks(),
     getTranslations('SeoPages'),
     getTranslations('Breadcrumbs'),
   ]);
-
-  // Filter for debit cards only
-  const debitCards = allCards.filter((c) => c.card_type.includes('debit'));
 
   return (
     <div className="px-4 py-12">
@@ -44,7 +41,7 @@ export default async function DebitCardsPage() {
         <p className="text-slate-500 mb-8">{t('debit_cards_subtitle')}</p>
 
         <CardsGrid
-          cards={debitCards}
+          cards={cards}
           banks={banks}
           enabledFilters={['network', 'bank', 'sort']}
           noCardsLabel={t('no_cards')}

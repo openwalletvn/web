@@ -21,15 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CoBrandedCardsPage() {
-  const [allCards, banks, t, tb] = await Promise.all([
-    getCards(),
+  const [cards, banks, t, tb] = await Promise.all([
+    getCards({ co_brand: true }),
     getBanks(),
     getTranslations('SeoPages'),
     getTranslations('Breadcrumbs'),
   ]);
-
-  // Filter for co-branded cards only
-  const coBrandedCards = allCards.filter((c) => !!c.co_brand);
 
   return (
     <div className="px-4 py-12">
@@ -44,7 +41,7 @@ export default async function CoBrandedCardsPage() {
         <p className="text-slate-500 mb-8">{t('cobranded_cards_subtitle')}</p>
 
         <CardsGrid
-          cards={coBrandedCards}
+          cards={cards}
           banks={banks}
           enabledFilters={['type', 'network', 'bank', 'sort']}
           noCardsLabel={t('no_cards')}

@@ -14,7 +14,7 @@ export function CardMasonry({ cards }: { cards: Card[] }) {
       columnClassName="pl-4 bg-clip-padding"
     >
       {cards.map((card) => (
-        <div key={card.id} className="mb-4">
+        <div key={card.id} className="mb-8">
           <CardItem card={card} />
         </div>
       ))}

@@ -95,7 +95,7 @@ export function NetworkSelect({ value, networks, onChange }: NetworkSelectProps)
         {networks.map((n) => (
           <SelectItem key={n.id} value={n.id}>
             <span className="flex items-center gap-2">
-              {n.logo_url && <img src={getNetworkImageUrl(n.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-left shrink-0" />}
+              {n.logo_url && <img src={getNetworkImageUrl(n.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-center shrink-0" />}
               <span>{n.name}</span>
             </span>
           </SelectItem>
@@ -153,7 +153,7 @@ export function BankCombobox({ value, banks, onChange, placeholder, searchPlaceh
                   onSelect={() => { onChange(b.id); setOpen(false); }}
                 >
                   <span className="flex items-center gap-2">
-                    {b.logo_url && <img src={getBankImageUrl(b.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-left shrink-0" />}
+                    {b.logo_url && <img src={getBankImageUrl(b.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-center shrink-0" />}
                     <span>{b.name}</span>
                   </span>
                 </CommandItem>
@@ -197,7 +197,7 @@ export function CoBrandSelect({ value, brands, onChange }: CoBrandSelectProps) {
         {brands.map((b) => (
           <SelectItem key={b.id} value={b.id}>
             <span className="flex items-center gap-2">
-              {b.logo_url && <img src={getBrandImageUrl(b.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-left shrink-0" />}
+              {b.logo_url && <img src={getBrandImageUrl(b.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-center shrink-0" />}
               <span>{b.name}</span>
             </span>
           </SelectItem>
@@ -238,7 +238,7 @@ export function WalletSelect({ value, wallets, onChange }: WalletSelectProps) {
         {wallets.map((w) => (
           <SelectItem key={w.id} value={w.id}>
             <span className="flex items-center gap-2">
-              {w.logo_url && <img src={getWalletImageUrl(w.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-left shrink-0" />}
+              {w.logo_url && <img src={getWalletImageUrl(w.logo_url)} alt="" className="w-[50px] h-[20px] object-contain object-center shrink-0" />}
               <span>{w.name}</span>
             </span>
           </SelectItem>
