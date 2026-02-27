@@ -1,9 +1,10 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import Image from 'next/image';
-import { IconCreditCard } from '@tabler/icons-react';
-import { getCardImageUrl, type Card } from '@/lib/api';
+import {IconCreditCard} from '@tabler/icons-react';
+import {type Card, getCardImageUrl} from '@/lib/api';
+import {ShimmerLayer} from "@/components/phucbm/shimmer-layer";
 
 interface Props {
   card: Card;
@@ -40,7 +41,7 @@ export function CardImage({ card, className }: Props) {
   return (
     <div
       ref={containerRef}
-      className={`relative w-full bg-slate-50 overflow-hidden${className ? ` ${className}` : ''}`}
+      className={`relative w-full overflow-hidden group/shimmer ${className ? className : ''}`}
       style={{ aspectRatio: ratio, borderRadius: radius }}
     >
       {!loaded && (
@@ -55,6 +56,9 @@ export function CardImage({ card, className }: Props) {
         className={`object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={handleLoad}
       />
+
+
+        <ShimmerLayer/>
     </div>
   );
 }

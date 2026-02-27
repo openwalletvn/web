@@ -50,6 +50,7 @@ export interface Card {
     image_horizontal_url?: string;
     image_vertical_url?: string;
     bank_id: string;
+    bank_data?: Bank;
     card_network: CardNetwork;
     card_tier?: string;
     co_brand?: string;
