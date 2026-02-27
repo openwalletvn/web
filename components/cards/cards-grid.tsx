@@ -220,7 +220,7 @@ function CardsGridInner({
 
             {/*filter*/}
             {anyFilterShown && cards.length > 5 && (
-                <div className="mb-8">
+                <div className="mb-8 flex gap-4 items-center">
                     <CardsFilter
                         banks={banks}
                         hideTypeFilter={hideTypeFilter}
@@ -245,6 +245,15 @@ function CardsGridInner({
                         onClearAll={handleClearAll}
                         isPending={isPending}
                     />
+
+                    {/*card count*/}
+                    {anyFilterShown && (
+                        <div className="">
+                            {limit && displayed.length < filteredCards.length
+                                ? `Hiển thị ${displayed.length} / ${filteredCards.length} thẻ`
+                                : `${filteredCards.length} thẻ`}
+                        </div>
+                    )}
                 </div>
             )}
 
