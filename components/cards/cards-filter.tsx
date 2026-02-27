@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import type { Bank } from '@/lib/api';
 import { getBankImageUrl, getBrandImageUrl, getNetworkImageUrl, getWalletImageUrl } from '@/lib/api';
@@ -54,6 +54,7 @@ export function CardsFilter({
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const t = useTranslations('CardsFilter');
 
   function update(key: string, value: string) {
@@ -63,7 +64,7 @@ export function CardsFilter({
     } else {
       params.set(key, value);
     }
-    router.push(`/the?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
     posthog.capture('catalog_filter_applied', {
       filter_key: key,
       filter_value: value === 'all' || value === 'default' ? null : value,
@@ -73,7 +74,7 @@ export function CardsFilter({
   function clearAll() {
     const params = new URLSearchParams(searchParams.toString());
     ['type', 'network', 'bank', 'co_brand', 'sort', 'wallet', 'fee'].forEach((k) => params.delete(k));
-    router.push(`/the?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
     posthog.capture('catalog_filter_cleared');
   }
 
