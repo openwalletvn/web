@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
-import {getBank, getBankImageUrl, getBanks, getCards} from '@/lib/api';
+import {getBank, getBankImageUrl, getBanks, getCards, getNetworkImageUrl} from '@/lib/api';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {CardsGrid} from '@/components/cards/cards-grid';
 
@@ -64,9 +64,21 @@ export default async function BankPage({ params }: Props) {
     getBanks(),
   ]);
 
+  const creditCards = cards.filter((c) => c.card_type.includes('credit'));
+  const debitCards = cards.filter((c) => c.card_type.includes('debit'));
+  const cobrandCards = cards.filter((c) => c.co_brand && c.co_brand !== '');
+
+  const networks = Array.from(
+    new Map(
+      cards
+        .filter((c) => c.card_network_data)
+        .map((c) => [c.card_network, c.card_network_data!])
+    ).values()
+  );
+
   return (
     <div className="px-4 py-12">
-      <div className="max-w-container mx-auto">
+      <div className="max-w-container mx-auto space-y-16">
         <Breadcrumbs
           items={[
             { label: tb('home'), href: '/' },
@@ -75,39 +87,72 @@ export default async function BankPage({ params }: Props) {
           ]}
         />
 
-        <div className="flex items-start gap-6 mb-12">
-          <div className="relative w-28 h-28 shrink-0">
+        {/* Bank Identity */}
+        <div className="flex items-start gap-12">
+          <div className="relative w-56 aspect-video shrink-0">
             <Image src={getBankImageUrl(bank.logo_url)} alt="" fill className="object-contain" />
           </div>
 
           <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-bold text-slate-900">{bank.name}</h1>
-              {bank.brand_color && (
-                <div
-                  className="w-5 h-5 rounded-full shrink-0 border border-slate-300"
-                  style={{ backgroundColor: bank.brand_color }}
-                  title={bank.brand_color}
-                />
-              )}
-            </div>
-            <p className="text-slate-500 mt-1">{bank.full_name}</p>
+            <h1 className="text-3xl font-bold text-zinc-900">{bank.name}</h1>
+            <p className="text-zinc-600 mt-1">{bank.full_name}</p>
+            {networks.length > 0 && (
+              <div className="flex items-center gap-4 mt-3">
+                {networks.map((n) => (
+                  <div key={n.id} className="relative h-5 w-auto">
+                    <Image
+                      src={getNetworkImageUrl(n.logo_url)}
+                      alt={n.name ?? ''}
+                      height={20}
+                      width={40}
+                      className="object-contain size-full"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             {bank.link && (
               <a
                 href={bank.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block mt-4 text-brand-red hover:underline text-base"
+                className="inline-flex items-center gap-1 mt-3 text-sm text-zinc-500 hover:text-zinc-800"
               >
-                {bank.link} ↗
+                {new URL(bank.link).hostname} ↗
               </a>
             )}
           </div>
         </div>
 
-        <hr className="border-slate-200 mb-2" />
+        {/* Stats Row */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: 'Tổng số thẻ', value: cards.length },
+            { label: 'Tín dụng', value: creditCards.length },
+            { label: 'Ghi nợ', value: debitCards.length },
+          ].map(({ label, value }) => (
+            <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
+              <p className="text-2xl font-bold text-zinc-900">{value}</p>
+              <p className="text-xs text-zinc-500 mt-1">{label}</p>
+            </div>
+          ))}
+        </div>
 
-        <CardsGrid cards={cards} banks={banks} title={t('cards_title')} />
+        {/* Card Sections */}
+        {creditCards.length > 0 && (
+          <CardsGrid cards={creditCards} banks={banks} title={`Thẻ tín dụng (${creditCards.length})`} />
+        )}
+
+
+
+        {debitCards.length > 0 && (
+          <CardsGrid cards={debitCards} banks={banks} title={`Thẻ ghi nợ (${debitCards.length})`} />
+        )}
+
+
+        {cobrandCards.length > 0 && (
+          <CardsGrid cards={cobrandCards} banks={banks} title={`Thẻ đồng thương hiệu (${cobrandCards.length})`} />
+        )}
       </div>
     </div>
   );
