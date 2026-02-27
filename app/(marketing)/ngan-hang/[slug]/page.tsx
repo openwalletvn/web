@@ -1,11 +1,10 @@
 import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import {Suspense} from 'react';
 import {getTranslations} from 'next-intl/server';
-import {getBank, getBankImageUrl, getBanks} from '@/lib/api';
+import {getBank, getBankImageUrl, getBanks, getCards} from '@/lib/api';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
-import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
+import {CardsGrid} from '@/components/cards/cards-grid';
 
 export async function generateStaticParams() {
   const banks = await getBanks();
@@ -60,6 +59,11 @@ export default async function BankPage({ params }: Props) {
     );
   }
 
+  const [cards, banks] = await Promise.all([
+    getCards({ bank_id: slug }),
+    getBanks(),
+  ]);
+
   return (
     <div className="px-4 py-12">
       <div className="max-w-container mx-auto">
@@ -103,9 +107,7 @@ export default async function BankPage({ params }: Props) {
 
         <hr className="border-slate-200 mb-2" />
 
-        <Suspense fallback={<CardsSectionSkeleton />}>
-          <CardsSection filters={{ bank_id: bank.id }} title={t('cards_title')} />
-        </Suspense>
+        <CardsGrid cards={cards} banks={banks} title={t('cards_title')} />
       </div>
     </div>
   );
