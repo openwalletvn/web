@@ -62,7 +62,6 @@ export const MENU: NavItem[] = [
                 title: 'Theo phí',
                 items: [
                     {label: 'Tín dụng miễn phí', href: '/the-tin-dung-mien-phi-thuong-nien'},
-                    {label: 'Tín dụng phí thấp', href: '/the-tin-dung-phi-thuong-nien-thap'},
                     {label: 'Ghi nợ miễn phí', href: '/the-ghi-no-mien-phi'},
                 ],
             },

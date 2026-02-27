@@ -43,7 +43,7 @@ export default async function CreditMastercardPage() {
         <CardsGrid
           cards={cards}
           banks={banks}
-          hideTypeFilter hideNetworkFilter hideCoBrandFilter hideContactlessFilter hideFeeFilter
+          hideTypeFilter
           noCardsLabel={t('no_cards')}
         />
       </div>
