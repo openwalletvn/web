@@ -207,7 +207,7 @@
     "days": "{count} ngày",
     "statement_date": "Ngày sao kê",
     "statement_date_value": "Ngày {day} hàng tháng",
-    "payment_due_date": "Ngày đến hạn thanh toán",
+    "payment_due_date": "Ngày đề nghị thanh toán",
     "co_brand_label": "Thẻ đồng thương hiệu",
     "contactless_methods": "Thanh toán không tiếp xúc (NFC)",
     "last_updated": "Cập nhật lần cuối",

@@ -503,7 +503,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                 </FormField>
 
                 <FormField
-                  label="Ngày đến hạn thanh toán"
+                  label="Ngày đề nghị thanh toán"
                   hint={
                     statementDate && card.interest_free_days
                       ? `Tự tính: ngày ${statementDate} + ${card.interest_free_days} ngày miễn lãi`

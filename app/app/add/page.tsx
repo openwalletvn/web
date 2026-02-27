@@ -330,7 +330,7 @@ export default function AddCardPage() {
                 />
 
                 <DaySelect
-                  label="Ngày đến hạn thanh toán"
+                  label="Ngày đề nghị thanh toán"
                   hint={
                     statementDate && selectedCard.interest_free_days
                       ? `Tự tính: ngày sao kê + ${selectedCard.interest_free_days} ngày miễn lãi`

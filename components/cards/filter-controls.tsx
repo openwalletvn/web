@@ -261,7 +261,7 @@ export function FeeSelect({ value, onChange }: FeeSelectProps) {
   const t = useTranslations('CardsFilter');
   return (
     <Select value={value ?? 'all'} onValueChange={onChange}>
-      <SelectTrigger className="w-36">
+      <SelectTrigger className="w-40">
         <SelectValue placeholder={t('all_fees')} />
       </SelectTrigger>
       <SelectContent>

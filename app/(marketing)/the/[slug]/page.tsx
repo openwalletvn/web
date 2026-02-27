@@ -124,7 +124,7 @@ export default async function CardPage({ params }: Props) {
                         {card.annual_fee === 0 ? t('free') : `${card.annual_fee.toLocaleString()} ${card.currency ?? ''}`}
                       </span>
                       {feeBucket && (
-                        <Link href={`/the?fee=${feeBucket.value}`} className="block text-sm text-slate-400 hover:text-brand-blue underline underline-offset-2 transition-colors mt-0.5">
+                        <Link href={`/the?fee=${feeBucket.value}&sort=fee_desc`} className="block text-sm text-slate-400 hover:text-brand-blue underline underline-offset-2 transition-colors mt-0.5">
                           Xem thêm thẻ {feeBucket.label}
                         </Link>
                       )}

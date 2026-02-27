@@ -22,7 +22,7 @@ interface Props {
 function CardsGridInner({
   cards,
   banks,
-  enabledFilters = ['type', 'network', 'bank', 'sort', 'co_brand'],
+  enabledFilters = ['type', 'network', 'bank', 'fee', 'sort', 'co_brand'],
   title,
   limit,
   showViewAll,
@@ -103,7 +103,14 @@ function CardsGridInner({
     if (wallet) result = result.filter((c) => c.contactless_methods?.includes(wallet));
     if (fee === 'free') result = result.filter((c) => c.annual_fee === 0);
     const bucket = FEE_BUCKETS.find((b) => b.value === fee);
-    if (bucket) result = result.filter((c) => c.annual_fee != null && c.annual_fee > 0 && c.annual_fee <= bucket.max);
+    if (bucket) {
+      result = result.filter((c) => {
+        if (c.annual_fee == null) return false;
+        if (c.annual_fee < bucket.min) return false;
+        if (bucket.max !== null && c.annual_fee > bucket.max) return false;
+        return true;
+      });
+    }
 
     if (sort === 'fee_asc') {
       result = [...result].sort((a, b) => (a.annual_fee ?? 0) - (b.annual_fee ?? 0));
