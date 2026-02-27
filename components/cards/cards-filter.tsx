@@ -2,32 +2,54 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import type { Bank, CardType, CardNetwork } from '@/lib/api';
+import type { Bank } from '@/lib/api';
+import { getBankImageUrl, getBrandImageUrl, getNetworkImageUrl, getWalletImageUrl } from '@/lib/api';
 import posthog from 'posthog-js';
+import {
+  TypeSelect,
+  NetworkSelect,
+  BankCombobox,
+  CoBrandSelect,
+  WalletSelect,
+  FeeSelect,
+  SortSelect,
+  FilterChip,
+} from './filter-controls';
 
 interface Props {
   banks: Bank[];
-  types: CardType[];
-  networks: CardNetwork[];
-  enabledFilters: Array<'type' | 'network' | 'bank' | 'sort'>;
-  coBrandAvailable: boolean;
-  coBrandDisabled: boolean;
+  enabledFilters: Array<'type' | 'network' | 'bank' | 'sort' | 'wallet' | 'fee' | 'co_brand'>;
+  typeFilterUseful: boolean;
+  networkFilterUseful: boolean;
+  bankFilterUseful: boolean;
+  walletFilterUseful: boolean;
+  feeFilterUseful: boolean;
+  sortFilterUseful: boolean;
+  coBrandFilterUseful: boolean;
+  availableNetworks: Array<{ id: string; name: string; logo_url: string }>;
+  availableBrands: Array<{ id: string; name: string; logo_url: string }>;
+  availableWallets: Array<{ id: string; name: string; logo_url: string }>;
+  wallet: string | null;
+  fee: string | null;
+  coBrand: string | null;
 }
 
 export function CardsFilter({
   banks,
-  types,
-  networks,
   enabledFilters,
-  coBrandAvailable,
-  coBrandDisabled,
+  typeFilterUseful,
+  networkFilterUseful,
+  bankFilterUseful,
+  walletFilterUseful,
+  feeFilterUseful,
+  sortFilterUseful,
+  coBrandFilterUseful,
+  availableNetworks,
+  availableBrands,
+  availableWallets,
+  wallet,
+  fee,
+  coBrand,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -47,142 +69,142 @@ export function CardsFilter({
     });
   }
 
-  function toggleCoBrand() {
+  function clearAll() {
     const params = new URLSearchParams(searchParams.toString());
-    const isEnabling = params.get('co_brand') !== '1';
-    if (!isEnabling) {
-      params.delete('co_brand');
-    } else {
-      params.set('co_brand', '1');
-    }
+    ['type', 'network', 'bank', 'co_brand', 'sort', 'wallet', 'fee'].forEach((k) => params.delete(k));
     router.push(`/the?${params.toString()}`);
-    posthog.capture('catalog_filter_applied', {
-      filter_key: 'co_brand',
-      filter_value: isEnabling ? '1' : null,
-    });
+    posthog.capture('catalog_filter_cleared');
   }
 
-  function cycleSortOrder() {
-    const params = new URLSearchParams(searchParams.toString());
-    const current = params.get('sort');
-    let next: string;
-
-    if (!current || current === 'default') {
-      next = 'fee_asc';
-    } else if (current === 'fee_asc') {
-      next = 'fee_desc';
-    } else {
-      next = 'default';
-    }
-
-    if (next === 'default') {
-      params.delete('sort');
-    } else {
-      params.set('sort', next);
-    }
-
-    router.push(`/the?${params.toString()}`);
-    posthog.capture('catalog_filter_applied', {
-      filter_key: 'sort',
-      filter_value: next === 'default' ? null : next,
-    });
-  }
-
-  const isCoBrand = searchParams.get('co_brand') === '1';
   const sortValue = searchParams.get('sort') ?? 'default';
+  const activeType = searchParams.get('type');
+  const activeNetwork = searchParams.get('network');
+  const activeBankId = searchParams.get('bank');
 
   const hasFilter = !!(
-    searchParams.get('type') ||
-    searchParams.get('network') ||
-    searchParams.get('bank') ||
-    searchParams.get('co_brand') ||
-    searchParams.get('sort')
+    activeType ||
+    activeNetwork ||
+    activeBankId ||
+    coBrand ||
+    sortValue !== 'default' ||
+    wallet ||
+    fee
   );
 
-  const hasEnabledFilters = enabledFilters.length > 0;
-
-  // Sort button label
-  const sortLabel = sortValue === 'fee_asc'
-    ? 'Fee ↑'
-    : sortValue === 'fee_desc'
-    ? 'Fee ↓'
-    : t('default_order');
+  // Chip lookup data
+  const networkChipData = activeNetwork ? availableNetworks.find((n) => n.id === activeNetwork) : null;
+  const bankChipData = activeBankId ? banks.find((b) => b.id === activeBankId) : null;
+  const brandChipData = coBrand ? availableBrands.find((b) => b.id === coBrand) : null;
+  const walletChipData = wallet ? availableWallets.find((w) => w.id === wallet) : null;
 
   return (
-    <div className="flex gap-2 flex-wrap items-center">
-      {enabledFilters.includes('type') && (
-        <Select value={searchParams.get('type') ?? 'all'} onValueChange={(v) => update('type', v)}>
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder={t('all_types')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('all_types')}</SelectItem>
-            <SelectItem value="credit">{t('type_credit')}</SelectItem>
-            <SelectItem value="debit">{t('type_debit')}</SelectItem>
-          </SelectContent>
-        </Select>
-      )}
+    <div className="space-y-3">
+      {/* Filter controls */}
+      <div className="flex gap-2 flex-wrap items-center">
+        {enabledFilters.includes('type') && typeFilterUseful && (
+          <TypeSelect value={activeType} onChange={(v) => update('type', v)} />
+        )}
 
-      {enabledFilters.includes('network') && (
-        <Select value={searchParams.get('network') ?? 'all'} onValueChange={(v) => update('network', v)}>
-          <SelectTrigger className="w-36">
-            <SelectValue placeholder={t('all_networks')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('all_networks')}</SelectItem>
-            {networks.map((key) => (
-              <SelectItem key={key} value={key}>{t(`network_${key}`)}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+        {enabledFilters.includes('network') && networkFilterUseful && (
+          <NetworkSelect
+            value={activeNetwork}
+            networks={availableNetworks}
+            onChange={(v) => update('network', v)}
+          />
+        )}
 
-      {enabledFilters.includes('bank') && (
-        <Select value={searchParams.get('bank') ?? 'all'} onValueChange={(v) => update('bank', v)}>
-          <SelectTrigger className="w-44">
-            <SelectValue placeholder={t('all_banks')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t('all_banks')}</SelectItem>
-            {banks.map((b) => (
-              <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+        {enabledFilters.includes('bank') && bankFilterUseful && (
+          <BankCombobox
+            value={activeBankId}
+            banks={banks}
+            onChange={(v) => update('bank', v)}
+            placeholder={t('all_banks')}
+            searchPlaceholder={t('search_bank')}
+            allLabel={t('all_banks')}
+          />
+        )}
 
-      {enabledFilters.includes('sort') && (
-        <button
-          onClick={cycleSortOrder}
-          className="h-9 px-3 rounded-md border bg-white text-slate-700 border-slate-300 hover:bg-slate-50 text-base font-medium transition-colors"
-        >
-          {sortLabel}
-        </button>
-      )}
+        {enabledFilters.includes('co_brand') && coBrandFilterUseful && (
+          <CoBrandSelect
+            value={coBrand}
+            brands={availableBrands}
+            onChange={(v) => update('co_brand', v)}
+          />
+        )}
 
-      {coBrandAvailable && (
-        <button
-          onClick={toggleCoBrand}
-          disabled={coBrandDisabled}
-          className={`h-9 px-3 rounded-md border text-base font-medium transition-colors ${
-            coBrandDisabled
-              ? 'opacity-40 pointer-events-none bg-white text-slate-700 border-slate-300'
-              : isCoBrand
-              ? 'bg-brand-blue text-white border-brand-blue'
-              : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-          }`}
-        >
-          {t('co_branded')}
-        </button>
-      )}
+        {enabledFilters.includes('wallet') && walletFilterUseful && (
+          <WalletSelect
+            value={wallet}
+            wallets={availableWallets}
+            onChange={(v) => update('wallet', v)}
+          />
+        )}
 
-      {hasFilter && hasEnabledFilters && (
-        <button
-          onClick={() => router.push('/the')}
-          className="h-9 px-3 text-base text-slate-500 hover:text-slate-900 transition-colors underline underline-offset-2"
-        >
-          {t('reset')}
-        </button>
+        {enabledFilters.includes('fee') && feeFilterUseful && (
+          <FeeSelect value={fee} onChange={(v) => update('fee', v)} />
+        )}
+
+        {enabledFilters.includes('sort') && sortFilterUseful && (
+          <SortSelect value={sortValue} onChange={(v) => update('sort', v)} />
+        )}
+      </div>
+
+      {/* Active filter chips */}
+      {hasFilter && (
+        <div className="flex gap-2 flex-wrap items-center">
+          {activeType && (
+            <FilterChip
+              label={t(`type_${activeType}`)}
+              onRemove={() => update('type', 'all')}
+            />
+          )}
+          {activeNetwork && (
+            <FilterChip
+              label={networkChipData?.name ?? t(`network_${activeNetwork}`)}
+              logoUrl={networkChipData?.logo_url ? getNetworkImageUrl(networkChipData.logo_url) : undefined}
+              onRemove={() => update('network', 'all')}
+            />
+          )}
+          {activeBankId && (
+            <FilterChip
+              label={bankChipData?.name ?? activeBankId}
+              logoUrl={bankChipData?.logo_url ? getBankImageUrl(bankChipData.logo_url) : undefined}
+              onRemove={() => update('bank', 'all')}
+            />
+          )}
+          {coBrand && (
+            <FilterChip
+              label={brandChipData?.name ?? coBrand}
+              logoUrl={brandChipData?.logo_url ? getBrandImageUrl(brandChipData.logo_url) : undefined}
+              onRemove={() => update('co_brand', 'all')}
+            />
+          )}
+          {wallet && (
+            <FilterChip
+              label={walletChipData?.name ?? wallet}
+              logoUrl={walletChipData?.logo_url ? getWalletImageUrl(walletChipData.logo_url) : undefined}
+              onRemove={() => update('wallet', 'all')}
+            />
+          )}
+          {fee && (
+            <FilterChip
+              label={fee === 'free' ? t('fee_free') : t('fee_paid')}
+              onRemove={() => update('fee', 'all')}
+            />
+          )}
+          {sortValue !== 'default' && (
+            <FilterChip
+              label={sortValue === 'fee_asc' ? t('sort_fee_asc') : t('sort_fee_desc')}
+              onRemove={() => update('sort', 'default')}
+            />
+          )}
+          <button
+            onClick={clearAll}
+            className="text-sm text-slate-500 hover:text-slate-900 transition-colors"
+          >
+            {t('clear_all')}
+          </button>
+        </div>
       )}
     </div>
   );

@@ -48,9 +48,9 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
         </div>
       )}
 
-      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4">
+      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 sm:gap-4 gap-6">
         {displayed.map((card) => (
-          <div key={card.id} className="break-inside-avoid mb-4">
+          <div key={card.id} className="break-inside-avoid mb-8">
             <CardItem card={card} />
           </div>
         ))}

@@ -174,7 +174,18 @@
     "network_jcb": "JCB",
     "network_napas": "Napas",
     "network_amex": "Amex",
-    "network_unionpay": "UnionPay"
+    "network_unionpay": "UnionPay",
+    "sort_fee_asc": "Annual fee ↑",
+    "sort_fee_desc": "Annual fee ↓",
+    "all_wallets": "All wallets",
+    "all_fees": "All fees",
+    "fee_free": "Free",
+    "fee_paid": "Paid",
+    "clear_all": "Clear all",
+    "co_brand": "Co-branded",
+    "all_brands": "All brands",
+    "search_bank": "Search bank...",
+    "co_brand_label": "Co-branded"
   },
   "BlogPage": {
     "meta_title": "Blog — Personal Finance Knowledge | OpenWallet",
