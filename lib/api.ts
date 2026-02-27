@@ -19,6 +19,12 @@ export interface ContactlessMethod {
     link?: string;
 }
 
+export interface BankStats {
+    card_count: number;
+    credit_count: number;
+    debit_count: number;
+}
+
 export interface Bank {
     id: string;
     name: string;
@@ -26,6 +32,9 @@ export interface Bank {
     link: string;
     logo_url: string;
     brand_color?: string;
+    stats?: BankStats;
+    networks?: string[];
+    networks_data?: Network[];
 }
 
 interface BankListResponse {

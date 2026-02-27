@@ -68,14 +68,6 @@ export default async function BankPage({ params }: Props) {
   const debitCards = cards.filter((c) => c.card_type.includes('debit'));
   const cobrandCards = cards.filter((c) => c.co_brand && c.co_brand !== '');
 
-  const networks = Array.from(
-    new Map(
-      cards
-        .filter((c) => c.card_network_data)
-        .map((c) => [c.card_network, c.card_network_data!])
-    ).values()
-  );
-
   return (
     <div className="px-4 py-12">
       <div className="max-w-container mx-auto space-y-16">
@@ -96,21 +88,6 @@ export default async function BankPage({ params }: Props) {
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-zinc-900">{bank.name}</h1>
             <p className="text-zinc-600 mt-1">{bank.full_name}</p>
-            {networks.length > 0 && (
-              <div className="flex items-center gap-4 mt-3">
-                {networks.map((n) => (
-                  <div key={n.id} className="relative h-5 w-auto">
-                    <Image
-                      src={getNetworkImageUrl(n.logo_url)}
-                      alt={n.name ?? ''}
-                      height={20}
-                      width={40}
-                      className="object-contain size-full"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
             {bank.link && (
               <a
                 href={bank.link}
@@ -120,6 +97,20 @@ export default async function BankPage({ params }: Props) {
               >
                 {new URL(bank.link).hostname} ↗
               </a>
+            )}
+            {(bank.networks_data?.length ?? 0) > 0 && (
+              <div className="flex items-center gap-3 mt-3">
+                {bank.networks_data!.map((n) => (
+                  <div key={n.id} className="relative w-8 h-8">
+                    <Image
+                      src={getNetworkImageUrl(n.logo_url)}
+                      alt={n.name ?? ''}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

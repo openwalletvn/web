@@ -35,7 +35,7 @@ export default async function BanksPage() {
         <h1 className="text-4xl font-bold text-slate-900 mb-1">{t('title')}</h1>
         <p className="text-slate-500 mb-8">{t('count', { count: banks.length })}</p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-8">
           {banks.map((bank) => (
             <BankItem key={bank.id} bank={bank} />
           ))}
