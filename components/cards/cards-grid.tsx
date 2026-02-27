@@ -5,6 +5,7 @@ import { Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { Bank, Card, CardType, CardSort } from '@/lib/api';
+import { FEE_BUCKETS } from '@/lib/fee-buckets';
 import { CardsFilter } from './cards-filter';
 import { CardMasonry } from './card-masonry';
 
@@ -83,12 +84,7 @@ function CardsGridInner({
   }, [cards]);
   const walletFilterUseful = availableWallets.length > 1;
 
-  const hasFreeCards = useMemo(() => cards.some((c) => c.annual_fee === 0), [cards]);
-  const hasPaidCards = useMemo(
-    () => cards.some((c) => c.annual_fee != null && c.annual_fee > 0),
-    [cards]
-  );
-  const feeFilterUseful = hasFreeCards && hasPaidCards;
+  const feeFilterUseful = cards.some((c) => c.annual_fee != null && c.annual_fee > 0);
 
   const sortFilterUseful = useMemo(
     () => cards.filter((c) => c.annual_fee != null).length > 1,
@@ -106,7 +102,8 @@ function CardsGridInner({
     if (coBrand) result = result.filter((c) => c.co_brand === coBrand);
     if (wallet) result = result.filter((c) => c.contactless_methods?.includes(wallet));
     if (fee === 'free') result = result.filter((c) => c.annual_fee === 0);
-    if (fee === 'paid') result = result.filter((c) => c.annual_fee != null && c.annual_fee > 0);
+    const bucket = FEE_BUCKETS.find((b) => b.value === fee);
+    if (bucket) result = result.filter((c) => c.annual_fee != null && c.annual_fee > 0 && c.annual_fee <= bucket.max);
 
     if (sort === 'fee_asc') {
       result = [...result].sort((a, b) => (a.annual_fee ?? 0) - (b.annual_fee ?? 0));

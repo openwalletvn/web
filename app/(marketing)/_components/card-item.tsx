@@ -31,9 +31,22 @@ export function CardItem({card}: Props) {
 
     const bank = card.bank_data;
     const isVertical = card.image_orientation != "horizontal";
+    const hexToRgba = (hex: string, alpha = 0.45) => {
+        if (!hex) return `rgba(0,0,0,${alpha})`
+        const r = parseInt(hex.slice(1, 3), 16)
+        const g = parseInt(hex.slice(3, 5), 16)
+        const b = parseInt(hex.slice(5, 7), 16)
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`
+    }
 
     return (
-        <div className="flex flex-col gap-2 group relative cursor-pointer">
+        <div
+            className="flex flex-col gap-2 group relative cursor-pointer"
+            style={{
+                // @ts-ignore
+                "--glow-color": bank?.brand_color ? hexToRgba(bank?.brand_color, 0.45) : "rgba(0,0,0,0.45)",
+            }}
+        >
             {/* Tilt wrapper — perspective 3D, mouse-tracked */}
             <div
                 ref={imageRef}
@@ -53,11 +66,11 @@ export function CardItem({card}: Props) {
                 {
                     isVertical &&
                     <div
-                        className="absolute left-1/2 top-1/2 w-[50%] h-[80%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_100px_rgba(0,0,0,0.45)]"/>
+                        className="absolute left-1/2 top-1/2 w-[50%] h-[80%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_100px_var(--glow-color)]"/>
                 } {
                 !isVertical &&
                 <div
-                    className="absolute left-1/2 top-1/2 w-[50%] h-[50%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_80px_rgba(0,0,0,0.45)]"/>
+                    className="absolute left-1/2 top-1/2 w-[50%] h-[50%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_80px_var(--glow-color)]"/>
             }
 
 

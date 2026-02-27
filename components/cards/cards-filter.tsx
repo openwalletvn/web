@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import type { Bank } from '@/lib/api';
 import { getBankImageUrl, getBrandImageUrl, getNetworkImageUrl, getWalletImageUrl } from '@/lib/api';
+import { FEE_BUCKETS } from '@/lib/fee-buckets';
 import posthog from 'posthog-js';
 import {
   TypeSelect,
@@ -188,7 +189,7 @@ export function CardsFilter({
           )}
           {fee && (
             <FilterChip
-              label={fee === 'free' ? t('fee_free') : t('fee_paid')}
+              label={fee === 'free' ? t('fee_free') : (FEE_BUCKETS.find((b) => b.value === fee)?.label ?? fee)}
               onRemove={() => update('fee', 'all')}
             />
           )}

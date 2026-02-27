@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/command';
 import { IconChevronDown } from '@tabler/icons-react';
 import { getBankImageUrl, getBrandImageUrl, getNetworkImageUrl, getWalletImageUrl } from '@/lib/api';
+import { FEE_BUCKETS } from '@/lib/fee-buckets';
+import { SelectSeparator } from '@/components/ui/select';
 
 // ── FilterChip ────────────────────────────────────────────────────────────────
 
@@ -265,7 +267,10 @@ export function FeeSelect({ value, onChange }: FeeSelectProps) {
       <SelectContent>
         <SelectItem value="all">{t('all_fees')}</SelectItem>
         <SelectItem value="free">{t('fee_free')}</SelectItem>
-        <SelectItem value="paid">{t('fee_paid')}</SelectItem>
+        <SelectSeparator />
+        {FEE_BUCKETS.map((b) => (
+          <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );

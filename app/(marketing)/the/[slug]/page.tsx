@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {getTranslations, getLocale} from 'next-intl/server';
 import {Badge} from '@/components/ui/badge';
 import {getBank, getBankImageUrl, getCard, getCards, getWalletImageUrl} from '@/lib/api';
+import {getFeeBucket} from '@/lib/fee-buckets';
 import {CardImage} from '@/components/cards/card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {AddToWalletButton} from './_add-to-wallet-button';
@@ -113,14 +114,24 @@ export default async function CardPage({ params }: Props) {
             <AddToWalletButton card={card} />
 
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-base">
-              {card.annual_fee !== undefined && (
-                <>
-                  <dt className="text-slate-500">{t('annual_fee')}</dt>
-                  <dd className="text-slate-900 font-medium">
-                    {card.annual_fee === 0 ? t('free') : `${card.annual_fee.toLocaleString()} ${card.currency ?? ''}`}
-                  </dd>
-                </>
-              )}
+              {card.annual_fee !== undefined && (() => {
+                const feeBucket = card.annual_fee > 0 ? getFeeBucket(card.annual_fee) : null;
+                return (
+                  <>
+                    <dt className="text-slate-500">{t('annual_fee')}</dt>
+                    <dd className="font-medium">
+                      <span className="text-slate-900">
+                        {card.annual_fee === 0 ? t('free') : `${card.annual_fee.toLocaleString()} ${card.currency ?? ''}`}
+                      </span>
+                      {feeBucket && (
+                        <Link href={`/the?fee=${feeBucket.value}`} className="block text-sm text-slate-400 hover:text-brand-blue underline underline-offset-2 transition-colors mt-0.5">
+                          Xem thêm thẻ {feeBucket.label}
+                        </Link>
+                      )}
+                    </dd>
+                  </>
+                );
+              })()}
               {card.interest_free_days !== undefined && (
                 <>
                   <dt className="text-slate-500">{t('interest_free_days')}</dt>
