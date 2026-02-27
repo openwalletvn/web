@@ -3,7 +3,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { IconGripVertical } from '@tabler/icons-react';
-import { getCardImageUrl, type Card, type Bank } from '@/lib/api';
+import { type Card, type Bank } from '@/lib/api';
+import { CardImage } from '@/components/cards/card-image';
 import type { WalletCard, CardStatus } from '@/lib/db';
 import { WalletCardBadges } from './wallet-card-badges';
 
@@ -46,13 +47,9 @@ export function WalletCardContent({
         className="flex items-center gap-3 flex-1 min-w-0 text-left"
       >
         {/* Card image */}
-        <div className={`shrink-0 w-20 aspect-[16/10] bg-slate-50 overflow-hidden rounded-sm ${isInactive ? 'opacity-50' : ''}`}>
+        <div className={`shrink-0 w-20 aspect-[16/10] ${isInactive ? 'opacity-50' : ''}`}>
           {catalogCard ? (
-            <img
-              src={getCardImageUrl(catalogCard)}
-              alt={catalogCard.name}
-              className="w-full h-full object-contain"
-            />
+            <CardImage card={catalogCard} />
           ) : (
             <div className="w-full h-full bg-slate-100 animate-pulse" />
           )}

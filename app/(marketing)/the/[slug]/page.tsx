@@ -3,7 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations, getLocale} from 'next-intl/server';
 import {Badge} from '@/components/ui/badge';
-import {getBank, getBankImageUrl, getCard, getCardImageUrl, getCards, getWalletImageUrl} from '@/lib/api';
+import {getBank, getBankImageUrl, getCard, getCards, getWalletImageUrl} from '@/lib/api';
+import {CardImage} from '@/components/cards/card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {AddToWalletButton} from './_add-to-wallet-button';
 import {CoBrandDisplay} from '@/components/cards/co-brand-display';
@@ -78,9 +79,7 @@ export default async function CardPage({ params }: Props) {
 
         <div className="flex flex-col md:flex-row gap-10">
           <div className={`shrink-0 ${isVertical ? 'md:w-48' : 'md:w-80'}`}>
-            <div className={`relative w-full ${isVertical ? 'aspect-[2/3]' : 'aspect-[16/10]'} bg-slate-100 rounded-xl overflow-hidden`}>
-              <Image src={getCardImageUrl(card)} alt="" fill className="object-contain" />
-            </div>
+            <CardImage card={card} />
           </div>
 
           <div className="flex-1 flex flex-col gap-4">

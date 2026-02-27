@@ -1,4 +1,5 @@
-import { getBankImageUrl, getCardImageUrl, type Bank, type Card } from '@/lib/api';
+import { getBankImageUrl, type Bank, type Card } from '@/lib/api';
+import { CardImage } from '@/components/cards/card-image';
 
 export function CardSelectionStep({
   bank,
@@ -39,8 +40,8 @@ export function CardSelectionStep({
               onClick={() => onSelect(card)}
               className="flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded-sm hover:border-brand-blue hover:bg-blue-50/40 transition-colors text-left"
             >
-              <div className="w-full aspect-[16/10] bg-slate-50 overflow-hidden rounded-sm">
-                <img src={getCardImageUrl(card)} alt={card.name} className="w-full h-full object-contain" />
+              <div className="w-full aspect-[16/10]">
+                <CardImage card={card} />
               </div>
               <span className="font-medium text-slate-800 leading-tight">{card.name}</span>
             </button>

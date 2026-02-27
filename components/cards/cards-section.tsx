@@ -48,9 +48,11 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
         </div>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4">
         {displayed.map((card) => (
-          <CardItem key={card.id} card={card} />
+          <div key={card.id} className="break-inside-avoid mb-4">
+            <CardItem card={card} />
+          </div>
         ))}
       </div>
 
@@ -76,9 +78,9 @@ export function CardsSectionSkeleton() {
         <div className="border-t border-dashed border-slate-200 mt-3" />
         <div className="h-4 w-72 bg-slate-200 rounded animate-pulse mt-3" />
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4">
         {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded-sm">
+          <div key={i} className="break-inside-avoid mb-4 flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded-sm">
             <div className={`w-full ${i % 3 === 0 ? 'aspect-[2/3]' : 'aspect-[16/10]'} bg-slate-200 animate-pulse`} />
             <div className="h-5 w-3/4 bg-slate-200 rounded animate-pulse" />
             <div className="h-4 w-1/2 bg-slate-200 rounded animate-pulse" />
