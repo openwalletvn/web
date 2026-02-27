@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { Bank, Card, CardType, CardSort } from '@/lib/api';
 import { CardsFilter } from './cards-filter';
-import { CardItem } from '@/app/(marketing)/_components/card-item';
+import { CardMasonry } from './card-masonry';
 
 interface Props {
   cards: Card[];
@@ -156,13 +156,7 @@ function CardsGridInner({
       {displayed.length === 0 ? (
         <p className="text-slate-500">{emptyMessage}</p>
       ) : (
-        <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 sm:gap-6 gap-4">
-          {displayed.map((card) => (
-            <div key={card.id} className="break-inside-avoid mb-8">
-              <CardItem card={card} />
-            </div>
-          ))}
-        </div>
+        <CardMasonry cards={displayed} />
       )}
 
       {showViewAll && displayed.length > 0 && (

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { getCards, type CardFilters } from '@/lib/api';
-import { CardItem } from '@/app/(marketing)/_components/card-item';
+import { CardMasonry } from './card-masonry';
 
 interface Props {
   filters?: CardFilters;
@@ -48,13 +48,7 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
         </div>
       )}
 
-      <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 sm:gap-4 gap-6">
-        {displayed.map((card) => (
-          <div key={card.id} className="break-inside-avoid mb-8">
-            <CardItem card={card} />
-          </div>
-        ))}
-      </div>
+      <CardMasonry cards={displayed} />
 
       {showViewAll && (
         <div className="mt-8">
