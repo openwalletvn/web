@@ -101,18 +101,28 @@ export default async function BankPage({params}: Props) {
                     )}
 
                     {/* Stats Row */}
-                    <div className="grid grid-cols-3 gap-3">
-                        {[
-                            {label: 'Tổng số thẻ', value: cards.length},
-                            {label: 'Tín dụng', value: creditCards.length},
-                            {label: 'Ghi nợ', value: debitCards.length},
-                        ].map(({label, value}) => (
-                            <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
-                                <p className="text-2xl font-bold text-zinc-900">{value}</p>
-                                <p className="text-xs text-zinc-500 mt-1">{label}</p>
+                    {(() => {
+                        const maxFee = bank.stats?.max_annual_fee;
+                        const statsItems: { label: string; value: string }[] = [
+                            {label: 'Tổng số thẻ', value: String(cards.length)},
+                            {label: 'Tín dụng', value: String(creditCards.length)},
+                            {label: 'Ghi nợ', value: String(debitCards.length)},
+                            ...(maxFee && maxFee > 0
+                                ? [{label: 'Phí thường niên tối đa', value: `${maxFee.toLocaleString('vi-VN')}đ`}]
+                                : []),
+                        ];
+                        const gridClass = statsItems.length === 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3';
+                        return (
+                            <div className={`grid ${gridClass} gap-3`}>
+                                {statsItems.map(({label, value}) => (
+                                    <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
+                                        <p className="text-2xl font-bold text-zinc-900">{value}</p>
+                                        <p className="text-xs text-zinc-500 mt-1">{label}</p>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        );
+                    })()}
                 </div>
 
                 {/* Card Sections */}

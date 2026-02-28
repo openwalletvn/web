@@ -33,6 +33,7 @@ export interface BankStats {
     hybrid_count: number;
     co_branded_count: number;
     free_annual_fee_count: number;
+    max_annual_fee?: number;
     network_counts: Record<string, number>;
 }
 

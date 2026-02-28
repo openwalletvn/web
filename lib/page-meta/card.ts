@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import type {Card, Bank} from '@/lib/api';
+import {getCardImageUrl, getBankImageUrl} from '@/lib/api';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
 
 const BASE_URL = 'https://openwallet.vn';
@@ -44,12 +45,17 @@ export function buildCardPageMeta(card: Card, bank: Bank | null): CardPageMeta {
                 name: card.name,
                 description,
                 url,
+                image: getCardImageUrl(card),
                 category: cardCategory,
                 ...(bank ? {
                     provider: {
                         '@type': 'BankOrCreditUnion',
                         name: bank.name,
                         url: bank.link,
+                        image: getBankImageUrl(bank.logo_url),
+                        ...(bank.stats?.max_annual_fee && bank.stats.max_annual_fee > 0 ? {
+                            priceRange: `Từ 0đ - ${bank.stats.max_annual_fee.toLocaleString('vi-VN')} VNĐ/năm`,
+                        } : {}),
                     },
                 } : {}),
                 ...(feesSpec ? {feesAndCommissionsSpecification: feesSpec} : {}),
