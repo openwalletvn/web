@@ -54,11 +54,11 @@ function applySortOrder(
     sorted.sort((a, b) => (creditLimitMap.get(b.creditAccountId ?? '') ?? -1) - (creditLimitMap.get(a.creditAccountId ?? '') ?? -1));
   } else if (sortBy === 'annual_fee') {
     sorted.sort((a, b) => {
-      const feeA = catalogCards[a.cardId]?.annual_fee;
-      const feeB = catalogCards[b.cardId]?.annual_fee;
-      if (feeA === undefined && feeB === undefined) return 0;
-      if (feeA === undefined) return 1;
-      if (feeB === undefined) return -1;
+      const feeA = catalogCards[a.cardId]?.annual_fee ?? null;
+      const feeB = catalogCards[b.cardId]?.annual_fee ?? null;
+      if (feeA === null && feeB === null) return 0;
+      if (feeA === null) return 1;
+      if (feeB === null) return -1;
       return feeA - feeB;
     });
   } else if (sortBy === 'added') {
