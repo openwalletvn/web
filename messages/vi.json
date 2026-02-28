@@ -278,6 +278,10 @@
     "debit_napas": "Thẻ Ghi Nợ Nội Địa (Napas)",
     "debit_napas_title": "Thẻ Ghi Nợ Nội Địa | Open Wallet",
     "debit_napas_description": "Tra cứu tất cả thẻ ghi nợ nội địa Napas từ các ngân hàng Việt Nam",
-    "debit_napas_subtitle": "Thẻ thanh toán mạng lưới nội địa Napas"
+    "debit_napas_subtitle": "Thẻ thanh toán mạng lưới nội địa Napas",
+    "premium_credit": "Thẻ tín dụng cao cấp",
+    "premium_credit_title": "Thẻ tín dụng cao cấp | OpenWallet",
+    "premium_credit_description": "Tổng hợp các thẻ tín dụng cao cấp nhất Việt Nam: Visa Infinite, Visa Signature, Mastercard World Elite và nhiều hơn nữa. So sánh ưu đãi, phí thường niên và đặc quyền.",
+    "premium_credit_subtitle": "Tổng hợp thẻ tín dụng hạng cao từ tất cả các mạng lưới — Visa, Mastercard, JCB, Amex và UnionPay."
   }
 }

@@ -37,15 +37,28 @@ export const MENU: NavItem[] = [
 
     {
         label: 'Thẻ',
+        footerLink: {label: 'Xem tất cả thẻ →', href: '/the'},
         columns: [
             {
-                title: 'Theo loại',
+                title: 'Thẻ tín dụng',
                 items: [
-                    {label: 'Tất cả thẻ', href: '/the'},
-                    {label: 'Thẻ tín dụng', href: '/the-tin-dung'},
-                    {label: 'Thẻ ghi nợ', href: '/the-ghi-no'},
-                    {label: 'Thẻ 2 trong 1', href: '/the-2-trong-1'},
-                    {label: 'Thẻ đồng thương hiệu', href: '/the-dong-thuong-hieu'},
+                    {label: 'Tất cả thẻ tín dụng', href: '/the-tin-dung'},
+                    {label: 'Thẻ tín dụng Visa', href: '/the-tin-dung-visa'},
+                    {label: 'Thẻ tín dụng Mastercard', href: '/the-tin-dung-mastercard'},
+                    {label: 'Thẻ tín dụng JCB', href: '/the-tin-dung-jcb'},
+                    {label: 'Thẻ tín dụng American Express', href: '/the-tin-dung-amex'},
+                    {label: 'Thẻ tín dụng miễn phí thường niên', href: '/the-tin-dung-mien-phi-thuong-nien'},
+                    {label: 'Thẻ tín dụng cao cấp', href: '/the-tin-dung-cao-cap'},
+                ],
+            },
+            {
+                title: 'Thẻ ghi nợ',
+                items: [
+                    {label: 'Tất cả thẻ ghi nợ', href: '/the-ghi-no'},
+                    {label: 'Thẻ ghi nợ Visa', href: '/the-ghi-no-visa'},
+                    {label: 'Thẻ ghi nợ Mastercard', href: '/the-ghi-no-mastercard'},
+                    {label: 'Thẻ ghi nợ nội địa (Napas)', href: '/the-ghi-no-noi-dia'},
+                    {label: 'Thẻ ghi nợ miễn phí', href: '/the-ghi-no-mien-phi'},
                 ],
             },
             {
@@ -56,13 +69,6 @@ export const MENU: NavItem[] = [
                     {label: 'JCB', href: '/the-tin-dung-jcb'},
                     {label: 'American Express', href: '/the-tin-dung-amex'},
                     {label: 'Napas (Nội địa)', href: '/the-ghi-no-noi-dia'},
-                ],
-            },
-            {
-                title: 'Theo phí',
-                items: [
-                    {label: 'Tín dụng miễn phí', href: '/the-tin-dung-mien-phi-thuong-nien'},
-                    {label: 'Ghi nợ miễn phí', href: '/the-ghi-no-mien-phi'},
                 ],
             },
         ],

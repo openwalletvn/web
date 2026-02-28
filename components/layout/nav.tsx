@@ -119,6 +119,18 @@ export function Nav({ banks }: Props) {
                                                     </Fragment>
                                                 ))}
                                             </div>
+                                            {item.footerLink && (
+                                                <div className="mt-3 pt-3 border-t border-slate-100">
+                                                    <NavigationMenuLink asChild>
+                                                        <Link
+                                                            href={item.footerLink.href}
+                                                            className="text-base text-brand-red hover:underline font-medium"
+                                                        >
+                                                            {item.footerLink.label}
+                                                        </Link>
+                                                    </NavigationMenuLink>
+                                                </div>
+                                            )}
                                         </div>
                                     </NavigationMenuContent>
                                 </NavigationMenuItem>

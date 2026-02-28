@@ -3,44 +3,54 @@ import {getTranslations} from 'next-intl/server';
 import {getBanks} from '@/lib/api';
 import {BankItem} from '../_components/bank-item';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
+import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+
+const BREADCRUMB_ITEMS = [
+    {label: 'Trang chủ', href: '/'},
+    {label: 'Ngân hàng'},
+];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('BanksPage');
-  return {
-    title: t('meta_title'),
-    description: t('meta_description'),
-      openGraph: {
-          title: t('meta_title'),
-          description: t('meta_description'),
-      },
-      twitter: {
-          title: t('meta_title'),
-          description: t('meta_description'),
-      },
-  };
+    const banks = await getBanks();
+    const {metadata} = buildCollectionPageMeta({
+        title: 'Ngân hàng | Open Wallet',
+        description: 'Danh sách tất cả các ngân hàng Việt Nam trên Open Wallet.',
+        url: '/ngan-hang',
+        items: banks.map((b) => ({name: b.name, url: `/ngan-hang/${b.id}`})),
+        breadcrumbItems: BREADCRUMB_ITEMS,
+    });
+    return metadata;
 }
 
 export default async function BanksPage() {
-  const [banks, t, tb] = await Promise.all([
-    getBanks(),
-    getTranslations('BanksPage'),
-    getTranslations('Breadcrumbs'),
-  ]);
+    const [banks, t] = await Promise.all([
+        getBanks(),
+        getTranslations('BanksPage'),
+    ]);
 
-  return (
-    <div className="px-4 py-12">
-      <div className="max-w-container mx-auto">
-        <Breadcrumbs items={[{ label: tb('home'), href: '/' }, { label: t('title') }]} />
+    const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
+        title: 'Ngân hàng | Open Wallet',
+        description: 'Danh sách tất cả các ngân hàng Việt Nam trên Open Wallet.',
+        url: '/ngan-hang',
+        items: banks.map((b) => ({name: b.name, url: `/ngan-hang/${b.id}`})),
+        breadcrumbItems: BREADCRUMB_ITEMS,
+    });
 
-        <h1 className="text-4xl font-bold text-slate-900 mb-1">{t('title')}</h1>
-        <p className="text-slate-500 mb-8">{t('count', { count: banks.length })}</p>
+    return (
+        <div className="px-4 py-12">
+            <div className="max-w-container mx-auto">
+                <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
+                <Breadcrumbs items={breadcrumbItems}/>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-8">
-          {banks.map((bank) => (
-            <BankItem key={bank.id} bank={bank} />
-          ))}
+                <h1 className="text-4xl font-bold text-slate-900 mb-1">{t('title')}</h1>
+                <p className="text-slate-500 mb-8">{t('count', {count: banks.length})}</p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-8">
+                    {banks.map((bank) => (
+                        <BankItem key={bank.id} bank={bank}/>
+                    ))}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
