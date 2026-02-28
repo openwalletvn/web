@@ -79,7 +79,7 @@ export interface Card {
     card_network_data?: Network;
     card_type: CardType[];
     image_orientation: ImageOrientation;
-    annual_fee?: number;
+    annual_fee?: number | null;
     currency?: string;
     interest_free_days?: number;
     statement_date?: number;

@@ -85,7 +85,7 @@ export function CardItem({card}: Props) {
                 {/* Text content — fades out on hover */}
                 <div className="transition-opacity duration-150 group-hover:opacity-0">
                     <p className="font-medium text-slate-800 leading-tight">{card.name}</p>
-                    {card.annual_fee !== undefined && (
+                    {card.annual_fee != null && (
                         <p className="text-sm text-slate-500">
                             {card.annual_fee === 0
                                 ? t('free')

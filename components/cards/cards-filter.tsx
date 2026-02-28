@@ -222,7 +222,7 @@ export function CardsFilter({
           )}
           {fee && (
             <FilterChip
-              label={fee === 'free' ? t('fee_free') : (FEE_BUCKETS.find((b) => b.value === fee)?.label ?? fee)}
+              label={fee === 'free' ? t('fee_free') : fee === 'unknown' ? t('fee_unknown') : (FEE_BUCKETS.find((b) => b.value === fee)?.label ?? fee)}
               onRemove={() => update('fee', 'all')}
             />
           )}

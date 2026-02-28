@@ -188,6 +188,7 @@ function CardsGridInner({
         if (coBrand) result = result.filter((c) => c.co_brand === coBrand);
         if (contactless) result = result.filter((c) => c.contactless_methods?.includes(contactless));
         if (fee === 'free') result = result.filter((c) => c.annual_fee === 0);
+        if (fee === 'unknown') result = result.filter((c) => c.annual_fee == null);
         const bucket = FEE_BUCKETS.find((b) => b.value === fee);
         if (bucket) {
             result = result.filter((c) => {

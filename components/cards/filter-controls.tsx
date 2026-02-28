@@ -308,6 +308,7 @@ export function FeeSelect({ value, onChange }: FeeSelectProps) {
       <SelectContent>
         <SelectItem value="all">{t('all_fees')}</SelectItem>
         <SelectItem value="free">{t('fee_free')}</SelectItem>
+        <SelectItem value="unknown">{t('fee_unknown')}</SelectItem>
         <SelectSeparator />
         {FEE_BUCKETS.map((b) => (
           <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>

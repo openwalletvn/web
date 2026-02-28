@@ -16,7 +16,7 @@ const BREADCRUMB_ITEMS = [
 
 export async function generateMetadata(): Promise<Metadata> {
     const allCards = await getCards();
-    const cards = allCards.filter((c) => c.card_type.includes('debit') && (c.annual_fee === 0 || c.annual_fee === undefined));
+    const cards = allCards.filter((c) => c.card_type.includes('debit') && (c.annual_fee === 0));
     const {metadata} = buildCollectionPageMeta({
         title: `${TITLE} | Open Wallet`,
         description: DESCRIPTION,
@@ -35,7 +35,7 @@ export default async function DebitFreePage() {
     ]);
 
     const filteredCards = allCards.filter((c) =>
-        c.card_type.includes('debit') && (c.annual_fee === 0 || c.annual_fee === undefined)
+        c.card_type.includes('debit') && (c.annual_fee === 0)
     );
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({

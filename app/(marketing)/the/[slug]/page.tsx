@@ -105,7 +105,7 @@ export default async function CardPage({params}: Props) {
                         <AddToWalletButton card={card}/>
 
                         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-base">
-                            {card.annual_fee !== undefined && (() => {
+                            {card.annual_fee != null && (() => {
                                 const feeBucket = card.annual_fee > 0 ? getFeeBucket(card.annual_fee) : null;
                                 return (
                                     <>

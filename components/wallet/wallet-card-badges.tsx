@@ -45,7 +45,7 @@ export function WalletCardBadges({
         <DashedBadge>Đến {walletCard.validThru}</DashedBadge>
       )}
 
-      {catalogCard?.annual_fee !== undefined && (
+      {catalogCard?.annual_fee != null && (
         catalogCard.annual_fee === 0 ? (
           <DashedBadge variant="green">Miễn phí thường niên</DashedBadge>
         ) : (
