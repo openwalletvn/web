@@ -14,11 +14,11 @@ const BREADCRUMB_ITEMS = [
     {label: 'Thẻ Tín Dụng', href: '/the-tin-dung'},
     {label: TITLE},
 ];
-const TIER_FILTER = 'infinite,signature,world_elite,world,the_class,centurion,platinum,ultimate';
+const NETWORK_TIER_FILTER = 'visa:infinite,visa:signature,mastercard:world-elite,mastercard:world,amex:platinum,jcb:ultimate';
 const NETWORK_ORDER = ['visa', 'mastercard', 'amex', 'jcb', 'unionpay'];
 
 export async function generateMetadata(): Promise<Metadata> {
-    const cards = await getCards({type: 'credit', tier: TIER_FILTER});
+    const cards = await getCards({type: 'credit', network_tier: NETWORK_TIER_FILTER});
     const {metadata} = buildCollectionPageMeta({
         title: `${TITLE} | OpenWallet`,
         description: DESCRIPTION,
@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function PremiumCreditPage() {
     const [cards, banks, t] = await Promise.all([
-        getCards({type: 'credit', tier: TIER_FILTER}),
+        getCards({type: 'credit', network_tier: NETWORK_TIER_FILTER}),
         getBanks(),
         getTranslations('SeoPages'),
     ]);
