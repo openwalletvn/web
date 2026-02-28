@@ -49,6 +49,7 @@ export const MENU: NavItem[] = [
                     {label: 'Thẻ tín dụng American Express', href: '/the-tin-dung-amex'},
                     {label: 'Thẻ tín dụng miễn phí thường niên', href: '/the-tin-dung-mien-phi-thuong-nien'},
                     {label: 'Thẻ tín dụng cao cấp', href: '/the-tin-dung-cao-cap'},
+                    {label: 'Thẻ kim loại', href: '/the-kim-loai'},
                 ],
             },
             {

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {getTranslations, getLocale} from 'next-intl/server';
 import {Badge} from '@/components/ui/badge';
 import {getBank, getBankImageUrl, getCard, getCards, getWalletImageUrl} from '@/lib/api';
+import {MetalBadge} from '@/components/cards/metal-badge';
 import {getFeeBucket} from '@/lib/fee-buckets';
 import {CardImage} from '@/components/cards/card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -87,6 +88,7 @@ export default async function CardPage({params}: Props) {
                                         {card.card_tier && (
                                             <Badge variant="outline" className="capitalize">{card.card_tier}</Badge>
                                         )}
+                                        {card.is_metal && <MetalBadge />}
                                     </div>
                                 </div>
                                 {process.env.NODE_ENV === 'development' && (

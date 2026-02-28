@@ -226,6 +226,8 @@
   },
   "SeoPages": {
     "no_cards": "No cards found.",
+    "metal_cards": "Metal Cards",
+    "metal_cards_subtitle": "Browse all metal bank cards in Vietnam",
     "credit_cards": "Credit Cards",
     "credit_cards_title": "Credit Cards | Open Wallet",
     "credit_cards_description": "Browse all credit cards from Vietnamese banks",

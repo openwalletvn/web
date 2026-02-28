@@ -8,6 +8,7 @@ import {ExternalLink, Landmark} from 'lucide-react';
 import type {Card} from '@/lib/api';
 import {getBankImageUrl} from '@/lib/api';
 import {CardImage} from '@/components/cards/card-image';
+import {MetalBadge} from '@/components/cards/metal-badge';
 
 interface Props {
     card: Card;
@@ -108,6 +109,7 @@ export function CardItem({card}: Props) {
                                 {type}
                             </span>
                         ))}
+                        {card.is_metal && <MetalBadge />}
                     </div>
                 </div>
 

@@ -220,6 +220,8 @@
   },
   "SeoPages": {
     "no_cards": "Không tìm thấy thẻ nào.",
+    "metal_cards": "Thẻ Kim Loại",
+    "metal_cards_subtitle": "Tra cứu tất cả thẻ ngân hàng chất liệu kim loại tại Việt Nam",
     "credit_cards": "Thẻ Tín Dụng",
     "credit_cards_title": "Thẻ Tín Dụng | Open Wallet",
     "credit_cards_description": "Tra cứu tất cả thẻ tín dụng từ các ngân hàng Việt Nam",
