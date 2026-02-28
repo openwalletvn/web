@@ -22,7 +22,7 @@ export function buildBlogPostPageMeta(post: Post): BlogPostPageMeta {
         {label: frontmatter.title},
     ];
 
-    const dateModified = (frontmatter as Record<string, string>)['updated'] ?? frontmatter.date;
+    const dateModified = frontmatter.updated ?? frontmatter.date;
 
     const jsonLd = {
         '@context': 'https://schema.org',

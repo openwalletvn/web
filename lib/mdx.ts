@@ -15,6 +15,7 @@ export interface PostFrontmatter {
   title: string;
   description: string;
   date: string;
+  updated?: string;
   author?: string;
   category: string;
   tags: string[];
