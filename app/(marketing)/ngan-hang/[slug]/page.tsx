@@ -58,9 +58,8 @@ export default async function BankPage({params}: Props) {
 
     const {jsonLd, breadcrumbItems} = buildBankPageMeta(bank, cards);
 
-    const hybridCards = cards.filter((c) => c.card_type.includes('credit') && c.card_type.includes('debit'));
-    const creditCards = cards.filter((c) => c.card_type.includes('credit') && !c.card_type.includes('debit'));
-    const debitCards = cards.filter((c) => c.card_type.includes('debit') && !c.card_type.includes('credit'));
+    const creditCards = cards.filter((c) => c.card_type.includes('credit'));
+    const debitCards = cards.filter((c) => c.card_type.includes('debit'));
     const cobrandCards = cards.filter((c) => c.co_brand && c.co_brand !== '');
 
     return (
@@ -102,12 +101,11 @@ export default async function BankPage({params}: Props) {
                     )}
 
                     {/* Stats Row */}
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-3 gap-3">
                         {[
                             {label: 'Tổng số thẻ', value: cards.length},
                             {label: 'Tín dụng', value: creditCards.length},
                             {label: 'Ghi nợ', value: debitCards.length},
-                            {label: 'Thẻ 2 trong 1', value: hybridCards.length},
                         ].map(({label, value}) => (
                             <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
                                 <p className="text-2xl font-bold text-zinc-900">{value}</p>
@@ -124,10 +122,6 @@ export default async function BankPage({params}: Props) {
 
                 {debitCards.length > 0 && (
                     <CardsGrid cards={debitCards} banks={banks} title={`Thẻ ghi nợ (${debitCards.length})`}/>
-                )}
-
-                {hybridCards.length > 0 && (
-                    <CardsGrid cards={hybridCards} banks={banks} title={`Thẻ 2 trong 1 (${hybridCards.length})`}/>
                 )}
 
                 {cobrandCards.length > 0 && (

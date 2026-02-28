@@ -74,6 +74,11 @@ export default async function CardPage({params}: Props) {
                                 <div>
                                     <h1 className="text-3xl font-bold text-slate-900">{card.name}</h1>
                                     <div className="flex flex-wrap gap-2 mt-2">
+                                        {card.status === 'discontinued' && (
+                                            <Badge variant="outline" className="border-amber-400 text-amber-600 bg-amber-50">
+                                                Dừng phát hành mới
+                                            </Badge>
+                                        )}
                                         <Badge variant="secondary"
                                                className="capitalize bg-brand-blue text-white border-transparent">{card.card_network}</Badge>
                                         {card.card_type.map((type) => (

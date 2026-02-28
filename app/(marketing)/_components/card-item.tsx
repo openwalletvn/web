@@ -93,6 +93,11 @@ export function CardItem({card}: Props) {
                         </p>
                     )}
                     <div className="flex flex-wrap gap-1 mt-1">
+                        {card.status === 'discontinued' && (
+                            <span className="px-1.5 py-0.5 border border-dashed border-amber-400 text-amber-600 bg-amber-50 text-[11px]">
+                                Dừng phát hành
+                            </span>
+                        )}
                         <span
                             className="px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium capitalize">
                             {card.card_network}{card.card_tier ? ` ${card.card_tier}` : ''}
