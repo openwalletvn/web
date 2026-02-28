@@ -84,7 +84,7 @@ export interface Card {
     interest_free_days?: number;
     statement_date?: number;
     card_link?: string;
-    status?: 'published' | 'draft';
+    status?: 'published' | 'draft' | 'discontinued';
     contactless_methods?: string[];
     contactless_methods_data?: ContactlessMethod[];
     last_modified?: string;
