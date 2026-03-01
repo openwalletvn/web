@@ -14,14 +14,18 @@ import {
     navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import {cn} from '@/lib/utils';
-import {type Bank, getBankImageUrl} from '@/lib/api';
-import {MENU, isDropdown} from '@/lib/menu';
+import {type Bank, getBankImageUrl, getNetworkImageUrl, type Network} from '@/lib/api';
+import {isDropdown, MENU} from '@/lib/menu';
 
 interface Props {
     banks: Bank[];
+    networks: Network[];
+    cardCounts: Record<string, number>;
+    totalCards: number;
+    totalBanks: number;
 }
 
-export function Nav({ banks }: Props) {
+export function Nav({banks, networks, cardCounts, totalCards, totalBanks}: Props) {
     const pathname = usePathname();
 
     return (
@@ -29,9 +33,8 @@ export function Nav({ banks }: Props) {
             <NavigationMenuList>
                 {MENU.map((item, index) => {
                     if (isDropdown(item)) {
-                        // Dropdown menu item
+                        // Banks dropdown with dynamic content
                         if (item.type === 'banks') {
-                            // Banks dropdown with dynamic content
                             return (
                                 <NavigationMenuItem key={index}>
                                     <NavigationMenuTrigger
@@ -79,8 +82,128 @@ export function Nav({ banks }: Props) {
                                     </NavigationMenuContent>
                                 </NavigationMenuItem>
                             );
-                        } else if (item.columns) {
-                            // Cards or other mega menu
+                        }
+
+                        // Rows-based mega menu (cards)
+                        if (item.rows) {
+                            const isActive = item.rows.some((row) =>
+                                row.items.some((sub) => pathname.startsWith(sub.href))
+                            );
+
+                            return (
+                                <NavigationMenuItem key={index}>
+                                    <NavigationMenuTrigger
+                                        className={cn(isActive && 'text-brand-red font-semibold')}
+                                    >
+                                        {item.label}
+                                    </NavigationMenuTrigger>
+                                    <NavigationMenuContent>
+                                        <div className="w-[680px] p-5">
+                                            {item.rows.map((row, rowIdx) => (
+                                                <Fragment key={rowIdx}>
+                                                    {rowIdx > 0 && (
+                                                        <div className="border-t border-dashed border-slate-100 my-3"/>
+                                                    )}
+                                                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">
+                                                        {row.title}
+                                                    </p>
+                                                    {row.type === 'networks' ? (
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {row.items.map((subItem) => {
+                                                                const network = networks.find(
+                                                                    (n) =>
+                                                                        n.name.toLowerCase() === subItem.label.toLowerCase() ||
+                                                                        n.id.toLowerCase() === subItem.label.toLowerCase()
+                                                                );
+                                                                const isItemActive = pathname.startsWith(subItem.href);
+                                                                return (
+                                                                    <NavigationMenuLink asChild key={subItem.href}>
+                                                                        <Link
+                                                                            href={subItem.href}
+                                                                            className={cn(
+                                                                                'flex flex-col items-center gap-1 px-3 py-2 rounded-md border border-slate-200 hover:border-brand-red hover:bg-slate-50 transition-colors min-w-[64px]',
+                                                                                isItemActive && 'border-brand-red bg-slate-50'
+                                                                            )}
+                                                                        >
+                                                                            {network ? (
+                                                                                <div className="relative w-8 h-8">
+                                                                                    <Image
+                                                                                        src={getNetworkImageUrl(network.logo_url)}
+                                                                                        alt=""
+                                                                                        fill
+                                                                                        className="object-contain"
+                                                                                    />
+                                                                                </div>
+                                                                            ) : (
+                                                                                <div
+                                                                                    className="w-8 h-8 rounded bg-slate-100"/>
+                                                                            )}
+                                                                            <span className={cn(
+                                                                                'text-xs text-slate-600 text-center leading-tight',
+                                                                                isItemActive && 'text-brand-red font-medium'
+                                                                            )}>
+                                                                                {subItem.label}
+                                                                            </span>
+                                                                        </Link>
+                                                                    </NavigationMenuLink>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {row.items.map((subItem) => {
+                                                                const count = cardCounts[subItem.href];
+                                                                const isItemActive = pathname.startsWith(subItem.href);
+                                                                const isPicks = row.title === 'OpenWallet Picks';
+                                                                return (
+                                                                    <NavigationMenuLink asChild key={subItem.href}>
+                                                                        <Link
+                                                                            href={subItem.href}
+                                                                            className={cn(
+                                                                                '!inline-flex items-center text-sm px-3 py-1.5 rounded-sm border border-dashed transition-colors whitespace-nowrap',
+                                                                                isPicks
+                                                                                    ? 'bg-amber-50/60 border-amber-200 text-amber-900 hover:border-brand-red hover:text-brand-red'
+                                                                                    : 'border-slate-200 text-slate-700 hover:border-brand-red hover:text-brand-red',
+                                                                                isItemActive && 'border-brand-red text-brand-red'
+                                                                            )}
+                                                                        >
+                                                                            <span className="flex items-center">
+                                                                                {subItem.label}
+                                                                                {count !== undefined && (
+                                                                                    <span
+                                                                                        className="text-slate-400 text-xs ml-1">
+                                                                                    ({count})
+                                                                                </span>
+                                                                                )}
+                                                                            </span>
+                                                                        </Link>
+                                                                    </NavigationMenuLink>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </Fragment>
+                                            ))}
+                                            {item.footerLink && (
+                                                <div className="mt-3 pt-3 border-t border-slate-100">
+                                                    <NavigationMenuLink asChild>
+                                                        <Link
+                                                            href={item.footerLink.href}
+                                                            className="text-base text-brand-red hover:underline font-medium"
+                                                        >
+                                                            Xem tất cả {totalCards} thẻ từ {totalBanks} ngân hàng →
+                                                        </Link>
+                                                    </NavigationMenuLink>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </NavigationMenuContent>
+                                </NavigationMenuItem>
+                            );
+                        }
+
+                        // Columns-based mega menu (legacy fallback)
+                        if (item.columns) {
                             const pathPrefix = item.columns[0]?.items[0]?.href.split('/')[1];
                             const isActive = pathPrefix && pathname.startsWith(`/${pathPrefix}`);
 

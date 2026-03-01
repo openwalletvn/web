@@ -8,10 +8,18 @@ export interface MenuColumn {
     items: MenuItem[];
 }
 
+export interface MenuRow {
+    title: string;
+    items: MenuItem[];
+    type?: 'networks';
+}
+
 export interface MenuItemWithDropdown {
     label: string;
     /** Optional href for the dropdown trigger itself */
     href?: string;
+    /** Row-based layout for cards mega menu */
+    rows?: MenuRow[];
     /** Columns for mega menu layout */
     columns?: MenuColumn[];
     /** Footer link for "View all" */
@@ -23,7 +31,7 @@ export interface MenuItemWithDropdown {
 export type NavItem = MenuItem | MenuItemWithDropdown;
 
 function isDropdown(item: NavItem): item is MenuItemWithDropdown {
-    return 'columns' in item || 'type' in item;
+    return 'columns' in item || 'rows' in item || 'type' in item;
 }
 
 export const MENU: NavItem[] = [
@@ -37,42 +45,45 @@ export const MENU: NavItem[] = [
 
     {
         label: 'Thẻ',
-        footerLink: {label: 'Xem tất cả thẻ →', href: '/the'},
-        columns: [
+        rows: [
             {
-                title: 'Thẻ tín dụng',
-                items: [
-                    {label: 'Tất cả thẻ tín dụng', href: '/the-tin-dung'},
-                    {label: 'Thẻ tín dụng Visa', href: '/the-tin-dung-visa'},
-                    {label: 'Thẻ tín dụng Mastercard', href: '/the-tin-dung-mastercard'},
-                    {label: 'Thẻ tín dụng JCB', href: '/the-tin-dung-jcb'},
-                    {label: 'Thẻ tín dụng American Express', href: '/the-tin-dung-amex'},
-                    {label: 'Thẻ tín dụng miễn phí thường niên', href: '/the-tin-dung-mien-phi-thuong-nien'},
-                    {label: 'Thẻ tín dụng cao cấp', href: '/the-tin-dung-cao-cap'},
-                    {label: 'Thẻ kim loại', href: '/the-kim-loai'},
-                ],
-            },
-            {
-                title: 'Thẻ ghi nợ',
-                items: [
-                    {label: 'Tất cả thẻ ghi nợ', href: '/the-ghi-no'},
-                    {label: 'Thẻ ghi nợ Visa', href: '/the-ghi-no-visa'},
-                    {label: 'Thẻ ghi nợ Mastercard', href: '/the-ghi-no-mastercard'},
-                    {label: 'Thẻ ghi nợ nội địa (Napas)', href: '/the-ghi-no-noi-dia'},
-                    {label: 'Thẻ ghi nợ miễn phí', href: '/the-ghi-no-mien-phi'},
-                ],
-            },
-            {
-                title: 'Theo mạng',
+                title: 'Mạng lưới thẻ',
+                type: 'networks',
                 items: [
                     {label: 'Visa', href: '/the-tin-dung-visa'},
                     {label: 'Mastercard', href: '/the-tin-dung-mastercard'},
                     {label: 'JCB', href: '/the-tin-dung-jcb'},
                     {label: 'American Express', href: '/the-tin-dung-amex'},
-                    {label: 'Napas (Nội địa)', href: '/the-ghi-no-noi-dia'},
+                    {label: 'NAPAS', href: '/the-tin-dung-noi-dia'},
+                ],
+            },
+            {
+                title: 'Thẻ tín dụng (credit)',
+                items: [
+                    {label: 'Tất cả', href: '/the-tin-dung'},
+                    {label: 'Miễn phí thường niên', href: '/the-tin-dung-mien-phi-thuong-nien'},
+                    {label: 'Thẻ tín dụng Napas', href: '/the-tin-dung-noi-dia'},
+                    {label: 'Thẻ hybrid (2 trong 1)', href: '/the-2-trong-1'},
+                ],
+            },
+            {
+                title: 'Thẻ ghi nợ (debit)',
+                items: [
+                    {label: 'Tất cả', href: '/the-ghi-no'},
+                    {label: 'Miễn phí thường niên', href: '/the-ghi-no-mien-phi'},
+                    {label: 'Thẻ ghi nợ Napas', href: '/the-ghi-no-noi-dia'},
+                ],
+            },
+            {
+                title: 'OpenWallet Picks',
+                items: [
+                    {label: 'Thẻ ưu đãi Shopee', href: '/the-shopee'},
+                    {label: 'Thẻ kim loại', href: '/the-kim-loai'},
+                    {label: 'Thẻ cao cấp', href: '/the-tin-dung-cao-cap'},
                 ],
             },
         ],
+        footerLink: {label: 'Xem tất cả thẻ →', href: '/the'},
     },
 
     {label: 'Tin tức', href: '/tin-tuc'},

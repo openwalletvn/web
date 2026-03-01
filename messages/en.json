@@ -287,6 +287,10 @@
     "debit_napas": "Domestic Debit Cards (Napas)",
     "debit_napas_title": "Domestic Debit Cards | Open Wallet",
     "debit_napas_description": "Browse all Napas domestic debit cards from Vietnamese banks",
-    "debit_napas_subtitle": "Napas domestic payment network cards"
+    "debit_napas_subtitle": "Napas domestic payment network cards",
+    "credit_napas": "Domestic Credit Cards (Napas)",
+    "credit_napas_subtitle": "Browse all Napas domestic credit cards from Vietnamese banks",
+    "shopee_cards": "Shopee Cards",
+    "shopee_cards_subtitle": "Browse all Shopee credit and debit cards from Vietnamese banks"
   }
 }
