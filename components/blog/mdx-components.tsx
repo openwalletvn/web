@@ -17,8 +17,23 @@ function makeHeading(Tag: 'h2' | 'h3' | 'h4') {
   };
 }
 
+function BlogImage({ src, alt, title, ...props }: React.ComponentProps<'img'>) {
+  const caption = title || alt;
+  return (
+    <figure className="my-8">
+      <img src={src} alt={alt} title={title} {...props} className="w-full rounded-sm" />
+      {caption && (
+        <figcaption className="mt-2 text-center text-sm text-slate-400 italic">
+          {caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
 export const mdxComponents = {
   h2: makeHeading('h2'),
   h3: makeHeading('h3'),
   h4: makeHeading('h4'),
+  img: BlogImage,
 };

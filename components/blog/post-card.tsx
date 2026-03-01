@@ -12,9 +12,19 @@ export function PostCard({ post }: Props) {
   return (
     <Link
       href={`/tin-tuc/${slug}`}
-      className="flex flex-col gap-3 p-5 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors"
+      className="flex flex-col border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors overflow-hidden"
     >
-      <div className="flex items-center gap-2 flex-wrap">
+      {frontmatter.cover_image && (
+        <div className="aspect-[2/1] overflow-hidden bg-slate-100">
+          <img
+            src={frontmatter.cover_image}
+            alt={frontmatter.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      <div className="flex flex-col gap-3 p-5">
+        <div className="flex items-center gap-2 flex-wrap">
         <span className="text-xs font-medium px-2 py-0.5 border border-dashed border-brand-blue text-brand-blue rounded-sm">
           {frontmatter.category}
         </span>
@@ -49,6 +59,7 @@ export function PostCard({ post }: Props) {
             ))}
           </div>
         )}
+      </div>
       </div>
     </Link>
   );

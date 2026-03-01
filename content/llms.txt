@@ -75,7 +75,7 @@ status: "published"              # "published" | "draft". Only "published" posts
   `"Bắt đầu sử dụng"` → `#bat-dau-su-dung`
 
 ### Links
-- Internal links: use relative paths `/cards/bidv-visa-classic` or `/banks/bidv`
+- Internal links: use relative paths `/the/bidv-visa-classic` or `/ngan-hang/bidv`
 - External links: absolute URLs with descriptive text
 
 ### Code blocks

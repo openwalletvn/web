@@ -3,8 +3,10 @@ You will be given one or more post slugs (filenames without extension). For each
 1. Read the corresponding MDX file in `content/posts/<slug>.mdx`
 2. Analyze the full content to decide where images would improve understanding or visual appeal
 3. For each image placement:
-    - Insert `![descriptive alt text](/images/posts/<slug>/<slug>-<n>.jpg)` at the appropriate spot in the MDX content (n starts at 1)
+    - Insert `![descriptive alt text](/images/posts/<slug>/<slug>-<n>.jpg "Short visible caption")` at the appropriate spot in the MDX content (n starts at 1)
     - The first image (`<slug>-1.jpg`) must be placed near the top of the content (after the intro paragraph)
+    - `alt` = descriptive text for accessibility/SEO (can be longer)
+    - `title` (in quotes after the URL) = short caption displayed visually below the image (keep it concise, under 100 chars)
 4. Update the frontmatter with `cover_image: "/images/posts/<slug>/<slug>-1.jpg"`
 5. Save the updated MDX file
 
@@ -31,6 +33,8 @@ Rules:
 - Do NOT download any images
 - Do NOT add images where content is self-explanatory and doesn't benefit visually
 - Keep alt text descriptive and in Vietnamese
+- Always include a title (caption) in quotes after the URL — this is shown visually below the image
+- alt and title can differ: alt is for screen readers/SEO, title is the visible caption
 - Aim for 2–4 images per post depending on length
 
 Before starting, provide a todo list of what will be changed.

@@ -11,6 +11,7 @@ import {AiBadge} from '@/components/blog/ai-badge';
 import {SidebarRelatedCards} from '@/components/blog/sidebar-related-cards';
 import {mdxComponents} from '@/components/blog/mdx-components';
 import {remarkAutoLink} from '@/lib/remark-auto-link';
+import remarkGfm from 'remark-gfm';
 import {buildBlogPostPageMeta} from '@/lib/page-meta/blog-post';
 
 interface Props {
@@ -108,11 +109,11 @@ export default async function BlogPostPage({params}: Props) {
 
                         {/* Content */}
                         <article
-                            className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline prose-strong:text-slate-900 prose-code:text-brand-red prose-code:before:content-none prose-code:after:content-none prose-li:text-slate-700 prose-hr:border-dashed prose-hr:border-slate-200">
+                            className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline prose-strong:text-slate-900 prose-code:text-brand-red prose-code:before:content-none prose-code:after:content-none prose-li:text-slate-700 prose-hr:border-dashed prose-hr:border-slate-200 prose-table:text-sm prose-th:text-slate-700 prose-th:bg-slate-50 prose-td:text-slate-600">
                             <MDXRemote
                                 source={content}
                                 components={mdxComponents}
-                                options={{mdxOptions: {remarkPlugins: [remarkAutoLink]}}}
+                                options={{mdxOptions: {remarkPlugins: [remarkGfm, remarkAutoLink]}}}
                             />
                         </article>
 

@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { getAllPosts, getPostBySlug } from '@/lib/mdx';
 import { createOgImage, OG_SIZE } from '@/lib/og';
 
@@ -16,6 +18,17 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
   if (!post) {
     return createOgImage({ title: 'Blog', description: 'Open Wallet' });
+  }
+
+  if (post.frontmatter.cover_image) {
+    const filePath = path.join(process.cwd(), 'public', post.frontmatter.cover_image);
+    if (fs.existsSync(filePath)) {
+      const ext = path.extname(filePath).toLowerCase();
+      const mime = ext === '.png' ? 'image/png' : 'image/jpeg';
+      return new Response(fs.readFileSync(filePath), {
+        headers: { 'Content-Type': mime },
+      });
+    }
   }
 
   return createOgImage({

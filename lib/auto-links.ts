@@ -9,16 +9,16 @@
  */
 export const AUTO_LINKS: [keyword: string, url: string][] = [
   // Card networks
-  ['American Express', '/cards/networks/amex'],
-  ['Mastercard', '/cards/networks/mastercard'],
-  ['UnionPay', '/cards/networks/unionpay'],
-  ['NAPAS', '/cards/networks/napas'],
-  ['Visa', '/cards/networks/visa'],
-  ['JCB', '/cards/networks/jcb'],
+  ['American Express', '/the-tin-dung-amex'],
+  ['Mastercard', '/the-tin-dung-mastercard'],
+  ['UnionPay', '/the-tin-dung'],
+  ['NAPAS', '/the-tin-dung-noi-dia'],
+  ['Visa', '/the-tin-dung-visa'],
+  ['JCB', '/the-tin-dung-jcb'],
 
   // Card types — longer phrases first
-  ['thẻ 2 trong 1', '/cards/2in1'],
-  ['thẻ tín dụng', '/cards/credit'],
-  ['thẻ ghi nợ', '/cards/debit'],
-  ['thẻ ATM nội địa', '/cards/debit'],
+  ['thẻ 2 trong 1', '/the-2-trong-1'],
+  ['thẻ tín dụng', '/the-tin-dung'],
+  ['thẻ ghi nợ', '/the-ghi-no'],
+  ['thẻ ATM nội địa', '/the-ghi-no-noi-dia'],
 ];
