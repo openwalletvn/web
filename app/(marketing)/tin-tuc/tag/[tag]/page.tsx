@@ -22,7 +22,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
     const displayName = found?.name ?? slug;
     const posts = getPostsByTag(slug);
     const {metadata} = buildCollectionPageMeta({
-        title: `#${displayName} — Blog | OpenWallet`,
+        title: `#${displayName} - Blog | OpenWallet`,
         description: `Bài viết được gắn thẻ "${displayName}" trên OpenWallet Blog.`,
         url: `/tin-tuc/tag/${slug}`,
         items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),
@@ -47,7 +47,7 @@ export default async function TagPage({params}: Props) {
     const posts = getPostsByTag(slug);
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
-        title: `#${displayName} — Blog | OpenWallet`,
+        title: `#${displayName} - Blog | OpenWallet`,
         description: `Bài viết được gắn thẻ "${displayName}" trên OpenWallet Blog.`,
         url: `/tin-tuc/tag/${slug}`,
         items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),

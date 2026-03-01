@@ -322,7 +322,7 @@ export default function AddCardPage() {
                   label="Ngày sao kê"
                   hint={
                     selectedCard.statement_date && statementDate === String(selectedCard.statement_date)
-                      ? 'Mặc định của ngân hàng — bạn có thể thay đổi nếu khác'
+                      ? 'Mặc định của ngân hàng - bạn có thể thay đổi nếu khác'
                       : undefined
                   }
                   value={statementDate}

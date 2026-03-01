@@ -48,7 +48,7 @@ export function CardItem({card}: Props) {
                 "--glow-color": bank?.brand_color ? hexToRgba(bank?.brand_color, 0.45) : "rgba(0,0,0,0.45)",
             }}
         >
-            {/* Tilt wrapper — perspective 3D, mouse-tracked */}
+            {/* Tilt wrapper - perspective 3D, mouse-tracked */}
             <div
                 ref={imageRef}
                 onMouseMove={handleMouseMove}
@@ -63,7 +63,7 @@ export function CardItem({card}: Props) {
                     transition: hovering ? 'transform 0.05s linear' : 'transform 0.5s ease',
                 }}
             >
-                {/* Shadow div — painted first (behind shimmer wrapper), no overflow clip */}
+                {/* Shadow div - painted first (behind shimmer wrapper), no overflow clip */}
                 {
                     isVertical &&
                     <div
@@ -83,7 +83,7 @@ export function CardItem({card}: Props) {
             </div>
 
             <div className="relative min-h-[80px]">
-                {/* Text content — fades out on hover */}
+                {/* Text content - fades out on hover */}
                 <div className="transition-opacity duration-150 group-hover:opacity-0">
                     <p className="font-medium text-slate-800 leading-tight">{card.name}</p>
                     {card.annual_fee != null && (
@@ -113,7 +113,7 @@ export function CardItem({card}: Props) {
                     </div>
                 </div>
 
-                {/* Circle buttons — fade in on hover, left-aligned */}
+                {/* Circle buttons - fade in on hover, left-aligned */}
                 <div className="absolute inset-0 flex items-center justify-start gap-3">
                     {/* Bank button */}
                     <div

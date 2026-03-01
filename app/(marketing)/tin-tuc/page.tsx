@@ -15,7 +15,7 @@ const BREADCRUMB_ITEMS = [
 export async function generateMetadata(): Promise<Metadata> {
     const posts = getAllPosts();
     const {metadata} = buildCollectionPageMeta({
-        title: 'Blog — Kiến thức tài chính cá nhân | OpenWallet',
+        title: 'Blog - Kiến thức tài chính cá nhân | OpenWallet',
         description: 'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.',
         url: '/tin-tuc',
         items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),
@@ -34,7 +34,7 @@ export default async function BlogPage() {
     const tags = getAllTags();
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
-        title: 'Blog — Kiến thức tài chính cá nhân | OpenWallet',
+        title: 'Blog - Kiến thức tài chính cá nhân | OpenWallet',
         description: 'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.',
         url: '/tin-tuc',
         items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),

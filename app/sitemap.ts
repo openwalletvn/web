@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: url === '/' ? 1 : 0.8,
   }))
 
-  // 2. Banks — dynamic from API
+  // 2. Banks - dynamic from API
   const banksRes = await fetch('https://api.openwallet.vn/api/v1/banks')
   const banks = await banksRes.json()
   const bankPages = [
@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   ]
 
-  // 3. Cards — dynamic from API
+  // 3. Cards - dynamic from API
   const cardsRes = await fetch('https://api.openwallet.vn/api/v1/cards')
   const cards = await cardsRes.json()
   const cardPages = [
@@ -55,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   ]
 
-  // 4. Blog — add when CMS is ready
+  // 4. Blog - add when CMS is ready
   // const blogPages = []
 
   return [

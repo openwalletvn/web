@@ -22,7 +22,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
     const displayName = cat?.name ?? slug;
     const posts = getPostsByCategory(slug);
     const {metadata} = buildCollectionPageMeta({
-        title: `${displayName} — Blog | OpenWallet`,
+        title: `${displayName} - Blog | OpenWallet`,
         description: `Bài viết về chủ đề "${displayName}" trên OpenWallet Blog.`,
         url: `/tin-tuc/category/${slug}`,
         items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),
@@ -47,7 +47,7 @@ export default async function CategoryPage({params}: Props) {
     const posts = getPostsByCategory(slug);
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
-        title: `${displayName} — Blog | OpenWallet`,
+        title: `${displayName} - Blog | OpenWallet`,
         description: `Bài viết về chủ đề "${displayName}" trên OpenWallet Blog.`,
         url: `/tin-tuc/category/${slug}`,
         items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),
