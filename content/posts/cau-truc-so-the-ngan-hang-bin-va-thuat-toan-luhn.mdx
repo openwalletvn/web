@@ -1,0 +1,192 @@
+---
+title: "Cấu trúc số thẻ ngân hàng: BIN, Luhn và cách hệ thống kiểm tra tính hợp lệ"
+description: "Giải thích đầy đủ cấu trúc số thẻ theo ISO 7812: BIN/IIN, cách nhận diện mạng lưới, thuật toán Luhn với ví dụ minh họa, và rủi ro khi chia sẻ số thẻ."
+date: "2026-03-05"
+category: "Hướng dẫn"
+tags:
+  - số thẻ
+  - BIN
+  - IIN
+  - thuật toán Luhn
+  - ISO 7812
+  - bảo mật thẻ
+status: "published"
+ai_generated: true
+---
+
+Dãy 15 hoặc 16 chữ số trên mặt thẻ không phải số ngẫu nhiên. Mỗi chữ số có vị trí và ý nghĩa xác định, tuân theo tiêu chuẩn quốc tế ISO 7812. Hiểu cấu trúc này giúp giải thích tại sao hệ thống biết ngay thẻ của bạn là Visa hay Mastercard khi bạn mới nhập 4 số đầu, và tại sao gõ sai một chữ số không bao giờ qua được bước kiểm tra đầu tiên của form thanh toán.
+
+## ISO 7812 — Tiêu chuẩn nền tảng
+
+ISO 7812 là tiêu chuẩn quốc tế quy định định dạng số nhận dạng cho các tổ chức phát hành thẻ tài chính. Phiên bản đầu được ban hành năm 1989, hiện đang áp dụng phiên bản cập nhật gần nhất.
+
+Tiêu chuẩn này định nghĩa:
+
+- Cấu trúc của PAN (Primary Account Number)
+- Cách phân bổ IIN/BIN cho các tổ chức phát hành
+- Độ dài tối đa và tối thiểu của PAN
+- Cơ chế kiểm tra tính hợp lệ (check digit theo Luhn)
+
+PAN theo ISO 7812 có độ dài từ 8 đến 19 chữ số. Trong thực tế thẻ ngân hàng tiêu dùng, 15 và 16 chữ số là phổ biến nhất. Thẻ Amex dùng 15, hầu hết Visa và Mastercard dùng 16.
+
+## BIN và IIN — Khác nhau như thế nào
+
+BIN là viết tắt của **Bank Identification Number**. IIN là **Issuer Identification Number** — tên gọi chính thức hơn theo ISO 7812.
+
+Hai thuật ngữ về cơ bản đề cập đến cùng một thứ: các chữ số đầu tiên của PAN, dùng để xác định tổ chức phát hành thẻ. BIN là thuật ngữ cũ hơn, phổ biến trong ngành. IIN là tên chính thức trong tiêu chuẩn ISO.
+
+Ban đầu, BIN gồm **6 chữ số** đầu tiên. Từ năm 2022, ngành thẻ chuyển sang BIN **8 chữ số** để mở rộng không gian địa chỉ — số lượng tổ chức phát hành và loại thẻ ngày càng nhiều, 6 số không còn đủ.
+
+Trong hệ thống hiện tại, chữ số đầu tiên là **MII (Major Industry Identifier)** — xác định ngành phát hành:
+
+| Chữ số đầu | Ngành |
+|------------|-------|
+| 1, 2 | Airlines |
+| 3 | Travel and Entertainment (Amex, JCB, Diners) |
+| 4 | Banking/Financial (Visa) |
+| 5 | Banking/Financial (Mastercard) |
+| 6 | Merchandising and Banking (Discover, UnionPay) |
+| 7 | Petroleum |
+| 8 | Healthcare, Telecom |
+| 9 | Government và các tổ chức quốc gia |
+
+MII là chữ số đầu tiên của BIN. Toàn bộ BIN (6 hoặc 8 số) sau đó xác định tổ chức phát hành và loại thẻ cụ thể.
+
+## Cách nhận diện mạng lưới qua đầu số
+
+Hệ thống phát hiện loại thẻ từ vài chữ số đầu dựa trên dải BIN đã đăng ký với các mạng lưới:
+
+**Visa:** Bắt đầu bằng **4**. Tất cả số thẻ Visa bắt đầu bằng 4, dù là Visa Classic, Visa Gold, Visa Platinum hay Visa Infinite.
+
+**Mastercard:** Bắt đầu bằng **51–55** (dải 6 số cũ) hoặc **2221–2720** (dải mở rộng từ 2017). Mastercard mở thêm dải 2xxx để có không gian BIN cho thị trường mới.
+
+**American Express:** Bắt đầu bằng **34** hoặc **37**. Tất cả thẻ Amex đều rơi vào một trong hai prefix này.
+
+**JCB:** Bắt đầu bằng **3528–3589**.
+
+**Discover:** Bắt đầu bằng **6011**, **622126–622925**, **644–649**, hoặc **65**.
+
+**UnionPay:** Bắt đầu bằng **62** (có thể trùng với một phần Discover — cần BIN đầy đủ để phân biệt).
+
+**Napas (Việt Nam):** Napas sử dụng dải BIN riêng được phân bổ trong khuôn khổ quốc gia. Các thẻ Napas nội địa thường bắt đầu bằng **9704** (BIN 4 số cũ hơn) hoặc các dải được cập nhật theo chuẩn mới.
+
+Khi bạn nhập số thẻ trên một website, JavaScript trên trang tra cứu ngay trong bảng BIN để hiển thị logo đúng mạng lưới và điều chỉnh form cho phù hợp (số chữ số, định dạng CVV, số nhóm chữ số). Điều này xảy ra phía client, trước khi bất kỳ thông tin nào được gửi đến server.
+
+## Cấu trúc đầy đủ của PAN
+
+Lấy một PAN Visa 16 số làm ví dụ:
+
+```
+4 5 3 2 0 1 5 1 1 2 8 3 0 6 7 3
+│ └─────────────┘ └──────────────┘ │
+│      BIN (6 số)    Account #     │
+│                                  │
+MII (4)                      Check digit (3)
+```
+
+- **Chữ số 1:** MII = 4 → Visa
+- **Chữ số 1–6:** BIN = 453201 → xác định ngân hàng phát hành cụ thể
+- **Chữ số 7–15:** Account number = số tài khoản cá nhân
+- **Chữ số 16:** Check digit = kết quả tính Luhn
+
+Với thẻ Amex 15 số:
+
+```
+3 7 1 4 4 9 6 3 5 3 9 8 4 3 1
+│ └────────────┘ └────────────┘ │
+│    BIN (6 số)   Account #     │
+MII (3)                   Check digit (1)
+```
+
+- **Chữ số 1:** MII = 3 → Travel/Entertainment
+- **Chữ số 1–6:** BIN = 371449 (hoặc 34xxxx) → American Express
+- **Chữ số 7–14:** Account number (8 số, nhiều hơn thẻ 16 số)
+- **Chữ số 15:** Check digit
+
+Amex có 8 số tài khoản thay vì 9 của Visa — nhưng vì Amex kiểm soát toàn bộ không gian BIN của mình, 8 số đủ cho hàng trăm triệu tài khoản.
+
+## Thuật toán Luhn — Giải thích chi tiết với ví dụ
+
+Thuật toán Luhn (hay mod 10) là phương pháp kiểm tra checksum để phát hiện lỗi nhập liệu đơn giản. Nó **không** là cơ chế bảo mật — chỉ là phép kiểm tra tính nhất quán toán học.
+
+### Quy trình tính
+
+Cho PAN: **4 5 3 2 0 1 5 1 1 2 8 3 0 6 7 3**
+
+**Bước 1:** Tách check digit (chữ số cuối): `3`. Làm việc với 15 số còn lại: `4 5 3 2 0 1 5 1 1 2 8 3 0 6 7`
+
+**Bước 2:** Đếm vị trí từ phải sang trái. Nhân đôi chữ số ở vị trí **lẻ** (1, 3, 5... từ phải, không tính check digit):
+
+```
+Vị trí (từ phải): 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1
+Chữ số:            4  5  3  2  0  1  5  1  1  2  8  3  0  6  7
+Nhân đôi (vị trí lẻ):  ×2    ×2    ×2    ×2    ×2    ×2    ×2    ×2
+Kết quả:           8  5  6  2  0  1 10  1  2  2 16  3  0  6 14
+```
+
+**Bước 3:** Với kết quả nhân đôi lớn hơn 9, trừ đi 9:
+- 10 → 10 - 9 = **1**
+- 16 → 16 - 9 = **7**
+- 14 → 14 - 9 = **5**
+
+Dãy sau xử lý: `8, 5, 6, 2, 0, 1, 1, 1, 2, 2, 7, 3, 0, 6, 5`
+
+**Bước 4:** Cộng tất cả: 8+5+6+2+0+1+1+1+2+2+7+3+0+6+5 = **49**
+
+**Bước 5:** Check digit = số cần thêm để tổng chia hết cho 10. 49 + ? ≡ 0 (mod 10) → ? = **1**
+
+Nhưng check digit của ví dụ này là 3, không phải 1 — vì đây là PAN giả minh họa. Với một PAN thực hợp lệ, bước 4 + check digit sẽ chia hết cho 10.
+
+### Cách kiểm tra PAN đã có sẵn
+
+Để kiểm tra PAN có hợp lệ không (bao gồm check digit), thực hiện quy trình tương tự trên toàn bộ 15–16 số:
+
+1. Nhân đôi chữ số ở vị trí chẵn từ phải (vị trí 2, 4, 6...).
+2. Trừ 9 nếu kết quả > 9.
+3. Cộng tất cả.
+4. Nếu tổng chia hết cho 10 → PAN hợp lệ về mặt Luhn.
+
+Mọi form thanh toán nghiêm chỉnh đều chạy kiểm tra này phía client trước khi submit, để báo lỗi ngay nếu người dùng nhập nhầm số.
+
+### Luhn phát hiện được lỗi gì, không phát hiện được gì
+
+**Phát hiện được:**
+- Gõ nhầm một chữ số (ví dụ 5 thành 6)
+- Hoán đổi hai chữ số liền kề (ví dụ 53 thành 35) — trong hầu hết trường hợp
+
+**Không phát hiện được:**
+- Hoán đổi hai chữ số giống nhau (35 thành 53 khi cả hai đều là 3 và 5 nhưng ở vị trí đặc biệt)
+- Nhiều lỗi cùng lúc triệt tiêu nhau
+- Số thẻ bịa ra nhưng tính Luhn đúng — thuật toán không xác thực sự tồn tại của tài khoản
+
+Điểm cuối cùng quan trọng: các công cụ tạo số thẻ "test" (dùng để test cổng thanh toán trong môi trường sandbox) đều tạo ra PAN thỏa mãn Luhn nhưng không thuộc tài khoản thực. Khi gửi lên mạng lưới thật, tài khoản không tồn tại và giao dịch bị từ chối ngay.
+
+## Hệ thống kiểm tra tính hợp lệ hoạt động theo lớp
+
+Khi bạn nhập số thẻ và nhấn thanh toán, có nhiều lớp kiểm tra:
+
+**Lớp 1 — Client-side Luhn:** JavaScript chạy ngay trên trình duyệt, phát hiện lỗi gõ nhầm trước khi gửi request.
+
+**Lớp 2 — BIN lookup:** Server kiểm tra BIN trong database, xác định mạng lưới và ngân hàng phát hành, xác nhận BIN đang hoạt động.
+
+**Lớp 3 — Network routing:** Giao dịch được gửi đến mạng lưới đúng (Visa, Mastercard, Amex). Mạng lưới kiểm tra BIN lần nữa và định tuyến đến ngân hàng phát hành.
+
+**Lớp 4 — Issuer authorization:** Ngân hàng phát hành kiểm tra: tài khoản có tồn tại không, có đủ hạn mức không, CVV có khớp không, giao dịch có bất thường không.
+
+**Lớp 5 — 3DS (nếu áp dụng):** Xác thực bổ sung của chủ thẻ.
+
+Luhn chỉ là lớp 1 — cổng lọc đầu tiên. Qua được Luhn không có nghĩa là giao dịch sẽ thành công.
+
+## Rủi ro khi chia sẻ số thẻ
+
+Với hiểu biết về cấu trúc PAN, dễ thấy các rủi ro:
+
+**Chia sẻ đầy đủ PAN + hết hạn + CVV:** Đây là thông tin đủ để thực hiện giao dịch online tại các merchant không có 3DS. Rủi ro cao nhất.
+
+**Chia sẻ PAN + hết hạn (không CVV):** Ít merchant chấp nhận giao dịch không có CVV. Rủi ro thấp hơn nhưng vẫn tồn tại với một số cổng thanh toán cũ.
+
+**Chia sẻ PAN không có gì khác:** BIN trong PAN lộ thông tin ngân hàng phát hành và loại thẻ. Không đủ để thực hiện giao dịch, nhưng là thông tin kẻ gian dùng để lọc và nhắm mục tiêu trong các chiến dịch phishing hoặc social engineering.
+
+**Chia sẻ 4 số cuối:** Thông tin này thường được ngân hàng và merchant dùng để xác nhận danh tính trong cuộc gọi hỗ trợ. Không đủ để thực hiện giao dịch, nhưng kết hợp với thông tin bị rò rỉ từ nguồn khác có thể được dùng trong social engineering.
+
+Quy tắc thực hành: không nhập số thẻ đầy đủ trên bất kỳ website nào không phải cổng thanh toán có HTTPS, không có logo mạng lưới thẻ, hoặc website bạn không nhận ra. Kiểm tra URL và certificate trước khi nhập bất kỳ thông tin thẻ nào.
