@@ -155,10 +155,50 @@ Use `.webp` as the default placeholder extension when writing (the admin server 
 
 - Write prompts in **English**
 - Be specific about visual style: "flat illustration", "minimalist", "infographic style", "isometric", etc.
-- Mention a color tone that fits Vietnamese fintech: clean, professional, blue/green palette
-- **No text in the image**
+- **No text in the image** (unless it is a data-heavy infographic where labels are essential — then note "text must be legible")
 - Describe the subject clearly, related to the post topic
-- Around 2–3 sentences per prompt
+- Prompts can be long and detailed — more specificity produces better results. Include exact colors, layout, objects, quantities, and relationships between elements.
+- **Prefer real objects over generic placeholders.** When the post mentions credit cards, use real Vietnamese bank cards with their actual brand colors and logo style — do not draw generic white/blue rectangles. Reference specific banks:
+  - **Vietcombank** — dark green (`#006633`), white text, VCB initials
+  - **BIDV** — dark blue (`#003087`) with red accent, BIDV mark
+  - **VietinBank** — red (`#c8102e`) with navy, CTG mark
+  - **Techcombank** — bright red (`#e30613`), Techcombank wordmark
+  - **MB Bank** — teal/navy (`#004f9f`), MB mark
+  - **VPBank** — green (`#00a650`) with orange accent, VPBank wordmark — issues Amex in Vietnam
+  - **Shinhan Bank Vietnam** — blue (`#003b8e`), Shinhan mark — also issues Amex
+  - **Agribank** — dark green (`#007a3d`), Agribank mark
+  - **ACB** — blue (`#0066b2`), ACB mark
+  - **TPBank** — purple/violet (`#6b21a8`), TPBank mark
+  - When a post is about Amex: show a VPBank Amex card (green/gold)
+  - When a post is about Visa: show a Techcombank Visa or Vietcombank Visa card
+  - When a post is about Mastercard: show an MB Bank Mastercard or VietinBank Mastercard
+
+#### Cover / first image — always an illustration
+
+The first image of every post must be an **eye-catching illustration**, never a table or dry diagram.
+It sets the visual tone for the article. Think: what would a magazine cover or blog hero image look like?
+
+- Show 2–4 concrete objects (cards, coins, buildings, devices) in a compelling composition
+- Use a **subtle gradient background** — light blue to white (`#e0f2fe → #ffffff`), or soft teal/slate
+- Add a **faint abstract geometric pattern** on the background (hexagons, diagonal lines, dot grid, circuit traces) — very light opacity, ~8–15%
+- Objects should have depth: slight drop shadow, subtle shine, slight angle/tilt
+- No flat color blocks as background — always gradient + texture
+
+#### Background for object-focused images
+
+When showing 1–3 objects on a background (cards, phones, icons):
+- Use a **slightly gradient background**, e.g. light blue `#dbeafe → #eff6ff`, or slate `#f1f5f9 → #e2e8f0`
+- Add a **subtle abstract pattern** at low opacity: geometric hexagons, soft dot grid, diagonal hairlines
+- Objects should be centered with breathing room, slight shadow for lift
+
+#### Infographic / diagram images
+
+When showing a comparison, flow, or structure — be creative, **avoid tables inside images** (boring):
+- Use flow diagrams with arrows to show processes
+- Use icon + label cards in a grid or pyramid
+- Use side-by-side panels for comparisons
+- Use tier/podium layouts for rankings
+- Tables in image are allowed only when data density requires it, and only for secondary/non-cover images
 
 ### Example frontmatter with image_prompts
 

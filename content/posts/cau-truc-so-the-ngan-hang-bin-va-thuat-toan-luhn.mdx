@@ -12,9 +12,90 @@ tags:
   - bảo mật thẻ
 status: "published"
 ai_generated: true
+cover_image: "/images/posts/cau-truc-so-the-ngan-hang-bin-va-thuat-toan-luhn/cau-truc-pan-so-the-theo-iso-7812.webp"
+image_prompts:
+  cau-truc-pan-so-the-theo-iso-7812: >
+    Flat infographic illustration of a white credit card centered on a light gray background.
+    The card displays the number "4532 0151 1283 0673" in large monospace digits across the middle.
+    Four annotation brackets below the number, each a different color:
+    a blue bracket spanning digit 1 only, labeled "MII = 4";
+    a teal bracket spanning digits 1–6, labeled "BIN 453201";
+    an orange bracket spanning digits 7–15, labeled "Account number";
+    a green bracket on digit 16 only, labeled "Check digit".
+    Clean lines, no card brand logos, no human figures, professional fintech illustration style,
+    blue and white color palette.
+
+  nhan-dang-mang-luoi-the-qua-dau-so-bin: >
+    {
+      "type": "infographic table",
+      "style": "flat design, white background, thin border rows, header in dark navy #1e293b",
+      "title": "Card network identification by BIN prefix",
+      "columns": ["Network", "BIN prefix", "Card length"],
+      "rows": [
+        { "network": "Visa",       "prefix": "4",                  "length": "16 digits", "row_color": "#eff6ff" },
+        { "network": "Mastercard", "prefix": "51–55  |  2221–2720","length": "16 digits", "row_color": "#ffffff" },
+        { "network": "Amex",       "prefix": "34  |  37",          "length": "15 digits", "row_color": "#eff6ff" },
+        { "network": "JCB",        "prefix": "3528–3589",          "length": "16 digits", "row_color": "#ffffff" },
+        { "network": "Discover",   "prefix": "6011  |  644–649  |  65", "length": "16 digits", "row_color": "#eff6ff" },
+        { "network": "UnionPay",   "prefix": "62",                 "length": "16–19 digits", "row_color": "#ffffff" },
+        { "network": "Napas (VN)", "prefix": "9704",               "length": "16 digits", "row_color": "#fff7ed" }
+      ],
+      "accent": "left colored stripe per row — blue for Visa, red for Mastercard, dark green for Amex, teal for others, orange for Napas",
+      "note": "render all text accurately, this is a data table, text legibility is critical"
+    }
+
+  thuat-toan-luhn-tinh-check-digit-tung-buoc: >
+    A precise step-by-step grid infographic of the Luhn algorithm on a white background.
+    Five stacked labeled rows, each a horizontal strip:
+
+    Row 1 — "Input PAN": 16 cells in a row containing digits 4,5,3,2,0,1,5,1,1,2,8,3,0,6,7 plus a
+    final grayed-out cell showing "3" labeled "check digit — set aside".
+
+    Row 2 — "Double every 2nd digit from right (positions 1,3,5,7,9,11,13,15)":
+    same 15 cells — the 8 cells at odd positions from the right are highlighted in light blue
+    and show doubled values: position 1→4×2=8, position 3→3×2=6, position 5→0×2=0,
+    position 7→5×2=10, position 9→1×2=2, position 11→8×2=16, position 13→3×2=6 wait
+    let me correct — from right: pos1=7→14, pos3=0→0, pos5=2→4, pos7=1→2...
+    actually just show a clean grid with alternating blue-highlighted cells and "×2" labels above them.
+
+    Row 3 — "Subtract 9 where result > 9": values 10→1, 16→7, 14→5 shown in orange
+    with strikethrough of original value and arrow to corrected value.
+
+    Row 4 — "Sum": one wide cell showing the addition sequence ending in "= 49".
+
+    Row 5 — "Check digit": formula cell showing "49 + ? ≡ 0 (mod 10)" with answer "? = 1"
+    in a green circle.
+
+    Style: clean grid lines, blue/orange/green accent colors, monospace digits, sans-serif labels,
+    white background. Text must be legible and accurate.
+
+  cac-lop-kiem-tra-hop-le-giao-dich-the: >
+    A vertical 5-layer stack diagram on white background showing payment validation flow,
+    each layer a wide horizontal rounded rectangle with a left-side icon area and text area.
+
+    Layer 1 (top, lightest sky blue #e0f2fe): icon = laptop/browser outline,
+    label "Layer 1 — Browser" with sub-label "Luhn checksum — catches typos instantly".
+
+    Layer 2 (medium blue #bae6fd): icon = database cylinder,
+    label "Layer 2 — Merchant server" with sub-label "BIN lookup — identifies network and issuing bank".
+
+    Layer 3 (#7dd3fc): icon = network nodes,
+    label "Layer 3 — Payment network" with sub-label "Visa / Mastercard routes transaction to issuer".
+
+    Layer 4 (#38bdf8): icon = bank building outline,
+    label "Layer 4 — Issuing bank" with sub-label "Checks account, credit limit, CVV match, fraud score".
+
+    Layer 5 (bottom, dark navy #0c4a6e): icon = phone with lock,
+    label "Layer 5 — 3D Secure" with sub-label "Cardholder OTP or biometric (when required)".
+
+    Downward arrows between each layer. Right side of each layer shows a small green checkmark
+    with label "pass" except Layer 5 which shows "optional".
+    Flat design, fintech infographic style, text must be legible.
 ---
 
 Dãy 15 hoặc 16 chữ số trên mặt thẻ không phải số ngẫu nhiên. Mỗi chữ số có vị trí và ý nghĩa xác định, tuân theo tiêu chuẩn quốc tế ISO 7812. Hiểu cấu trúc này giúp giải thích tại sao hệ thống biết ngay thẻ của bạn là Visa hay Mastercard khi bạn mới nhập 4 số đầu, và tại sao gõ sai một chữ số không bao giờ qua được bước kiểm tra đầu tiên của form thanh toán.
+
+![Cấu trúc PAN số thẻ ngân hàng theo tiêu chuẩn ISO 7812: MII, BIN, Account Number, Check Digit](/images/posts/cau-truc-so-the-ngan-hang-bin-va-thuat-toan-luhn/cau-truc-pan-so-the-theo-iso-7812.webp "Giải phẫu số thẻ 16 chữ số theo ISO 7812")
 
 ## ISO 7812 — Tiêu chuẩn nền tảng
 
@@ -71,6 +152,8 @@ Hệ thống phát hiện loại thẻ từ vài chữ số đầu dựa trên d
 **Napas (Việt Nam):** Napas sử dụng dải BIN riêng được phân bổ trong khuôn khổ quốc gia. Các thẻ Napas nội địa thường bắt đầu bằng **9704** (BIN 4 số cũ hơn) hoặc các dải được cập nhật theo chuẩn mới.
 
 Khi bạn nhập số thẻ trên một website, JavaScript trên trang tra cứu ngay trong bảng BIN để hiển thị logo đúng mạng lưới và điều chỉnh form cho phù hợp (số chữ số, định dạng CVV, số nhóm chữ số). Điều này xảy ra phía client, trước khi bất kỳ thông tin nào được gửi đến server.
+
+![Bảng nhận dạng mạng lưới thẻ qua đầu số BIN: Visa, Mastercard, Amex, JCB, Discover, UnionPay, Napas](/images/posts/cau-truc-so-the-ngan-hang-bin-va-thuat-toan-luhn/nhan-dang-mang-luoi-the-qua-dau-so-bin.webp "Dải BIN đăng ký của từng mạng lưới thẻ quốc tế và Napas Việt Nam")
 
 ## Cấu trúc đầy đủ của PAN
 
@@ -137,6 +220,8 @@ Dãy sau xử lý: `8, 5, 6, 2, 0, 1, 1, 1, 2, 2, 7, 3, 0, 6, 5`
 
 Nhưng check digit của ví dụ này là 3, không phải 1 — vì đây là PAN giả minh họa. Với một PAN thực hợp lệ, bước 4 + check digit sẽ chia hết cho 10.
 
+![Thuật toán Luhn tính check digit từng bước với ví dụ số thẻ 4532015112830673](/images/posts/cau-truc-so-the-ngan-hang-bin-va-thuat-toan-luhn/thuat-toan-luhn-tinh-check-digit-tung-buoc.webp "Minh họa từng bước thuật toán Luhn mod 10 trên PAN 16 chữ số")
+
 ### Cách kiểm tra PAN đã có sẵn
 
 Để kiểm tra PAN có hợp lệ không (bao gồm check digit), thực hiện quy trình tương tự trên toàn bộ 15–16 số:
@@ -176,6 +261,8 @@ Khi bạn nhập số thẻ và nhấn thanh toán, có nhiều lớp kiểm tra
 **Lớp 5 — 3DS (nếu áp dụng):** Xác thực bổ sung của chủ thẻ.
 
 Luhn chỉ là lớp 1 — cổng lọc đầu tiên. Qua được Luhn không có nghĩa là giao dịch sẽ thành công.
+
+![Sơ đồ 5 lớp kiểm tra hợp lệ giao dịch thẻ từ trình duyệt đến ngân hàng phát hành](/images/posts/cau-truc-so-the-ngan-hang-bin-va-thuat-toan-luhn/cac-lop-kiem-tra-hop-le-giao-dich-the.webp "5 lớp xác thực giao dịch thẻ: Luhn → BIN lookup → Network → Issuer → 3DS")
 
 ## Rủi ro khi chia sẻ số thẻ
 

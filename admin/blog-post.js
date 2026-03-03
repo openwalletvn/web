@@ -97,22 +97,26 @@ function buildLabel(block) {
 
 function buildCard(block, postSlug) {
   const card = el('div', 'image-card');
+  const wrap = el('div', 'preview-wrap');
 
-  // Preview
   if (block.exists && block.filename) {
-    card.appendChild(buildPreview(postSlug, block.filename, block.key));
+    // Image exists: show it, overlay the drop zone on top
+    wrap.appendChild(buildPreview(postSlug, block.filename, block.key));
+    const dz = el('div', 'dropzone overlay');
+    dz.textContent = 'Drop to replace';
+    attachDropzone(dz, block, postSlug, card, wrap);
+    wrap.appendChild(dz);
+  } else {
+    // No image: full gray drop zone
+    const dz = el('div', 'dropzone');
+    dz.textContent = 'Drag & drop image here, or click to browse';
+    attachDropzone(dz, block, postSlug, card, wrap);
+    wrap.appendChild(dz);
   }
 
-  // Drop zone
-  card.appendChild(buildDropzone(block, postSlug, card));
-
-  // Upload status placeholder
+  card.appendChild(wrap);
   card.appendChild(el('div', 'upload-status'));
-
-  // Prompt
-  if (block.prompt) {
-    card.appendChild(buildPrompt(block.prompt));
-  }
+  if (block.prompt) card.appendChild(buildPrompt(block.prompt));
 
   return card;
 }
@@ -125,26 +129,21 @@ function buildPreview(postSlug, filename, alt) {
   return img;
 }
 
-function buildDropzone(block, postSlug, card) {
-  const dz = el('div', block.exists ? 'dropzone replace' : 'dropzone');
-  dz.textContent = block.exists ? 'Drop here to replace' : 'Drag & drop image here, or click to browse';
-
+function attachDropzone(dz, block, postSlug, card, wrap) {
   dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drag-over'); });
   dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
   dz.addEventListener('drop', (e) => {
     e.preventDefault();
     dz.classList.remove('drag-over');
-    if (e.dataTransfer.files[0]) upload(e.dataTransfer.files[0], block, postSlug, card);
+    if (e.dataTransfer.files[0]) upload(e.dataTransfer.files[0], block, postSlug, card, wrap, dz);
   });
   dz.addEventListener('click', () => {
     const inp = document.createElement('input');
     inp.type = 'file';
     inp.accept = 'image/*';
-    inp.onchange = () => { if (inp.files[0]) upload(inp.files[0], block, postSlug, card); };
+    inp.onchange = () => { if (inp.files[0]) upload(inp.files[0], block, postSlug, card, wrap, dz); };
     inp.click();
   });
-
-  return dz;
 }
 
 function buildPrompt(promptText) {
@@ -170,17 +169,15 @@ function buildPrompt(promptText) {
 
 // ─── Upload ───────────────────────────────────────────────────────────────────
 
-async function upload(file, block, postSlug, card) {
+async function upload(file, block, postSlug, card, wrap, dz) {
   const statusEl = card.querySelector('.upload-status');
   statusEl.textContent = 'Uploading…';
   statusEl.className = 'upload-status';
 
   const ext = file.name.includes('.') ? file.name.split('.').pop() : 'jpg';
-  const filename = `${block.key}.${ext}`;
-
   const form = new FormData();
   form.append('file', file);
-  form.append('filename', filename);
+  form.append('filename', `${block.key}.${ext}`);
 
   try {
     const res = await fetch(`/api/blog/${postSlug}/upload`, { method: 'POST', body: form });
@@ -191,22 +188,18 @@ async function upload(file, block, postSlug, card) {
     statusEl.className = 'upload-status ok';
     setTimeout(() => { statusEl.textContent = ''; }, 3000);
 
-    // Update preview
+    // Update or insert preview image inside wrap
     const newSrc = `/images/posts/${postSlug}/${json.filename}?t=${Date.now()}`;
-    const existingImg = card.querySelector('.preview-img');
+    const existingImg = wrap.querySelector('.preview-img');
     if (existingImg) {
       existingImg.src = newSrc;
     } else {
-      const img = buildPreview(postSlug, `${json.filename}?t=${Date.now()}`, block.key);
-      card.insertBefore(img, card.firstChild);
+      wrap.insertBefore(buildPreview(postSlug, `${json.filename}?t=${Date.now()}`, block.key), dz);
     }
 
-    // Compact the drop zone
-    const dz = card.querySelector('.dropzone');
-    if (dz) {
-      dz.textContent = 'Drop here to replace';
-      dz.className = 'dropzone replace';
-    }
+    // Switch drop zone to overlay
+    dz.className = 'dropzone overlay';
+    dz.textContent = 'Drop to replace';
 
     // Update label for non-cover images
     const section = card.closest('.image-section');

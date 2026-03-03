@@ -133,19 +133,29 @@
       overflow: hidden;
     }
 
+    /* ── Preview wrap ────────────────────────────────────────────────────────── */
+
+    .preview-wrap {
+      position: relative;
+    }
+
     .preview-img {
       display: block;
       width: 100%;
       max-height: 340px;
       object-fit: cover;
-      border-bottom: 1px solid #f1f5f9;
     }
 
     /* ── Drop zone ───────────────────────────────────────────────────────────── */
 
+    /* Empty state — no image yet */
     .dropzone {
+      min-height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin: 12px;
-      padding: 22px 16px;
+      padding: 16px;
       border: 1.5px dashed #cbd5e1;
       border-radius: 6px;
       text-align: center;
@@ -156,16 +166,37 @@
       user-select: none;
     }
 
-    .dropzone.replace {
-      padding: 10px 16px;
-      font-size: 12px;
-    }
-
     .dropzone:hover,
     .dropzone.drag-over {
       border-color: #2563eb;
       background: #eff6ff;
       color: #2563eb;
+    }
+
+    /* Overlay state — covers the image */
+    .dropzone.overlay {
+      position: absolute;
+      inset: 0;
+      min-height: unset;
+      margin: 0;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: transparent;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.18s, background 0.18s, color 0.18s;
+    }
+
+    .preview-wrap:hover .dropzone.overlay,
+    .dropzone.overlay.drag-over {
+      opacity: 1;
+      background: rgba(37, 99, 235, 0.18);
+      color: #fff;
+      outline: 2px dashed #2563eb;
+      outline-offset: -6px;
     }
 
     /* ── Prompt ──────────────────────────────────────────────────────────────── */
