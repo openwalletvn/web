@@ -38,7 +38,9 @@
       "Bash(cd:*)",
       "Bash(cat:*)",
       "Bash(find:*)",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(bun:*)",
+      "Bash(npm:*)"
     ]
   }
 }

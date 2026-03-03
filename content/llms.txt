@@ -124,6 +124,52 @@ Use 2–8 tags per post. No restrictions on Vietnamese or English.
 
 ---
 
+## Image Prompts
+
+When writing a new post, always add an `image_prompts` field to the frontmatter.
+
+### Keys
+
+- The **`cover`** key maps to the cover image of the post.
+- Every other key is the **filename stem** (without extension) of each image referenced in the post content.
+- Keys double as filenames, so they must be **SEO-friendly**: descriptive, keyword-rich, hyphen-separated Vietnamese slugs.
+- Use 3–6 words that describe the image subject and relate to the post topic.
+- **Good:** `so-sanh-cashback-visa-vs-mastercard`, `bieu-phi-thuong-nien-the-tin-dung`, `cau-truc-so-the-ngan-hang-iso-7812`
+- **Bad:** `image1`, `bang`, `hinh`, `cover2`
+
+### Image paths in content
+
+Images must follow this convention:
+
+```
+/images/posts/<slug>/<filename>.jpg
+```
+
+Use `.png` as the default placeholder extension when writing (Gemini always outputs PNG). Example:
+
+```md
+![Alt text](/images/posts/shopee-card-vs-vib-online-plus/so-sanh-cashback-shopee-card-vib-online-plus.png)
+```
+
+### Gemini prompt guidelines
+
+- Write prompts in **English**
+- Be specific about visual style: "flat illustration", "minimalist", "infographic style", "isometric", etc.
+- Mention a color tone that fits Vietnamese fintech: clean, professional, blue/green palette
+- **No text in the image**
+- Describe the subject clearly, related to the post topic
+- Around 2–3 sentences per prompt
+
+### Example frontmatter with image_prompts
+
+```yaml
+image_prompts:
+  cover: "A flat-style minimalist illustration of two credit cards side by side, one labeled Visa and one Mastercard, clean blue and gold color palette, fintech style, no text."
+  so-sanh-cashback-shopee-card-vib-online-plus: "A clean infographic-style comparison table visual with two columns, checkmarks and crosses, soft blue background, professional financial design, no text."
+```
+
+---
+
 ## Example Post
 
 ```mdx

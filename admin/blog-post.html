@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Edit images</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────────── */
+
+    .page-header {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 14px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .brand {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .back-link {
+      font-size: 12px;
+      color: #2563eb;
+      text-decoration: none;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .slug-line {
+      font-family: monospace;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 5px;
+    }
+
+    .meta-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .post-title { font-size: 13px; font-weight: 500; color: #1e293b; }
+    .sep        { color: #cbd5e1; font-size: 12px; }
+    .category   { font-size: 12px; color: #475569; }
+    .date       { font-size: 12px; color: #94a3b8; font-family: monospace; }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .status-dot.published { background: #16a34a; }
+    .status-dot.draft     { background: #f59e0b; }
+
+    /* ── Content ─────────────────────────────────────────────────────────────── */
+
+    .content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 24px 80px;
+    }
+
+    /* ── Text blocks ─────────────────────────────────────────────────────────── */
+
+    .text-block {
+      font-size: 13px;
+      color: #94a3b8;
+      font-style: italic;
+      padding: 10px 4px;
+      line-height: 1.6;
+    }
+
+    /* ── Image section ───────────────────────────────────────────────────────── */
+
+    .image-section { margin: 4px 0 20px; }
+
+    .image-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      min-height: 20px;
+    }
+
+    .cover-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #2563eb;
+    }
+
+    .filename {
+      font-family: monospace;
+      font-size: 13px;
+      color: #334155;
+    }
+
+    .status-icon-ok   { color: #16a34a; font-size: 13px; }
+    .status-icon-warn { color: #f59e0b; font-size: 13px; }
+
+    /* ── Card ────────────────────────────────────────────────────────────────── */
+
+    .image-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .preview-img {
+      display: block;
+      width: 100%;
+      max-height: 340px;
+      object-fit: cover;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* ── Drop zone ───────────────────────────────────────────────────────────── */
+
+    .dropzone {
+      margin: 12px;
+      padding: 22px 16px;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.12s, color 0.12s;
+      user-select: none;
+    }
+
+    .dropzone.replace {
+      padding: 10px 16px;
+      font-size: 12px;
+    }
+
+    .dropzone:hover,
+    .dropzone.drag-over {
+      border-color: #2563eb;
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    /* ── Prompt ──────────────────────────────────────────────────────────────── */
+
+    .prompt-section {
+      padding: 12px 16px 14px;
+      border-top: 1px solid #f1f5f9;
+      background: #f8fafc;
+    }
+
+    .prompt-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+
+    .prompt-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .prompt-text {
+      flex: 1;
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.55;
+    }
+
+    .copy-btn {
+      flex-shrink: 0;
+      padding: 4px 11px;
+      font-size: 12px;
+      font-weight: 500;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      color: #475569;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .copy-btn:hover { border-color: #2563eb; color: #2563eb; }
+
+    /* ── Upload status ───────────────────────────────────────────────────────── */
+
+    .upload-status {
+      font-size: 12px;
+      padding: 4px 16px 8px;
+      color: #94a3b8;
+      min-height: 24px;
+    }
+    .upload-status.ok    { color: #16a34a; }
+    .upload-status.error { color: #dc2626; }
+
+    /* ── Loading / error ─────────────────────────────────────────────────────── */
+
+    .loading { padding: 40px 24px; color: #94a3b8; font-size: 13px; }
+    .error   { padding: 40px 24px; color: #dc2626; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div id="root"><p class="loading">Loading…</p></div>
+  <script src="/static/blog-post.js"></script>
+</body>
+</html>

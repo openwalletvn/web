@@ -48,6 +48,16 @@ export default async function BlogPostPage({params}: Props) {
 
     return (
         <div className="px-4 py-12">
+            {process.env.NODE_ENV === 'development' && (
+                <a
+                    href={`http://localhost:3004/blog/${slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="fixed bottom-5 right-5 z-50 px-3 py-1.5 rounded bg-gray-900 text-white text-xs font-medium shadow-lg hover:bg-gray-700 transition-colors"
+                >
+                    ✏️ Edit images
+                </a>
+            )}
             <div className="max-w-container mx-auto">
                 <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
                 <Breadcrumbs items={breadcrumbItems}/>
