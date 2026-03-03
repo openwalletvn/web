@@ -77,7 +77,8 @@ function parseBlocks(
       const text = stripMarkdown(before);
       if (text.length > 5) blocks.push({ type: 'text', text: text.slice(0, 160) });
     }
-    const key = (m[1].split('/').pop() ?? '').replace(/\.[^.]+$/, '');
+    const rawUrl = m[1].trim().split(/\s+/)[0]; // strip optional "title" before splitting
+    const key = (rawUrl.split('/').pop() ?? '').replace(/\.[^.]+$/, '');
     const filename = existingImages.find((f) => f.replace(/\.[^.]+$/, '') === key) ?? null;
     blocks.push({ type: 'image', key, prompt: imagePrompts[key] ?? null, exists: !!filename, filename });
     last = m.index + m[0].length;
@@ -97,6 +98,39 @@ function parseBlocks(
   }
 
   return blocks;
+}
+
+// ─── Watermark helper ─────────────────────────────────────────────────────────
+
+async function applyWatermark(inputBuffer: Buffer, imgWidth: number, imgHeight: number): Promise<Buffer> {
+  const wmSvg = fs.readFileSync(path.join(PUBLIC_DIR, 'images/watermark.svg'));
+  const wmStr = wmSvg.toString();
+  const wmW = parseInt(wmStr.match(/width="(\d+)"/)?.[1]  ?? '120');
+  const wmH = parseInt(wmStr.match(/height="(\d+)"/)?.[1] ?? '24');
+  const mg  = 12;
+
+  // Rasterize SVG → PNG first, then rotate the PNG (avoids librsvg rotation quirks)
+  const horizBuf = await sharp(wmSvg).png().toBuffer();
+  const vertBuf  = await sharp(horizBuf).rotate(90).toBuffer();
+  const vW = wmH; // width after 90° rotation
+  const vH = wmW; // height after 90° rotation
+
+  // 8 positions: 4 horizontal (hugging top/bottom) + 4 vertical (hugging left/right)
+  const positions = [
+    { buf: horizBuf, top: mg,                  left: mg },
+    { buf: horizBuf, top: mg,                  left: imgWidth  - wmW - mg },
+    { buf: horizBuf, top: imgHeight - wmH - mg, left: mg },
+    { buf: horizBuf, top: imgHeight - wmH - mg, left: imgWidth  - wmW - mg },
+    { buf: vertBuf,  top: mg,                  left: mg },
+    { buf: vertBuf,  top: imgHeight - vH  - mg, left: mg },
+    { buf: vertBuf,  top: mg,                  left: imgWidth  - vW  - mg },
+    { buf: vertBuf,  top: imgHeight - vH  - mg, left: imgWidth  - vW  - mg },
+  ];
+  const pos = positions[Math.floor(Math.random() * positions.length)];
+
+  return sharp(inputBuffer)
+    .composite([{ input: pos.buf, top: pos.top, left: pos.left }])
+    .toBuffer();
 }
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
@@ -145,34 +179,45 @@ app.post('/api/blog/:slug/upload', upload.single('file'), async (req, res) => {
 
     const { width, height } = info;
 
-    // Step 2: load watermark SVG and pick a random corner
-    const wmSvg = fs.readFileSync(path.join(PUBLIC_DIR, 'images/watermark.svg'));
-    const wmStr = wmSvg.toString();
-    const wmWidth  = parseInt(wmStr.match(/width="(\d+)"/)?.[1]  ?? '120');
-    const wmHeight = parseInt(wmStr.match(/height="(\d+)"/)?.[1] ?? '24');
-    const margin = 12;
-    const corners = [
-      { top: margin,                    left: margin },
-      { top: margin,                    left: width - wmWidth - margin },
-      { top: height - wmHeight - margin, left: margin },
-      { top: height - wmHeight - margin, left: width - wmWidth - margin },
-    ];
-    const corner = corners[Math.floor(Math.random() * corners.length)];
+    // Step 2: apply watermark
+    const finalBuffer = await applyWatermark(webpBuffer, width, height);
 
-    // Step 3: composite watermark onto webp buffer
-    const finalBuffer = await sharp(webpBuffer)
-      .composite([{ input: wmSvg, ...corner }])
-      .toBuffer();
-
-    // Step 4: save
+    // Step 3: save watermarked image + original (for future rewatermark)
     const dir = path.join(IMAGES_DIR, slug);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, outFilename), finalBuffer);
+    fs.writeFileSync(path.join(dir, `${stem}.orig.webp`), webpBuffer);
 
     res.json({ ok: true, filename: outFilename });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: `sharp failed: ${message}` });
+  }
+});
+
+app.post('/api/blog/:slug/rewatermark', express.json(), async (req, res) => {
+  const { slug } = req.params;
+  const { filename } = req.body as { filename?: string };
+  if (!filename) return res.status(400).json({ error: 'Missing filename' });
+
+  const stem = filename.replace(/\.[^.]+$/, '');
+  const dir  = path.join(IMAGES_DIR, slug);
+  const origPath = path.join(dir, `${stem}.orig.webp`);
+  const outPath  = path.join(dir, filename);
+
+  if (!fs.existsSync(origPath)) {
+    return res.status(404).json({ error: 'Re-upload to rewatermark' });
+  }
+
+  try {
+    const origBuffer = fs.readFileSync(origPath);
+    const { width, height } = await sharp(origBuffer).metadata();
+    const finalBuffer = await applyWatermark(origBuffer, width!, height!);
+    fs.writeFileSync(outPath, finalBuffer);
+    res.json({ ok: true });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: message });
   }
 });
 

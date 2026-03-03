@@ -72,7 +72,7 @@ function buildTextBlock(block) {
 // ─── Image section ────────────────────────────────────────────────────────────
 
 function buildImageSection(block, postSlug) {
-  const label = buildLabel(block);
+  const label = buildLabel(block, postSlug);
   const card  = buildCard(block, postSlug);
 
   const section = el('div', 'image-section');
@@ -80,7 +80,7 @@ function buildImageSection(block, postSlug) {
   return section;
 }
 
-function buildLabel(block) {
+function buildLabel(block, postSlug) {
   const label = el('div', 'image-label');
   if (block.key === 'cover') {
     label.appendChild(span('Cover image', 'cover-badge'));
@@ -92,7 +92,18 @@ function buildLabel(block) {
     label.append(span(displayName, 'filename'), icon);
     if (!block.exists) label.append(span('missing', 'sep'));
   }
+  if (block.exists && block.filename) {
+    label.appendChild(buildRewatermarkBtn(block, postSlug));
+  }
   return label;
+}
+
+function buildRewatermarkBtn(block, postSlug) {
+  const btn = el('button', 'rewatermark-btn');
+  btn.textContent = '↻ Watermark';
+  btn.title = 'Re-apply watermark at a new random position';
+  btn.addEventListener('click', () => rewatermark(btn, block, postSlug));
+  return btn;
 }
 
 function buildCard(block, postSlug) {
@@ -213,6 +224,39 @@ async function upload(file, block, postSlug, card, wrap, dz) {
   } catch (err) {
     statusEl.textContent = err.message;
     statusEl.className = 'upload-status error';
+  }
+}
+
+// ─── Rewatermark ──────────────────────────────────────────────────────────────
+
+async function rewatermark(btn, block, postSlug) {
+  btn.textContent = '…';
+  btn.className = 'rewatermark-btn busy';
+
+  try {
+    const res = await fetch(`/api/blog/${postSlug}/rewatermark`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename: block.filename }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error ?? 'Failed');
+
+    // Force-refresh the preview image with cache-buster
+    const section = btn.closest('.image-section');
+    const img = section && section.querySelector('.preview-img');
+    if (img) {
+      const base = img.src.split('?')[0];
+      img.src = `${base}?t=${Date.now()}`;
+    }
+
+    btn.textContent = '✓ Done';
+    btn.className = 'rewatermark-btn done';
+    setTimeout(() => { btn.textContent = '↻ Watermark'; btn.className = 'rewatermark-btn'; }, 2500);
+  } catch (err) {
+    btn.textContent = err.message.length < 30 ? err.message : 'Error';
+    btn.className = 'rewatermark-btn err';
+    setTimeout(() => { btn.textContent = '↻ Watermark'; btn.className = 'rewatermark-btn'; }, 3000);
   }
 }
 
