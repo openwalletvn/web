@@ -1,72 +1,79 @@
 ---
-title: "CVV là gì? Vì sao Amex có 4 số và hệ thống bảo mật thẻ hoạt động ra sao?"
-description: "CVV là gì, vì sao Amex dùng 4 số còn Visa/Mastercard dùng 3, và toàn bộ hệ thống bảo mật thẻ từ PCI DSS đến 3D Secure và tokenization hoạt động ra sao."
-date: "2026-03-05"
-category: "Hướng dẫn"
+title: CVV là gì? Vì sao Amex có 4 số và hệ thống bảo mật thẻ hoạt động ra sao?
+description: >-
+  CVV là gì, vì sao Amex dùng 4 số còn Visa/Mastercard dùng 3, và toàn bộ hệ
+  thống bảo mật thẻ từ PCI DSS đến 3D Secure và tokenization hoạt động ra sao.
+date: '2026-03-05'
+category: Hướng dẫn
 tags:
   - PCI DSS
   - Bảo mật
   - American Express
   - 3D Secure
-status: "published"
+status: published
 ai_generated: true
-cover_image: "/images/posts/cvv-la-gi-va-he-thong-bao-mat-the-hoat-dong-ra-sao/bao-mat-the-tin-dung-cvv-3ds-tokenization.webp"
+cover_image: >-
+  /images/posts/cvv-la-gi-va-he-thong-bao-mat-the-hoat-dong-ra-sao/bao-mat-the-tin-dung-cvv-3ds-tokenization.webp
 image_prompts:
   bao-mat-the-tin-dung-cvv-3ds-tokenization: >
-    A premium flat illustration of a credit card security concept.
-    Center: a Techcombank Visa card (bright red #e30613, Techcombank wordmark in white, 16-digit number
-    in 4-4-4-4 groups, VISA in white at bottom-right) placed at a slight tilt with drop shadow.
-    Around the card, three floating security icons connected by thin dashed lines:
-    top-left — a shield with a checkmark (EMV chip protection), top-right — a smartphone showing
-    an OTP notification (3D Secure), bottom-center — a lock with a circular token symbol (tokenization).
-    Background: soft gradient from light blue (#dbeafe) top-left to white (#f8fafc) bottom-right,
-    with a faint hexagon mesh pattern at 10% opacity.
-    Each icon has a small glow halo. No text labels. High detail, fintech illustration style.
-
+    A premium flat illustration of a credit card security concept. Center: a
+    Techcombank Visa card (bright red #e30613, Techcombank wordmark in white,
+    16-digit number in 4-4-4-4 groups, VISA in white at bottom-right) placed at
+    a slight tilt with drop shadow. Around the card, three floating security
+    icons connected by thin dashed lines: top-left — a shield with a checkmark
+    (EMV chip protection), top-right — a smartphone showing an OTP notification
+    (3D Secure), bottom-center — a lock with a circular token symbol
+    (tokenization). Background: soft gradient from light blue (#dbeafe) top-left
+    to white (#f8fafc) bottom-right, with a faint hexagon mesh pattern at 10%
+    opacity. Each icon has a small glow halo. No text labels. High detail,
+    fintech illustration style.
   cach-tinh-cvv-tu-pan-expiry-khoa-bi-mat: >
-    A clean horizontal flow diagram on a white background showing how CVV is computed.
+    A clean horizontal flow diagram on a white background showing how CVV is
+    computed.
 
-    Four input nodes on the left, stacked vertically with soft blue rounded rectangles (#dbeafe fill,
-    #2563eb border), labeled:
-    — "PAN (số thẻ 15–16 số)"
-    — "Ngày hết hạn (MM/YY)"
-    — "Service Code (3 chữ số)"
-    — "CVK — Khóa bí mật (ngân hàng)"
+    Four input nodes on the left, stacked vertically with soft blue rounded
+    rectangles (#dbeafe fill, #2563eb border), labeled: — "PAN (số thẻ 15–16
+    số)" — "Ngày hết hạn (MM/YY)" — "Service Code (3 chữ số)" — "CVK — Khóa bí
+    mật (ngân hàng)"
 
-    All four input nodes feed into a central processing box with dark navy background (#1e3a5f),
-    labeled "3DES Encryption" with a gear icon inside.
+    All four input nodes feed into a central processing box with dark navy
+    background (#1e3a5f), labeled "3DES Encryption" with a gear icon inside.
 
-    The output arrow points right to a final node: a gold rounded rectangle (#fef9c3 fill, #ca8a04 border)
-    labeled "CVV / CVC2 / CID (3 hoặc 4 số)".
+    The output arrow points right to a final node: a gold rounded rectangle
+    (#fef9c3 fill, #ca8a04 border) labeled "CVV / CVC2 / CID (3 hoặc 4 số)".
 
-    A small note below the CVK node: "Chỉ ngân hàng phát hành biết". Arrows are thin, clean, one-color.
-    Background: very light gray #f8fafc with faint dot-grid pattern.
-    Flat design, all Vietnamese text must be legible and accurate.
-
+    A small note below the CVK node: "Chỉ ngân hàng phát hành biết". Arrows are
+    thin, clean, one-color. Background: very light gray #f8fafc with faint
+    dot-grid pattern. Flat design, all Vietnamese text must be legible and
+    accurate.
   quy-trinh-xac-thuc-3d-secure-frictionless-va-challenge: >
-    A side-by-side two-panel flow diagram comparing 3D Secure frictionless vs challenge flows.
+    A side-by-side two-panel flow diagram comparing 3D Secure frictionless vs
+    challenge flows.
 
-    Both panels share the same top node: a shopping cart icon labeled "Khách nhấn Thanh toán".
-    A horizontal arrow from this top node splits into two paths.
+    Both panels share the same top node: a shopping cart icon labeled "Khách
+    nhấn Thanh toán". A horizontal arrow from this top node splits into two
+    paths.
 
-    Left panel — "Frictionless Flow" (green theme #16a34a):
-    Flow nodes top to bottom:
-    1. "Merchant gửi dữ liệu giao dịch" (rectangle)
-    2. "Ngân hàng đánh giá rủi ro" (diamond shape, decision)
-    3. "Rủi ro thấp → Tự động xác thực" (green checkmark rounded box)
-    4. "Giao dịch thành công" (green filled box)
+    Left panel — "Frictionless Flow" (green theme #16a34a): Flow nodes top to
+    bottom: 1. "Merchant gửi dữ liệu giao dịch" (rectangle) 2. "Ngân hàng đánh
+    giá rủi ro" (diamond shape, decision) 3. "Rủi ro thấp → Tự động xác thực"
+    (green checkmark rounded box) 4. "Giao dịch thành công" (green filled box)
     No interruption to the user — show a smooth single downward arrow path.
 
-    Right panel — "Challenge Flow" (amber theme #d97706):
-    Flow nodes top to bottom:
-    1. "Merchant gửi dữ liệu giao dịch" (rectangle)
-    2. "Ngân hàng đánh giá rủi ro" (diamond shape, decision)
-    3. "Rủi ro cao → Yêu cầu xác thực" (amber warning box)
-    4. A phone icon with OTP/biometric screen — "OTP / App / Sinh trắc học"
-    5. "Giao dịch thành công" (green filled box) or "Từ chối" (red box) branching from step 4.
+    Right panel — "Challenge Flow" (amber theme #d97706): Flow nodes top to
+    bottom: 1. "Merchant gửi dữ liệu giao dịch" (rectangle) 2. "Ngân hàng đánh
+    giá rủi ro" (diamond shape, decision) 3. "Rủi ro cao → Yêu cầu xác thực"
+    (amber warning box) 4. A phone icon with OTP/biometric screen — "OTP / App /
+    Sinh trắc học" 5. "Giao dịch thành công" (green filled box) or "Từ chối"
+    (red box) branching from step 4.
 
-    Background: white #ffffff with very faint diagonal line pattern at 8% opacity.
-    Clean sans-serif labels, all Vietnamese text must be legible and accurate, flat design.
+    Background: white #ffffff with very faint diagonal line pattern at 8%
+    opacity. Clean sans-serif labels, all Vietnamese text must be legible and
+    accurate, flat design.
+card_slugs:
+  - techcombank-visa-eco
+  - sacombank-platinum-american-express
+  - vietcombank-american-express
 ---
 
 Ba hoặc bốn chữ số nhỏ in trên mặt thẻ là thứ nhiều người biết cần nhập khi thanh toán online, nhưng ít ai hiểu rõ nó được tạo ra như thế nào, tại sao Amex dùng 4 số thay vì 3, và tại sao lộ CVV vẫn có thể bị gian lận ngay cả khi không lộ số thẻ.

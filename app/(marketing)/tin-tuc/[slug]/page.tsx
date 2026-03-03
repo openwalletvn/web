@@ -130,6 +130,13 @@ export default async function BlogPostPage({params}: Props) {
                         {/* Divider */}
                         <div className="border-t border-dashed border-slate-200 my-12"/>
 
+                        {/* Related cards — mobile only (desktop shows in sidebar) */}
+                        {cardSlugs.length > 0 && (
+                            <div className="lg:hidden mb-10">
+                                <SidebarRelatedCards cardSlugs={cardSlugs}/>
+                            </div>
+                        )}
+
                         {/* Related posts */}
                         {related.length > 0 && <RelatedPosts posts={related}/>}
 
@@ -145,7 +152,7 @@ export default async function BlogPostPage({params}: Props) {
                     </div>
 
                     {/* ── Sidebar ── */}
-                    <aside className="w-56 shrink-0 hidden lg:flex flex-col sticky top-24 self-start">
+                    <aside className="w-72 shrink-0 hidden lg:flex flex-col sticky top-24 self-start">
                         <BlogToc headings={headings}/>
                         {cardSlugs.length > 0 && <SidebarRelatedCards cardSlugs={cardSlugs}/>}
                     </aside>

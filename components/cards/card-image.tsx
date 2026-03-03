@@ -5,13 +5,15 @@ import Image from 'next/image';
 import {IconCreditCard} from '@tabler/icons-react';
 import {type Card, getCardImageUrl} from '@/lib/api';
 import {ShimmerLayer} from "@/components/phucbm/shimmer-layer";
+import {cn} from "@/lib/utils";
 
 interface Props {
   card: Card;
   className?: string;
+    classNameVertical?: string;
 }
 
-export function CardImage({ card, className }: Props) {
+export function CardImage({card, className, classNameVertical}: Props) {
   const isVertical = card.image_orientation === 'vertical';
   const containerRef = useRef<HTMLDivElement>(null);
   const [radius, setRadius] = useState(0);
@@ -41,7 +43,7 @@ export function CardImage({ card, className }: Props) {
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden group/shimmer ${className ? className : ''}`}
+      className={cn("card-image relative w-full overflow-hidden group/shimmer", className, isVertical ? classNameVertical : className)}
       style={{ aspectRatio: ratio, borderRadius: radius }}
     >
       {!loaded && (

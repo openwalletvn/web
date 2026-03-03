@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function BlogToc({ headings }: Props) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   if (headings.length === 0) return null;
 

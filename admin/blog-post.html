@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — Edit images</title>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,6 +15,9 @@
       font-size: 14px;
       line-height: 1.5;
       min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      align-items: start;
     }
 
     /* ── Header ─────────────────────────────────────────────────────────────── */
@@ -278,10 +282,221 @@
 
     .loading { padding: 40px 24px; color: #94a3b8; font-size: 13px; }
     .error   { padding: 40px 24px; color: #dc2626; font-size: 13px; }
+
+    /* ── Cards sidebar ───────────────────────────────────────────────────────── */
+
+    #cards-sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background: #fff;
+      border-left: 1px solid #e2e8f0;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sidebar-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1e293b;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .count-badge {
+      background: #e2e8f0;
+      color: #475569;
+      border-radius: 10px;
+      padding: 1px 7px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+    .count-badge.has-items { background: #dbeafe; color: #1d4ed8; }
+
+    .cards-search {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #1e293b;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .cards-search:focus { border-color: #2563eb; }
+
+    .cards-results {
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+    .cards-results:empty { display: none; }
+
+    .result-row {
+      padding: 7px 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #e2e8f0;
+      transition: background 0.1s;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-row:hover:not(.already-added) { background: #eff6ff; }
+    .result-row.already-added { opacity: 0.45; cursor: default; }
+
+    .result-name {
+      font-size: 13px;
+      color: #1e293b;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .result-bank { font-size: 11px; color: #94a3b8; font-weight: 400; }
+    .result-id   { font-size: 11px; color: #94a3b8; font-family: monospace; margin-top: 1px; }
+
+    .selected-hd {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .cards-selected { display: flex; flex-direction: column; gap: 6px; min-height: 20px; }
+
+    .selected-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 8px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: default;
+    }
+    .selected-row.sortable-ghost  { opacity: 0.4; }
+    .selected-row.sortable-chosen { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+
+    .drag-handle {
+      color: #c8d0dc;
+      cursor: grab;
+      font-size: 16px;
+      flex-shrink: 0;
+      user-select: none;
+      line-height: 1;
+    }
+    .drag-handle:hover { color: #94a3b8; }
+
+    .card-thumb {
+      width: 64px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 4px;
+      flex-shrink: 0;
+      background: #f1f5f9;
+    }
+    .card-thumb-placeholder {
+      width: 64px;
+      height: 40px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      background: #f1f5f9;
+    }
+
+    .selected-info {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .selected-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1e293b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .selected-fee {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .selected-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      margin-top: 4px;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 1px 5px;
+      border: 1px dashed;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .badge-network      { border-color: #2563eb; color: #2563eb; }
+    .badge-type         { border-color: #cbd5e1; color: #64748b; }
+    .badge-metal        { border-color: #92400e; color: #92400e; background: #fef3c7; }
+    .badge-discontinued { border-color: #d97706; color: #d97706; background: #fffbeb; }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      padding: 0 2px;
+      flex-shrink: 0;
+      transition: color 0.1s;
+    }
+    .remove-btn:hover { color: #dc2626; }
+
+    .cards-save-btn {
+      width: 100%;
+      padding: 8px 12px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: auto;
+    }
+    .cards-save-btn:hover    { background: #1d4ed8; }
+    .cards-save-btn:disabled { opacity: 0.5; pointer-events: none; }
+
+    .save-msg { font-size: 12px; text-align: center; min-height: 18px; color: #94a3b8; }
+    .save-msg.ok    { color: #16a34a; }
+    .save-msg.error { color: #dc2626; }
   </style>
 </head>
 <body>
   <div id="root"><p class="loading">Loading…</p></div>
+  <aside id="cards-sidebar">
+    <div class="sidebar-hd">
+      <span>Thẻ liên quan</span>
+      <span id="cards-count" class="count-badge">0</span>
+    </div>
+    <input id="cards-search" class="cards-search" type="text" placeholder="Tìm thẻ theo tên hoặc ID..." autocomplete="off" />
+    <div id="cards-results" class="cards-results"></div>
+    <div class="selected-hd">Đã chọn</div>
+    <div id="cards-selected" class="cards-selected"></div>
+    <button id="cards-save-btn" class="cards-save-btn">Lưu thẻ liên quan</button>
+    <div id="cards-save-msg" class="save-msg"></div>
+  </aside>
   <script src="/static/blog-post.js"></script>
 </body>
 </html>
