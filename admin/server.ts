@@ -100,6 +100,19 @@ function parseBlocks(
   return blocks;
 }
 
+// ─── Updated-date helper ──────────────────────────────────────────────────────
+
+function writeUpdatedDate(slug: string): void {
+  const files = getPostFiles();
+  const filename = files.find((f) => f.replace(/\.(mdx|md)$/, '') === slug);
+  if (!filename) return;
+  const filePath = path.join(POSTS_DIR, filename);
+  const raw = fs.readFileSync(filePath, 'utf-8');
+  const { data, content } = matter(raw);
+  data.updated = new Date().toISOString().slice(0, 10);
+  fs.writeFileSync(filePath, matter.stringify(content, data), 'utf-8');
+}
+
 // ─── Watermark helper ─────────────────────────────────────────────────────────
 
 async function applyWatermark(inputBuffer: Buffer, imgWidth: number, imgHeight: number): Promise<Buffer> {
@@ -188,6 +201,7 @@ app.post('/api/blog/:slug/upload', upload.single('file'), async (req, res) => {
     fs.writeFileSync(path.join(dir, outFilename), finalBuffer);
     fs.writeFileSync(path.join(dir, `${stem}.orig.webp`), webpBuffer);
 
+    writeUpdatedDate(slug);
     res.json({ ok: true, filename: outFilename });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -214,6 +228,7 @@ app.post('/api/blog/:slug/rewatermark', express.json(), async (req, res) => {
     const { width, height } = await sharp(origBuffer).metadata();
     const finalBuffer = await applyWatermark(origBuffer, width!, height!);
     fs.writeFileSync(outPath, finalBuffer);
+    writeUpdatedDate(slug);
     res.json({ ok: true });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -235,6 +250,7 @@ app.patch('/api/blog/:slug/frontmatter', express.json(), (req, res) => {
     const raw = fs.readFileSync(filePath, 'utf-8');
     const { data, content } = matter(raw);
     data.card_slugs = card_slugs;
+    data.updated = new Date().toISOString().slice(0, 10);
     fs.writeFileSync(filePath, matter.stringify(content, data), 'utf-8');
     res.json({ ok: true });
   } catch (err: unknown) {

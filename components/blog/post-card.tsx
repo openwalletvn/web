@@ -39,13 +39,26 @@ export function PostCard({ post }: Props) {
       <p className="text-sm text-slate-500 line-clamp-3 leading-relaxed">{excerpt}</p>
 
       <div className="flex items-center justify-between mt-auto pt-2 border-t border-dashed border-slate-100">
-        <time className="text-xs text-slate-400" dateTime={frontmatter.date}>
-          {new Date(frontmatter.date).toLocaleDateString('vi-VN', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })}
-        </time>
+        {frontmatter.updated && frontmatter.updated !== frontmatter.date ? (
+          <span className="flex items-baseline gap-1">
+            <span className="text-xs text-slate-400">Cập nhật</span>
+            <time className="text-xs text-slate-400" dateTime={frontmatter.updated}>
+              {new Date(frontmatter.updated).toLocaleDateString('vi-VN', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </time>
+          </span>
+        ) : (
+          <time className="text-xs text-slate-400" dateTime={frontmatter.date}>
+            {new Date(frontmatter.date).toLocaleDateString('vi-VN', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </time>
+        )}
 
         {frontmatter.tags.length > 0 && (
           <div className="flex gap-1 flex-wrap justify-end">

@@ -92,13 +92,25 @@ export default async function BlogPostPage({params}: Props) {
                                     {frontmatter.author && (
                                         <span className="text-sm text-slate-600 font-medium">{frontmatter.author}</span>
                                     )}
-                                    <time className="text-sm text-slate-500" dateTime={frontmatter.date}>
-                                        {new Date(frontmatter.date).toLocaleDateString('vi-VN', {
-                                            day: 'numeric',
-                                            month: 'long',
-                                            year: 'numeric',
-                                        })}
-                                    </time>
+                                    <div className="flex flex-col gap-0.5">
+                                        <time className="text-sm text-slate-500" dateTime={frontmatter.date}>
+                                            {new Date(frontmatter.date).toLocaleDateString('vi-VN', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric',
+                                            })}
+                                        </time>
+                                        {frontmatter.updated && frontmatter.updated !== frontmatter.date && (
+                                            <time className="text-xs text-slate-400" dateTime={frontmatter.updated}>
+                                                Cập nhật:{' '}
+                                                {new Date(frontmatter.updated).toLocaleDateString('vi-VN', {
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    year: 'numeric',
+                                                })}
+                                            </time>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {frontmatter.tags.length > 0 && (

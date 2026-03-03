@@ -328,6 +328,21 @@ function renderResults(query) {
     const already = selectedCardSlugs.includes(card.id);
     const row = el('div', 'result-row' + (already ? ' already-added' : ''));
 
+    // Thumbnail
+    const thumbUrl = getCardThumbUrl(card);
+    if (thumbUrl) {
+      const img = document.createElement('img');
+      img.src = thumbUrl;
+      img.alt = card.name;
+      img.className = 'result-thumb';
+      img.loading = 'lazy';
+      row.appendChild(img);
+    } else {
+      row.appendChild(el('div', 'result-thumb-placeholder'));
+    }
+
+    // Text
+    const text = el('div', 'result-text');
     const nameLine = el('div', 'result-name');
     if (already) nameLine.appendChild(span('✓ ', 'status-icon-ok'));
     nameLine.appendChild(document.createTextNode(card.name));
@@ -336,7 +351,9 @@ function renderResults(query) {
     const idLine = el('div', 'result-id');
     idLine.textContent = card.id;
 
-    row.append(nameLine, idLine);
+    text.append(nameLine, idLine);
+    row.appendChild(text);
+
     if (!already) row.addEventListener('click', () => addCard(card));
     container.appendChild(row);
   }

@@ -344,7 +344,10 @@
     .cards-results:empty { display: none; }
 
     .result-row {
-      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
       cursor: pointer;
       border-bottom: 1px solid #e2e8f0;
       transition: background 0.1s;
@@ -352,6 +355,22 @@
     .result-row:last-child { border-bottom: none; }
     .result-row:hover:not(.already-added) { background: #eff6ff; }
     .result-row.already-added { opacity: 0.45; cursor: default; }
+    .result-thumb {
+      width: 52px;
+      height: 32px;
+      object-fit: contain;
+      flex-shrink: 0;
+      border-radius: 3px;
+      background: #f1f5f9;
+    }
+    .result-thumb-placeholder {
+      width: 52px;
+      height: 32px;
+      flex-shrink: 0;
+      background: #f1f5f9;
+      border-radius: 3px;
+    }
+    .result-text { flex: 1; min-width: 0; }
 
     .result-name {
       font-size: 13px;
