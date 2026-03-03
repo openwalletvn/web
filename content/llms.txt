@@ -145,10 +145,10 @@ Images must follow this convention:
 /images/posts/<slug>/<filename>.jpg
 ```
 
-Use `.png` as the default placeholder extension when writing (Gemini always outputs PNG). Example:
+Use `.webp` as the default placeholder extension when writing (the admin server always converts uploads to WebP). Example:
 
 ```md
-![Alt text](/images/posts/shopee-card-vs-vib-online-plus/so-sanh-cashback-shopee-card-vib-online-plus.png)
+![Alt text](/images/posts/shopee-card-vs-vib-online-plus/so-sanh-cashback-shopee-card-vib-online-plus.webp)
 ```
 
 ### Gemini prompt guidelines

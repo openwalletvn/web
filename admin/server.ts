@@ -3,6 +3,7 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import sharp from 'sharp';
 
 const app = express();
 const PORT = 3004;
@@ -126,16 +127,53 @@ app.get('/api/blog/:slug', (req, res) => {
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-app.post('/api/blog/:slug/upload', upload.single('file'), (req, res) => {
+app.post('/api/blog/:slug/upload', upload.single('file'), async (req, res) => {
   const { slug } = req.params;
   const { filename } = req.body as { filename?: string };
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   if (!filename) return res.status(400).json({ error: 'Missing filename' });
-  const safe = path.basename(filename).replace(/[^a-zA-Z0-9._-]/g, '-');
-  const dir = path.join(IMAGES_DIR, slug);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, safe), req.file.buffer);
-  res.json({ ok: true, filename: safe });
+
+  const stem = path.basename(filename).replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
+  const outFilename = `${stem}.webp`;
+
+  try {
+    // Step 1: resize + convert to webp
+    const { data: webpBuffer, info } = await sharp(req.file.buffer)
+      .resize({ width: 1280, withoutEnlargement: true })
+      .webp({ quality: 85 })
+      .toBuffer({ resolveWithObject: true });
+
+    const { width, height } = info;
+
+    // Step 2: load watermark SVG and pick a random corner
+    const wmSvg = fs.readFileSync(path.join(PUBLIC_DIR, 'images/watermark.svg'));
+    const wmStr = wmSvg.toString();
+    const wmWidth  = parseInt(wmStr.match(/width="(\d+)"/)?.[1]  ?? '120');
+    const wmHeight = parseInt(wmStr.match(/height="(\d+)"/)?.[1] ?? '24');
+    const margin = 12;
+    const corners = [
+      { top: margin,                    left: margin },
+      { top: margin,                    left: width - wmWidth - margin },
+      { top: height - wmHeight - margin, left: margin },
+      { top: height - wmHeight - margin, left: width - wmWidth - margin },
+    ];
+    const corner = corners[Math.floor(Math.random() * corners.length)];
+
+    // Step 3: composite watermark onto webp buffer
+    const finalBuffer = await sharp(webpBuffer)
+      .composite([{ input: wmSvg, ...corner }])
+      .toBuffer();
+
+    // Step 4: save
+    const dir = path.join(IMAGES_DIR, slug);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, outFilename), finalBuffer);
+
+    res.json({ ok: true, filename: outFilename });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: `sharp failed: ${message}` });
+  }
 });
 
 app.get('/blog/:slug', (_req, res) => {
