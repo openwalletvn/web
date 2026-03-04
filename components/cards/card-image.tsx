@@ -70,7 +70,6 @@ export function CardImage({card, className, classNameVertical}: Props) {
                             'object-cover size-full transition-opacity duration-200',
                             !loaded && !card.image?.lqip ? 'opacity-0' : 'opacity-100'
                         )}
-                        unoptimized
                         onLoad={handleLoad}
                         {...(card.image?.lqip ? {placeholder: 'blur' as const, blurDataURL: card.image.lqip} : {})}
                     />
@@ -84,7 +83,6 @@ export function CardImage({card, className, classNameVertical}: Props) {
                             'object-cover size-full transition-opacity duration-200',
                             !loaded && !card.image?.lqip ? 'opacity-0' : 'opacity-100'
                         )}
-                        unoptimized
                         onLoad={handleLoad}
                         {...(card.image?.lqip ? {placeholder: 'blur' as const, blurDataURL: card.image.lqip} : {})}
                     />
