@@ -63,13 +63,18 @@ interface BankDetailResponse {
 
 export type CardNetwork = 'visa' | 'mastercard' | 'jcb' | 'napas' | 'amex' | 'unionpay';
 export type CardType = 'credit' | 'debit' | 'prepaid' | 'transit' | 'atm' | '2in1' | 'co-branded';
-export type ImageOrientation = 'horizontal' | 'vertical' | 'both';
+
+export interface CardImage {
+    url: string;
+    width: number | null;
+    height: number | null;
+    orientation: 'horizontal' | 'vertical';
+}
 
 export interface Card {
     id: string;
     name: string;
-    image_horizontal_url?: string;
-    image_vertical_url?: string;
+    image?: CardImage | null;
     bank_id: string;
     bank_data?: Bank;
     card_network: CardNetwork;
@@ -79,7 +84,6 @@ export interface Card {
     co_brand_data?: Brand;
     card_network_data?: Network;
     card_type: CardType[];
-    image_orientation: ImageOrientation;
     annual_fee?: number | null;
     currency?: string;
     interest_free_days?: number;
@@ -138,10 +142,11 @@ export const getNetworkImageUrl = getImageUrl;
 export const getWalletImageUrl = getImageUrl;
 
 export function getCardImageUrl(card: Card): string {
-    const path = card.image_orientation === 'vertical'
-        ? card.image_vertical_url
-        : card.image_horizontal_url;
-    return `${apiUrl}${path}`;
+    if (!card.image?.url) return '';
+    if (process.env.NODE_ENV === 'development') {
+        return card.image.url.replace('https://api.openwallet.vn', apiUrl);
+    }
+    return card.image.url;
 }
 
 export async function getBanks(): Promise<Bank[]> {

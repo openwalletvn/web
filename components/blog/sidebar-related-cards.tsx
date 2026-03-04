@@ -64,14 +64,13 @@ export async function SidebarRelatedCards({ cardSlugs }: Props) {
                 {/*  /!* eslint-disable-next-line @next/next/no-img-element *!/*/}
                 {/*  <img src={imageUrl} alt={card.name} className="w-full h-full object-contain" loading="lazy" />*/}
                 {/*</div>*/}
-                {card.image_orientation === "horizontal" && (
-                    <div className="w-24 shrink-0">
-                        <CardImage card={card}/>
-                    </div>
-                )}
-                {card.image_orientation === "vertical" && (
+                {card.image?.orientation === "vertical" ? (
                     <div className="w-24 h-20 shrink-0 flex items-center justify-center">
                         <CardImage card={card} className="h-full w-auto"/>
+                    </div>
+                ) : (
+                    <div className="w-24 shrink-0">
+                        <CardImage card={card}/>
                     </div>
                 )}
 

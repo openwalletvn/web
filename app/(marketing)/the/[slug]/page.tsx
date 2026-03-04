@@ -55,7 +55,7 @@ export default async function CardPage({params}: Props) {
     }
 
     const bank = await getBank(card.bank_id).catch(() => null);
-    const isVertical = card.image_orientation === 'vertical';
+    const isVertical = card.image?.orientation === 'vertical';
     const {jsonLd, breadcrumbItems} = buildCardPageMeta(card, bank);
 
     return (

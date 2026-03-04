@@ -14,11 +14,16 @@ interface Props {
 }
 
 export function CardImage({card, className, classNameVertical}: Props) {
-  const isVertical = card.image_orientation === 'vertical';
+  const isVertical = card.image?.orientation === 'vertical';
   const containerRef = useRef<HTMLDivElement>(null);
   const [radius, setRadius] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const [ratio, setRatio] = useState<string>(isVertical ? '2/3' : '16/10');
+
+  const defaultRatio = isVertical ? '2/3' : '16/10';
+  const initialRatio = card.image?.width && card.image?.height
+    ? `${card.image.width} / ${card.image.height}`
+    : defaultRatio;
+  const [ratio, setRatio] = useState<string>(initialRatio);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -31,6 +36,8 @@ export function CardImage({card, className, classNameVertical}: Props) {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  const imageUrl = getCardImageUrl(card);
 
   const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
@@ -51,14 +58,26 @@ export function CardImage({card, className, classNameVertical}: Props) {
           <IconCreditCard size={32} className="text-slate-300" />
         </div>
       )}
-      <Image
-        src={getCardImageUrl(card)}
-        alt=""
-        fill
-        className={`object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-        onLoad={handleLoad}
-      />
-
+      {imageUrl && (
+        card.image?.width && card.image?.height ? (
+          <Image
+            src={imageUrl}
+            alt=""
+            width={card.image.width}
+            height={card.image.height}
+            className={`object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={handleLoad}
+          />
+        ) : (
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            className={`object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={handleLoad}
+          />
+        )
+      )}
 
         <ShimmerLayer/>
     </div>

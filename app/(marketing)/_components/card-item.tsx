@@ -31,7 +31,7 @@ export function CardItem({card}: Props) {
     };
 
     const bank = card.bank_data;
-    const isVertical = card.image_orientation != "horizontal";
+    const isVertical = card.image?.orientation === 'vertical';
     const hexToRgba = (hex: string, alpha = 0.45) => {
         if (!hex) return `rgba(0,0,0,${alpha})`
         const r = parseInt(hex.slice(1, 3), 16)

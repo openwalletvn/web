@@ -30,15 +30,12 @@ export default async function Image({ params }: { params: Promise<{ slug: string
     const bankJson = await bankRes.json();
     const bankName: string = bankJson.success ? (bankJson.data.name ?? '') : '';
 
-    const imagePath =
-      card.image_orientation === 'vertical' ? card.image_vertical_url : card.image_horizontal_url;
-    const cardImageUrl = imagePath ? `${apiUrl}${imagePath}` : null;
+    const cardImageUrl = card.image?.url ?? null;
 
-    // Satori doesn't support WebP - skip non-PNG/JPG images
-    const isWebp = cardImageUrl?.match(/\.webp(\?|$)/i);
-
+    // Satori doesn't support WebP — image URLs are now extensionless,
+    // so we always attempt a HEAD probe and skip only if it fails
     let imageOk = false;
-    if (cardImageUrl && !isWebp) {
+    if (cardImageUrl) {
       try {
         const probe = await fetch(cardImageUrl, { method: 'HEAD' });
         imageOk = probe.ok && (probe.headers.get('content-type') ?? '').includes('image');
