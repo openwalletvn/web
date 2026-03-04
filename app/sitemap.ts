@@ -55,12 +55,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   ]
 
-  // 4. Blog - add when CMS is ready
-  // const blogPages = []
+  // 4. Changelog
+  const changelogPage = {
+    url: `${BASE_URL}/changelog`,
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }
 
   return [
     ...staticPages,
     ...bankPages,
     ...cardPages,
+    changelogPage,
   ]
 }

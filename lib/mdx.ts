@@ -48,7 +48,8 @@ const VN_MAP: [RegExp, string][] = [
 ];
 
 export function slugify(text: string): string {
-  let s = text.toLowerCase();
+    if (!text) return '';
+    let s = text?.toLowerCase();
   for (const [re, repl] of VN_MAP) s = s.replace(re, repl);
   return s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }

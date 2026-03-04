@@ -40,7 +40,9 @@
       "Bash(find:*)",
       "Bash(head:*)",
       "Bash(bun:*)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "Bash(wc:*)",
+      "Bash(git status:*)"
     ]
   }
 }
