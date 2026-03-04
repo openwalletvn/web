@@ -69,6 +69,7 @@ export interface CardImage {
     width: number | null;
     height: number | null;
     orientation: 'horizontal' | 'vertical';
+    lqip?: string;
 }
 
 export interface Card {
