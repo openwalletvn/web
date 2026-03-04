@@ -65,7 +65,7 @@ export function CardImage({card, className, classNameVertical}: Props) {
             alt=""
             width={card.image.width}
             height={card.image.height}
-            className={`object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            className={`object-cover size-full transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={handleLoad}
           />
         ) : (
@@ -73,7 +73,7 @@ export function CardImage({card, className, classNameVertical}: Props) {
             src={imageUrl}
             alt=""
             fill
-            className={`object-cover transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            className={`object-cover size-full transition-opacity duration-200 ${loaded ? 'opacity-100' : 'opacity-0'}`}
             onLoad={handleLoad}
           />
         )
