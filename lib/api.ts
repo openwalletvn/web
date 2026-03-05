@@ -95,6 +95,7 @@ export interface Card {
     contactless_methods_data?: ContactlessMethod[];
     last_modified?: string;
     is_metal?: boolean;
+    for_business?: boolean;
 }
 
 export type CardSort = 'fee_asc' | 'fee_desc';
@@ -109,6 +110,7 @@ export interface CardFilters {
     sort?: CardSort;
     metal?: boolean;
     network_tier?: string;
+    for_business?: boolean;
 }
 
 export const SEGMENT_FILTERS: Record<string, Pick<CardFilters, 'type'>> = {
@@ -174,6 +176,7 @@ export async function getCards(filters?: CardFilters): Promise<Card[]> {
     if (filters?.contactless) params.set('contactless', filters.contactless);
     if (filters?.tier) params.set('tier', filters.tier);
     if (filters?.metal) params.set('metal', 'true');
+    if (filters?.for_business) params.set('for_business', 'true');
     if (filters?.network_tier) params.set('network_tier', filters.network_tier);
     const query = params.size > 0 ? `?${params.toString()}` : '';
     const res = await fetch(`${apiUrl}/api/v1/cards${query}`, fetchOptions);

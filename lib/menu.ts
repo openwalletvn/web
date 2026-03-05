@@ -80,6 +80,7 @@ export const MENU: NavItem[] = [
                     {label: 'Thẻ ưu đãi Shopee', href: '/the-shopee'},
                     {label: 'Thẻ kim loại', href: '/the-kim-loai'},
                     {label: 'Thẻ cao cấp', href: '/the-tin-dung-cao-cap'},
+                    {label: 'Thẻ doanh nghiệp', href: '/the-doanh-nghiep'},
                 ],
             },
         ],

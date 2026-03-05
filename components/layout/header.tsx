@@ -34,6 +34,7 @@ export async function Header() {
     ).length,
     '/the-shopee': allCards.filter((c) => c.co_brand === 'shopee').length,
     '/the-kim-loai': allCards.filter((c) => c.is_metal === true).length,
+    '/the-doanh-nghiep': allCards.filter((c) => c.for_business === true).length,
     '/the-tin-dung-cao-cap': (() => {
       const tiers = new Set(
         NETWORK_TIER_FILTER.split(',').map((t) => {
