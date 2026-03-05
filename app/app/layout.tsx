@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
 import {
+  IconBell,
   IconCalendarDue,
   IconCheck,
   IconChevronDown,
@@ -37,9 +38,10 @@ import { appDb } from '@/lib/app-db';
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
 const NAV_ITEMS = [
-  { label: 'Tổng quan',    href: '/app',          icon: IconLayoutDashboard },
-  { label: 'Thẻ của tôi',  href: '/app/my-cards', icon: IconCreditCard },
-  { label: 'Đến hạn',      href: '/app/upcoming', icon: IconCalendarDue },
+  { label: 'Tổng quan',    href: '/app',            icon: IconLayoutDashboard },
+  { label: 'Thẻ của tôi',  href: '/app/my-cards',   icon: IconCreditCard },
+  { label: 'Nhắc nhở',     href: '/app/reminders',  icon: IconBell },
+  { label: 'Đến hạn',      href: '/app/upcoming',   icon: IconCalendarDue },
 ] as const;
 
 // ─── Wallet switcher ──────────────────────────────────────────────────────────

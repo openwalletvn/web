@@ -11,15 +11,29 @@ interface AppConfig {
   value: string;
 }
 
+export interface NotificationAdapter {
+  id: 'discord' | 'telegram' | 'email';
+  config: Record<string, string>;
+  enabled: boolean;
+  lastStatus?: 'ok' | 'failed';
+  lastCheckedAt?: string;
+}
+
 class AppDatabase extends Dexie {
   wallets!: EntityTable<AppWallet, 'id'>;
   config!: EntityTable<AppConfig, 'key'>;
+  notificationAdapters!: EntityTable<NotificationAdapter, 'id'>;
 
   constructor() {
     super('openwallet-app');
     this.version(1).stores({
       wallets: 'id, name',
       config: 'key',
+    });
+    this.version(2).stores({
+      wallets: 'id, name',
+      config: 'key',
+      notificationAdapters: 'id',
     });
   }
 }

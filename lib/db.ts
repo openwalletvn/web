@@ -8,6 +8,13 @@ export interface CreditAccount {
   creditLimit: number;
 }
 
+export interface CardNotificationConfig {
+  enabled: boolean;
+  daysBefore: number;
+  adapter: string;
+  remoteId?: string;
+}
+
 export interface WalletCard {
   id: string;
   cardId: string;           // references catalog card
@@ -27,6 +34,10 @@ export interface WalletCard {
   order: number;
   createdAt: Date;
   updatedAt: Date;
+  notifications?: {
+    statementDate?: CardNotificationConfig;
+    paymentDueDate?: CardNotificationConfig;
+  };
 }
 
 export interface WalletConfig {
