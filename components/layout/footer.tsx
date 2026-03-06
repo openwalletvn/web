@@ -14,7 +14,6 @@ export async function Footer() {
           <Link href="/the" className="hover:text-white transition-colors">{t('cards')}</Link>
           <Link href="/tin-tuc" className="hover:text-white transition-colors">{t('blog')}</Link>
           <Link href="/changelog" className="hover:text-white transition-colors">Changelog</Link>
-          <Link href="/docs" className="hover:text-white transition-colors">{t('api_docs')}</Link>
           <a
             href="https://github.com/openwalletvn"
             target="_blank"

@@ -88,7 +88,6 @@ export const MENU: NavItem[] = [
     },
 
     {label: 'Tin tức', href: '/tin-tuc'},
-    {label: 'API Docs', href: '/docs'},
 ];
 
 export {isDropdown};

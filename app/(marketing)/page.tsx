@@ -70,26 +70,6 @@ export default async function HomePage() {
                     {/* Right - product panels */}
                     <div className="flex flex-col gap-4">
 
-                        {/* Cards API */}
-                        <div className="border-l-2 border-dashed border-brand-red bg-red-50/40 p-6">
-                            <h2 className="text-lg font-bold text-slate-900 mb-1">
-                                {hero('db.title')}
-                            </h2>
-                            <p className="text-base text-slate-500">
-                                {hero('db.description')}
-                            </p>
-                            {/* Stats - live counts from API */}
-                            <p className="text-base text-slate-500 mb-5">
-                                {hero('stats.banks', {count: banks.length})} - {hero('stats.cards', {count: cards.length})}
-                            </p>
-                            <Link
-                                href="/docs"
-                                className="text-base font-semibold text-brand-red hover:underline underline-offset-4"
-                            >
-                                {hero('db.ctanow')}
-                            </Link>
-                        </div>
-
                         {/* Ví thẻ */}
                         <div className="border-l-2 border-dashed border-brand-blue bg-blue-50/40 p-6">
                             <h2 className="text-lg font-bold text-slate-900 mb-1">
