@@ -32,18 +32,6 @@ export default async function Image({ params }: { params: Promise<{ slug: string
 
     const cardImageUrl = card.image?.url ?? null;
 
-    // Satori doesn't support WebP — image URLs are now extensionless,
-    // so we always attempt a HEAD probe and skip only if it fails
-    let imageOk = false;
-    if (cardImageUrl) {
-      try {
-        const probe = await fetch(cardImageUrl, { method: 'HEAD' });
-        imageOk = probe.ok && (probe.headers.get('content-type') ?? '').includes('image');
-      } catch {
-        imageOk = false;
-      }
-    }
-
     const description = [bankName, card.card_network?.toUpperCase(), ...card.card_type]
       .filter(Boolean)
       .join(' · ');
@@ -52,11 +40,11 @@ export default async function Image({ params }: { params: Promise<{ slug: string
     return createOgImage({
       title: card.name,
       description,
-      rightSlot: imageOk && cardImageUrl ? (
+      rightSlot: cardImageUrl ? (
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', width: '360px', height: '500px' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={cardImageUrl}
+            src={`${cardImageUrl}?format=png`}
             alt=""
             width={360}
             height={460}
