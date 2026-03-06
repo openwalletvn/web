@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { MetadataRoute } from 'next'
+import { apiFetch } from '@/lib/api'
 
 export const dynamic = 'force-static'
 
@@ -32,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // 2. Banks - dynamic from API
-  const banksRes = await fetch('https://api.openwallet.vn/api/v1/banks')
+  const banksRes = await apiFetch('/api/v1/banks')
   const banks = await banksRes.json()
   const bankPages = [
     { url: `${BASE_URL}/ngan-hang`, changeFrequency: 'weekly' as const, priority: 0.9 },
@@ -44,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // 3. Cards - dynamic from API
-  const cardsRes = await fetch('https://api.openwallet.vn/api/v1/cards')
+  const cardsRes = await apiFetch('/api/v1/cards')
   const cards = await cardsRes.json()
   const cardPages = [
     { url: `${BASE_URL}/the`, changeFrequency: 'weekly' as const, priority: 0.9 },

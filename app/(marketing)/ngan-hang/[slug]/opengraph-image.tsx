@@ -1,4 +1,5 @@
 import { createOgImage, OG_SIZE } from '@/lib/og';
+import { apiFetch } from '@/lib/api';
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
@@ -8,7 +9,7 @@ export const contentType = 'image/png';
 
 export async function generateStaticParams() {
   try {
-    const res = await fetch(`${apiUrl}/api/v1/banks`);
+    const res = await apiFetch('/api/v1/banks');
     const json = await res.json();
     if (!json.success) return [];
     return json.data.map((bank: { id: string }) => ({ slug: bank.id }));
@@ -21,7 +22,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const { slug } = await params;
 
   try {
-    const res = await fetch(`${apiUrl}/api/v1/banks/${slug}`);
+    const res = await apiFetch(`/api/v1/banks/${slug}`);
     const json = await res.json();
     if (!json.success) throw new Error('not found');
     const bank = json.data;

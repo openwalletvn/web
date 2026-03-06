@@ -95,6 +95,14 @@ All public pages emit `<script type="application/ld+json">` via `lib/page-meta/`
 - **CollectionPage** + ItemList — listing/category/tag pages (`collection.ts`)
 - **BreadcrumbList** — all pages (`breadcrumb.ts`)
 
+## API authentication
+
+- All build-time fetch calls to `api.openwallet.vn` **must** use the `apiFetch()` helper from `lib/api.ts`.
+- `apiFetch()` automatically injects the `X-OpenWallet-Key` header from `process.env.OPENWALLET_API_KEY`.
+- **Never** use `NEXT_PUBLIC_` prefix for `OPENWALLET_API_KEY` — it is a server-only build-time secret.
+- **Never** use raw `fetch()` for API calls — always go through `apiFetch()`.
+- The `apiUrl` constant in `lib/api.ts` handles base URL; pass only the path to `apiFetch()` (e.g. `apiFetch('/api/v1/cards')`).
+
 ## Meta-rules
 
 1. **Before starting any task**, check `.claude/commands/` for a relevant command file.

@@ -135,6 +135,19 @@ interface CardDetailResponse {
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 const fetchOptions: RequestInit = process.env.NODE_ENV === 'development' ? { cache: 'no-store' } : {};
 
+export async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
+    const headers = new Headers(init?.headers);
+    const apiKey = process.env.OPENWALLET_API_KEY;
+    if (apiKey) {
+        headers.set('X-OpenWallet-Key', apiKey);
+    }
+    return fetch(`${apiUrl}${path}`, {
+        ...fetchOptions,
+        ...init,
+        headers,
+    });
+}
+
 function getImageUrl(relativePath: string): string {
     return `${apiUrl}${relativePath}`;
 }
@@ -153,14 +166,14 @@ export function getCardImageUrl(card: Card): string {
 }
 
 export async function getBanks(): Promise<Bank[]> {
-    const res = await fetch(`${apiUrl}/api/v1/banks`, fetchOptions);
+    const res = await apiFetch('/api/v1/banks');
     const json = (await res.json()) as BankListResponse;
     if (!json.success) throw new Error('Failed to fetch banks');
     return json.data;
 }
 
 export async function getBank(id: string): Promise<Bank> {
-    const res = await fetch(`${apiUrl}/api/v1/banks/${id}`, fetchOptions);
+    const res = await apiFetch(`/api/v1/banks/${id}`);
     const json = (await res.json()) as BankDetailResponse;
     if (!json.success) throw new Error(`Failed to fetch bank: ${id}`);
     return json.data;
@@ -179,14 +192,14 @@ export async function getCards(filters?: CardFilters): Promise<Card[]> {
     if (filters?.for_business) params.set('for_business', 'true');
     if (filters?.network_tier) params.set('network_tier', filters.network_tier);
     const query = params.size > 0 ? `?${params.toString()}` : '';
-    const res = await fetch(`${apiUrl}/api/v1/cards${query}`, fetchOptions);
+    const res = await apiFetch(`/api/v1/cards${query}`);
     const json = (await res.json()) as CardListResponse;
     if (!json.success) throw new Error('Failed to fetch cards');
     return json.data;
 }
 
 export async function getCard(id: string): Promise<Card> {
-    const res = await fetch(`${apiUrl}/api/v1/cards/${id}`, fetchOptions);
+    const res = await apiFetch(`/api/v1/cards/${id}`);
     const json = (await res.json()) as CardDetailResponse;
     if (!json.success) throw new Error(`Failed to fetch card: ${id}`);
     return json.data;
@@ -214,28 +227,28 @@ interface BrandDetailResponse {
 }
 
 export async function getBrands(): Promise<Brand[]> {
-    const res = await fetch(`${apiUrl}/api/v1/brands`, fetchOptions);
+    const res = await apiFetch('/api/v1/brands');
     const json = (await res.json()) as BrandListResponse;
     if (!json.success) throw new Error('Failed to fetch brands');
     return json.data;
 }
 
 export async function getBrand(id: string): Promise<Brand> {
-    const res = await fetch(`${apiUrl}/api/v1/brands/${id}`, fetchOptions);
+    const res = await apiFetch(`/api/v1/brands/${id}`);
     const json = (await res.json()) as BrandDetailResponse;
     if (!json.success) throw new Error(`Failed to fetch brand: ${id}`);
     return json.data;
 }
 
 export async function getNetworks(): Promise<Network[]> {
-    const res = await fetch(`${apiUrl}/api/v1/networks`, fetchOptions);
+    const res = await apiFetch('/api/v1/networks');
     const json = (await res.json()) as NetworkListResponse;
     if (!json.success) throw new Error('Failed to fetch networks');
     return json.data;
 }
 
 export async function getNetwork(id: string): Promise<Network> {
-    const res = await fetch(`${apiUrl}/api/v1/networks/${id}`, fetchOptions);
+    const res = await apiFetch(`/api/v1/networks/${id}`);
     const json = (await res.json()) as NetworkDetailResponse;
     if (!json.success) throw new Error(`Failed to fetch network: ${id}`);
     return json.data;
@@ -247,7 +260,7 @@ interface TierOrderResponse {
 }
 
 export async function getTiers(): Promise<CardTierOrder> {
-    const res = await fetch(`${apiUrl}/api/v1/tiers`, fetchOptions);
+    const res = await apiFetch('/api/v1/tiers');
     const json = (await res.json()) as TierOrderResponse;
     if (!json.success) throw new Error('Failed to fetch tiers');
     return json.data;
