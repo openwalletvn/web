@@ -1,5 +1,6 @@
-import { createOgImage, OG_SIZE } from '@/lib/og';
-import { apiFetch } from '@/lib/api';
+import {createOgImage, OG_SIZE} from '@/lib/og';
+import {apiFetch} from '@/lib/api';
+import {createCardOgImage} from "@/lib/og-card";
 
 export const dynamic = 'force-static';
 export const size = OG_SIZE;
@@ -36,7 +37,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
       .join(' · ');
 
     // Title matches page generateMetadata: card.name
-    return createOgImage({
+      return createCardOgImage({
       title: card.name,
       description,
       rightSlot: cardImageUrl ? (
