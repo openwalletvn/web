@@ -132,14 +132,17 @@ interface CardDetailResponse {
     meta: { total: number };
 }
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+// Server-side: call the API directly (key injected below).
+// Client-side: empty string → relative /api/v1/* URLs → Next.js proxy route.
+const imageBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.openwallet.vn';
+const apiUrl = typeof window === 'undefined' ? imageBaseUrl : '';
 const fetchOptions: RequestInit = process.env.NODE_ENV === 'development' ? { cache: 'no-store' } : {};
 
 export async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
     const headers = new Headers(init?.headers);
-    const apiKey = process.env.OPENWALLET_API_KEY;
-    if (apiKey) {
-        headers.set('X-OpenWallet-Key', apiKey);
+    if (typeof window === 'undefined') {
+        const apiKey = process.env.OPENWALLET_API_KEY;
+        if (apiKey) headers.set('X-OpenWallet-Key', apiKey);
     }
     return fetch(`${apiUrl}${path}`, {
         ...fetchOptions,
@@ -149,7 +152,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
 }
 
 function getImageUrl(relativePath: string): string {
-    return `${apiUrl}${relativePath}`;
+    return `${imageBaseUrl}${relativePath}`;
 }
 
 export const getBankImageUrl = getImageUrl;
@@ -160,7 +163,7 @@ export const getWalletImageUrl = getImageUrl;
 export function getCardImageUrl(card: Card): string {
     if (!card.image?.url) return '';
     if (process.env.NODE_ENV === 'development') {
-        return card.image.url.replace('https://api.openwallet.vn', apiUrl);
+        return card.image.url.replace('https://api.openwallet.vn', imageBaseUrl);
     }
     return card.image.url;
 }
