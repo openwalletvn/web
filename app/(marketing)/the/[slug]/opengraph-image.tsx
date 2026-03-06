@@ -45,7 +45,14 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             }
         }
 
-        const description = [bankName, card.card_network?.toUpperCase(), ...card.card_type]
+
+        const types = card.card_type as string[];
+        const cardType = types.includes('credit') && types.includes('debit')
+            ? 'Thẻ hybrid'
+            : types.includes('credit')
+                ? 'Thẻ tín dụng'
+                : 'Thẻ ghi nợ';
+        const description = [cardType, card.card_network?.toUpperCase()]
             .filter(Boolean)
             .join(' · ');
 

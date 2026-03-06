@@ -34,6 +34,7 @@ export function createCardOgImage({title, description, cardImageUrl, isVertical 
                         gap: '16px',
                         flex: 1,
                         paddingRight: '48px',
+                        paddingBottom: '10px',
                     }}
                 >
                     {/* Site name - top-left, absolute so it doesn't affect bottom alignment */}
@@ -51,20 +52,8 @@ export function createCardOgImage({title, description, cardImageUrl, isVertical 
                     <div style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '16px',
+                        gap: '10px',
                     }}>
-                        {/* Title */}
-                        <div
-                            style={{
-                                color: '#fff',
-                                fontSize: '80px',
-                                fontWeight: 700,
-                                lineHeight: 1.05,
-                                maxWidth: '620px',
-                            }}
-                        >
-                            {title}
-                        </div>
 
                         {/* Description */}
                         {description && (
@@ -73,47 +62,84 @@ export function createCardOgImage({title, description, cardImageUrl, isVertical 
                                     color: 'rgba(255,255,255,0.72)',
                                     fontSize: '26px',
                                     lineHeight: 1.45,
-                                    maxWidth: '580px',
+                                    maxWidth: '560px',
                                 }}
                             >
                                 {description}
                             </div>
                         )}
+                        {/* Title */}
+                        <div
+                            style={{
+                                color: '#fff',
+                                fontSize: '80px',
+                                fontWeight: 700,
+                                lineHeight: 1.05,
+                                maxWidth: '560px',
+                            }}
+                        >
+                            {title}
+                        </div>
                     </div>
+                    <div></div>
                 </div>
 
                 {/* Right slot - anchored to bottom-right */}
                 {
                     cardImageUrl && isVertical ?
-                        // vertical
-                        <img src={cardImageUrl} style={
-                            {
-                                objectFit: 'contain',
-                                position: 'absolute',
-                                top: '0',
-                                right: '160px',
-                                bottom: '0',
-                                width: '360px',
-                                height: 'auto',
-                                aspectRatio: '500/800',
-                                transform: 'rotate(-15deg)'
-                            }
-                        } alt=""/>
+                        // vertical - two cards fanned out, no wrapper div (Satori collapses zero-size flex containers)
+                        <>
+                            <img src={cardImageUrl} style={
+                                {
+                                    objectFit: 'contain',
+                                    position: 'absolute',
+                                    bottom: '10px',
+                                    right: '100px',
+                                    width: '440px',
+                                    height: '550px',
+                                    transform: 'rotate(-25deg)',
+                                    opacity: '0.7'
+                                }
+                            } alt=""/>
+                            <img src={cardImageUrl} style={
+                                {
+                                    objectFit: 'contain',
+                                    position: 'absolute',
+                                    bottom: '-10px',
+                                    right: '60px',
+                                    width: '460px',
+                                    height: '570px',
+                                    transform: 'rotate(-8deg)',
+                                }
+                            } alt=""/>
+                        </>
                         :
                         // horizontal
-                        <img src={cardImageUrl} style={
-                            {
-                                objectFit: 'contain',
-                                position: 'absolute',
-                                top: '0',
-                                right: '-20px',
-                                bottom: '0',
-                                width: '600px',
-                                height: 'auto',
-                                aspectRatio: '800/500',
-                                transform: 'rotate(-15deg)'
-                            }
-                        } alt=""/>
+                        <>
+                            <img src={cardImageUrl} style={
+                                {
+                                    objectFit: 'contain',
+                                    position: 'absolute',
+                                    right: '0px',
+                                    bottom: '60px',
+                                    width: '520px',
+                                    height: '550px',
+                                    transform: 'rotate(10deg)',
+                                    opacity: '0.7'
+                                }
+                            } alt=""/>
+                            <img src={cardImageUrl} style={
+                                {
+                                    objectFit: 'contain',
+                                    position: 'absolute',
+                                    right: '-10px',
+                                    bottom: '-20px',
+                                    width: '550px',
+                                    height: '550px',
+                                    transform: 'rotate(-5deg)'
+                                }
+                            } alt=""/>
+                        </>
                 }
             </div>
         ),
