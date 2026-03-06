@@ -44,7 +44,8 @@
       "Bash(wc:*)",
       "Bash(git status:*)",
       "Bash(pnpm lint:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(rm:*)"
     ]
   }
 }

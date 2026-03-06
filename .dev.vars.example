@@ -1,0 +1,2 @@
+# Wrangler local dev secrets (copy to .dev.vars, do not commit)
+OPENWALLET_API_KEY=415d-81a0-6b6c49b7f757
