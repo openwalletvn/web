@@ -109,6 +109,7 @@ export default function CardDetailPage() {
           creditAccount={creditAccount}
           onSaved={() => {}}
           onDeleted={() => router.replace('/app/my-cards')}
+          onMoved={() => router.replace('/app/my-cards')}
         />
       )}
     </PageContainer>

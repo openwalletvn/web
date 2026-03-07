@@ -19,13 +19,15 @@ import {
 } from '@dnd-kit/sortable';
 import { IconCreditCard } from '@tabler/icons-react';
 import type { WalletCard, CardStatus } from '@/lib/db';
+import type { AppWallet } from '@/lib/app-db';
+import { appDb } from '@/lib/app-db';
 import { reorderCards } from '@/lib/wallet';
 import { getBanks, getCard, type Card, type Bank } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SortableWalletCard, WalletCardRow, type CreditBadge } from '@/components/wallet/wallet-card-row';
 import { BankFilterBar } from '@/components/wallet/bank-filter-bar';
-import { useWalletDb } from '@/providers/wallet-db-provider';
+import { useWalletDb, useActiveWallet } from '@/providers/wallet-db-provider';
 import posthog from 'posthog-js';
 
 // ─── Sort ─────────────────────────────────────────────────────────────────────
@@ -132,6 +134,7 @@ function WalletCardList({
   getCreditBadge,
   creditLimitMap,
   onStatusChange,
+  otherWallets,
   isSorted,
   bankFilter,
   sensors,
@@ -143,6 +146,7 @@ function WalletCardList({
   getCreditBadge: (card: WalletCard) => CreditBadge | undefined;
   creditLimitMap: Map<string, number>;
   onStatusChange: (card: WalletCard, status: CardStatus) => void;
+  otherWallets: AppWallet[];
   isSorted: boolean;
   bankFilter: string | null;
   sensors: ReturnType<typeof useSensors>;
@@ -155,6 +159,7 @@ function WalletCardList({
     creditBadge: getCreditBadge(walletCard),
     creditLimit: walletCard.creditAccountId ? creditLimitMap.get(walletCard.creditAccountId) : undefined,
     onStatusChange,
+    otherWallets,
   });
 
   if (isSorted || bankFilter) {
@@ -184,12 +189,19 @@ function WalletCardList({
 
 export default function WalletPage() {
   const db = useWalletDb();
+  const activeWallet = useActiveWallet();
   const walletCards = useLiveQuery(() => db.walletCards.orderBy('order').toArray(), [db]);
   const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [db], []);
+  const allWallets = useLiveQuery(() => appDb.wallets.toArray(), [], []);
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
   const [banks, setBanks] = useState<Record<string, Bank>>({});
   const [sortBy, setSortBy] = useState<SortOption>('custom');
   const [bankFilter, setBankFilter] = useState<string | null>(null);
+
+  const otherWallets = useMemo(
+    () => (allWallets ?? []).filter((w) => w.id !== activeWallet.id),
+    [allWallets, activeWallet.id],
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -327,6 +339,7 @@ export default function WalletPage() {
             getCreditBadge={getCreditBadge}
             creditLimitMap={creditLimitMap}
             onStatusChange={handleStatusChange}
+            otherWallets={otherWallets}
             isSorted={isSorted}
             bankFilter={bankFilter}
             sensors={sensors}

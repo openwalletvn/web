@@ -1,4 +1,5 @@
-import type { WalletDb, WalletCard } from './db';
+import { WalletDb } from './db';
+import type { WalletCard } from './db';
 import { cleanupOrphanAccounts } from './credit-account';
 
 // ─── Gamification (score/level data layer, no UI yet) ────────────────────────
@@ -94,4 +95,84 @@ export async function reorderCards(db: WalletDb, ordered: WalletCard[]): Promise
       await db.walletCards.update(ordered[i].id, { order: i, updatedAt: new Date() });
     }
   });
+}
+
+// ─── Move card to another wallet ──────────────────────────────────────────────
+
+export interface MoveCardInfo {
+  /** The target card plus all pool siblings that will move with it. */
+  cardsToMove: WalletCard[];
+  /** Number of pool siblings (excludes the target card itself). */
+  siblingCount: number;
+}
+
+/** Returns which cards will be moved (card + any pool siblings). */
+export async function getMoveCardInfo(
+  db: WalletDb,
+  walletCardId: string,
+): Promise<MoveCardInfo> {
+  const card = await db.walletCards.get(walletCardId);
+  if (!card) return { cardsToMove: [], siblingCount: 0 };
+
+  const cardsToMove: WalletCard[] = [card];
+
+  if (card.creditAccountId) {
+    const poolCards = await db.walletCards
+      .where('creditAccountId')
+      .equals(card.creditAccountId)
+      .toArray();
+    for (const sibling of poolCards) {
+      if (sibling.id !== card.id) cardsToMove.push(sibling);
+    }
+  }
+
+  return { cardsToMove, siblingCount: cardsToMove.length - 1 };
+}
+
+/**
+ * Moves a card (and its entire credit pool if any) to a different wallet.
+ * All destination writes complete before any source deletes occur.
+ */
+export async function moveCardToWallet(
+  sourceDb: WalletDb,
+  walletCardId: string,
+  destinationWalletId: string,
+): Promise<void> {
+  const { cardsToMove } = await getMoveCardInfo(sourceDb, walletCardId);
+  if (cardsToMove.length === 0) return;
+
+  const primaryCard = cardsToMove[0];
+  const creditAccount = primaryCard.creditAccountId
+    ? await sourceDb.creditAccounts.get(primaryCard.creditAccountId)
+    : undefined;
+
+  const destDb = new WalletDb(destinationWalletId);
+
+  // Determine base order: append after the last card in destination.
+  const destCards = await destDb.walletCards.orderBy('order').toArray();
+  const baseOrder = destCards.length > 0
+    ? Math.max(...destCards.map((c) => c.order)) + 1
+    : Date.now();
+
+  // Write credit account to destination first.
+  if (creditAccount) {
+    await destDb.creditAccounts.put(creditAccount);
+  }
+
+  // Write all cards to destination.
+  for (let i = 0; i < cardsToMove.length; i++) {
+    await destDb.walletCards.put({
+      ...cardsToMove[i],
+      order: baseOrder + i,
+      updatedAt: new Date(),
+    });
+  }
+
+  // Delete from source only after destination writes succeed.
+  for (const card of cardsToMove) {
+    await sourceDb.walletCards.delete(card.id);
+  }
+  if (creditAccount) {
+    await sourceDb.creditAccounts.delete(creditAccount.id);
+  }
 }

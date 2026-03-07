@@ -1,17 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { IconTrash } from '@tabler/icons-react';
+import { IconTrash, IconArrowForwardUp } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import { inputClass } from '@/lib/ui-constants';
 import { addCard, updateCard, removeCard, hasCardWithSameCatalogId } from '@/lib/wallet';
 import { createCreditAccount } from '@/lib/credit-account';
+import { appDb } from '@/lib/app-db';
 import { type Card, type Bank } from '@/lib/api';
 import type { WalletCard, CreditAccount, CardStatus } from '@/lib/db';
+import type { AppWallet } from '@/lib/app-db';
 import { CardImage } from '@/components/cards/card-image';
 import { FormField } from '@/components/ui/form-field';
 import { CreditPoolSelector, type PoolSelection } from './credit-pool-selector';
-import { useWalletDb } from '@/providers/wallet-db-provider';
+import { MoveToWalletPicker } from './move-to-wallet-picker';
+import { useWalletDb, useActiveWallet } from '@/providers/wallet-db-provider';
+import { useLiveQuery } from 'dexie-react-hooks';
 import posthog from 'posthog-js';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -62,6 +66,7 @@ export interface CardDetailFormProps {
   creditAccount?: CreditAccount;  // only relevant in edit mode
   onSaved: (walletCardId: string) => void;
   onDeleted?: () => void;
+  onMoved?: () => void;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -73,10 +78,16 @@ export function CardDetailForm({
   creditAccount,
   onSaved,
   onDeleted,
+  onMoved,
 }: CardDetailFormProps) {
   const db = useWalletDb();
+  const activeWallet = useActiveWallet();
   const isEdit = !!walletCard;
   const showCreditFields = card.card_type.includes('credit') || card.card_type.includes('2in1');
+
+  const allWallets = useLiveQuery(() => appDb.wallets.toArray(), [], []);
+  const otherWallets: AppWallet[] = (allWallets ?? []).filter((w) => w.id !== activeWallet.id);
+  const [movePickerOpen, setMovePickerOpen] = useState(false);
 
   // ── Form state ──
   const [nickname, setNickname] = useState(walletCard?.nickname ?? '');
@@ -440,6 +451,30 @@ export function CardDetailForm({
               <IconTrash size={14} />
               {deleting ? 'Đang xóa...' : 'Xóa thẻ khỏi ví'}
             </button>
+          )}
+
+          {/* Move to wallet — only in edit mode when 2+ wallets exist */}
+          {isEdit && otherWallets.length > 0 && (
+            <div className="pt-1">
+              <button
+                onClick={() => setMovePickerOpen((v) => !v)}
+                className="w-full py-2 border border-dashed border-slate-300 text-slate-500 rounded-sm hover:border-slate-400 hover:text-slate-700 transition-colors text-sm flex items-center justify-center gap-1.5"
+              >
+                <IconArrowForwardUp size={14} />
+                Chuyển sang ví khác
+              </button>
+
+              {movePickerOpen && (
+                <div className="mt-2 border border-dashed border-slate-200 rounded-sm overflow-hidden">
+                  <MoveToWalletPicker
+                    walletCard={walletCard!}
+                    otherWallets={otherWallets}
+                    onMoved={() => { setMovePickerOpen(false); onMoved?.(); }}
+                    onClose={() => setMovePickerOpen(false)}
+                  />
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
