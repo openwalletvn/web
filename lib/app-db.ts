@@ -59,8 +59,23 @@ export const appDb = new AppDatabase();
 
 async function seed() {
   const existing = await appDb.config.get('activeWalletId');
+
   if (existing) {
-    // Existing user — ensure they have a local account
+    // Validate the wallet the config points to still exists
+    const wallet = await appDb.wallets.get(existing.value);
+    if (!wallet) {
+      // Orphaned activeWalletId — point to first available wallet or create one
+      const first = await appDb.wallets.toArray().then((ws) => ws[0]);
+      if (first) {
+        await appDb.config.put({ key: 'activeWalletId', value: first.id });
+      } else {
+        const walletId = crypto.randomUUID();
+        await appDb.wallets.add({ id: walletId, name: 'Ví của tôi', createdAt: new Date() });
+        await appDb.config.put({ key: 'activeWalletId', value: walletId });
+      }
+    }
+
+    // Ensure account exists
     const accountCount = await appDb.accounts.count();
     if (accountCount === 0) {
       await appDb.accounts.add({

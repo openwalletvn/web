@@ -61,7 +61,7 @@ export default function WalletSettingsPage() {
             <h2 className="font-semibold text-slate-500 uppercase tracking-wider mb-1">Tài khoản cục bộ</h2>
             <p className="text-slate-500 text-sm mb-3">ID dùng để nhận diện thiết bị này. Sẽ được dùng khi tính năng đồng bộ ra mắt.</p>
             <div className="px-3 py-2 border border-dashed border-slate-200 rounded-sm bg-slate-50">
-              <p className="text-xs font-mono text-slate-500 break-all">{account.id}</p>
+              <p className="text-sm font-mono text-slate-500 break-all">{account.id}</p>
             </div>
           </section>
           <div className="border-t border-dashed border-slate-200 mb-8" />
@@ -119,7 +119,7 @@ export default function WalletSettingsPage() {
                         {wallet.name}
                       </button>
                       {isActive && (
-                        <span className="text-xs border border-dashed border-brand-blue text-brand-blue px-1.5 py-0.5 rounded-sm shrink-0">
+                        <span className="text-sm border border-dashed border-brand-blue text-brand-blue px-1.5 py-0.5 rounded-sm shrink-0">
                           Đang dùng
                         </span>
                       )}
@@ -129,7 +129,7 @@ export default function WalletSettingsPage() {
 
                 {/* Card count */}
                 {!isEditing && (
-                  <span className="text-xs text-slate-400 shrink-0">{cardCount} thẻ</span>
+                  <span className="text-sm text-slate-400 shrink-0">{cardCount} thẻ</span>
                 )}
 
                 {/* Action buttons */}

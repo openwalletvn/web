@@ -28,6 +28,7 @@ export interface WalletCard {
   validThru?: string;       // MM/YY
   statementDate?: number;
   paymentDueDate?: number;
+  paymentDueDateSource?: 'calculated' | 'custom';
   status?: CardStatus;
   statusNote?: string;
   note?: string;

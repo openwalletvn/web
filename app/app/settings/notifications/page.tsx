@@ -102,7 +102,7 @@ export default function NotificationsSettingsPage() {
           </button>
         </div>
         {discordAdapter?.lastCheckedAt && (
-          <p className="text-xs mt-3">
+          <p className="text-sm mt-3">
             {discordAdapter.lastStatus === 'ok' ? (
               <span className="text-green-600">Gửi thành công lúc {formatTime(discordAdapter.lastCheckedAt)}</span>
             ) : (
@@ -117,7 +117,7 @@ export default function NotificationsSettingsPage() {
         <div key={name} className="flex items-center gap-3 p-4 border border-dashed border-slate-100 rounded-sm mb-2 opacity-50">
           <IconLock size={16} className="text-slate-300 shrink-0" />
           <span className="text-sm text-slate-400">{name}</span>
-          <span className="ml-auto text-xs text-slate-300">Sắp ra mắt</span>
+          <span className="ml-auto text-sm text-slate-300">Sắp ra mắt</span>
         </div>
       ))}
     </>

@@ -43,7 +43,7 @@ export function JsonViewerDialog({
             </div>
           </div>
           <div className="overflow-auto flex-1 p-4">
-            <pre className="text-xs text-slate-700 whitespace-pre-wrap break-all font-mono leading-relaxed">
+            <pre className="text-sm text-slate-700 whitespace-pre-wrap break-all font-mono leading-relaxed">
               {data}
             </pre>
           </div>
