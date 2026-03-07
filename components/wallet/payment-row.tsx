@@ -21,6 +21,14 @@ export function getPreviousOccurrence(dayOfMonth: number, today: Date = new Date
         : new Date(t.getFullYear(), t.getMonth() - 1, dayOfMonth);
 }
 
+/** Returns the date this month if the day-of-month fell 1–7 days ago, otherwise null. */
+export function getPastOccurrence(dayOfMonth: number, today: Date = new Date()): Date | null {
+    const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const thisMonth = new Date(t.getFullYear(), t.getMonth(), dayOfMonth);
+    const diffDays = Math.floor((t.getTime() - thisMonth.getTime()) / 86_400_000);
+    return diffDays >= 1 && diffDays <= 7 ? thisMonth : null;
+}
+
 /** Find the statement date that led to the given payment due date. */
 function getRelatedStatementDate(paymentDueDate: Date, statementDay: number): Date {
     const dueDay = paymentDueDate.getDate();
@@ -36,22 +44,22 @@ export function PaymentRow({
                                walletCard,
                                catalogCard,
                                bank,
-                               isNext,
+                               variant,
                            }: {
     date: Date;
     walletCard: WalletCard;
     catalogCard: Card | undefined;
     bank: Bank | undefined;
-    isNext: boolean;
+    variant: 'past' | 'today' | 'upcoming';
 }) {
     const daysUntil = Math.ceil((date.getTime() - Date.now()) / 86_400_000);
     const dueLabel =
-        daysUntil === 0 ? 'Hôm nay' :
-            daysUntil === 1 ? 'Ngày mai' :
-                daysUntil > 0 ? `${daysUntil} ngày nữa` :
-                    daysUntil === -1 ? 'Hôm qua' :
-                        `${Math.abs(daysUntil)} ngày trước`;
-    const isPast = daysUntil < 0;
+        variant === 'today' ? 'Hôm nay' :
+            variant === 'past' ? (daysUntil === -1 ? 'Hôm qua' : `${Math.abs(daysUntil)} ngày trước`) :
+                daysUntil === 1 ? 'Ngày mai' :
+                    `${daysUntil} ngày nữa`;
+    const isPast = variant === 'past';
+    const isToday = variant === 'today';
 
     const statementDate = walletCard.statementDate
         ? getRelatedStatementDate(date, walletCard.statementDate)
@@ -62,14 +70,14 @@ export function PaymentRow({
         <div className="flex items-start gap-4 py-4 border-b border-dashed border-slate-100 last:border-0">
             {/* Date block — payment due date */}
             <div className="shrink-0 w-12 text-center">
-                <p className={`text-3xl font-bold leading-none ${isPast ? 'text-slate-500' : isNext ? 'text-brand-blue' : 'text-slate-800'}`}>
+                <p className={`text-3xl font-bold leading-none ${isPast ? 'text-slate-400' : isToday ? 'text-brand-blue' : 'text-slate-800'}`}>
                     {date.getDate()}
                 </p>
                 <p className="text-sm text-slate-600 mt-0.5">{MONTH_VI[date.getMonth()]}</p>
             </div>
 
             {/* Divider */}
-            <div className={`self-stretch w-px shrink-0 ${isNext && !isPast ? 'bg-brand-blue' : 'bg-slate-100'}`}/>
+            <div className={`self-stretch w-px shrink-0 ${isToday ? 'bg-brand-blue' : 'bg-slate-100'}`}/>
 
             {/* Card image */}
             <div className="shrink-0 w-16 aspect-[16/10] bg-slate-50 rounded-sm overflow-hidden self-center">

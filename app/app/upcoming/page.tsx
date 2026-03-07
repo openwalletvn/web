@@ -5,7 +5,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { IconCreditCard } from '@tabler/icons-react';
 import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
-import { PaymentRow, getNextOccurrence, getPreviousOccurrence } from '@/components/wallet/payment-row';
+import { PaymentRow, getNextOccurrence, getPastOccurrence } from '@/components/wallet/payment-row';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 import type { WalletCard } from '@/lib/db';
 
@@ -40,41 +40,37 @@ export default function UpcomingPage() {
     [walletCards],
   );
 
-  const { lastWeek, thisWeek, upcoming } = useMemo(() => {
-    const sevenDaysAgo = new Date(today.getTime() - 7 * 86_400_000);
-    const sevenDaysFromNow = new Date(today.getTime() + 7 * 86_400_000);
-    const thirtyDaysFromNow = new Date(today.getTime() + 30 * 86_400_000);
-
-    const lastWeek: PaymentEntry[] = [];
-    const thisWeek: PaymentEntry[] = [];
+  const { past, todayCards, upcoming } = useMemo(() => {
+    const past: PaymentEntry[] = [];
+    const todayCards: PaymentEntry[] = [];
     const upcoming: PaymentEntry[] = [];
 
     for (const c of activeCards) {
       if (!c.paymentDueDate) continue;
 
-      const prev = getPreviousOccurrence(c.paymentDueDate, today);
-      const next = getNextOccurrence(c.paymentDueDate, today);
+      const day = c.paymentDueDate;
 
-      if (prev >= sevenDaysAgo && prev < today) {
-        lastWeek.push({ walletCard: c, date: prev });
-      }
-      if (next >= today && next < sevenDaysFromNow) {
-        thisWeek.push({ walletCard: c, date: next });
-      } else if (next >= sevenDaysFromNow && next <= thirtyDaysFromNow) {
-        upcoming.push({ walletCard: c, date: next });
+      if (day === today.getDate()) {
+        todayCards.push({ walletCard: c, date: new Date(today.getFullYear(), today.getMonth(), day) });
+      } else {
+        const pastDate = getPastOccurrence(day, today);
+        if (pastDate) {
+          past.push({ walletCard: c, date: pastDate });
+        } else {
+          upcoming.push({ walletCard: c, date: getNextOccurrence(day, today) });
+        }
       }
     }
 
-    lastWeek.sort((a, b) => b.date.getTime() - a.date.getTime()); // most recent first
-    thisWeek.sort((a, b) => a.date.getTime() - b.date.getTime());
-    upcoming.sort((a, b) => a.date.getTime() - b.date.getTime());
+    past.sort((a, b) => a.date.getTime() - b.date.getTime()); // oldest → newest
+    upcoming.sort((a, b) => a.date.getTime() - b.date.getTime()); // earliest → latest
 
-    return { lastWeek, thisWeek, upcoming };
+    return { past, todayCards, upcoming };
   }, [activeCards, today]);
 
   const allEntries = useMemo(
-    () => [...lastWeek, ...thisWeek, ...upcoming],
-    [lastWeek, thisWeek, upcoming],
+    () => [...past, ...todayCards, ...upcoming],
+    [past, todayCards, upcoming],
   );
 
   useEffect(() => {
@@ -88,10 +84,10 @@ export default function UpcomingPage() {
     });
   }, [allEntries]);
 
-  const totalCount = lastWeek.length + thisWeek.length + upcoming.length;
+  const totalCount = past.length + todayCards.length + upcoming.length;
   const isEmpty = totalCount === 0;
 
-  function renderRows(entries: PaymentEntry[], highlightToday = false) {
+  function renderRows(entries: PaymentEntry[], variant: 'past' | 'today' | 'upcoming') {
     return entries.map(({ walletCard, date }) => (
       <PaymentRow
         key={`${walletCard.id}-${date.getTime()}`}
@@ -99,7 +95,7 @@ export default function UpcomingPage() {
         walletCard={walletCard}
         catalogCard={catalogCards[walletCard.cardId]}
         bank={banks[walletCard.bankId]}
-        isNext={highlightToday && date.getTime() === today.getTime()}
+        variant={variant}
       />
     ));
   }
@@ -119,24 +115,30 @@ export default function UpcomingPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {lastWeek.length > 0 && (
-            <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
-              <SectionHeader label="Tuần trước" count={lastWeek.length} />
-              <div className="px-4">{renderRows(lastWeek, false)}</div>
-            </div>
-          )}
-          {thisWeek.length > 0 && (
-            <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
-              <SectionHeader label="Tuần này" count={thisWeek.length} />
-              <div className="px-4">{renderRows(thisWeek, true)}</div>
-            </div>
-          )}
-          {upcoming.length > 0 && (
-            <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
-              <SectionHeader label="30 ngày tới" count={upcoming.length} />
-              <div className="px-4">{renderRows(upcoming, false)}</div>
-            </div>
-          )}
+          <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
+            <SectionHeader label="Đã qua" count={past.length} />
+            {past.length > 0 ? (
+              <div className="px-4">{renderRows(past, 'past')}</div>
+            ) : (
+              <p className="px-4 py-4 text-sm text-slate-400">Không có thẻ nào đến hạn trong 7 ngày qua</p>
+            )}
+          </div>
+          <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
+            <SectionHeader label="Hôm nay" count={todayCards.length} />
+            {todayCards.length > 0 ? (
+              <div className="px-4">{renderRows(todayCards, 'today')}</div>
+            ) : (
+              <p className="px-4 py-4 text-sm text-slate-400">Không có thẻ nào đến hạn hôm nay</p>
+            )}
+          </div>
+          <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
+            <SectionHeader label="Sắp tới" count={upcoming.length} />
+            {upcoming.length > 0 ? (
+              <div className="px-4">{renderRows(upcoming, 'upcoming')}</div>
+            ) : (
+              <p className="px-4 py-4 text-sm text-slate-400">Không có thẻ nào sắp đến hạn</p>
+            )}
+          </div>
         </div>
       )}
     </PageContainer>
