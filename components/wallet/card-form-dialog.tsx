@@ -161,6 +161,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
   const [statementDate, setStatementDate] = useState('');
   const [paymentDueDate, setPaymentDueDate] = useState('');
   const [dueDateOverridden, setDueDateOverridden] = useState(false);
+  const [dueDateSource, setDueDateSource] = useState<'calculated' | 'custom' | undefined>(undefined);
   const [isSupplementary, setIsSupplementary] = useState(false);
   const [status, setStatus] = useState<CardStatus>('active');
   const [statusNote, setStatusNote] = useState('');
@@ -192,7 +193,11 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
       setValidThru(walletCard.validThru ?? '');
       setStatementDate(walletCard.statementDate?.toString() ?? '');
       setPaymentDueDate(walletCard.paymentDueDate?.toString() ?? '');
-      setDueDateOverridden(!!walletCard.paymentDueDate);
+      setDueDateOverridden(walletCard.paymentDueDateSource === 'custom' || (!walletCard.paymentDueDateSource && !!walletCard.paymentDueDate));
+      setDueDateSource(
+        walletCard.paymentDueDateSource ??
+        (card.statement_date && walletCard.statementDate === card.statement_date ? 'calculated' : 'custom'),
+      );
       setIsSupplementary(walletCard.isSupplementary ?? false);
       setStatus(walletCard.status ?? 'active');
       setStatusNote(walletCard.statusNote ?? '');
@@ -242,6 +247,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
     if (dueDateOverridden || !statementDate || !card.interest_free_days) return;
     const raw = (parseInt(statementDate) + card.interest_free_days) % 30;
     setPaymentDueDate(String(raw === 0 ? 30 : raw));
+    setDueDateSource('calculated');
   }, [statementDate, card.interest_free_days, dueDateOverridden]);
 
   async function handleSave() {
@@ -285,6 +291,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
         validThru: validThru || undefined,
         statementDate: statementDate ? parseInt(statementDate) : undefined,
         paymentDueDate: paymentDueDate ? parseInt(paymentDueDate) : undefined,
+        paymentDueDateSource: paymentDueDate ? dueDateSource : undefined,
         status,
         statusNote: status !== 'active' ? (statusNote || undefined) : undefined,
         note: note || undefined,
@@ -494,7 +501,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                 >
                   <select
                     value={statementDate}
-                    onChange={(e) => { setStatementDate(e.target.value); setDueDateOverridden(false); }}
+                    onChange={(e) => { setStatementDate(e.target.value); setDueDateOverridden(false); setDueDateSource('custom'); }}
                     className={inputClass}
                   >
                     <option value="">- chọn ngày -</option>
@@ -512,7 +519,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                 >
                   <select
                     value={paymentDueDate}
-                    onChange={(e) => { setPaymentDueDate(e.target.value); setDueDateOverridden(true); }}
+                    onChange={(e) => { setPaymentDueDate(e.target.value); setDueDateOverridden(true); setDueDateSource('custom'); }}
                     className={inputClass}
                   >
                     <option value="">- chọn ngày -</option>

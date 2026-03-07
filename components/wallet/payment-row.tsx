@@ -1,73 +1,150 @@
-import { getCardImageUrl, type Bank, type Card } from '@/lib/api';
-import type { WalletCard } from '@/lib/db';
+import {IconArrowNarrowRightDashed, IconCircleCheckFilled, IconCircleDashed} from '@tabler/icons-react';
+import {type Bank, type Card, getCardImageUrl} from '@/lib/api';
+import type {WalletCard} from '@/lib/db';
+import {cn} from "@/lib/utils";
 
 export const MONTH_VI = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
 
-export function getNextOccurrence(dayOfMonth: number): Date {
-  const now = new Date();
-  const thisMonth = new Date(now.getFullYear(), now.getMonth(), dayOfMonth);
-  return thisMonth > now
-    ? thisMonth
-    : new Date(now.getFullYear(), now.getMonth() + 1, dayOfMonth);
+export function getNextOccurrence(dayOfMonth: number, today: Date = new Date()): Date {
+    const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const thisMonth = new Date(t.getFullYear(), t.getMonth(), dayOfMonth);
+    return thisMonth >= t
+        ? thisMonth
+        : new Date(t.getFullYear(), t.getMonth() + 1, dayOfMonth);
+}
+
+export function getPreviousOccurrence(dayOfMonth: number, today: Date = new Date()): Date {
+    const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const thisMonth = new Date(t.getFullYear(), t.getMonth(), dayOfMonth);
+    return thisMonth < t
+        ? thisMonth
+        : new Date(t.getFullYear(), t.getMonth() - 1, dayOfMonth);
+}
+
+/** Find the statement date that led to the given payment due date. */
+function getRelatedStatementDate(paymentDueDate: Date, statementDay: number): Date {
+    const dueDay = paymentDueDate.getDate();
+    // Statement is always before payment due — if statement day >= due day, it was last month
+    if (statementDay < dueDay) {
+        return new Date(paymentDueDate.getFullYear(), paymentDueDate.getMonth(), statementDay);
+    }
+    return new Date(paymentDueDate.getFullYear(), paymentDueDate.getMonth() - 1, statementDay);
 }
 
 export function PaymentRow({
-  date,
-  walletCard,
-  catalogCard,
-  bank,
-  isNext,
-}: {
-  date: Date;
-  walletCard: WalletCard;
-  catalogCard: Card | undefined;
-  bank: Bank | undefined;
-  isNext: boolean;
+                               date,
+                               walletCard,
+                               catalogCard,
+                               bank,
+                               isNext,
+                           }: {
+    date: Date;
+    walletCard: WalletCard;
+    catalogCard: Card | undefined;
+    bank: Bank | undefined;
+    isNext: boolean;
 }) {
-  const daysUntil = Math.ceil((date.getTime() - Date.now()) / 86_400_000);
-  const label = daysUntil === 0 ? 'Hôm nay' : daysUntil === 1 ? 'Ngày mai' : `${daysUntil} ngày nữa`;
+    const daysUntil = Math.ceil((date.getTime() - Date.now()) / 86_400_000);
+    const dueLabel =
+        daysUntil === 0 ? 'Hôm nay' :
+            daysUntil === 1 ? 'Ngày mai' :
+                daysUntil > 0 ? `${daysUntil} ngày nữa` :
+                    daysUntil === -1 ? 'Hôm qua' :
+                        `${Math.abs(daysUntil)} ngày trước`;
+    const isPast = daysUntil < 0;
 
-  return (
-    <div className="flex items-start gap-4 py-4 border-b border-dashed border-slate-100 last:border-0">
-      {/* Date block */}
-      <div className="shrink-0 w-12 text-center">
-        <p className={`text-3xl font-bold leading-none ${isNext ? 'text-brand-blue' : 'text-slate-800'}`}>
-          {date.getDate()}
-        </p>
-        <p className="text-xs text-slate-400 mt-0.5">{MONTH_VI[date.getMonth()]}</p>
-      </div>
+    const statementDate = walletCard.statementDate
+        ? getRelatedStatementDate(date, walletCard.statementDate)
+        : null;
+    const statementIsPast = statementDate ? statementDate.getTime() <= Date.now() : false;
 
-      {/* Divider */}
-      <div className={`self-stretch w-px shrink-0 ${isNext ? 'bg-brand-blue' : 'bg-slate-100'}`} />
+    return (
+        <div className="flex items-start gap-4 py-4 border-b border-dashed border-slate-100 last:border-0">
+            {/* Date block — payment due date */}
+            <div className="shrink-0 w-12 text-center">
+                <p className={`text-3xl font-bold leading-none ${isPast ? 'text-slate-500' : isNext ? 'text-brand-blue' : 'text-slate-800'}`}>
+                    {date.getDate()}
+                </p>
+                <p className="text-sm text-slate-600 mt-0.5">{MONTH_VI[date.getMonth()]}</p>
+            </div>
 
-      {/* Card image */}
-      <div className="shrink-0 w-16 aspect-[16/10] bg-slate-50 rounded-sm overflow-hidden self-center">
-        {catalogCard ? (
-          <img src={getCardImageUrl(catalogCard)} alt={catalogCard.name} className="w-full h-full object-contain" />
-        ) : (
-          <div className="w-full h-full bg-slate-100 animate-pulse" />
-        )}
-      </div>
+            {/* Divider */}
+            <div className={`self-stretch w-px shrink-0 ${isNext && !isPast ? 'bg-brand-blue' : 'bg-slate-100'}`}/>
 
-      {/* Card info */}
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-slate-900 truncate">
-          {walletCard.nickname ?? catalogCard?.name ?? '-'}
-        </p>
-        {walletCard.nickname && catalogCard?.name && (
-          <p className="text-xs text-slate-400 truncate">{catalogCard.name}</p>
-        )}
-        <p className="text-xs text-slate-400 mt-0.5">{bank?.name ?? '-'}</p>
-      </div>
+            {/* Card image */}
+            <div className="shrink-0 w-16 aspect-[16/10] bg-slate-50 rounded-sm overflow-hidden self-center">
+                {catalogCard ? (
+                    <img src={getCardImageUrl(catalogCard)} alt={catalogCard.name}
+                         className="w-full h-full object-contain"/>
+                ) : (
+                    <div className="w-full h-full bg-slate-100 animate-pulse"/>
+                )}
+            </div>
 
-      {/* Days badge */}
-      <span className={`shrink-0 text-xs px-2 py-0.5 rounded-sm border border-dashed ${
-        isNext
-          ? 'border-brand-blue text-brand-blue bg-blue-50/60'
-          : 'border-slate-200 text-slate-400'
-      }`}>
-        {label}
-      </span>
-    </div>
-  );
+            {/* Card info */}
+            <div className="flex-1 min-w-0">
+                <p className="font-medium text-slate-900 truncate">
+                    {walletCard.nickname ?? catalogCard?.name ?? '-'}
+                </p>
+                {walletCard.nickname && catalogCard?.name && (
+                    <p className="text-sm text-slate-600 truncate">{catalogCard.name}</p>
+                )}
+                {/*<p className="text-sm text-slate-600">{bank?.name ?? '-'}</p>*/}
+
+                {/* Statement → due date flow */}
+                {statementDate && (
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        {/* Statement date */}
+                        <div className={cn("flex items-center gap-1.5", statementIsPast ? "text-green-500" : "")}>
+                            {/*tooltip*/}
+                            {walletCard.paymentDueDate && (
+                                <div className="relative group -translate-y-0.5">
+                                    {
+                                        statementIsPast ?
+                                            <>
+                                                <IconCircleCheckFilled size={16}/>
+                                            </> :
+                                            <>
+                                                <IconCircleDashed size={16}/>
+                                            </>
+                                    }
+                                    <div
+                                        className="absolute left-0 bottom-full mb-1.5 w-60 px-2.5 py-1.5 bg-slate-800 text-white text-sm rounded-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-snug">
+                                        {walletCard.paymentDueDateSource === 'custom'
+                                            ? 'Dựa trên ngày sao kê bạn đã tùy chỉnh'
+                                            : `Dựa trên ngày sao kê mặc định của ${bank?.name ?? 'ngân hàng'}`}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className={cn(
+                                "min-w-[150px]",
+                                `text-sm`
+                            )}>
+                                {statementIsPast ? 'Đã sao kê' : 'Sao kê tiếp theo'}:{' '}
+                                <span className="font-medium">
+                                      {statementDate.getDate()} {MONTH_VI[statementDate.getMonth()]}
+                                  </span>
+                            </div>
+                        </div>
+
+                        {/* Arrow */}
+                        <span className={`text-xs ${isPast ? 'text-slate-400' : 'text-slate-500'}`}>
+                      <IconArrowNarrowRightDashed size={18}/>
+                  </span>
+
+                        {/* Payment due label */}
+                        <span className={`text-sm font-medium ${
+                            isPast ? 'text-slate-500' :
+                                daysUntil === 0 ? 'text-brand-blue' :
+                                    daysUntil <= 3 ? 'text-amber-500' :
+                                        'text-slate-700'
+                        }`}>
+              Hạn TT: {dueLabel}
+            </span>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }

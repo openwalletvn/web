@@ -113,7 +113,7 @@ function WalletSwitcher() {
                   <button
                     onClick={handleCreate}
                     disabled={!newName.trim()}
-                    className="px-2 py-1 text-xs border border-dashed border-brand-blue text-brand-blue rounded-sm hover:bg-blue-50/60 disabled:opacity-40 transition-colors"
+                    className="px-2 py-1 text-sm border border-dashed border-brand-blue text-brand-blue rounded-sm hover:bg-blue-50/60 disabled:opacity-40 transition-colors"
                   >
                     Tạo
                   </button>

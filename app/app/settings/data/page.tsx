@@ -27,7 +27,7 @@ const REMINDER_LABELS: Record<string, string> = {
 function SummaryBlock({ summary }: { summary: BackupSummary }) {
   return (
     <div className="space-y-1.5">
-      <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Nội dung</p>
+      <p className="text-sm text-slate-400 uppercase tracking-wider font-semibold mb-2">Nội dung</p>
       {summary.wallets.map((w) => (
         <div key={w.id} className="flex items-center justify-between text-sm">
           <span className="text-slate-700">{w.name}</span>
@@ -150,7 +150,7 @@ export default function DataSettingsPage() {
             Xuất file sao lưu (JSON)
           </button>
           {exportFileName && (
-            <p className="mt-2 text-xs text-slate-400 font-mono">{exportFileName}</p>
+            <p className="mt-2 text-sm text-slate-400 font-mono">{exportFileName}</p>
           )}
         </div>
       </section>
@@ -178,7 +178,7 @@ export default function DataSettingsPage() {
           >
             <IconFileImport size={28} className="mx-auto text-slate-400 mb-3" />
             <p className="text-sm font-medium text-slate-700">Kéo thả file vào đây hoặc nhấn để chọn</p>
-            <p className="text-xs text-slate-400 mt-1">Chỉ hỗ trợ file .json từ OpenWallet</p>
+            <p className="text-sm text-slate-400 mt-1">Chỉ hỗ trợ file .json từ OpenWallet</p>
             <input
               ref={fileRef}
               type="file"

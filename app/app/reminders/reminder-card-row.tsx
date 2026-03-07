@@ -135,7 +135,7 @@ export function ReminderCardRow({
           <div className="h-6 w-6 bg-slate-100 rounded-sm shrink-0" />
         )}
         <span className="font-medium text-slate-900 truncate flex-1">{cardName}</span>
-        {walletCard.last4 && <span className="text-xs text-slate-400 shrink-0">•••• {walletCard.last4}</span>}
+        {walletCard.last4 && <span className="text-sm text-slate-400 shrink-0">•••• {walletCard.last4}</span>}
       </div>
 
       {noDates ? (

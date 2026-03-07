@@ -106,19 +106,19 @@ export default function DashboardPage() {
       {/* ── Top stats ── */}
       <div className="grid grid-cols-3 gap-3 mb-8">
         <div className="col-span-3 border border-dashed border-slate-200 rounded-sm p-4">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Tổng hạn mức tín dụng</p>
+          <p className="text-sm text-slate-500 uppercase tracking-wider mb-1">Tổng hạn mức tín dụng</p>
           <p className="text-4xl font-bold text-slate-900">{formatVND(totalCreditLimit)}</p>
         </div>
         <div className="border border-dashed border-slate-200 rounded-sm p-4">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Thẻ hoạt động</p>
+          <p className="text-sm text-slate-500 uppercase tracking-wider mb-1">Thẻ hoạt động</p>
           <p className="text-3xl font-bold text-slate-900">{activeCards.length}</p>
         </div>
         <div className="border border-dashed border-slate-200 rounded-sm p-4">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Ngân hàng</p>
+          <p className="text-sm text-slate-500 uppercase tracking-wider mb-1">Ngân hàng</p>
           <p className="text-3xl font-bold text-slate-900">{totalBanks}</p>
         </div>
         <div className="border border-dashed border-slate-200 rounded-sm p-4">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Đến hạn / 30 ngày</p>
+          <p className="text-sm text-slate-500 uppercase tracking-wider mb-1">Đến hạn / 30 ngày</p>
           <p className="text-3xl font-bold text-slate-900">{allUpcoming.length}</p>
         </div>
       </div>
@@ -132,7 +132,7 @@ export default function DashboardPage() {
           {allUpcoming.length > 0 && (
             <Link
               href="/app/upcoming"
-              className="flex items-center gap-1 text-xs text-brand-blue hover:underline"
+              className="flex items-center gap-1 text-sm text-brand-blue hover:underline"
             >
               Xem tất cả <IconArrowRight size={12} />
             </Link>
@@ -158,7 +158,7 @@ export default function DashboardPage() {
               ))}
               {allUpcoming.length > 2 && (
                 <div className="py-3 text-center border-t border-dashed border-slate-100">
-                  <Link href="/app/upcoming" className="text-xs text-brand-blue hover:underline">
+                  <Link href="/app/upcoming" className="text-sm text-brand-blue hover:underline">
                     + {allUpcoming.length - 2} thẻ nữa
                   </Link>
                 </div>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
           {Object.entries(STATUS_LABELS).map(([status, label]) => (
             <div key={status} className="border border-dashed border-slate-200 rounded-sm p-3">
               <p className="text-2xl font-bold text-slate-900">{statusCounts[status] ?? 0}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+              <p className="text-sm text-slate-500 mt-0.5">{label}</p>
             </div>
           ))}
         </div>
