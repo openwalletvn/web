@@ -1,26 +1,54 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft } from '@tabler/icons-react';
-import { getBanks, getCards, type Bank, type Card } from '@/lib/api';
+import { getBanks, getCards, getCard, type Bank, type Card } from '@/lib/api';
 import { CardDetailForm } from '@/components/wallet/card-detail-form';
 import { PageContainer } from '@/components/ui/page-container';
 import { BankSelectionStep } from '@/components/wallet/add/bank-selection-step';
 import { CardSelectionStep } from '@/components/wallet/add/card-selection-step';
+import { useWalletDb } from '@/providers/wallet-db-provider';
+import { useLiveQuery } from 'dexie-react-hooks';
 import posthog from 'posthog-js';
 
 export default function AddCardPage() {
   const router = useRouter();
+  const db = useWalletDb();
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [deepLinked, setDeepLinked] = useState(false);
 
   const [banks, setBanks] = useState<Bank[]>([]);
   const [bankCards, setBankCards] = useState<Card[]>([]);
   const [banksLoading, setBanksLoading] = useState(false);
   const [cardsLoading, setCardsLoading] = useState(false);
+
+  // Owned card IDs — used by CardSelectionStep to show "already in wallet" indicator.
+  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db]);
+  const ownedCardIds = useMemo(
+    () => new Set((walletCards ?? []).map((c) => c.cardId)),
+    [walletCards],
+  );
+
+  // Deep link: if ?card=[id] is present on mount, skip straight to step 3.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cardId = params.get('card');
+    if (!cardId) return;
+    setDeepLinked(true);
+    getCard(cardId)
+      .then((card) => {
+        setSelectedCard(card);
+        setSelectedBank(card.bank_data ?? null);
+        setStep(3);
+      })
+      .catch(() => {
+        // Silently fall through to step 1 if card not found.
+      });
+  }, []);
 
   useEffect(() => {
     setBanksLoading(true);
@@ -34,7 +62,7 @@ export default function AddCardPage() {
   }, [selectedBank]);
 
   function handleBack() {
-    if (step === 1) {
+    if (step === 1 || (step === 3 && deepLinked)) {
       router.back();
     } else if (step === 2) {
       setStep(1);
@@ -68,7 +96,7 @@ export default function AddCardPage() {
   }
 
   return (
-    <PageContainer maxWidth={step === 3 ? '4xl' : '2xl'}>
+    <PageContainer maxWidth="4xl">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <button
@@ -105,6 +133,7 @@ export default function AddCardPage() {
           bank={selectedBank}
           cards={bankCards}
           loading={cardsLoading}
+          ownedCardIds={ownedCardIds}
           onSelect={selectCard}
         />
       )}
