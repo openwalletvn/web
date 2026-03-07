@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { IconGripVertical } from '@tabler/icons-react';
@@ -27,7 +28,6 @@ export function WalletCardContent({
   bank,
   creditBadge,
   creditLimit,
-  onEdit,
   onStatusChange,
 }: {
   walletCard: WalletCard;
@@ -35,15 +35,14 @@ export function WalletCardContent({
   bank: Bank | undefined;
   creditBadge?: CreditBadge;
   creditLimit?: number;
-  onEdit: (walletCard: WalletCard) => void;
   onStatusChange?: (walletCard: WalletCard, status: CardStatus) => void;
 }) {
   const isInactive = walletCard.status === 'expired' || walletCard.status === 'canceled';
 
   return (
     <>
-      <button
-        onClick={() => onEdit(walletCard)}
+      <Link
+        href={`/app/my-cards/${walletCard.id}`}
         className="flex items-center gap-3 flex-1 min-w-0 text-left"
       >
         {/* Card image */}
@@ -75,7 +74,7 @@ export function WalletCardContent({
             <p className="text-slate-400 mt-1 truncate">{walletCard.note}</p>
           )}
         </div>
-      </button>
+      </Link>
 
       {/* Quick status select */}
       {onStatusChange && (
@@ -103,7 +102,6 @@ export function WalletCardRow({
   bank,
   creditBadge,
   creditLimit,
-  onEdit,
   onStatusChange,
 }: {
   walletCard: WalletCard;
@@ -111,7 +109,6 @@ export function WalletCardRow({
   bank: Bank | undefined;
   creditBadge?: CreditBadge;
   creditLimit?: number;
-  onEdit: (walletCard: WalletCard) => void;
   onStatusChange?: (walletCard: WalletCard, status: CardStatus) => void;
 }) {
   return (
@@ -122,7 +119,6 @@ export function WalletCardRow({
         bank={bank}
         creditBadge={creditBadge}
         creditLimit={creditLimit}
-        onEdit={onEdit}
         onStatusChange={onStatusChange}
       />
     </div>
@@ -137,7 +133,6 @@ export function SortableWalletCard({
   bank,
   creditBadge,
   creditLimit,
-  onEdit,
   onStatusChange,
 }: {
   walletCard: WalletCard;
@@ -145,7 +140,6 @@ export function SortableWalletCard({
   bank: Bank | undefined;
   creditBadge?: CreditBadge;
   creditLimit?: number;
-  onEdit: (walletCard: WalletCard) => void;
   onStatusChange?: (walletCard: WalletCard, status: CardStatus) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -164,7 +158,6 @@ export function SortableWalletCard({
         bank={bank}
         creditBadge={creditBadge}
         creditLimit={creditLimit}
-        onEdit={onEdit}
         onStatusChange={onStatusChange}
       />
       <button
