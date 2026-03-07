@@ -153,7 +153,7 @@ export default function DashboardPage() {
                   walletCard={walletCard}
                   catalogCard={catalogCards[walletCard.cardId]}
                   bank={banks[walletCard.bankId]}
-                  isNext={i === 0}
+                  variant="upcoming"
                 />
               ))}
               {allUpcoming.length > 2 && (
