@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import {useEffect, useState} from 'react';
+import {useParams, useRouter} from 'next/navigation';
 import Link from 'next/link';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { IconArrowLeft } from '@tabler/icons-react';
-import { getCard, getBank, type Card, type Bank } from '@/lib/api';
-import { CardDetailForm } from '@/components/wallet/card-detail-form';
-import { PageContainer } from '@/components/ui/page-container';
-import { useWalletDb } from '@/providers/wallet-db-provider';
+import {useLiveQuery} from 'dexie-react-hooks';
+import {IconArrowLeft} from '@tabler/icons-react';
+import {type Bank, type Card, getBank, getCard} from '@/lib/api';
+import {CardDetailForm} from '@/components/wallet/card-detail-form';
+import {PageContainer} from '@/components/ui/page-container';
+import {useWalletDb} from '@/providers/wallet-db-provider';
+import type {CreditAccount} from '@/lib/db';
 
 export default function CardDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +21,7 @@ export default function CardDetailPage() {
     () => db.walletCards.get(id).then((c) => c ?? null),
     [db, id],
   );
-  const creditAccount = useLiveQuery(
+    const creditAccount = useLiveQuery<CreditAccount | undefined>(
     () =>
       walletCard?.creditAccountId
         ? db.creditAccounts.get(walletCard.creditAccountId)

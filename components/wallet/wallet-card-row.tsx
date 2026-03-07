@@ -1,16 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import {useState} from 'react';
 import Link from 'next/link';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { IconGripVertical, IconArrowForwardUp } from '@tabler/icons-react';
-import { type Card, type Bank } from '@/lib/api';
-import { CardImage } from '@/components/cards/card-image';
-import type { WalletCard, CardStatus } from '@/lib/db';
-import type { AppWallet } from '@/lib/app-db';
-import { WalletCardBadges } from './wallet-card-badges';
-import { MoveToWalletPicker } from './move-to-wallet-picker';
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
+import {IconArrowForwardUp, IconGripVertical} from '@tabler/icons-react';
+import {type Bank, type Card} from '@/lib/api';
+import {CardImage} from '@/components/cards/card-image';
+import type {CardStatus, WalletCard} from '@/lib/db';
+import type {AppWallet} from '@/lib/app-db';
+import {WalletCardBadges} from './wallet-card-badges';
+import {MoveToWalletPicker} from './move-to-wallet-picker';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -49,9 +49,20 @@ export function WalletCardContent({
         className="flex items-center gap-3 flex-1 min-w-0 text-left"
       >
         {/* Card image */}
-        <div className={`shrink-0 w-20 aspect-[16/10] ${isInactive ? 'opacity-50' : ''}`}>
+          <div className={`shrink-0 w-20 ${isInactive ? 'opacity-50' : ''}`}>
           {catalogCard ? (
-            <CardImage card={catalogCard} />
+              <>
+                  {catalogCard.image?.orientation === "vertical" ? (
+                      <div className="h-20 flex justify-center items-center">
+                          <CardImage card={catalogCard} className="h-full w-auto"/>
+                      </div>
+                  ) : (
+                      <div className="w-full flex justify-center items-center">
+                          <CardImage card={catalogCard} className="w-full"/>
+                      </div>
+                  )}
+              </>
+
           ) : (
             <div className="w-full h-full bg-slate-100 animate-pulse" />
           )}
@@ -59,7 +70,6 @@ export function WalletCardContent({
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className="text-slate-400 truncate">{bank?.name ?? '-'}</p>
           <p className={`font-medium leading-tight truncate text-sm ${isInactive ? 'text-slate-400' : 'text-slate-900'}`}>
             {walletCard.nickname ?? catalogCard?.name ?? (
               <span className="inline-block w-28 h-4 bg-slate-100 rounded animate-pulse" />

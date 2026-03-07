@@ -118,24 +118,24 @@ export default function UpcomingPage() {
           <p className="text-sm">Chưa có thẻ nào có ngày đến hạn</p>
         </div>
       ) : (
-        <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
+        <div className="space-y-4">
           {lastWeek.length > 0 && (
-            <>
+            <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
               <SectionHeader label="Tuần trước" count={lastWeek.length} />
               <div className="px-4">{renderRows(lastWeek, false)}</div>
-            </>
+            </div>
           )}
           {thisWeek.length > 0 && (
-            <>
+            <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
               <SectionHeader label="Tuần này" count={thisWeek.length} />
               <div className="px-4">{renderRows(thisWeek, true)}</div>
-            </>
+            </div>
           )}
           {upcoming.length > 0 && (
-            <>
+            <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
               <SectionHeader label="30 ngày tới" count={upcoming.length} />
               <div className="px-4">{renderRows(upcoming, false)}</div>
-            </>
+            </div>
           )}
         </div>
       )}
