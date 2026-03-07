@@ -23,7 +23,6 @@ import { reorderCards } from '@/lib/wallet';
 import { getBanks, getCard, type Card, type Bank } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
 import { EmptyState } from '@/components/ui/empty-state';
-import { CardFormDialog } from '@/components/wallet/card-form-dialog';
 import { SortableWalletCard, WalletCardRow, type CreditBadge } from '@/components/wallet/wallet-card-row';
 import { BankFilterBar } from '@/components/wallet/bank-filter-bar';
 import { useWalletDb } from '@/providers/wallet-db-provider';
@@ -132,7 +131,6 @@ function WalletCardList({
   banks,
   getCreditBadge,
   creditLimitMap,
-  onEdit,
   onStatusChange,
   isSorted,
   bankFilter,
@@ -144,7 +142,6 @@ function WalletCardList({
   banks: Record<string, Bank>;
   getCreditBadge: (card: WalletCard) => CreditBadge | undefined;
   creditLimitMap: Map<string, number>;
-  onEdit: (card: WalletCard) => void;
   onStatusChange: (card: WalletCard, status: CardStatus) => void;
   isSorted: boolean;
   bankFilter: string | null;
@@ -157,7 +154,6 @@ function WalletCardList({
     bank: banks[walletCard.bankId],
     creditBadge: getCreditBadge(walletCard),
     creditLimit: walletCard.creditAccountId ? creditLimitMap.get(walletCard.creditAccountId) : undefined,
-    onEdit,
     onStatusChange,
   });
 
@@ -192,7 +188,6 @@ export default function WalletPage() {
   const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [db], []);
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
   const [banks, setBanks] = useState<Record<string, Bank>>({});
-  const [editingCard, setEditingCard] = useState<WalletCard | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('custom');
   const [bankFilter, setBankFilter] = useState<string | null>(null);
 
@@ -283,7 +278,6 @@ export default function WalletPage() {
   }
 
   const isLoading = walletCards === undefined;
-  const editingCatalogCard = editingCard ? catalogCards[editingCard.cardId] : null;
   const isSorted = sortBy !== 'custom';
 
   return (
@@ -332,7 +326,6 @@ export default function WalletPage() {
             banks={banks}
             getCreditBadge={getCreditBadge}
             creditLimitMap={creditLimitMap}
-            onEdit={setEditingCard}
             onStatusChange={handleStatusChange}
             isSorted={isSorted}
             bankFilter={bankFilter}
@@ -342,15 +335,6 @@ export default function WalletPage() {
         )}
       </div>
 
-      {editingCard && editingCatalogCard && (
-        <CardFormDialog
-          card={editingCatalogCard}
-          walletCard={editingCard}
-          open={!!editingCard}
-          onClose={() => setEditingCard(null)}
-          onAfterDelete={() => setEditingCard(null)}
-        />
-      )}
     </PageContainer>
   );
 }
