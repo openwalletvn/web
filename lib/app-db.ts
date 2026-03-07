@@ -1,5 +1,15 @@
 import Dexie, { type EntityTable } from 'dexie';
 
+export interface Account {
+  id: string;                                       // UUID, generated locally — will be the server account ID when sync enabled
+  email?: string;                                   // null until auth/sync
+  created_at: string;                               // ISO timestamp
+  last_login_at?: string;
+  early_adopter: boolean;
+  pro_reason?: 'paid' | 'early_adopter' | 'promo';
+  sync_enabled: boolean;
+}
+
 export interface AppWallet {
   id: string;
   name: string;
@@ -20,6 +30,7 @@ export interface NotificationAdapter {
 }
 
 class AppDatabase extends Dexie {
+  accounts!: EntityTable<Account, 'id'>;
   wallets!: EntityTable<AppWallet, 'id'>;
   config!: EntityTable<AppConfig, 'key'>;
   notificationAdapters!: EntityTable<NotificationAdapter, 'id'>;
@@ -35,6 +46,12 @@ class AppDatabase extends Dexie {
       config: 'key',
       notificationAdapters: 'id',
     });
+    this.version(3).stores({
+      accounts: 'id',
+      wallets: 'id, name',
+      config: 'key',
+      notificationAdapters: 'id',
+    });
   }
 }
 
@@ -42,14 +59,35 @@ export const appDb = new AppDatabase();
 
 async function seed() {
   const existing = await appDb.config.get('activeWalletId');
-  if (existing) return;
+  if (existing) {
+    // Existing user — ensure they have a local account
+    const accountCount = await appDb.accounts.count();
+    if (accountCount === 0) {
+      await appDb.accounts.add({
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        early_adopter: false,
+        sync_enabled: false,
+      });
+    }
+    return;
+  }
 
+  // New user — seed everything
   const walletId = crypto.randomUUID();
-  await appDb.transaction('rw', [appDb.wallets, appDb.config], async () => {
+  const accountId = crypto.randomUUID();
+
+  await appDb.transaction('rw', [appDb.accounts, appDb.wallets, appDb.config], async () => {
+    await appDb.accounts.add({
+      id: accountId,
+      created_at: new Date().toISOString(),
+      early_adopter: false,
+      sync_enabled: false,
+    });
     await appDb.wallets.add({ id: walletId, name: 'Ví của tôi', createdAt: new Date() });
     await appDb.config.bulkPut([
       { key: 'activeWalletId', value: walletId },
-      { key: 'isPremium', value: 'true' },
+      { key: 'isPremium', value: 'false' },
     ]);
   });
 }

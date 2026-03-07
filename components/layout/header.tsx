@@ -89,7 +89,7 @@ export async function Header() {
           <div className="hidden md:block w-56">
             <SearchDialog />
           </div>
-          <WalletNavButton />
+          {/*<WalletNavButton />*/}
           <div className="md:hidden flex items-center">
             <SearchDialog mobileOnly />
             <MobileNav banks={banks} />

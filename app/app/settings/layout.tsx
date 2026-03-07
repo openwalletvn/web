@@ -6,8 +6,8 @@ import { PageContainer } from '@/components/ui/page-container';
 
 const NAV_ITEMS = [
   { label: 'Ví',        href: '/app/settings/wallet' },
-  { label: 'Dữ liệu',  href: '/app/settings/data' },
   { label: 'Thông báo', href: '/app/settings/notifications' },
+  { label: 'Dữ liệu',  href: '/app/settings/data' },
 ] as const;
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
