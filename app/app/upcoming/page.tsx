@@ -6,6 +6,7 @@ import { IconCreditCard } from '@tabler/icons-react';
 import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
 import { PaymentRow, getNextOccurrence, getPastOccurrence } from '@/components/wallet/payment-row';
+import { calcDueDate } from '@/lib/card-dates';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 import type { WalletCard } from '@/lib/db';
 
@@ -18,6 +19,18 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
       <p className="text-sm text-slate-400">{count} thẻ</p>
     </div>
   );
+}
+
+/** Resolves the effective due date for a wallet card. Custom overrides take precedence. */
+function resolveEffectiveDueDate(
+  walletCard: WalletCard,
+  catalogCard: Card | undefined,
+  today: Date,
+): Date | null {
+  if (walletCard.paymentDueDateSource === 'custom' && walletCard.paymentDueDate) {
+    return new Date(today.getFullYear(), today.getMonth(), walletCard.paymentDueDate);
+  }
+  return calcDueDate(walletCard.statementDate, catalogCard?.statement_date, catalogCard?.interest_free_days, today);
 }
 
 export default function UpcomingPage() {
@@ -40,49 +53,45 @@ export default function UpcomingPage() {
     [walletCards],
   );
 
+  // Eagerly load catalog cards for all active cards — needed for calcDueDate
+  useEffect(() => {
+    const missing = activeCards.map((c) => c.cardId).filter((id) => !catalogCards[id]);
+    if (!missing.length) return;
+    const unique = [...new Set(missing)];
+    Promise.all(
+      unique.map((id) => getCard(id).then((card) => [id, card] as const).catch(() => null)),
+    ).then((results) => {
+      const entries = Object.fromEntries(results.filter((r): r is [string, Card] => r !== null));
+      setCatalogCards((prev) => ({ ...prev, ...entries }));
+    });
+  }, [activeCards]);
+
   const { past, todayCards, upcoming } = useMemo(() => {
     const past: PaymentEntry[] = [];
     const todayCards: PaymentEntry[] = [];
     const upcoming: PaymentEntry[] = [];
 
     for (const c of activeCards) {
-      if (!c.paymentDueDate) continue;
+      const dueDate = resolveEffectiveDueDate(c, catalogCards[c.cardId], today);
+      if (!dueDate) continue;
 
-      const day = c.paymentDueDate;
-
-      if (day === today.getDate()) {
-        todayCards.push({ walletCard: c, date: new Date(today.getFullYear(), today.getMonth(), day) });
+      if (dueDate.getTime() === today.getTime()) {
+        todayCards.push({ walletCard: c, date: dueDate });
       } else {
-        const pastDate = getPastOccurrence(day, today);
+        const pastDate = getPastOccurrence(dueDate, today);
         if (pastDate) {
           past.push({ walletCard: c, date: pastDate });
         } else {
-          upcoming.push({ walletCard: c, date: getNextOccurrence(day, today) });
+          upcoming.push({ walletCard: c, date: getNextOccurrence(dueDate, today) });
         }
       }
     }
 
-    past.sort((a, b) => a.date.getTime() - b.date.getTime()); // oldest → newest
-    upcoming.sort((a, b) => a.date.getTime() - b.date.getTime()); // earliest → latest
+    past.sort((a, b) => a.date.getTime() - b.date.getTime());
+    upcoming.sort((a, b) => a.date.getTime() - b.date.getTime());
 
     return { past, todayCards, upcoming };
-  }, [activeCards, today]);
-
-  const allEntries = useMemo(
-    () => [...past, ...todayCards, ...upcoming],
-    [past, todayCards, upcoming],
-  );
-
-  useEffect(() => {
-    const missing = allEntries.map((u) => u.walletCard.cardId).filter((id) => !catalogCards[id]);
-    if (!missing.length) return;
-    Promise.all(
-      missing.map((id) => getCard(id).then((card) => [id, card] as const).catch(() => null)),
-    ).then((results) => {
-      const entries = Object.fromEntries(results.filter((r): r is [string, Card] => r !== null));
-      setCatalogCards((prev) => ({ ...prev, ...entries }));
-    });
-  }, [allEntries]);
+  }, [activeCards, catalogCards, today]);
 
   const totalCount = past.length + todayCards.length + upcoming.length;
   const isEmpty = totalCount === 0;

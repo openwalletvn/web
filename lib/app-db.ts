@@ -25,6 +25,8 @@ export interface NotificationAdapter {
   id: 'discord' | 'telegram' | 'email';
   config: Record<string, string>;
   enabled: boolean;
+  daysBefore: number;   // default 1 — how many days before the event to fire
+  notifyHour: number;   // default 8 — hour in Vietnam time (ICT UTC+7) to send the reminder
   lastStatus?: 'ok' | 'failed';
   lastCheckedAt?: string;
 }
@@ -47,6 +49,13 @@ class AppDatabase extends Dexie {
       notificationAdapters: 'id',
     });
     this.version(3).stores({
+      accounts: 'id',
+      wallets: 'id, name',
+      config: 'key',
+      notificationAdapters: 'id',
+    });
+    // v4: adds daysBefore and notifyHour fields to notificationAdapters (no index change)
+    this.version(4).stores({
       accounts: 'id',
       wallets: 'id, name',
       config: 'key',

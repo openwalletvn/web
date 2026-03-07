@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { IconTrash, IconArrowForwardUp } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import { inputClass } from '@/lib/ui-constants';
+import { calcDueDate, dueDateDay, formatDueDate } from '@/lib/card-dates';
 import { addCard, updateCard, removeCard, hasCardWithSameCatalogId } from '@/lib/wallet';
 import { createCreditAccount } from '@/lib/credit-account';
 import { appDb } from '@/lib/app-db';
@@ -125,11 +126,11 @@ export function CardDetailForm({
     hasCardWithSameCatalogId(db, card.id, walletCard?.id).then(setCanBeSupplementary);
   }, [db, card.id, walletCard?.id]);
 
-  // Auto-calculate due date from statement date + interest_free_days
+  // Auto-calculate due date using real calendar arithmetic
   useEffect(() => {
     if (dueDateOverridden || !statementDate || !card.interest_free_days) return;
-    const raw = (parseInt(statementDate) + card.interest_free_days) % 30;
-    setPaymentDueDate(String(raw === 0 ? 30 : raw));
+    const computed = calcDueDate(parseInt(statementDate) || undefined, card.statement_date, card.interest_free_days);
+    if (computed) setPaymentDueDate(String(dueDateDay(computed)));
   }, [statementDate, card.interest_free_days, dueDateOverridden]);
 
   async function handleSave() {
@@ -369,11 +370,11 @@ export function CardDetailForm({
 
             <FormField
               label="Ngày đề nghị thanh toán"
-              hint={
-                statementDate && card.interest_free_days
-                  ? `Tự tính: ngày ${statementDate} + ${card.interest_free_days} ngày miễn lãi`
-                  : undefined
-              }
+              hint={(() => {
+                if (!statementDate || !card.interest_free_days) return undefined;
+                const computed = calcDueDate(parseInt(statementDate) || undefined, card.statement_date, card.interest_free_days);
+                return computed ? `Tự tính: ${formatDueDate(computed)}` : undefined;
+              })()}
             >
               <select
                 value={paymentDueDate}

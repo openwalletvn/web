@@ -3,14 +3,16 @@
 import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { IconBell, IconBellOff } from '@tabler/icons-react';
+import { IconBell, IconBellOff, IconSend } from '@tabler/icons-react';
 import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
 import { appDb, type NotificationAdapter } from '@/lib/app-db';
+import { testAdapter } from '@/lib/notify-api';
+import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/ui/page-container';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 import { ReminderCardRow } from './reminder-card-row';
 
-const MAX_REMINDERS = 5;
+// const MAX_REMINDERS = 5; // reserved for future enforcement
 
 export default function RemindersPage() {
   const db = useWalletDb();
@@ -18,6 +20,7 @@ export default function RemindersPage() {
   const adapters = useLiveQuery(() => appDb.notificationAdapters.toArray(), [], []);
   const [banks, setBanks] = useState<Record<string, Bank>>({});
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
+  const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'ok' | 'failed'>('idle');
 
   const activeAdapter = useMemo(
     () => adapters?.find((a) => a.enabled),
@@ -57,6 +60,18 @@ export default function RemindersPage() {
       setCatalogCards((prev) => ({ ...prev, ...entries }));
     });
   }, [activeCards]);
+
+  async function handleTestDiscord() {
+    if (!activeAdapter) return;
+    setTestStatus('loading');
+    try {
+      await testAdapter(activeAdapter.id, activeAdapter.config.webhook_url);
+      setTestStatus('ok');
+    } catch {
+      setTestStatus('failed');
+    }
+    setTimeout(() => setTestStatus('idle'), 3000);
+  }
 
   return (
     <PageContainer>
@@ -99,17 +114,36 @@ export default function RemindersPage() {
               bank={banks[card.bankId]}
               adapter={activeAdapter}
               db={db}
-              limitReached={activeRemoteCount >= MAX_REMINDERS}
+              limitReached={false}
             />
           ))
         )}
       </div>
 
       {/* Footer */}
-      <p className="mt-4 text-sm text-slate-400 text-center">
-        {activeRemoteCount}/{MAX_REMINDERS} nhắc nhở đã dùng
-        {activeAdapter ? ` (${activeAdapter.id === 'discord' ? 'Discord' : activeAdapter.id})` : ''}
-      </p>
+      <div className="mt-4 flex items-center justify-center gap-3">
+        <p className="text-sm text-slate-400">
+          {activeRemoteCount} nhắc nhở đang bật
+          {activeAdapter ? ` (${activeAdapter.id === 'discord' ? 'Discord' : activeAdapter.id})` : ''}
+        </p>
+        {activeAdapter && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleTestDiscord}
+            disabled={testStatus === 'loading'}
+          >
+            <IconSend size={14} />
+            {testStatus === 'loading'
+              ? 'Đang gửi...'
+              : testStatus === 'ok'
+                ? 'Thành công!'
+                : testStatus === 'failed'
+                  ? 'Thất bại'
+                  : 'Test Discord'}
+          </Button>
+        )}
+      </div>
     </PageContainer>
   );
 }

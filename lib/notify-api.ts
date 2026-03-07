@@ -31,7 +31,10 @@ export interface CreateReminderPayload {
   wallet_id: string;
   adapter: string;
   credential: string;
-  fire_on_day: number;
+  /** Day-of-month the statement closes (1–31). The Worker uses this + interest_free_days to compute the real fire date each month. */
+  statement_day: number;
+  /** 0 for statement reminders; the card's interest_free_days for due-date reminders. */
+  interest_free_days: number;
   days_before: number;
   message: string;
 }
@@ -45,7 +48,7 @@ export function createReminder(payload: CreateReminderPayload): Promise<{ id: st
 
 export function updateReminder(
   id: string,
-  payload: { fire_on_day?: number; days_before?: number; message?: string },
+  payload: { statement_day?: number; interest_free_days?: number; days_before?: number; message?: string },
 ): Promise<void> {
   return request(`/reminders/${id}`, {
     method: 'PATCH',

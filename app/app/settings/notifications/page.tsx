@@ -5,7 +5,26 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { IconBrandDiscord, IconDeviceFloppy, IconCheck, IconSend, IconLock } from '@tabler/icons-react';
 import { appDb, type NotificationAdapter } from '@/lib/app-db';
 import { testAdapter } from '@/lib/notify-api';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import posthog from 'posthog-js';
+
+const DAYS_OPTIONS = [
+  { value: 0, label: 'Đúng ngày' },
+  { value: 1, label: '1 ngày trước' },
+  { value: 2, label: '2 ngày trước' },
+  { value: 3, label: '3 ngày trước' },
+];
+
+const HOUR_OPTIONS = Array.from({ length: 17 }, (_, i) => {
+  const h = i + 6;
+  return { value: h, label: `${h.toString().padStart(2, '0')}:00` };
+});
 
 export default function NotificationsSettingsPage() {
   const discordAdapter = useLiveQuery(
@@ -28,6 +47,8 @@ export default function NotificationsSettingsPage() {
       id: 'discord',
       config: { webhook_url: webhookUrl.trim() },
       enabled: true,
+      daysBefore: discordAdapter?.daysBefore ?? 1,
+      notifyHour: discordAdapter?.notifyHour ?? 8,
       lastStatus: discordAdapter?.lastStatus,
       lastCheckedAt: discordAdapter?.lastCheckedAt,
     };
@@ -57,6 +78,14 @@ export default function NotificationsSettingsPage() {
       posthog.capture('adapter_tested', { adapter: 'discord', result: 'failed' });
     }
     setTimeout(() => setTestStatus('idle'), 3000);
+  }
+
+  async function handleDaysBeforeChange(value: string) {
+    await appDb.notificationAdapters.update('discord', { daysBefore: Number(value) });
+  }
+
+  async function handleNotifyHourChange(value: string) {
+    await appDb.notificationAdapters.update('discord', { notifyHour: Number(value) });
   }
 
   function formatTime(iso: string) {
@@ -109,6 +138,54 @@ export default function NotificationsSettingsPage() {
               <span className="text-amber-600">Gửi thất bại lúc {formatTime(discordAdapter.lastCheckedAt)}</span>
             )}
           </p>
+        )}
+      </div>
+
+      {/* Global reminder preferences */}
+      <div className="p-4 border border-dashed border-slate-200 rounded-sm mb-3">
+        <p className="text-sm font-medium text-slate-800 mb-3">Tùy chọn nhắc nhở</p>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm text-slate-600">Nhắc trước</span>
+            <Select
+              value={String(discordAdapter?.daysBefore ?? 1)}
+              onValueChange={handleDaysBeforeChange}
+              disabled={!discordAdapter}
+            >
+              <SelectTrigger size="sm" className="w-36">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {DAYS_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={String(o.value)}>
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm text-slate-600">Lúc</span>
+            <Select
+              value={String(discordAdapter?.notifyHour ?? 8)}
+              onValueChange={handleNotifyHourChange}
+              disabled={!discordAdapter}
+            >
+              <SelectTrigger size="sm" className="w-36">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {HOUR_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={String(o.value)}>
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        {!discordAdapter && (
+          <p className="text-xs text-slate-400 mt-2">Lưu webhook để bật tùy chọn này.</p>
         )}
       </div>
 

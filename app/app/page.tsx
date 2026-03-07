@@ -7,6 +7,7 @@ import { IconCreditCard, IconArrowRight } from '@tabler/icons-react';
 import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
 import { PaymentRow, getNextOccurrence } from '@/components/wallet/payment-row';
+import { calcDueDate } from '@/lib/card-dates';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -54,14 +55,23 @@ export default function DashboardPage() {
   );
 
   const allUpcoming = useMemo(() => {
-    const now = Date.now();
-    const limit = now + 30 * 86_400_000;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const limit = today.getTime() + 30 * 86_400_000;
     return activeCards
-      .filter((c) => c.paymentDueDate)
-      .map((c) => ({ walletCard: c, date: getNextOccurrence(c.paymentDueDate!) }))
+      .flatMap((c) => {
+        let dueDate: Date | null = null;
+        if (c.paymentDueDateSource === 'custom' && c.paymentDueDate) {
+          dueDate = new Date(today.getFullYear(), today.getMonth(), c.paymentDueDate);
+        } else {
+          dueDate = calcDueDate(c.statementDate, catalogCards[c.cardId]?.statement_date, catalogCards[c.cardId]?.interest_free_days, today);
+        }
+        if (!dueDate) return [];
+        return [{ walletCard: c, date: getNextOccurrence(dueDate, today) }];
+      })
       .filter(({ date }) => date.getTime() <= limit)
       .sort((a, b) => a.date.getTime() - b.date.getTime());
-  }, [activeCards]);
+  }, [activeCards, catalogCards]);
 
   const previewUpcoming = allUpcoming.slice(0, 2);
 
@@ -74,13 +84,13 @@ export default function DashboardPage() {
     return counts;
   }, [walletCards]);
 
+  // Load catalog cards for all active cards — needed for calcDueDate
   useEffect(() => {
-    const missing = previewUpcoming
-      .map((u) => u.walletCard.cardId)
-      .filter((id) => !catalogCards[id]);
+    const missing = activeCards.map((c) => c.cardId).filter((id) => !catalogCards[id]);
     if (!missing.length) return;
+    const unique = [...new Set(missing)];
     Promise.all(
-      missing.map((id) =>
+      unique.map((id) =>
         getCard(id).then((card) => [id, card] as const).catch(() => null),
       ),
     ).then((results) => {
@@ -89,7 +99,7 @@ export default function DashboardPage() {
       );
       setCatalogCards((prev) => ({ ...prev, ...entries }));
     });
-  }, [previewUpcoming]);
+  }, [activeCards]);
 
   const now = new Date();
   const monthLabel = `Tháng ${now.getMonth() + 1}, ${now.getFullYear()}`;
