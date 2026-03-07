@@ -2,41 +2,38 @@ import {IconArrowNarrowRightDashed, IconCircleCheckFilled, IconCircleDashed} fro
 import {type Bank, type Card, getCardImageUrl} from '@/lib/api';
 import type {WalletCard} from '@/lib/db';
 import {cn} from "@/lib/utils";
+import {getLastCloseDate, resolveStatementDay} from '@/lib/card-dates';
 
 export const MONTH_VI = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
 
-export function getNextOccurrence(dayOfMonth: number, today: Date = new Date()): Date {
+/**
+ * Returns dueDate if it is >= today (this month's cycle), otherwise advances by one month.
+ * Callers should pass the result of calcDueDate() as a full Date.
+ */
+export function getNextOccurrence(dueDate: Date, today: Date = new Date()): Date {
     const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const thisMonth = new Date(t.getFullYear(), t.getMonth(), dayOfMonth);
-    return thisMonth >= t
-        ? thisMonth
-        : new Date(t.getFullYear(), t.getMonth() + 1, dayOfMonth);
+    return dueDate >= t
+        ? dueDate
+        : new Date(dueDate.getFullYear(), dueDate.getMonth() + 1, dueDate.getDate());
 }
 
-export function getPreviousOccurrence(dayOfMonth: number, today: Date = new Date()): Date {
+/**
+ * Returns dueDate if it is < today, otherwise retreats by one month.
+ */
+export function getPreviousOccurrence(dueDate: Date, today: Date = new Date()): Date {
     const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const thisMonth = new Date(t.getFullYear(), t.getMonth(), dayOfMonth);
-    return thisMonth < t
-        ? thisMonth
-        : new Date(t.getFullYear(), t.getMonth() - 1, dayOfMonth);
+    return dueDate < t
+        ? dueDate
+        : new Date(dueDate.getFullYear(), dueDate.getMonth() - 1, dueDate.getDate());
 }
 
-/** Returns the date this month if the day-of-month fell 1–7 days ago, otherwise null. */
-export function getPastOccurrence(dayOfMonth: number, today: Date = new Date()): Date | null {
+/**
+ * Returns dueDate if it fell exactly 1–7 days ago (i.e. recently past), otherwise null.
+ */
+export function getPastOccurrence(dueDate: Date, today: Date = new Date()): Date | null {
     const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const thisMonth = new Date(t.getFullYear(), t.getMonth(), dayOfMonth);
-    const diffDays = Math.floor((t.getTime() - thisMonth.getTime()) / 86_400_000);
-    return diffDays >= 1 && diffDays <= 7 ? thisMonth : null;
-}
-
-/** Find the statement date that led to the given payment due date. */
-function getRelatedStatementDate(paymentDueDate: Date, statementDay: number): Date {
-    const dueDay = paymentDueDate.getDate();
-    // Statement is always before payment due — if statement day >= due day, it was last month
-    if (statementDay < dueDay) {
-        return new Date(paymentDueDate.getFullYear(), paymentDueDate.getMonth(), statementDay);
-    }
-    return new Date(paymentDueDate.getFullYear(), paymentDueDate.getMonth() - 1, statementDay);
+    const diffDays = Math.floor((t.getTime() - dueDate.getTime()) / 86_400_000);
+    return diffDays >= 1 && diffDays <= 7 ? dueDate : null;
 }
 
 export function PaymentRow({
@@ -61,8 +58,11 @@ export function PaymentRow({
     const isPast = variant === 'past';
     const isToday = variant === 'today';
 
-    const statementDate = walletCard.statementDate
-        ? getRelatedStatementDate(date, walletCard.statementDate)
+    // Derive the statement close date directly from the billing cycle — avoids any
+    // off-by-one from calcDueDate's +1 adjustment.
+    const resolvedStatementDay = resolveStatementDay(walletCard.statementDate, catalogCard?.statement_date);
+    const statementDate = (resolvedStatementDay != null && catalogCard?.interest_free_days != null)
+        ? getLastCloseDate(walletCard.statementDate, catalogCard?.statement_date, catalogCard.interest_free_days)
         : null;
     const statementIsPast = statementDate ? statementDate.getTime() <= Date.now() : false;
 
@@ -97,24 +97,17 @@ export function PaymentRow({
                 {walletCard.nickname && catalogCard?.name && (
                     <p className="text-sm text-slate-600 truncate">{catalogCard.name}</p>
                 )}
-                {/*<p className="text-sm text-slate-600">{bank?.name ?? '-'}</p>*/}
 
                 {/* Statement → due date flow */}
                 {statementDate && (
                     <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                         {/* Statement date */}
                         <div className={cn("flex items-center gap-1.5", statementIsPast ? "text-green-500" : "")}>
-                            {/*tooltip*/}
-                            {walletCard.paymentDueDate && (
+                            {resolvedStatementDay != null && (
                                 <div className="relative group -translate-y-0.5">
-                                    {
-                                        statementIsPast ?
-                                            <>
-                                                <IconCircleCheckFilled size={16}/>
-                                            </> :
-                                            <>
-                                                <IconCircleDashed size={16}/>
-                                            </>
+                                    {statementIsPast
+                                        ? <IconCircleCheckFilled size={16}/>
+                                        : <IconCircleDashed size={16}/>
                                     }
                                     <div
                                         className="absolute left-0 bottom-full mb-1.5 w-60 px-2.5 py-1.5 bg-slate-800 text-white text-sm rounded-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-snug">
@@ -125,21 +118,18 @@ export function PaymentRow({
                                 </div>
                             )}
 
-                            <div className={cn(
-                                "min-w-[150px]",
-                                `text-sm`
-                            )}>
+                            <div className={cn("min-w-[150px]", "text-sm")}>
                                 {statementIsPast ? 'Đã sao kê' : 'Sao kê tiếp theo'}:{' '}
                                 <span className="font-medium">
-                                      {statementDate.getDate()} {MONTH_VI[statementDate.getMonth()]}
-                                  </span>
+                                    {statementDate.getDate()} {MONTH_VI[statementDate.getMonth()]}
+                                </span>
                             </div>
                         </div>
 
                         {/* Arrow */}
                         <span className={`text-xs ${isPast ? 'text-slate-400' : 'text-slate-500'}`}>
-                      <IconArrowNarrowRightDashed size={18}/>
-                  </span>
+                            <IconArrowNarrowRightDashed size={18}/>
+                        </span>
 
                         {/* Payment due label */}
                         <span className={`text-sm font-medium ${
@@ -148,8 +138,8 @@ export function PaymentRow({
                                     daysUntil <= 3 ? 'text-amber-500' :
                                         'text-slate-700'
                         }`}>
-              Hạn TT: {dueLabel}
-            </span>
+                            Hạn TT: {dueLabel}
+                        </span>
                     </div>
                 )}
             </div>
