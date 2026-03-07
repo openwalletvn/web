@@ -1,18 +1,19 @@
 'use client';
 
-import {useEffect, useState} from 'react';
-import {useParams, useRouter} from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {useLiveQuery} from 'dexie-react-hooks';
-import {IconArrowLeft} from '@tabler/icons-react';
-import {type Bank, type Card, getBank, getCard} from '@/lib/api';
-import {CardDetailForm} from '@/components/wallet/card-detail-form';
-import {PageContainer} from '@/components/ui/page-container';
-import {useWalletDb} from '@/providers/wallet-db-provider';
-import type {CreditAccount} from '@/lib/db';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { IconArrowLeft } from '@tabler/icons-react';
+import { type Bank, type Card, getBank, getCard } from '@/lib/api';
+import { CardDetailForm } from '@/components/wallet/card-detail-form';
+import { PageContainer } from '@/components/ui/page-container';
+import { useWalletDb } from '@/providers/wallet-db-provider';
+import type { CreditAccount } from '@/lib/db';
 
-export default function CardDetailClient() {
-  const { id } = useParams<{ id: string }>();
+export default function CardDetailPage() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id') ?? '';
   const router = useRouter();
   const db = useWalletDb();
 

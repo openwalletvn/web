@@ -45,7 +45,7 @@ export function WalletCardContent({
   return (
     <>
       <Link
-        href={`/app/my-cards/${walletCard.id}`}
+        href={`/app/my-cards/detail?id=${walletCard.id}`}
         className="flex items-center gap-3 flex-1 min-w-0 text-left"
       >
         {/* Card image */}
