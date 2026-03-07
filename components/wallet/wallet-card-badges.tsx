@@ -57,13 +57,13 @@ export function WalletCardBadges({
         <DashedBadge variant="blue">Hạn mức: {creditLimit.toLocaleString('vi-VN')}đ</DashedBadge>
       )}
 
-      {walletCard.statementDate && (
-        <DashedBadge variant="blue">Sao kê: ngày {walletCard.statementDate}</DashedBadge>
-      )}
+      {/*{walletCard.statementDate && (*/}
+      {/*  <DashedBadge variant="blue">Sao kê: ngày {walletCard.statementDate}</DashedBadge>*/}
+      {/*)}*/}
 
-      {walletCard.paymentDueDate && (
-        <DashedBadge variant="red">Đến hạn: ngày {walletCard.paymentDueDate}</DashedBadge>
-      )}
+      {/*{walletCard.paymentDueDate && (*/}
+      {/*  <DashedBadge variant="red">Đến hạn: ngày {walletCard.paymentDueDate}</DashedBadge>*/}
+      {/*)}*/}
     </div>
   );
 }

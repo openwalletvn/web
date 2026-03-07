@@ -14,10 +14,12 @@ import {
 import {
   SortableContext,
   sortableKeyboardCoordinates,
+  useSortable,
   verticalListSortingStrategy,
   arrayMove,
 } from '@dnd-kit/sortable';
-import { IconCreditCard } from '@tabler/icons-react';
+import { CSS } from '@dnd-kit/utilities';
+import { IconArrowForwardUp, IconCreditCard, IconGripVertical } from '@tabler/icons-react';
 import type { WalletCard, CardStatus } from '@/lib/db';
 import type { AppWallet } from '@/lib/app-db';
 import { appDb } from '@/lib/app-db';
@@ -25,101 +27,31 @@ import { reorderCards } from '@/lib/wallet';
 import { getBanks, getCard, type Card, type Bank } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
 import { EmptyState } from '@/components/ui/empty-state';
-import { SortableWalletCard, WalletCardRow, type CreditBadge } from '@/components/wallet/wallet-card-row';
-import { BankFilterBar } from '@/components/wallet/bank-filter-bar';
+import { WalletCardContent, type CreditBadge } from '@/components/wallet/wallet-card-row';
+import { MoveToWalletPicker } from '@/components/wallet/move-to-wallet-picker';
 import { useWalletDb, useActiveWallet } from '@/providers/wallet-db-provider';
 import posthog from 'posthog-js';
 
-// ─── Sort ─────────────────────────────────────────────────────────────────────
-
-type SortOption = 'custom' | 'credit_limit' | 'annual_fee' | 'added' | 'updated' | 'due_date';
-
-const SORT_LABELS: Record<SortOption, string> = {
-  custom:       'Tùy chỉnh',
-  credit_limit: 'Hạn mức',
-  annual_fee:   'PTN',
-  added:        'Ngày thêm',
-  updated:      'Ngày cập nhật',
-  due_date:     'Ngày đến hạn',
-};
-
-function applySortOrder(
-  cards: WalletCard[],
-  sortBy: SortOption,
-  creditLimitMap: Map<string, number>,
-  catalogCards: Record<string, Card>,
-): WalletCard[] {
-  if (sortBy === 'custom') return cards;
-  const sorted = [...cards];
-  if (sortBy === 'credit_limit') {
-    sorted.sort((a, b) => (creditLimitMap.get(b.creditAccountId ?? '') ?? -1) - (creditLimitMap.get(a.creditAccountId ?? '') ?? -1));
-  } else if (sortBy === 'annual_fee') {
-    sorted.sort((a, b) => {
-      const feeA = catalogCards[a.cardId]?.annual_fee ?? null;
-      const feeB = catalogCards[b.cardId]?.annual_fee ?? null;
-      if (feeA === null && feeB === null) return 0;
-      if (feeA === null) return 1;
-      if (feeB === null) return -1;
-      return feeA - feeB;
-    });
-  } else if (sortBy === 'added') {
-    sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  } else if (sortBy === 'updated') {
-    sorted.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-  } else if (sortBy === 'due_date') {
-    sorted.sort((a, b) => {
-      if (!a.paymentDueDate && !b.paymentDueDate) return 0;
-      if (!a.paymentDueDate) return 1;
-      if (!b.paymentDueDate) return -1;
-      return a.paymentDueDate - b.paymentDueDate;
-    });
-  }
-  return sorted;
-}
-
 // ─── Local sub-components ─────────────────────────────────────────────────────
 
-function WalletSortBar({
-  sortBy,
-  cardCount,
-  onSort,
-}: {
-  sortBy: SortOption;
-  cardCount: number;
-  onSort: (option: SortOption) => void;
-}) {
-  if (cardCount <= 1) return null;
+function BankSectionHeader({ label, count }: { label: string; count: number }) {
   return (
-    <div className="flex items-center gap-2 mb-6">
-      <span className="text-slate-500 shrink-0">Sắp xếp:</span>
-      <div className="flex flex-wrap gap-1.5">
-        {(Object.keys(SORT_LABELS) as SortOption[]).map((option) => (
-          <button
-            key={option}
-            onClick={() => onSort(option)}
-            className={`px-2.5 py-1 border border-dashed rounded-sm transition-colors ${
-              sortBy === option
-                ? 'border-brand-blue text-brand-blue bg-blue-50/60'
-                : 'border-slate-300 text-slate-500 hover:border-slate-400 hover:text-slate-700'
-            }`}
-          >
-            {SORT_LABELS[option]}
-          </button>
-        ))}
-      </div>
+    <div className="flex items-center justify-between px-4 py-2 bg-slate-50 border-b border-dashed border-slate-200">
+      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</p>
+      <p className="text-sm text-slate-400">{count} thẻ</p>
     </div>
   );
 }
 
 function WalletLoadingSkeleton() {
   return (
-    <div className="space-y-2">
+    <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm">
-          <div className="w-20 aspect-[16/10] bg-slate-100 rounded-sm animate-pulse" />
+        <div key={i} className="flex items-center gap-3 px-4 py-4 border-b border-dashed border-slate-100 last:border-0">
+          <div className="shrink-0 w-20 aspect-[16/10] bg-slate-100 rounded-sm animate-pulse" />
           <div className="flex-1 space-y-2">
-            <div className="h-3 w-16 bg-slate-100 rounded animate-pulse" />
             <div className="h-4 w-32 bg-slate-100 rounded animate-pulse" />
+            <div className="h-3 w-16 bg-slate-100 rounded animate-pulse" />
           </div>
         </div>
       ))}
@@ -127,61 +59,85 @@ function WalletLoadingSkeleton() {
   );
 }
 
-function WalletCardList({
-  displayCards,
-  catalogCards,
-  banks,
-  getCreditBadge,
-  creditLimitMap,
+function SortableCardRow({
+  walletCard,
+  catalogCard,
+  bank,
+  creditBadge,
+  creditLimit,
   onStatusChange,
   otherWallets,
-  isSorted,
-  bankFilter,
-  sensors,
-  onDragEnd,
+  sortable,
 }: {
-  displayCards: WalletCard[];
-  catalogCards: Record<string, Card>;
-  banks: Record<string, Bank>;
-  getCreditBadge: (card: WalletCard) => CreditBadge | undefined;
-  creditLimitMap: Map<string, number>;
-  onStatusChange: (card: WalletCard, status: CardStatus) => void;
+  walletCard: WalletCard;
+  catalogCard: Card | undefined;
+  bank: Bank | undefined;
+  creditBadge?: CreditBadge;
+  creditLimit?: number;
+  onStatusChange: (walletCard: WalletCard, status: CardStatus) => void;
   otherWallets: AppWallet[];
-  isSorted: boolean;
-  bankFilter: string | null;
-  sensors: ReturnType<typeof useSensors>;
-  onDragEnd: (event: DragEndEvent) => void;
+  sortable: boolean;
 }) {
-  const sharedProps = (walletCard: WalletCard) => ({
-    walletCard,
-    catalogCard: catalogCards[walletCard.cardId],
-    bank: banks[walletCard.bankId],
-    creditBadge: getCreditBadge(walletCard),
-    creditLimit: walletCard.creditAccountId ? creditLimitMap.get(walletCard.creditAccountId) : undefined,
-    onStatusChange,
-    otherWallets,
+  const [moveOpen, setMoveOpen] = useState(false);
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: walletCard.id,
+    disabled: !sortable,
   });
 
-  if (isSorted || bankFilter) {
-    return (
-      <div className="space-y-2">
-        {displayCards.map((walletCard) => (
-          <WalletCardRow key={walletCard.id} {...sharedProps(walletCard)} />
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-      <SortableContext items={displayCards.map((card) => card.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-2">
-          {displayCards.map((walletCard) => (
-            <SortableWalletCard key={walletCard.id} {...sharedProps(walletCard)} />
-          ))}
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }}
+      className="flex items-center gap-3 py-4 border-b border-dashed border-slate-100 last:border-0"
+    >
+      <WalletCardContent
+        walletCard={walletCard}
+        catalogCard={catalogCard}
+        bank={bank}
+        creditBadge={creditBadge}
+        creditLimit={creditLimit}
+        onStatusChange={onStatusChange}
+      />
+
+      {/* Move button */}
+      {otherWallets.length > 0 && (
+        <div className="relative shrink-0 self-center">
+          <button
+            onClick={(e) => { e.preventDefault(); setMoveOpen((v) => !v); }}
+            className="p-1.5 text-slate-300 hover:text-slate-500 transition-colors"
+            aria-label="Chuyển sang ví khác"
+            title="Chuyển sang ví"
+          >
+            <IconArrowForwardUp size={16} />
+          </button>
+          {moveOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setMoveOpen(false)} />
+              <div className="absolute right-0 top-full mt-1 z-50 w-52 bg-white border border-dashed border-slate-200 rounded-sm shadow-md overflow-hidden">
+                <MoveToWalletPicker
+                  walletCard={walletCard}
+                  otherWallets={otherWallets}
+                  onMoved={() => setMoveOpen(false)}
+                  onClose={() => setMoveOpen(false)}
+                />
+              </div>
+            </>
+          )}
         </div>
-      </SortableContext>
-    </DndContext>
+      )}
+
+      {/* Drag handle — only shown when group has more than 1 card */}
+      {sortable && (
+        <button
+          {...attributes}
+          {...listeners}
+          className="shrink-0 p-1.5 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing touch-none"
+          aria-label="Kéo để sắp xếp"
+        >
+          <IconGripVertical size={18} />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -195,8 +151,6 @@ export default function WalletPage() {
   const allWallets = useLiveQuery(() => appDb.wallets.toArray(), [], []);
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
   const [banks, setBanks] = useState<Record<string, Bank>>({});
-  const [sortBy, setSortBy] = useState<SortOption>('custom');
-  const [bankFilter, setBankFilter] = useState<string | null>(null);
 
   const otherWallets = useMemo(
     () => (allWallets ?? []).filter((w) => w.id !== activeWallet.id),
@@ -257,14 +211,6 @@ export default function WalletPage() {
     return count >= 2 ? 'primary_shared' : undefined;
   }
 
-  const displayCards = useMemo(() => {
-    let cards = walletCards ?? [];
-    if (bankFilter) {
-      cards = cards.filter((walletCard) => walletCard.bankId === bankFilter);
-    }
-    return applySortOrder(cards, sortBy, creditLimitMap, catalogCards);
-  }, [walletCards, bankFilter, sortBy, creditLimitMap, catalogCards]);
-
   async function handleStatusChange(walletCard: WalletCard, status: CardStatus) {
     await db.walletCards.update(walletCard.id, { status, updatedAt: new Date() });
     posthog.capture('card_status_changed', {
@@ -275,22 +221,46 @@ export default function WalletPage() {
     });
   }
 
-  async function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (!over || active.id === over.id || !walletCards) return;
-    const oldIndex = walletCards.findIndex((card) => card.id === (active.id as string));
-    const newIndex = walletCards.findIndex((card) => card.id === (over.id as string));
-    await reorderCards(db, arrayMove(walletCards, oldIndex, newIndex));
-    posthog.capture('card_reordered', {
-      card_id: walletCards[oldIndex]?.cardId,
-      old_position: oldIndex,
-      new_position: newIndex,
-      total_cards: walletCards.length,
-    });
+  // Group by bankId, preserving `order` within each group
+  const cardsByBank = useMemo(() => {
+    const groups = new Map<string, WalletCard[]>();
+    for (const card of walletCards ?? []) {
+      if (!groups.has(card.bankId)) groups.set(card.bankId, []);
+      groups.get(card.bankId)!.push(card);
+    }
+    return groups;
+  }, [walletCards]);
+
+  function makeHandleDragEnd(bankId: string) {
+    return async (event: DragEndEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id || !walletCards) return;
+
+      const groupCards = cardsByBank.get(bankId) ?? [];
+      const oldIndex = groupCards.findIndex((c) => c.id === active.id);
+      const newIndex = groupCards.findIndex((c) => c.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const reorderedGroup = arrayMove(groupCards, oldIndex, newIndex);
+
+      // Reconstruct global list: replace this bank's cards with the reordered group
+      let groupCursor = 0;
+      const newOrder = walletCards.map((card) =>
+        card.bankId === bankId ? reorderedGroup[groupCursor++] : card,
+      );
+
+      await reorderCards(db, newOrder);
+      posthog.capture('card_reordered', {
+        card_id: groupCards[oldIndex]?.cardId,
+        bank_id: bankId,
+        old_position: oldIndex,
+        new_position: newIndex,
+        group_size: groupCards.length,
+      });
+    };
   }
 
   const isLoading = walletCards === undefined;
-  const isSorted = sortBy !== 'custom';
 
   return (
     <PageContainer>
@@ -302,23 +272,6 @@ export default function WalletPage() {
           )}
         </div>
         <div className="border-t border-dashed border-slate-200 mb-6" />
-
-        {!isLoading && walletCards.length > 0 && (
-          <BankFilterBar
-            walletCards={walletCards}
-            banks={banks}
-            selectedBankId={bankFilter}
-            onSelect={setBankFilter}
-          />
-        )}
-
-        {!isLoading && (
-          <WalletSortBar
-            sortBy={sortBy}
-            cardCount={walletCards.length}
-            onSort={setSortBy}
-          />
-        )}
 
         {isLoading && <WalletLoadingSkeleton />}
 
@@ -332,22 +285,42 @@ export default function WalletPage() {
         )}
 
         {!isLoading && walletCards.length > 0 && (
-          <WalletCardList
-            displayCards={displayCards}
-            catalogCards={catalogCards}
-            banks={banks}
-            getCreditBadge={getCreditBadge}
-            creditLimitMap={creditLimitMap}
-            onStatusChange={handleStatusChange}
-            otherWallets={otherWallets}
-            isSorted={isSorted}
-            bankFilter={bankFilter}
-            sensors={sensors}
-            onDragEnd={handleDragEnd}
-          />
+          <div className="space-y-4">
+            {[...cardsByBank.entries()].map(([bankId, cards]) => {
+              const bank = banks[bankId];
+              return (
+                <div key={bankId} className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
+                  <BankSectionHeader label={bank?.name ?? bankId} count={cards.length} />
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={makeHandleDragEnd(bankId)}
+                  >
+                    <SortableContext items={cards.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+                      <div className="px-4">
+                        {cards.map((walletCard) => (
+                          <SortableCardRow
+                            key={walletCard.id}
+                            walletCard={walletCard}
+                            catalogCard={catalogCards[walletCard.cardId]}
+                            bank={bank}
+                            creditBadge={getCreditBadge(walletCard)}
+                            creditLimit={walletCard.creditAccountId ? creditLimitMap.get(walletCard.creditAccountId) : undefined}
+                            onStatusChange={handleStatusChange}
+                            otherWallets={otherWallets}
+                            sortable={cards.length > 1}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                </div>
+              );
+            })}
+          </div>
         )}
-      </div>
 
+      </div>
     </PageContainer>
   );
 }
