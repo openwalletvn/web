@@ -119,11 +119,12 @@ export function getRelatedStatements(
 }
 
 /**
- * Flattens all start/close/due dates from the given statements, plus a 'today' marker,
- * into a single chronologically sorted array of Milestones.
+ * Flattens all start/close/due dates from the given statements into a single
+ * chronologically sorted array of Milestones, with a 'today' marker inserted
+ * only when no real milestone already falls on today's date.
  *
- * Same-date milestones are sorted before the 'today' marker so that a due/close
- * coinciding with today appears immediately before it in the list.
+ * When a real milestone coincides with today its `isToday` flag is set to true
+ * and it serves as the timeline anchor — no separate 'today' node is added.
  */
 export function getMilestones(statements: Statement[], today: Date): Milestone[] {
     const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -148,22 +149,21 @@ export function getMilestones(statements: Statement[], today: Date): Milestone[]
         }
     }
 
-    // 'today' marker is always present
-    items.push({
-        date:       tod,
-        type:       'today',
-        message:    MILESTONE_MESSAGES.today,
-        statement:  null,
-        isPast:     false,
-        isToday:    true,
-        isUpcoming: false,
-    });
+    // Only add a 'today' marker when no real milestone already lands on today
+    const hasRealTodayMilestone = items.some((m) => m.isToday);
+    if (!hasRealTodayMilestone) {
+        items.push({
+            date:       tod,
+            type:       'today',
+            message:    MILESTONE_MESSAGES.today,
+            statement:  null,
+            isPast:     false,
+            isToday:    true,
+            isUpcoming: false,
+        });
+    }
 
-    // Sort chronologically; on ties, non-today milestones precede the today marker
-    return items.sort((a, b) =>
-        a.date.getTime() - b.date.getTime() ||
-        (a.type === 'today' ? 1 : b.type === 'today' ? -1 : 0),
-    );
+    return items.sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
 /**
@@ -187,7 +187,7 @@ export function getMilestones(statements: Statement[], today: Date): Milestone[]
  *   Result: [20/2, 21/2, TODAY, 20/3, 21/3, 7/4]
  */
 export function getDisplayMilestones(milestones: Milestone[]): Milestone[] {
-    const todayMs = milestones.find((m) => m.type === 'today');
+    const todayMs = milestones.find((m) => m.isToday);
     if (!todayMs) return [];
 
     function collect(items: Milestone[]): Milestone[] {
@@ -241,9 +241,20 @@ export function getTimelineForCard(
     const stmts = getRelatedStatements(tod, statementDay, interestFreeDays);
     const milestones = getDisplayMilestones(getMilestones(stmts, tod));
 
-    const firstUpcoming = milestones.find((m) => m.isUpcoming) ?? null;
+    // A non-'today' milestone coinciding with today takes priority over upcoming ones
+    const todayMilestone  = milestones.find((m) => m.isToday && m.type !== 'today') ?? null;
+    const firstUpcoming   = milestones.find((m) => m.isUpcoming) ?? null;
     let summary: string | null = null;
-    if (firstUpcoming) {
+
+    if (todayMilestone) {
+        if (todayMilestone.type === 'close') {
+            summary = `📅 Hôm nay là ngày sao kê`;
+        } else if (todayMilestone.type === 'due') {
+            summary = `⚠ Hôm nay là hạn thanh toán`;
+        } else {
+            summary = `📋 Hôm nay bắt đầu kỳ mới`;
+        }
+    } else if (firstUpcoming) {
         const daysToNext = Math.round((firstUpcoming.date.getTime() - tod.getTime()) / 86_400_000);
         const dateStr = `${formatDM(firstUpcoming.date)} (còn ${daysToNext} ngày)`;
         if (firstUpcoming.type === 'close') {
