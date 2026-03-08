@@ -95,7 +95,8 @@
   "BankDetail": {
     "not_found": "Không tìm thấy ngân hàng",
     "back": "← Quay lại Ngân hàng",
-    "cards_title": "Thẻ"
+    "cards_title": "Thẻ",
+    "business_cards": "Thẻ doanh nghiệp"
   },
   "CardsPage": {
     "title": "Thẻ ngân hàng",
