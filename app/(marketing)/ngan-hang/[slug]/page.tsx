@@ -61,6 +61,7 @@ export default async function BankPage({params}: Props) {
     const creditCards = cards.filter((c) => c.card_type.includes('credit'));
     const debitCards = cards.filter((c) => c.card_type.includes('debit'));
     const cobrandCards = cards.filter((c) => c.co_brand && c.co_brand !== '');
+    const businessCards = cards.filter((c) => c.for_business === true);
 
     return (
         <div className="px-4 py-12">
@@ -137,6 +138,11 @@ export default async function BankPage({params}: Props) {
                 {cobrandCards.length > 0 && (
                     <CardsGrid cards={cobrandCards} banks={banks}
                                title={`Thẻ đồng thương hiệu (${cobrandCards.length})`}/>
+                )}
+
+                {businessCards.length > 0 && (
+                    <CardsGrid cards={businessCards} banks={banks}
+                               title={`${t('business_cards')} (${businessCards.length})`}/>
                 )}
             </div>
         </div>
