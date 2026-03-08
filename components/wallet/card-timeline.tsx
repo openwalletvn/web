@@ -8,12 +8,28 @@ function formatDM(date: Date): string {
     return `${date.getDate()}/${date.getMonth() + 1}`;
 }
 
-export function CardTimeline({timeline}: { timeline: TimelineResult }) {
+export function CardTimelineSummary({timeline}: { timeline: TimelineResult }) {
     const {milestones, summary} = timeline;
 
     const firstUpcomingType = milestones.find((m) => m.isUpcoming)?.type ?? null;
     const todayIsDue = milestones.some((m) => m.isToday && m.type === 'due');
+    return (
+        <>
+            {/* Summary line */}
+            {summary && (
+                <p className={cn(
+                    'text-sm',
+                    firstUpcomingType === 'due' || todayIsDue ? 'text-amber-600' : 'text-slate-500',
+                )}>
+                    {summary}
+                </p>
+            )}
+        </>
+    )
+}
 
+export function CardTimeline({timeline}: { timeline: TimelineResult }) {
+    const {milestones} = timeline;
     return (
         <div>
             {/* Horizontal milestone track */}
@@ -77,16 +93,6 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
                     })}
                 </div>
             </div>
-
-            {/* Summary line */}
-            {summary && (
-                <p className={cn(
-                    'text-sm mt-4',
-                    firstUpcomingType === 'due' || todayIsDue ? 'text-amber-600' : 'text-slate-500',
-                )}>
-                    {summary}
-                </p>
-            )}
         </div>
     );
 }
