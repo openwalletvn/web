@@ -64,10 +64,10 @@ interface SortData {
 
 function _sortData(card: CardWithMilestones): SortData {
   const milestones = card.timeline?.milestones ?? [];
-  const today      = milestones.find((m) => m.type === 'today')?.date;
+  const today      = milestones.find((m) => m.isToday)?.date; // works whether anchor is real or 'today' marker
 
-  const nextDue   = milestones.find((m) => m.type === 'due'   && m.isUpcoming);
-  const nextClose = milestones.find((m) => m.type === 'close' && m.isUpcoming);
+  const nextDue   = milestones.find((m) => m.type === 'due'   && (m.isUpcoming || m.isToday));
+  const nextClose = milestones.find((m) => m.type === 'close' && (m.isUpcoming || m.isToday));
 
   const statementDay = card.timeline
     ? (card.walletCard.statementDate ?? card.catalogCard?.statement_date ?? 32)
