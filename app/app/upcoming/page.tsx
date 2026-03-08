@@ -2,15 +2,16 @@
 
 import { useMemo, useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { IconCreditCard } from '@tabler/icons-react';
+import { IconCreditCard, IconAlertTriangle } from '@tabler/icons-react';
 import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
-import { PaymentRow, getNextOccurrence, getPastOccurrence } from '@/components/wallet/payment-row';
-import { resolveStatementDay, getRelatedStatements } from '@/lib/card-dates';
+import { PaymentRow } from '@/components/wallet/payment-row';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 import type { WalletCard } from '@/lib/db';
+import type { Milestone } from '@/lib/card-dates';
+import { toCardWithMilestones, sortCardsByMilestones, type CardWithMilestones } from '@/lib/card-milestones';
 
-type PaymentEntry = { walletCard: WalletCard; date: Date };
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function SectionHeader({ label, count }: { label: string; count: number }) {
   return (
@@ -21,20 +22,29 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
   );
 }
 
-/** Resolves the effective due date for a wallet card. Custom overrides take precedence. */
-function resolveEffectiveDueDate(
-  walletCard: WalletCard,
-  catalogCard: Card | undefined,
+/**
+ * Derives the display date and variant for PaymentRow from a card's milestones.
+ * - Past due → date = most recent past due, variant = 'past'
+ * - Due today → date = today, variant = 'today'
+ * - Otherwise → date = next due ?? next close ?? today, variant = 'upcoming'
+ */
+function resolveDisplay(
+  card: CardWithMilestones,
   today: Date,
-): Date | null {
-  if (walletCard.paymentDueDateSource === 'custom' && walletCard.paymentDueDate) {
-    return new Date(today.getFullYear(), today.getMonth(), walletCard.paymentDueDate);
-  }
-  const statementDay = resolveStatementDay(walletCard.statementDate, catalogCard?.statement_date);
-  const interestFreeDays = catalogCard?.interest_free_days;
-  if (statementDay == null || interestFreeDays == null) return null;
-  return getRelatedStatements(today, statementDay, interestFreeDays).find((s) => s.due >= today)?.due ?? null;
+): { date: Date; variant: 'past' | 'today' | 'upcoming' } {
+  const milestones: Milestone[] = card.timeline?.milestones ?? [];
+
+  const todayDue  = milestones.find((m) => m.type === 'due' && m.isToday);
+  const pastDue   = [...milestones].reverse().find((m) => m.type === 'due' && m.isPast);
+  const nextDue   = milestones.find((m) => m.type === 'due'   && m.isUpcoming);
+  const nextClose = milestones.find((m) => m.type === 'close' && m.isUpcoming);
+
+  if (todayDue)  return { date: todayDue.date, variant: 'today' };
+  if (pastDue)   return { date: pastDue.date,  variant: 'past' };
+  return { date: (nextDue ?? nextClose)?.date ?? today, variant: 'upcoming' };
 }
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function UpcomingPage() {
   const db = useWalletDb();
@@ -51,14 +61,17 @@ export default function UpcomingPage() {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }, []);
 
-  const activeCards = useMemo(
-    () => (walletCards ?? []).filter((c) => c.status !== 'expired' && c.status !== 'canceled'),
+  const creditCards = useMemo(
+    () => (walletCards ?? []).filter(
+      (c) => c.status !== 'expired' && c.status !== 'canceled'
+        && (c.cardType === 'credit' || c.cardType === '2in1'),
+    ),
     [walletCards],
   );
 
-  // Eagerly load catalog cards for all active cards — needed for calcDueDate
+  // Eagerly load catalog cards for all credit cards
   useEffect(() => {
-    const missing = activeCards.map((c) => c.cardId).filter((id) => !catalogCards[id]);
+    const missing = creditCards.map((c) => c.cardId).filter((id) => !catalogCards[id]);
     if (!missing.length) return;
     const unique = [...new Set(missing)];
     Promise.all(
@@ -67,49 +80,30 @@ export default function UpcomingPage() {
       const entries = Object.fromEntries(results.filter((r): r is [string, Card] => r !== null));
       setCatalogCards((prev) => ({ ...prev, ...entries }));
     });
-  }, [activeCards]);
+  }, [creditCards]);
 
-  const { past, todayCards, upcoming } = useMemo(() => {
-    const past: PaymentEntry[] = [];
-    const todayCards: PaymentEntry[] = [];
-    const upcoming: PaymentEntry[] = [];
+  const { warningCards, mainCards } = useMemo(() => {
+    const all = creditCards.map((c) => toCardWithMilestones(c, catalogCards[c.cardId], today));
+    const warning = all.filter((c) => c.timeline === null);
+    const main    = sortCardsByMilestones(all.filter((c) => c.timeline !== null));
+    return { warningCards: warning, mainCards: main };
+  }, [creditCards, catalogCards, today]);
 
-    for (const c of activeCards) {
-      const dueDate = resolveEffectiveDueDate(c, catalogCards[c.cardId], today);
-      if (!dueDate) continue;
-
-      if (dueDate.getTime() === today.getTime()) {
-        todayCards.push({ walletCard: c, date: dueDate });
-      } else {
-        const pastDate = getPastOccurrence(dueDate, today);
-        if (pastDate) {
-          past.push({ walletCard: c, date: pastDate });
-        } else {
-          upcoming.push({ walletCard: c, date: getNextOccurrence(dueDate, today) });
-        }
-      }
-    }
-
-    past.sort((a, b) => a.date.getTime() - b.date.getTime());
-    upcoming.sort((a, b) => a.date.getTime() - b.date.getTime());
-
-    return { past, todayCards, upcoming };
-  }, [activeCards, catalogCards, today]);
-
-  const totalCount = past.length + todayCards.length + upcoming.length;
+  const totalCount = warningCards.length + mainCards.length;
   const isEmpty = totalCount === 0;
 
-  function renderRows(entries: PaymentEntry[], variant: 'past' | 'today' | 'upcoming') {
-    return entries.map(({ walletCard, date }) => (
+  function renderCard(card: CardWithMilestones) {
+    const { date, variant } = resolveDisplay(card, today);
+    return (
       <PaymentRow
-        key={`${walletCard.id}-${date.getTime()}`}
+        key={card.walletCard.id}
         date={date}
-        walletCard={walletCard}
-        catalogCard={catalogCards[walletCard.cardId]}
-        bank={banks[walletCard.bankId]}
+        walletCard={card.walletCard}
+        catalogCard={card.catalogCard}
+        bank={banks[card.walletCard.bankId]}
         variant={variant}
       />
-    ));
+    );
   }
 
   return (
@@ -123,34 +117,44 @@ export default function UpcomingPage() {
       {isEmpty ? (
         <div className="border border-dashed border-slate-200 rounded-sm py-12 flex flex-col items-center gap-2 text-slate-300">
           <IconCreditCard size={28} />
-          <p className="text-sm">Chưa có thẻ nào có ngày đến hạn</p>
+          <p className="text-sm">Chưa có thẻ tín dụng nào</p>
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
-            <SectionHeader label="Đã qua" count={past.length} />
-            {past.length > 0 ? (
-              <div className="px-4">{renderRows(past, 'past')}</div>
-            ) : (
-              <p className="px-4 py-4 text-sm text-slate-400">Không có thẻ nào đến hạn trong 7 ngày qua</p>
-            )}
-          </div>
-          <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
-            <SectionHeader label="Hôm nay" count={todayCards.length} />
-            {todayCards.length > 0 ? (
-              <div className="px-4">{renderRows(todayCards, 'today')}</div>
-            ) : (
-              <p className="px-4 py-4 text-sm text-slate-400">Không có thẻ nào đến hạn hôm nay</p>
-            )}
-          </div>
-          <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
-            <SectionHeader label="Sắp tới" count={upcoming.length} />
-            {upcoming.length > 0 ? (
-              <div className="px-4">{renderRows(upcoming, 'upcoming')}</div>
-            ) : (
-              <p className="px-4 py-4 text-sm text-slate-400">Không có thẻ nào sắp đến hạn</p>
-            )}
-          </div>
+          {/* Warning: cards missing billing data */}
+          {warningCards.length > 0 && (
+            <div className="border border-dashed border-amber-200 rounded-sm overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border-b border-dashed border-amber-200">
+                <IconAlertTriangle size={14} className="text-amber-500 shrink-0" />
+                <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider flex-1">
+                  Thiếu thông tin sao kê
+                </p>
+                <p className="text-sm text-amber-500">{warningCards.length} thẻ</p>
+              </div>
+              <div className="px-4">
+                {warningCards.map((card) => (
+                  <PaymentRow
+                    key={card.walletCard.id}
+                    date={today}
+                    walletCard={card.walletCard}
+                    catalogCard={card.catalogCard}
+                    bank={banks[card.walletCard.bankId]}
+                    variant="upcoming"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Main: sorted by billing urgency */}
+          {mainCards.length > 0 && (
+            <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
+              <SectionHeader label="Lịch thanh toán" count={mainCards.length} />
+              <div className="px-4">
+                {mainCards.map(renderCard)}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </PageContainer>
