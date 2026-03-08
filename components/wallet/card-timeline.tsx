@@ -1,6 +1,7 @@
 import React from 'react';
 import {cn} from '@/lib/utils';
 import type {TimelineResult} from '@/lib/card-dates';
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from '@/components/ui/tooltip';
 
 /** Formats a date as "D/M" (e.g. "20/2", "6/3"). */
 function formatDM(date: Date): string {
@@ -33,6 +34,9 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
                                         lineIsPast ? 'bg-slate-200' : 'bg-brand-blue/30',
                                     )}/>
                                 )}
+                                <TooltipProvider>
+                                <Tooltip>
+                                <TooltipTrigger asChild>
                                 <div className="flex flex-col items-center text-center w-[90px] shrink-0">
                                     {/* Dot */}
                                     <div className={cn(
@@ -59,14 +63,15 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
                                     )}>
                                         {m.message}
                                     </p>
-
-                                    {/* Cycle range */}
-                                    {m.statement && (
-                                        <p className="text-xs text-slate-400 leading-tight mt-0.5">
-                                            {`kỳ ${formatDM(m.statement.start)} - ${formatDM(m.statement.close)}`}
-                                        </p>
-                                    )}
                                 </div>
+                                </TooltipTrigger>
+                                {m.statement && (
+                                    <TooltipContent side="bottom">
+                                        {`kỳ ${formatDM(m.statement.start)} – ${formatDM(m.statement.close)}`}
+                                    </TooltipContent>
+                                )}
+                                </Tooltip>
+                                </TooltipProvider>
                             </React.Fragment>
                         );
                     })}
