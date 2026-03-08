@@ -163,7 +163,11 @@ export function getMilestones(statements: Statement[], today: Date): Milestone[]
         });
     }
 
-    return items.sort((a, b) => a.date.getTime() - b.date.getTime());
+    // On equal dates: due → close → start → today-marker
+    const TYPE_RANK: Record<Milestone['type'], number> = { due: 0, close: 1, start: 2, today: 3 };
+    return items.sort((a, b) =>
+        a.date.getTime() - b.date.getTime() || TYPE_RANK[a.type] - TYPE_RANK[b.type],
+    );
 }
 
 /**
