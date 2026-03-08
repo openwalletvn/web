@@ -36,14 +36,23 @@ export interface Statement {
 }
 
 export interface Milestone {
-  date: Date;
+    date: Date;
     type: 'start' | 'close' | 'due' | 'today';
+    /** Short Vietnamese label for this milestone. */
+    message: string;
     /** The billing statement this milestone belongs to; null for 'today'. */
     statement: Statement | null;
-  isPast: boolean;
-  isToday: boolean;
-  isUpcoming: boolean;
+    isPast: boolean;
+    isToday: boolean;
+    isUpcoming: boolean;
 }
+
+const MILESTONE_MESSAGES: Record<Milestone['type'], string> = {
+    start:  'Mở kỳ',
+    close:  'Sao kê',
+    due:    'Hạn TT',
+    today:  'Hôm nay',
+};
 
 // ─── Core pure functions ──────────────────────────────────────────────────────
 
@@ -128,11 +137,12 @@ export function getMilestones(statements: Statement[], today: Date): Milestone[]
         ] as const) {
             const d = new Date(raw.getFullYear(), raw.getMonth(), raw.getDate());
             items.push({
-                date: d,
+                date:       d,
                 type,
-                statement: stmt,
-                isPast: d < tod,
-                isToday: d.getTime() === tod.getTime(),
+                message:    MILESTONE_MESSAGES[type],
+                statement:  stmt,
+                isPast:     d < tod,
+                isToday:    d.getTime() === tod.getTime(),
                 isUpcoming: d > tod,
             });
         }
@@ -140,11 +150,12 @@ export function getMilestones(statements: Statement[], today: Date): Milestone[]
 
     // 'today' marker is always present
     items.push({
-        date: tod,
-        type: 'today',
-        statement: null,
-        isPast: false,
-        isToday: true,
+        date:       tod,
+        type:       'today',
+        message:    MILESTONE_MESSAGES.today,
+        statement:  null,
+        isPast:     false,
+        isToday:    true,
         isUpcoming: false,
     });
 
@@ -207,16 +218,42 @@ export function getDisplayMilestones(milestones: Milestone[]): Milestone[] {
 
 // ─── Convenience ──────────────────────────────────────────────────────────────
 
+export interface TimelineResult {
+    milestones: Milestone[];
+    /** One-line summary of the next upcoming event, e.g. "⚠ Hạn thanh toán tiếp theo: 7/4 (còn 30 ngày)". Null when nothing is upcoming. */
+    summary: string | null;
+}
+
+function formatDM(date: Date): string {
+    return `${date.getDate()}/${date.getMonth() + 1}`;
+}
+
 /**
- * Returns the display-ready timeline for a card.
+ * Returns the display-ready timeline and a human-readable summary for a card.
  * Chains: getRelatedStatements → getMilestones → getDisplayMilestones.
  */
 export function getTimelineForCard(
     statementDay: number,
     interestFreeDays: number,
     today: Date = new Date(),
-): Milestone[] {
+): TimelineResult {
     const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const stmts = getRelatedStatements(tod, statementDay, interestFreeDays);
-    return getDisplayMilestones(getMilestones(stmts, tod));
+    const milestones = getDisplayMilestones(getMilestones(stmts, tod));
+
+    const firstUpcoming = milestones.find((m) => m.isUpcoming) ?? null;
+    let summary: string | null = null;
+    if (firstUpcoming) {
+        const daysToNext = Math.round((firstUpcoming.date.getTime() - tod.getTime()) / 86_400_000);
+        const dateStr = `${formatDM(firstUpcoming.date)} (còn ${daysToNext} ngày)`;
+        if (firstUpcoming.type === 'close') {
+            summary = `📅 Kỳ sao kê tiếp theo: ${dateStr}`;
+        } else if (firstUpcoming.type === 'due') {
+            summary = `⚠ Hạn thanh toán tiếp theo: ${dateStr}`;
+        } else {
+            summary = `📋 Kỳ mới bắt đầu: ${dateStr}`;
+        }
+    }
+
+    return { milestones, summary };
 }
