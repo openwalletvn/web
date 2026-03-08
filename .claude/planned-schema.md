@@ -234,22 +234,41 @@ Server-side. Synced card metadata — no sensitive financial data (no card numbe
 
 ```sql
 CREATE TABLE wallet_cards (
-  id                TEXT PRIMARY KEY,   -- matches client-side card ID
-  wallet_id         TEXT NOT NULL,
-  card_name         TEXT NOT NULL,      -- e.g. "Visa Platinum"
-  bank_slug         TEXT NOT NULL,      -- e.g. "techcombank", matches card catalog
-  statement_day     INTEGER,           -- 1-31, nullable (user may not have set it)
-  payment_due_day   INTEGER,           -- 1-31, nullable
-  notify_statement  INTEGER DEFAULT 0, -- 1 = enabled
-  notify_due        INTEGER DEFAULT 0, -- 1 = enabled
-  notify_days_before INTEGER DEFAULT 1,-- days before event to notify
-  notify_adapter    TEXT,              -- 'discord' | 'telegram' | 'email'
-  created_at        TEXT NOT NULL,
-  updated_at        TEXT NOT NULL,
+  id                       TEXT PRIMARY KEY,   -- matches client-side card ID
+  wallet_id                TEXT NOT NULL,
+  card_id                  TEXT NOT NULL,      -- references catalog card (e.g. "tcb-visa-platinum")
+  bank_id                  TEXT NOT NULL,      -- denormalized for quick lookup
+  card_type                TEXT NOT NULL,      -- 'credit' | '2in1' | 'debit' | 'prepaid'
+  nickname                 TEXT,              -- user-given display name, nullable
+  statement_day            INTEGER,           -- 1-31, user override; null = use catalog default
+  payment_due_date_source  TEXT DEFAULT 'calculated', -- 'calculated' | 'custom'
+  payment_due_day          INTEGER,           -- only used when payment_due_date_source = 'custom' (1-31)
+  notify_statement         INTEGER DEFAULT 0, -- 1 = enabled
+  notify_due               INTEGER DEFAULT 0, -- 1 = enabled
+  notify_days_before       INTEGER DEFAULT 1, -- days before event to notify
+  notify_adapter           TEXT,              -- 'discord' | 'telegram' | 'email' | 'zalo'
+  created_at               TEXT NOT NULL,
+  updated_at               TEXT NOT NULL,
   FOREIGN KEY (wallet_id) REFERENCES wallets(id)
 );
 CREATE INDEX idx_wallet_cards_wallet_id ON wallet_cards(wallet_id);
 ```
+
+### Due date computation model
+
+When `payment_due_date_source = 'calculated'` (the default), the due date is **never stored** — it is derived client-side at runtime:
+
+```
+cycleClose = statementDay / resultMonth
+cycleStart = statementDay+1 / (resultMonth − 1)   ← first day of the billing cycle
+dueDate    = cycleStart + interestFreeDays          ← from catalog card
+```
+
+`interestFreeDays` comes from the card catalog API (`Card.interest_free_days`).
+`statement_day` is the user override; if null, the catalog's `statement_date` is used.
+See `lib/card-dates.ts` → `getStatementObject()` for the canonical implementation.
+
+When `payment_due_date_source = 'custom'`, `payment_due_day` stores the user-set day of month and overrides all computation.
 
 ### TypeScript
 
@@ -257,10 +276,13 @@ CREATE INDEX idx_wallet_cards_wallet_id ON wallet_cards(wallet_id);
 interface WalletCard {
   id: string;
   wallet_id: string;
-  card_name: string;
-  bank_slug: string;
+  card_id: string;
+  bank_id: string;
+  card_type: 'credit' | '2in1' | 'debit' | 'prepaid';
+  nickname?: string;
   statement_day?: number;
-  payment_due_day?: number;
+  payment_due_date_source: 'calculated' | 'custom';
+  payment_due_day?: number;   // only set when payment_due_date_source = 'custom'
   notify_statement: boolean;
   notify_due: boolean;
   notify_days_before: number;
@@ -270,22 +292,47 @@ interface WalletCard {
 }
 ```
 
-### Example row
+### Example row (calculated due date)
 
 ```json
 {
   "id": "card_k1l2m3",
   "wallet_id": "wal_x9y8z7",
-  "card_name": "Visa Platinum",
-  "bank_slug": "techcombank",
+  "card_id": "tcb-visa-platinum",
+  "bank_id": "techcombank",
+  "card_type": "credit",
+  "nickname": "Visa chính",
   "statement_day": 5,
-  "payment_due_day": 15,
+  "payment_due_date_source": "calculated",
+  "payment_due_day": null,
   "notify_statement": false,
   "notify_due": true,
   "notify_days_before": 2,
   "notify_adapter": "discord",
   "created_at": "2026-03-01T08:30:00Z",
   "updated_at": "2026-03-05T10:00:00Z"
+}
+```
+
+### Example row (custom due date)
+
+```json
+{
+  "id": "card_n4o5p6",
+  "wallet_id": "wal_x9y8z7",
+  "card_id": "vcb-mastercard-classic",
+  "bank_id": "vietcombank",
+  "card_type": "credit",
+  "nickname": null,
+  "statement_day": null,
+  "payment_due_date_source": "custom",
+  "payment_due_day": 15,
+  "notify_statement": false,
+  "notify_due": true,
+  "notify_days_before": 1,
+  "notify_adapter": "telegram",
+  "created_at": "2026-02-10T09:00:00Z",
+  "updated_at": "2026-02-10T09:00:00Z"
 }
 ```
 
