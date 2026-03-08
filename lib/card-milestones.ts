@@ -1,6 +1,6 @@
-import type { WalletCard } from '@/lib/db';
-import type { Card } from '@/lib/api';
-import { resolveStatementDay, getTimelineForCard, type TimelineResult } from '@/lib/card-dates';
+import type {WalletCard} from '@/lib/db';
+import type {Card} from '@/lib/api';
+import {getTimelineForCard, resolveStatementDay, type TimelineResult} from '@/lib/card-dates';
 
 export interface CardWithMilestones {
   walletCard: WalletCard;
@@ -27,8 +27,8 @@ export function toCardWithMilestones(
   if (statementDay == null || interestFreeDays == null) {
     return { walletCard, catalogCard, timeline: null };
   }
-    console.log(catalogCard?.name,getTimelineForCard(statementDay, interestFreeDays, today))
-  return {
+
+    return {
     walletCard,
     catalogCard,
     timeline: getTimelineForCard(statementDay, interestFreeDays, today),
