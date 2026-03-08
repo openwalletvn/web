@@ -9,6 +9,7 @@ import { PageContainer } from '@/components/ui/page-container';
 import { BankSelectionStep } from '@/components/wallet/add/bank-selection-step';
 import { CardSelectionStep } from '@/components/wallet/add/card-selection-step';
 import { useWalletDb } from '@/providers/wallet-db-provider';
+import { getMyCardUrl } from '@/lib/routes';
 import { useLiveQuery } from 'dexie-react-hooks';
 import posthog from 'posthog-js';
 
@@ -145,7 +146,7 @@ export default function AddCardPage() {
           <CardDetailForm
             card={selectedCard}
             bank={selectedBank}
-            onSaved={(id) => router.push(`/app/my-cards/${id}`)}
+            onSaved={(id) => router.push(getMyCardUrl(id))}
           />
         </>
       )}

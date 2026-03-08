@@ -9,14 +9,32 @@ import { appDb, type NotificationAdapter } from '@/lib/app-db';
 import { testAdapter } from '@/lib/notify-api';
 import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/ui/page-container';
+import { EmptyState } from '@/components/ui/empty-state';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 import { ReminderCardRow } from './reminder-card-row';
 
 // const MAX_REMINDERS = 5; // reserved for future enforcement
 
+function RemindersSkeleton() {
+  return (
+    <div className="animate-pulse border border-dashed border-slate-200 rounded-sm px-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex items-center gap-3 py-4 border-b border-dashed border-slate-100 last:border-0">
+          <div className="shrink-0 w-20 aspect-[16/10] bg-slate-100 rounded-sm" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-32 bg-slate-100 rounded" />
+            <div className="h-3 w-20 bg-slate-100 rounded" />
+          </div>
+          <div className="h-7 w-20 bg-slate-100 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function RemindersPage() {
   const db = useWalletDb();
-  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db], []);
+  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db]);
   const adapters = useLiveQuery(() => appDb.notificationAdapters.toArray(), [], []);
   const [banks, setBanks] = useState<Record<string, Bank>>({});
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
@@ -99,14 +117,18 @@ export default function RemindersPage() {
       )}
 
       {/* Card list */}
-      <div className="border border-dashed border-slate-200 rounded-sm px-4">
-        {activeCards.length === 0 ? (
-          <div className="py-12 flex flex-col items-center gap-2 text-slate-300">
-            <IconBell size={28} />
-            <p className="text-sm">Chưa có thẻ nào trong ví</p>
-          </div>
-        ) : (
-          activeCards.map((card) => (
+      {walletCards === undefined ? (
+        <RemindersSkeleton />
+      ) : activeCards.length === 0 ? (
+        <EmptyState
+          icon={<IconBell size={26} className="text-slate-300" />}
+          title="Chưa có thẻ nào trong ví"
+          description="Thêm thẻ để bật nhắc nhở sao kê và đến hạn."
+          action={{ label: 'Thêm thẻ', href: '/app/add' }}
+        />
+      ) : (
+        <div className="border border-dashed border-slate-200 rounded-sm px-4">
+          {activeCards.map((card) => (
             <ReminderCardRow
               key={card.id}
               walletCard={card}
@@ -116,9 +138,9 @@ export default function RemindersPage() {
               db={db}
               limitReached={false}
             />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Footer */}
       <div className="mt-4 flex items-center justify-center gap-3">

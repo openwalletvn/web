@@ -5,6 +5,7 @@ import {useLiveQuery} from 'dexie-react-hooks';
 import {IconAlertTriangle, IconCreditCard} from '@tabler/icons-react';
 import {type Bank, type Card, getBanks, getCard} from '@/lib/api';
 import {PageContainer} from '@/components/ui/page-container';
+import {EmptyState} from '@/components/ui/empty-state';
 import {PaymentRow} from '@/components/wallet/payment-row';
 import {useWalletDb} from '@/providers/wallet-db-provider';
 import type {Milestone} from '@/lib/card-dates';
@@ -43,11 +44,30 @@ function resolveDisplay(
   return { date: (nextDue ?? nextClose)?.date ?? today, variant: 'upcoming' };
 }
 
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+function UpcomingSkeleton() {
+  return (
+    <div className="animate-pulse border border-dashed border-slate-200 rounded-sm overflow-hidden">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex items-center gap-3 px-4 py-4 border-b border-dashed border-slate-100 last:border-0">
+          <div className="shrink-0 w-20 aspect-[16/10] bg-slate-100 rounded-sm" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-32 bg-slate-100 rounded" />
+            <div className="h-3 w-20 bg-slate-100 rounded" />
+          </div>
+          <div className="h-5 w-16 bg-slate-100 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function UpcomingPage() {
   const db = useWalletDb();
-  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db], []);
+  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db]);
   const [banks, setBanks] = useState<Record<string, Bank>>({});
   const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
 
@@ -61,7 +81,7 @@ export default function UpcomingPage() {
   }, []);
 
   const creditCards = useMemo(
-    () => (walletCards ?? []).filter(
+    () => (walletCards ?? []).filter(  // ?? [] handles undefined during loading
       (c) => c.status !== 'expired' && c.status !== 'canceled'
         && (c.cardType === 'credit' || c.cardType === '2in1'),
     ),
@@ -88,8 +108,9 @@ export default function UpcomingPage() {
     return { warningCards: warning, mainCards: main };
   }, [creditCards, catalogCards, today]);
 
+  const isLoading = walletCards === undefined;
   const totalCount = warningCards.length + mainCards.length;
-  const isEmpty = totalCount === 0;
+  const isEmpty = !isLoading && totalCount === 0;
 
   function renderCard(card: CardWithMilestones) {
     const { date, variant } = resolveDisplay(card, today);
@@ -111,12 +132,18 @@ export default function UpcomingPage() {
       </div>
       <div className="border-t border-dashed border-slate-200 mb-6" />
 
-      {isEmpty ? (
-        <div className="border border-dashed border-slate-200 rounded-sm py-12 flex flex-col items-center gap-2 text-slate-300">
-          <IconCreditCard size={28} />
-          <p className="text-sm">Chưa có thẻ tín dụng nào</p>
-        </div>
-      ) : (
+      {isLoading && <UpcomingSkeleton />}
+
+      {isEmpty && (
+        <EmptyState
+          icon={<IconCreditCard size={26} className="text-slate-300" />}
+          title="Chưa có thẻ tín dụng nào"
+          description="Thêm thẻ tín dụng để theo dõi ngày sao kê và đến hạn."
+          action={{ label: 'Thêm thẻ', href: '/app/add' }}
+        />
+      )}
+
+      {!isLoading && !isEmpty && (
         <div className="space-y-4">
           {/* Warning: cards missing billing data */}
           {warningCards.length > 0 && (

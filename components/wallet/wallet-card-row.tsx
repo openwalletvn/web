@@ -6,6 +6,7 @@ import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import {IconArrowForwardUp, IconGripVertical} from '@tabler/icons-react';
 import {type Bank, type Card} from '@/lib/api';
+import {getMyCardUrl} from '@/lib/routes';
 import {CardImage} from '@/components/cards/card-image';
 import type {CardStatus, WalletCard} from '@/lib/db';
 import type {AppWallet} from '@/lib/app-db';
@@ -45,7 +46,7 @@ export function WalletCardContent({
   return (
     <>
       <Link
-        href={`/app/my-cards/detail?id=${walletCard.id}`}
+        href={getMyCardUrl(walletCard.id)}
         className="flex items-center gap-3 flex-1 min-w-0 text-left"
       >
         {/* Card image */}
