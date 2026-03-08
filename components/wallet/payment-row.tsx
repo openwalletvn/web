@@ -1,10 +1,15 @@
-import {IconArrowNarrowRightDashed, IconCircleCheckFilled, IconCircleDashed} from '@tabler/icons-react';
+import React from 'react';
 import {type Bank, type Card, getCardImageUrl} from '@/lib/api';
 import type {WalletCard} from '@/lib/db';
-import {cn} from "@/lib/utils";
-import {getLastCloseDate, resolveStatementDay} from '@/lib/card-dates';
+import {cn} from '@/lib/utils';
+import {type Milestone, resolveStatementDay, StatementCalendar} from '@/lib/card-dates';
 
 export const MONTH_VI = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
+
+/** Formats a date as "D/M" (e.g. "20/2", "6/3"). */
+function formatDM(date: Date): string {
+    return `${date.getDate()}/${date.getMonth() + 1}`;
+}
 
 /**
  * Returns dueDate if it is >= today (this month's cycle), otherwise advances by one month.
@@ -36,6 +41,31 @@ export function getPastOccurrence(dueDate: Date, today: Date = new Date()): Date
     return diffDays >= 1 && diffDays <= 7 ? dueDate : null;
 }
 
+// ─── Timeline rendering ────────────────────────────────────────────────────────
+
+type TNode =
+    | { kind: 'milestone'; data: Milestone }
+    | { kind: 'today' };
+
+/** Inserts a today marker between the last past and first upcoming milestone. */
+function buildTimelineNodes(milestones: Milestone[], today: Date): TNode[] {
+    const nodes: TNode[] = [];
+    let todayInserted = false;
+    for (const m of milestones) {
+        if (!todayInserted && m.date > today) {
+            nodes.push({kind: 'today'});
+            todayInserted = true;
+        }
+        nodes.push({kind: 'milestone', data: m});
+    }
+    if (!todayInserted) {
+        nodes.push({kind: 'today'});
+    }
+    return nodes;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export function PaymentRow({
                                date,
                                walletCard,
@@ -49,22 +79,29 @@ export function PaymentRow({
     bank: Bank | undefined;
     variant: 'past' | 'today' | 'upcoming';
 }) {
-    const daysUntil = Math.ceil((date.getTime() - Date.now()) / 86_400_000);
-    const dueLabel =
-        variant === 'today' ? 'Hôm nay' :
-            variant === 'past' ? (daysUntil === -1 ? 'Hôm qua' : `${Math.abs(daysUntil)} ngày trước`) :
-                daysUntil === 1 ? 'Ngày mai' :
-                    `${daysUntil} ngày nữa`;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const daysUntil = Math.round((date.getTime() - today.getTime()) / 86_400_000);
     const isPast = variant === 'past';
     const isToday = variant === 'today';
 
-    // Derive the statement close date directly from the billing cycle — avoids any
-    // off-by-one from calcDueDate's +1 adjustment.
-    const resolvedStatementDay = resolveStatementDay(walletCard.statementDate, catalogCard?.statement_date);
-    const statementDate = (resolvedStatementDay != null && catalogCard?.interest_free_days != null)
-        ? getLastCloseDate(walletCard.statementDate, catalogCard?.statement_date, catalogCard.interest_free_days)
+    // Build StatementCalendar for non-custom cards
+    const statementDay = resolveStatementDay(walletCard.statementDate, catalogCard?.statement_date);
+    const cal = (walletCard.paymentDueDateSource !== 'custom'
+        && statementDay != null
+        && catalogCard?.interest_free_days != null)
+        ? new StatementCalendar(statementDay, catalogCard.interest_free_days)
         : null;
-    const statementIsPast = statementDate ? statementDate.getTime() <= Date.now() : false;
+
+    const milestones: Milestone[] = cal?.getTimeline(today) ?? [];
+    console.log(catalogCard?.name,milestones)
+    const timelineNodes = buildTimelineNodes(milestones, today);
+
+    // Summary line: first upcoming milestone drives the label
+    const firstUpcoming = milestones.find((m) => m.isUpcoming) ?? null;
+    const daysToNext = firstUpcoming
+        ? Math.round((firstUpcoming.date.getTime() - today.getTime()) / 86_400_000)
+        : null;
 
     return (
         <div className="flex items-start gap-4 py-4 border-b border-dashed border-slate-100 last:border-0">
@@ -98,49 +135,83 @@ export function PaymentRow({
                     <p className="text-sm text-slate-600 truncate">{catalogCard.name}</p>
                 )}
 
-                {/* Statement → due date flow */}
-                {statementDate && (
-                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                        {/* Statement date */}
-                        <div className={cn("flex items-center gap-1.5", statementIsPast ? "text-green-500" : "")}>
-                            {resolvedStatementDay != null && (
-                                <div className="relative group -translate-y-0.5">
-                                    {statementIsPast
-                                        ? <IconCircleCheckFilled size={16}/>
-                                        : <IconCircleDashed size={16}/>
-                                    }
-                                    <div
-                                        className="absolute left-0 bottom-full mb-1.5 w-60 px-2.5 py-1.5 bg-slate-800 text-white text-sm rounded-sm opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 leading-snug">
-                                        {walletCard.paymentDueDateSource === 'custom'
-                                            ? 'Dựa trên ngày sao kê bạn đã tùy chỉnh'
-                                            : `Dựa trên ngày sao kê mặc định của ${bank?.name ?? 'ngân hàng'}`}
-                                    </div>
-                                </div>
-                            )}
+                {/* Horizontal timeline */}
+                {timelineNodes.length > 0 && (
+                    <div className="mt-2 overflow-x-auto">
+                        <div className="flex items-start">
+                            {timelineNodes.map((node, i) => {
+                                const isThisToday = node.kind === 'today';
+                                const isThisPast = node.kind === 'milestone' && node.data.isPast;
+                                const isThisUpcoming = node.kind === 'milestone' && node.data.isUpcoming;
+                                const nodeDate = node.kind === 'today' ? today : node.data.date;
 
-                            <div className={cn("min-w-[150px]", "text-sm")}>
-                                {statementIsPast ? 'Đã sao kê' : 'Sao kê tiếp theo'}:{' '}
-                                <span className="font-medium">
-                                    {statementDate.getDate()} {MONTH_VI[statementDate.getMonth()]}
-                                </span>
-                            </div>
+                                // Line connecting this node to the previous one
+                                const prevNode = i > 0 ? timelineNodes[i - 1] : null;
+                                const lineIsPast = prevNode?.kind === 'milestone' && prevNode.data.isPast;
+
+                                return (
+                                    <React.Fragment key={i}>
+                                        {i > 0 && (
+                                            <div className={cn(
+                                                'h-px w-6 shrink-0 mt-2',
+                                                lineIsPast ? 'bg-slate-200' : 'bg-brand-blue/30',
+                                            )}/>
+                                        )}
+                                        <div className="flex flex-col items-center text-center w-[52px] shrink-0">
+                                            {/* Dot */}
+                                            <div className={cn(
+                                                'w-4 h-4 rounded-full shrink-0',
+                                                isThisToday ? 'bg-brand-blue ring-2 ring-brand-blue/20' :
+                                                    isThisPast ? 'bg-slate-200' :
+                                                        'border-2 border-brand-blue bg-white',
+                                            )}/>
+
+                                            {/* Date */}
+                                            <p className={cn(
+                                                'text-[10px] font-medium mt-0.5 leading-tight',
+                                                isThisToday ? 'text-brand-blue' :
+                                                    isThisPast ? 'text-slate-400' : 'text-slate-700',
+                                            )}>
+                                                {formatDM(nodeDate)}
+                                            </p>
+
+                                            {/* Type label */}
+                                            <p className={cn(
+                                                'text-[10px] leading-tight',
+                                                isThisToday ? 'text-brand-blue font-semibold' :
+                                                    isThisPast ? 'text-slate-400' : 'text-slate-600',
+                                            )}>
+                                                {isThisToday ? 'Hôm nay' :
+                                                    node.data.type === 'closeDate' ? 'Sao kê' : 'Hạn TT'}
+                                            </p>
+
+                                            {/* Cycle label */}
+                                            {node.kind === 'milestone' && (
+                                                <p className="text-[9px] text-slate-400 leading-tight mt-0.5">
+                                                    {`kỳ ${formatDM(node.data.cycle.from)}`}
+                                                    <br/>
+                                                    {`-${formatDM(node.data.cycle.to)}`}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </React.Fragment>
+                                );
+                            })}
                         </div>
-
-                        {/* Arrow */}
-                        <span className={`text-xs ${isPast ? 'text-slate-400' : 'text-slate-500'}`}>
-                            <IconArrowNarrowRightDashed size={18}/>
-                        </span>
-
-                        {/* Payment due label */}
-                        <span className={`text-sm font-medium ${
-                            isPast ? 'text-slate-500' :
-                                daysUntil === 0 ? 'text-brand-blue' :
-                                    daysUntil <= 3 ? 'text-amber-500' :
-                                        'text-slate-700'
-                        }`}>
-                            Hạn TT: {dueLabel}
-                        </span>
                     </div>
+                )}
+
+                {/* Summary line */}
+                {firstUpcoming && daysToNext !== null && (
+                    <p className={cn(
+                        'text-xs mt-1.5',
+                        firstUpcoming.type === 'dueDate' ? 'text-amber-600' : 'text-slate-500',
+                    )}>
+                        {firstUpcoming.type === 'closeDate'
+                            ? `📅 Kỳ sao kê tiếp theo: ${formatDM(firstUpcoming.date)} (còn ${daysToNext} ngày)`
+                            : `⚠ Hạn thanh toán tiếp theo: ${formatDM(firstUpcoming.date)} (còn ${daysToNext} ngày)`
+                        }
+                    </p>
                 )}
             </div>
         </div>

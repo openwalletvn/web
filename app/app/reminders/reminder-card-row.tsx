@@ -8,12 +8,9 @@ import type { WalletCard } from '@/lib/db';
 import { buildReminderMessage } from '@/lib/reminder-message';
 import { createReminder, deleteReminder } from '@/lib/notify-api';
 import {
-  calcDueDate,
-  calcStatementFireDate,
-  canCalcDueDate,
   formatDueDate,
-  getNextCloseDate,
   resolveStatementDay,
+  StatementCalendar,
 } from '@/lib/card-dates';
 import { Switch } from '@/components/ui/switch';
 import type { WalletDb } from '@/lib/db';
@@ -48,16 +45,18 @@ export function ReminderCardRow({
   // Resolve statement day (user override → catalog default)
   const statementDay = resolveStatementDay(walletCard.statementDate, catalogCard?.statement_date);
 
-  // Next statement close date (for statement row label + fire date)
-  const nextCloseDate = getNextCloseDate(walletCard.statementDate, catalogCard?.statement_date);
-
-  // Payment due date using correct billing cycle arithmetic
-  const dueDateObj = canCalcDueDate(walletCard.statementDate, catalogCard?.statement_date, catalogCard?.interest_free_days)
-    ? calcDueDate(walletCard.statementDate, catalogCard?.statement_date, catalogCard?.interest_free_days)
+  // Build billing context when enough data is available
+  const context = (statementDay != null && catalogCard?.interest_free_days != null)
+    ? new StatementCalendar(statementDay, catalogCard.interest_free_days).getContext()
     : null;
 
+  const nextCloseDate = context?.nextStatementCloseDate ?? null;
+  const dueDateObj = context?.nextDueDate ?? null;
+
   // Fire date for statement reminder: next close − daysBefore
-  const stmtFireDate = calcStatementFireDate(walletCard.statementDate, catalogCard?.statement_date, daysBefore);
+  const stmtFireDate = nextCloseDate
+    ? (() => { const d = new Date(nextCloseDate.getTime()); d.setDate(d.getDate() - daysBefore); return d; })()
+    : null;
 
   // Fire date for due-date reminder: dueDate − daysBefore
   const dueFireDate = dueDateObj
