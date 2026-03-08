@@ -11,7 +11,7 @@ import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {AddToWalletButton} from './_add-to-wallet-button';
 import {CoBrandDisplay} from '@/components/cards/co-brand-display';
 import {buildCardPageMeta} from '@/lib/page-meta/card';
-import {StatementCalendar} from '@/lib/card-dates';
+import {getRelatedStatements} from '@/lib/card-dates';
 
 export async function generateStaticParams() {
     const cards = await getCards();
@@ -140,8 +140,10 @@ export default async function CardPage({params}: Props) {
                                 </>
                             )}
                             {card.statement_date !== undefined && card.interest_free_days !== undefined && (() => {
-                                const context = new StatementCalendar(card.statement_date, card.interest_free_days).getContext();
-                                const due = context.nextDueDate ? context.nextDueDate.getDate() : null;
+                                const today = new Date();
+                                const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                                const nextDue = getRelatedStatements(tod, card.statement_date, card.interest_free_days).find((s) => s.due >= tod)?.due ?? null;
+                                const due = nextDue?.getDate() ?? null;
                                 if (due == null) return null;
                                 return (
                                     <>

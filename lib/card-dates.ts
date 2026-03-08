@@ -1,5 +1,7 @@
 // TODO: extract to @openwallet/statement-calendar
 
+// ─── Standalone helpers ───────────────────────────────────────────────────────
+
 /**
  * Returns the effective statement day for a wallet card.
  * Priority: user override (walletStatementDate) → catalog default (catalogStatementDate).
@@ -21,288 +23,200 @@ export function formatDueDate(date: Date): string {
   return `ngày ${day}/${month}`;
 }
 
-// ─── StatementCalendar ────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface StatementCycle {
-  closeDate: Date;
-  dueDate: Date;
+/** A single billing cycle with its open, close, and payment due date. */
+export interface Statement {
+    /** First day of the cycle: statementDay+1 of the month before close. */
+    start: Date;
+    /** Last day of the cycle (statement close date). */
+    close: Date;
+    /** Payment due date: start + interestFreeDays. */
+    due: Date;
 }
 
 export interface Milestone {
   date: Date;
-  type: 'closeDate' | 'dueDate';
-  /** The billing cycle this milestone belongs to (e.g. { from: 21/1, to: 20/2 }). */
-  cycle: { from: Date; to: Date };
+    type: 'start' | 'close' | 'due' | 'today';
+    /** The billing statement this milestone belongs to; null for 'today'. */
+    statement: Statement | null;
   isPast: boolean;
   isToday: boolean;
   isUpcoming: boolean;
 }
 
-export interface StatementContext {
-  /** Most recent statement close date on or before today. */
-  previousStatementCloseDate: Date | null;
-  /** Next upcoming statement close date strictly after today. */
-  nextStatementCloseDate: Date | null;
-  /**
-   * True when no due date from the last 2 billing cycles is >= today,
-   * meaning we are waiting for the next statement close to generate one.
-   */
-  isWaitingForNextStatement: boolean;
-  /** True when nextDueDate is non-null. */
-  hasUpcomingDue: boolean;
-  /** Earliest due date >= today from the last 2 billing cycles. */
-  nextDueDate: Date | null;
-  /** The closeDate whose cycle produced nextDueDate. */
-  nextDueDateSource: Date | null;
+// ─── Core pure functions ──────────────────────────────────────────────────────
+
+/**
+ * Returns the billing statement for the month at offset `refMonth` from `date`.
+ *
+ * - resultMonth = date.month + refMonth  (wraps across year boundaries)
+ * - close = statementDay / resultMonth
+ * - start = (statementDay+1) / (resultMonth − 1)
+ * - due   = start + interestFreeDays days
+ *
+ * Example (statementDay=20, interestFreeDays=45):
+ *   getStatementObject(new Date('2026-03-07'), 0, 20, 45)
+ *   → { start: 2026-02-21, close: 2026-03-20, due: 2026-04-07 }
+ */
+export function getStatementObject(
+    date: Date,
+    refMonth: number,
+    statementDay: number,
+    interestFreeDays: number,
+): Statement {
+    const baseYear = date.getFullYear();
+
+    // Compute close month, normalising over- and underflow
+    let closeMonthIdx = date.getMonth() + refMonth;
+    const closeYear = baseYear + Math.floor(closeMonthIdx / 12);
+    closeMonthIdx = ((closeMonthIdx % 12) + 12) % 12;
+
+    const close = new Date(closeYear, closeMonthIdx, statementDay);
+
+    // start = statementDay+1 of the month before close
+    let startMonthIdx = closeMonthIdx - 1;
+    let startYear = closeYear;
+    if (startMonthIdx < 0) {
+        startMonthIdx = 11;
+        startYear--;
+    }
+    const start = new Date(startYear, startMonthIdx, statementDay + 1);
+
+    const due = new Date(start);
+    due.setDate(due.getDate() + interestFreeDays);
+
+    return {start, close, due};
 }
 
-export class StatementCalendar {
-  readonly statementDay: number;
-  readonly interestFreeDays: number;
+/**
+ * Returns [A, B, C]: the billing statements for today's month −1, 0, +1.
+ *
+ * Example (statementDay=20, interestFreeDays=45, today=2026-03-07):
+ *   A → { start: 2026-01-21, close: 2026-02-20, due: 2026-03-07 }
+ *   B → { start: 2026-02-21, close: 2026-03-20, due: 2026-04-07 }
+ *   C → { start: 2026-03-21, close: 2026-04-20, due: 2026-05-05 }
+ */
+export function getRelatedStatements(
+    today: Date,
+    statementDay: number,
+    interestFreeDays: number,
+): [Statement, Statement, Statement] {
+    return [
+        getStatementObject(today, -1, statementDay, interestFreeDays),
+        getStatementObject(today, 0, statementDay, interestFreeDays),
+        getStatementObject(today, +1, statementDay, interestFreeDays),
+    ];
+}
 
-  constructor(statementDay: number, interestFreeDays: number) {
-    this.statementDay = statementDay;
-    this.interestFreeDays = interestFreeDays;
-  }
+/**
+ * Flattens all start/close/due dates from the given statements, plus a 'today' marker,
+ * into a single chronologically sorted array of Milestones.
+ *
+ * Same-date milestones are sorted before the 'today' marker so that a due/close
+ * coinciding with today appears immediately before it in the list.
+ */
+export function getMilestones(statements: Statement[], today: Date): Milestone[] {
+    const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const items: Milestone[] = [];
 
-  /**
-   * Returns statement cycles within the given range, ordered most-recent-first.
-   *
-   * Options:
-   *   - `to`   upper bound (inclusive); defaults to today.
-   *   - `from` lower bound (inclusive); iteration stops when closeDate < from.
-   *   - `n`    maximum number of cycles to return.
-   *
-   * Provide at least one of `from` or `n` to prevent unbounded iteration.
-   *
-   * Example:
-   *   new StatementCalendar(5, 55).getCloseDates({ to: new Date('2026-03-07'), n: 2 })
-   *   → [
-   *       { closeDate: 2026-03-05, dueDate: 2026-04-29 },
-   *       { closeDate: 2026-02-05, dueDate: 2026-04-01 },
-   *     ]
-   */
-  getCloseDates(options: { from?: Date; to?: Date; n?: number } = {}): StatementCycle[] {
-    const ceiling = options.to ?? new Date();
-    const floor = options.from;
-    const limit = options.n ?? 1200; // safety cap: ~100 years of monthly cycles
-
-    // Normalize ceiling to midnight for consistent day comparisons
-    const ceilingDay = new Date(ceiling.getFullYear(), ceiling.getMonth(), ceiling.getDate());
-
-    // Step back to the most recent close on or before ceilingDay
-    let year = ceilingDay.getFullYear();
-    let month = ceilingDay.getMonth();
-    if (ceilingDay.getDate() < this.statementDay) {
-      month -= 1;
-      if (month < 0) { month = 11; year -= 1; }
+    for (const stmt of statements) {
+        for (const [type, raw] of [
+            ['start', stmt.start],
+            ['close', stmt.close],
+            ['due', stmt.due],
+        ] as const) {
+            const d = new Date(raw.getFullYear(), raw.getMonth(), raw.getDate());
+            items.push({
+                date: d,
+                type,
+                statement: stmt,
+                isPast: d < tod,
+                isToday: d.getTime() === tod.getTime(),
+                isUpcoming: d > tod,
+            });
+        }
     }
 
-    const result: StatementCycle[] = [];
+    // 'today' marker is always present
+    items.push({
+        date: tod,
+        type: 'today',
+        statement: null,
+        isPast: false,
+        isToday: true,
+        isUpcoming: false,
+    });
 
-    while (result.length < limit) {
-      const closeDate = new Date(year, month, this.statementDay);
+    // Sort chronologically; on ties, non-today milestones precede the today marker
+    return items.sort((a, b) =>
+        a.date.getTime() - b.date.getTime() ||
+        (a.type === 'today' ? 1 : b.type === 'today' ? -1 : 0),
+    );
+}
 
-      if (floor !== undefined) {
-        const floorDay = new Date(floor.getFullYear(), floor.getMonth(), floor.getDate());
-        if (closeDate < floorDay) break;
-      }
+/**
+ * Returns the display subset of milestones anchored on today.
+ *
+ * Walk backward from today (newest-first): collect milestones into the backward
+ * list until a type already collected would repeat, then stop.
+ * Walk forward (oldest-first): same rule.
+ *
+ * Returns: backward (oldest-first) + today + forward
+ *
+ * Example (statementDay=20, interestFreeDays=45, today=2026-03-07):
+ *   A = { start:21/1, close:20/2, due:7/3 }
+ *   B = { start:21/2, close:20/3, due:7/4 }
+ *   C = { start:21/3, close:20/4, due:5/5 }
+ *
+ *   backward (types: close, start) → [20/2(close,A), 21/2(start,B)]
+ *   today                          →  7/3
+ *   forward  (types: close, start, due) → [20/3(close,B), 21/3(start,C), 7/4(due,B)]
+ *
+ *   Result: [20/2, 21/2, TODAY, 20/3, 21/3, 7/4]
+ */
+export function getDisplayMilestones(milestones: Milestone[]): Milestone[] {
+    const todayMs = milestones.find((m) => m.type === 'today');
+    if (!todayMs) return [];
 
-      const dueDate = new Date(closeDate);
-      dueDate.setDate(dueDate.getDate() + this.interestFreeDays);
-
-      result.push({ closeDate, dueDate });
-
-      month -= 1;
-      if (month < 0) { month = 11; year -= 1; }
+    function collect(items: Milestone[]): Milestone[] {
+        const seen = new Set<string>();
+        const out: Milestone[] = [];
+        for (const m of items) {
+            if (seen.has(m.type)) break;
+            seen.add(m.type);
+            out.push(m);
+    }
+        return out;
     }
 
-    return result;
-  }
+    const backward = collect(
+        milestones
+            .filter((m) => m.isPast)
+            .sort((a, b) => b.date.getTime() - a.date.getTime()), // newest-first for collection
+    ).reverse(); // restore oldest-first for display
 
-  /**
-   * Main method for UI components. Returns the full billing context relative to today.
-   *
-   * Internally calls getCloseDates to examine the last 2 billing cycles, then selects
-   * the earliest due date that is >= today as the next upcoming payment due date.
-   *
-   * Example:
-   *   new StatementCalendar(5, 55).getContext(new Date('2026-03-07'))
-   *   → {
-   *       previousStatementCloseDate: 2026-03-05,   // most recent close <= today
-   *       nextStatementCloseDate:     2026-04-05,   // next close strictly after today
-   *       isWaitingForNextStatement:  false,         // a due date from recent cycles exists
-   *       hasUpcomingDue:             true,
-   *       nextDueDate:                2026-04-01,   // earliest due >= today (from Feb 5 cycle)
-   *       nextDueDateSource:          2026-02-05,   // the closeDate that produced nextDueDate
-   *     }
-   */
-  getContext(today?: Date): StatementContext {
-    const t = today ?? new Date();
-    const tod = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+    const forward = collect(
+        milestones
+            .filter((m) => m.isUpcoming)
+            .sort((a, b) => a.date.getTime() - b.date.getTime()),
+    );
 
-    // Examine the last 2 statement cycles (both on or before today)
-    const pastCycles = this.getCloseDates({ to: tod, n: 2 });
+    return [...backward, todayMs, ...forward];
+}
 
-    const previousStatementCloseDate = pastCycles[0]?.closeDate ?? null;
-    const nextStatementCloseDate = this._nextCloseAfter(tod);
+// ─── Convenience ──────────────────────────────────────────────────────────────
 
-    // Keep only cycles whose due date has not yet passed
-    const upcomingCandidates = pastCycles
-      .filter((cycle) => cycle.dueDate >= tod)
-      .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
-
-    const nearestCycle = upcomingCandidates[0] ?? null;
-    const hasUpcomingDue = nearestCycle !== null;
-    const nextDueDate = nearestCycle?.dueDate ?? null;
-    const nextDueDateSource = nearestCycle?.closeDate ?? null;
-    const isWaitingForNextStatement = !hasUpcomingDue;
-
-    return {
-      previousStatementCloseDate,
-      nextStatementCloseDate,
-      isWaitingForNextStatement,
-      hasUpcomingDue,
-      nextDueDate,
-      nextDueDateSource,
-    };
-  }
-
-  /**
-   * Returns the billing timeline spanning from the cycle origin of the most recent past
-   * milestone to the nearest upcoming due date, as an ordered list of Milestone objects.
-   *
-   * A "milestone" is any statement close date or payment due date that falls in that window.
-   * The today marker is NOT included — callers insert it between the last past milestone
-   * and the first upcoming milestone when rendering.
-   *
-   * Algorithm:
-   *   1. Find prevMilestone: the closest close/due date strictly before today.
-   *   2. Find nextMilestone: the closest close/due date strictly after today.
-   *   3. timelineStart = closeDate of prevMilestone's billing cycle.
-   *   4. timelineEnd   = getContext().nextDueDate (nearest upcoming due date).
-   *   5. Return all close/due dates in [timelineStart, timelineEnd], sorted chronologically.
-   *
-   * Example — statementDay=20, interestFreeDays=45, today=7/3/2026:
-   *   prevMilestone  = 6/3  (dueDate of cycle 21/12–20/1)
-   *   nextMilestone  = 20/3 (closeDate of cycle 21/2–20/3)
-   *   timelineStart  = 20/1 (closeDate of prevMilestone's cycle)
-   *   timelineEnd    = 6/4  (getContext().nextDueDate = 20/2 + 45)
-   *
-   *   Output (chronological):
-   *   [
-   *     { date: 20/1, type: 'closeDate', cycle: { from: 21/12, to: 20/1 }, isPast: true, ... },
-   *     { date: 20/2, type: 'closeDate', cycle: { from: 21/1,  to: 20/2 }, isPast: true, ... },
-   *     { date:  6/3, type: 'dueDate',  cycle: { from: 21/12, to: 20/1 }, isPast: true, ... },
-   *     { date: 20/3, type: 'closeDate', cycle: { from: 21/2, to: 20/3 }, isUpcoming: true, ... },
-   *     { date:  6/4, type: 'dueDate',  cycle: { from: 21/1,  to: 20/2 }, isUpcoming: true, ... },
-   *   ]
-   */
-  getTimeline(today?: Date): Milestone[] {
-    const t = today ?? new Date();
-    const tod = new Date(t.getFullYear(), t.getMonth(), t.getDate());
-
-    // Need an upcoming due date to anchor the timeline end
-    const context = this.getContext(tod);
-    const timelineEnd = context.nextDueDate;
-    if (timelineEnd === null) return [];
-
-    // Gather recent milestones from 3 past cycles + next upcoming close
-    // to locate prevMilestone (the most recent milestone before today)
-    const recentPastCycles = this.getCloseDates({ to: tod, n: 3 });
-
-    interface Candidate {
-      date: Date;
-      type: 'closeDate' | 'dueDate';
-      cycleCloseDate: Date; // the closeDate of the billing cycle this milestone belongs to
-    }
-
-    const candidates: Candidate[] = [];
-    for (const cycle of recentPastCycles) {
-      candidates.push({ date: cycle.closeDate, type: 'closeDate', cycleCloseDate: cycle.closeDate });
-      candidates.push({ date: cycle.dueDate,   type: 'dueDate',   cycleCloseDate: cycle.closeDate });
-    }
-    if (context.nextStatementCloseDate !== null) {
-      const nextClose = context.nextStatementCloseDate;
-      candidates.push({ date: nextClose, type: 'closeDate', cycleCloseDate: nextClose });
-    }
-
-    // prevMilestone: most recent candidate strictly before today
-    const prevMilestone = candidates
-      .filter((c) => c.date < tod)
-      .sort((a, b) => b.date.getTime() - a.date.getTime())[0] ?? null;
-
-    // Timeline starts at the closeDate of prevMilestone's cycle.
-    // If prevMilestone is a dueDate, cycleCloseDate is its cycle's earlier closeDate.
-    const timelineStart = prevMilestone?.cycleCloseDate ?? tod;
-
-    // Get all cycles whose closeDate falls in [timelineStart, timelineEnd]
-    const cyclesInRange = this.getCloseDates({ from: timelineStart, to: timelineEnd });
-
-    // Emit milestones for each cycle, filtering to [timelineStart, timelineEnd]
-    const result: Milestone[] = [];
-    for (const cycle of cyclesInRange) {
-      const cyclePeriod = this._cyclePeriod(cycle.closeDate);
-
-      if (cycle.closeDate >= timelineStart && cycle.closeDate <= timelineEnd) {
-        result.push({
-          date: cycle.closeDate,
-          type: 'closeDate',
-          cycle: cyclePeriod,
-          isPast:     cycle.closeDate < tod,
-          isToday:    cycle.closeDate.getTime() === tod.getTime(),
-          isUpcoming: cycle.closeDate > tod,
-        });
-      }
-
-      if (cycle.dueDate >= timelineStart && cycle.dueDate <= timelineEnd) {
-        result.push({
-          date: cycle.dueDate,
-          type: 'dueDate',
-          cycle: cyclePeriod,
-          isPast:     cycle.dueDate < tod,
-          isToday:    cycle.dueDate.getTime() === tod.getTime(),
-          isUpcoming: cycle.dueDate > tod,
-        });
-      }
-    }
-
-    return result.sort((a, b) => a.date.getTime() - b.date.getTime());
-  }
-
-  /**
-   * Returns all statement cycles between two dates (both inclusive), ordered oldest-first.
-   * Reserved for future card lifetime statistics (e.g. total cycles between issue date and expiry).
-   *
-   * Example:
-   *   new StatementCalendar(5, 55).getAllCloseDates(new Date('2023-01-01'), new Date('2027-12-31'))
-   *   → [...all monthly cycles where closeDate falls in [2023-01-01, 2027-12-31], oldest first...]
-   */
-  getAllCloseDates(from: Date, to: Date): StatementCycle[] {
-    const cycles = this.getCloseDates({ from, to });
-    return cycles.reverse();
-  }
-
-  /**
-   * Returns the billing period { from, to } for a given closeDate.
-   * The cycle opens on the day after the previous closeDate (i.e. statementDay+1 of the
-   * previous month) and closes on statementDay of the current month.
-   *
-   * Example: closeDate=20/2 → { from: 21/1, to: 20/2 }
-   */
-  private _cyclePeriod(closeDate: Date): { from: Date; to: Date } {
-    const from = new Date(closeDate.getFullYear(), closeDate.getMonth() - 1, this.statementDay + 1);
-    return { from, to: new Date(closeDate) };
-  }
-
-  /** Returns the next statement close date strictly after today. */
-  private _nextCloseAfter(today: Date): Date {
-    let year = today.getFullYear();
-    let month = today.getMonth();
-    if (today.getDate() >= this.statementDay) {
-      month += 1;
-      if (month > 11) { month = 0; year += 1; }
-    }
-    return new Date(year, month, this.statementDay);
-  }
+/**
+ * Returns the display-ready timeline for a card.
+ * Chains: getRelatedStatements → getMilestones → getDisplayMilestones.
+ */
+export function getTimelineForCard(
+    statementDay: number,
+    interestFreeDays: number,
+    today: Date = new Date(),
+): Milestone[] {
+    const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const stmts = getRelatedStatements(tod, statementDay, interestFreeDays);
+    return getDisplayMilestones(getMilestones(stmts, tod));
 }

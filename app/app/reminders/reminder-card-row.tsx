@@ -10,7 +10,7 @@ import { createReminder, deleteReminder } from '@/lib/notify-api';
 import {
   formatDueDate,
   resolveStatementDay,
-  StatementCalendar,
+  getRelatedStatements,
 } from '@/lib/card-dates';
 import { Switch } from '@/components/ui/switch';
 import type { WalletDb } from '@/lib/db';
@@ -45,13 +45,14 @@ export function ReminderCardRow({
   // Resolve statement day (user override → catalog default)
   const statementDay = resolveStatementDay(walletCard.statementDate, catalogCard?.statement_date);
 
-  // Build billing context when enough data is available
-  const context = (statementDay != null && catalogCard?.interest_free_days != null)
-    ? new StatementCalendar(statementDay, catalogCard.interest_free_days).getContext()
+  // Derive billing context from related statements
+  const today = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); })();
+  const stmts = (statementDay != null && catalogCard?.interest_free_days != null)
+    ? getRelatedStatements(today, statementDay, catalogCard.interest_free_days)
     : null;
 
-  const nextCloseDate = context?.nextStatementCloseDate ?? null;
-  const dueDateObj = context?.nextDueDate ?? null;
+  const nextCloseDate = stmts?.find((s) => s.close > today)?.close ?? null;
+  const dueDateObj = stmts?.find((s) => s.due >= today)?.due ?? null;
 
   // Fire date for statement reminder: next close − daysBefore
   const stmtFireDate = nextCloseDate
