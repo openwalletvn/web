@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { IconTrash, IconArrowForwardUp } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import { inputClass } from '@/lib/ui-constants';
-import { resolveStatementDay, StatementCalendar, formatDueDate } from '@/lib/card-dates';
+import { resolveStatementDay, getRelatedStatements, formatDueDate } from '@/lib/card-dates';
 import { addCard, updateCard, removeCard, hasCardWithSameCatalogId } from '@/lib/wallet';
 import { createCreditAccount } from '@/lib/credit-account';
 import { appDb } from '@/lib/app-db';
@@ -131,7 +131,9 @@ export function CardDetailForm({
     if (dueDateOverridden || !statementDate || !card.interest_free_days) return;
     const resolvedDay = resolveStatementDay(parseInt(statementDate) || undefined, card.statement_date);
     if (resolvedDay == null) return;
-    const computed = new StatementCalendar(resolvedDay, card.interest_free_days).getContext().nextDueDate;
+    const today = new Date();
+    const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const computed = getRelatedStatements(tod, resolvedDay, card.interest_free_days).find((s) => s.due >= tod)?.due ?? null;
     if (computed) setPaymentDueDate(String(computed.getDate()));
   }, [statementDate, card.interest_free_days, dueDateOverridden]);
 
@@ -376,7 +378,9 @@ export function CardDetailForm({
                 if (!statementDate || !card.interest_free_days) return undefined;
                 const resolvedDay = resolveStatementDay(parseInt(statementDate) || undefined, card.statement_date);
                 if (resolvedDay == null) return undefined;
-                const computed = new StatementCalendar(resolvedDay, card.interest_free_days).getContext().nextDueDate;
+                const today = new Date();
+                const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                const computed = getRelatedStatements(tod, resolvedDay, card.interest_free_days).find((s) => s.due >= tod)?.due ?? null;
                 return computed ? `Tự tính: ${formatDueDate(computed)}` : undefined;
               })()}
             >

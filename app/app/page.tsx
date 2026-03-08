@@ -7,7 +7,7 @@ import { IconCreditCard, IconArrowRight } from '@tabler/icons-react';
 import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
 import { PaymentRow, getNextOccurrence } from '@/components/wallet/payment-row';
-import { resolveStatementDay, StatementCalendar } from '@/lib/card-dates';
+import { resolveStatementDay, getRelatedStatements } from '@/lib/card-dates';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -67,7 +67,7 @@ export default function DashboardPage() {
           const statementDay = resolveStatementDay(c.statementDate, catalogCards[c.cardId]?.statement_date);
           const interestFreeDays = catalogCards[c.cardId]?.interest_free_days;
           if (statementDay != null && interestFreeDays != null) {
-            dueDate = new StatementCalendar(statementDay, interestFreeDays).getContext(today).nextDueDate;
+            dueDate = getRelatedStatements(today, statementDay, interestFreeDays).find((s) => s.due >= today)?.due ?? null;
           }
         }
         if (!dueDate) return [];
