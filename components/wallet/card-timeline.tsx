@@ -11,6 +11,7 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
     const {milestones, summary} = timeline;
 
     const firstUpcomingType = milestones.find((m) => m.isUpcoming)?.type ?? null;
+    const todayIsDue = milestones.some((m) => m.isToday && m.type === 'due');
 
     return (
         <div>
@@ -18,7 +19,7 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
             <div className="overflow-x-auto">
                 <div className="flex items-start">
                     {milestones.map((m, i) => {
-                        const isThisToday    = m.type === 'today';
+                        const isThisToday    = m.isToday;
                         const isThisPast     = m.isPast;
 
                         const prevMs = i > 0 ? milestones[i - 1] : null;
@@ -60,7 +61,7 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
                                     </p>
 
                                     {/* Cycle range */}
-                                    {m.type !== 'today' && m.statement && (
+                                    {m.statement && (
                                         <p className="text-[9px] text-slate-400 leading-tight mt-0.5">
                                             {`kỳ ${formatDM(m.statement.start)}`}
                                             <br/>
@@ -78,7 +79,7 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
             {summary && (
                 <p className={cn(
                     'text-xs mt-1.5',
-                    firstUpcomingType === 'due' ? 'text-amber-600' : 'text-slate-500',
+                    firstUpcomingType === 'due' || todayIsDue ? 'text-amber-600' : 'text-slate-500',
                 )}>
                     {summary}
                 </p>

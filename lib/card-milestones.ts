@@ -27,6 +27,7 @@ export function toCardWithMilestones(
   if (statementDay == null || interestFreeDays == null) {
     return { walletCard, catalogCard, timeline: null };
   }
+    console.log(catalogCard?.name,getTimelineForCard(statementDay, interestFreeDays, today))
   return {
     walletCard,
     catalogCard,
