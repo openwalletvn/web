@@ -6,7 +6,7 @@ import { IconCreditCard } from '@tabler/icons-react';
 import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
 import { PageContainer } from '@/components/ui/page-container';
 import { PaymentRow, getNextOccurrence, getPastOccurrence } from '@/components/wallet/payment-row';
-import { calcDueDate } from '@/lib/card-dates';
+import { resolveStatementDay, StatementCalendar } from '@/lib/card-dates';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 import type { WalletCard } from '@/lib/db';
 
@@ -30,7 +30,10 @@ function resolveEffectiveDueDate(
   if (walletCard.paymentDueDateSource === 'custom' && walletCard.paymentDueDate) {
     return new Date(today.getFullYear(), today.getMonth(), walletCard.paymentDueDate);
   }
-  return calcDueDate(walletCard.statementDate, catalogCard?.statement_date, catalogCard?.interest_free_days, today);
+  const statementDay = resolveStatementDay(walletCard.statementDate, catalogCard?.statement_date);
+  const interestFreeDays = catalogCard?.interest_free_days;
+  if (statementDay == null || interestFreeDays == null) return null;
+  return new StatementCalendar(statementDay, interestFreeDays).getContext(today).nextDueDate;
 }
 
 export default function UpcomingPage() {

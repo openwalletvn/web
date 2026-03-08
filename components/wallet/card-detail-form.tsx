@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { IconTrash, IconArrowForwardUp } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import { inputClass } from '@/lib/ui-constants';
-import { calcDueDate, dueDateDay, formatDueDate } from '@/lib/card-dates';
+import { resolveStatementDay, StatementCalendar, formatDueDate } from '@/lib/card-dates';
 import { addCard, updateCard, removeCard, hasCardWithSameCatalogId } from '@/lib/wallet';
 import { createCreditAccount } from '@/lib/credit-account';
 import { appDb } from '@/lib/app-db';
@@ -129,8 +129,10 @@ export function CardDetailForm({
   // Auto-calculate due date using real calendar arithmetic
   useEffect(() => {
     if (dueDateOverridden || !statementDate || !card.interest_free_days) return;
-    const computed = calcDueDate(parseInt(statementDate) || undefined, card.statement_date, card.interest_free_days);
-    if (computed) setPaymentDueDate(String(dueDateDay(computed)));
+    const resolvedDay = resolveStatementDay(parseInt(statementDate) || undefined, card.statement_date);
+    if (resolvedDay == null) return;
+    const computed = new StatementCalendar(resolvedDay, card.interest_free_days).getContext().nextDueDate;
+    if (computed) setPaymentDueDate(String(computed.getDate()));
   }, [statementDate, card.interest_free_days, dueDateOverridden]);
 
   async function handleSave() {
@@ -372,7 +374,9 @@ export function CardDetailForm({
               label="Ngày đề nghị thanh toán"
               hint={(() => {
                 if (!statementDate || !card.interest_free_days) return undefined;
-                const computed = calcDueDate(parseInt(statementDate) || undefined, card.statement_date, card.interest_free_days);
+                const resolvedDay = resolveStatementDay(parseInt(statementDate) || undefined, card.statement_date);
+                if (resolvedDay == null) return undefined;
+                const computed = new StatementCalendar(resolvedDay, card.interest_free_days).getContext().nextDueDate;
                 return computed ? `Tự tính: ${formatDueDate(computed)}` : undefined;
               })()}
             >
