@@ -48,9 +48,9 @@ export interface Milestone {
 }
 
 const MILESTONE_MESSAGES: Record<Milestone['type'], string> = {
-    start:  'Mở kỳ',
-    close:  'Sao kê',
-    due:    'Hạn TT',
+    start:  'Kỳ sao kê mới',
+    close:  'Chốt sao kê',
+    due:    'Hạn thanh toán',
     today:  'Hôm nay',
 };
 
@@ -252,7 +252,7 @@ export function getTimelineForCard(
 
     if (todayMilestone) {
         if (todayMilestone.type === 'close') {
-            summary = `📅 Hôm nay là ngày sao kê`;
+            summary = `📅 Hôm nay là ngày chốt sao kê`;
         } else if (todayMilestone.type === 'due') {
             summary = `⚠ Hôm nay là hạn thanh toán`;
         } else {
@@ -262,7 +262,7 @@ export function getTimelineForCard(
         const daysToNext = Math.round((firstUpcoming.date.getTime() - tod.getTime()) / 86_400_000);
         const dateStr = `${formatDM(firstUpcoming.date)} (còn ${daysToNext} ngày)`;
         if (firstUpcoming.type === 'close') {
-            summary = `📅 Kỳ sao kê tiếp theo: ${dateStr}`;
+            summary = `📅 Ngày chốt sao kê tiếp theo: ${dateStr}`;
         } else if (firstUpcoming.type === 'due') {
             summary = `⚠ Hạn thanh toán tiếp theo: ${dateStr}`;
         } else {
