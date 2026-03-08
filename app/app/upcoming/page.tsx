@@ -1,15 +1,14 @@
 'use client';
 
-import { useMemo, useEffect, useState } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { IconCreditCard, IconAlertTriangle } from '@tabler/icons-react';
-import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
-import { PageContainer } from '@/components/ui/page-container';
-import { PaymentRow } from '@/components/wallet/payment-row';
-import { useWalletDb } from '@/providers/wallet-db-provider';
-import type { WalletCard } from '@/lib/db';
-import type { Milestone } from '@/lib/card-dates';
-import { toCardWithMilestones, sortCardsByMilestones, type CardWithMilestones } from '@/lib/card-milestones';
+import {useEffect, useMemo, useState} from 'react';
+import {useLiveQuery} from 'dexie-react-hooks';
+import {IconAlertTriangle, IconCreditCard} from '@tabler/icons-react';
+import {type Bank, type Card, getBanks, getCard} from '@/lib/api';
+import {PageContainer} from '@/components/ui/page-container';
+import {PaymentRow} from '@/components/wallet/payment-row';
+import {useWalletDb} from '@/providers/wallet-db-provider';
+import type {Milestone} from '@/lib/card-dates';
+import {type CardWithMilestones, sortCardsByMilestones, toCardWithMilestones} from '@/lib/card-milestones';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -97,10 +96,8 @@ export default function UpcomingPage() {
     return (
       <PaymentRow
         key={card.walletCard.id}
-        date={date}
         walletCard={card.walletCard}
         catalogCard={card.catalogCard}
-        bank={banks[card.walletCard.bankId]}
         variant={variant}
       />
     );
@@ -135,10 +132,8 @@ export default function UpcomingPage() {
                 {warningCards.map((card) => (
                   <PaymentRow
                     key={card.walletCard.id}
-                    date={today}
                     walletCard={card.walletCard}
                     catalogCard={card.catalogCard}
-                    bank={banks[card.walletCard.bankId]}
                     variant="upcoming"
                   />
                 ))}

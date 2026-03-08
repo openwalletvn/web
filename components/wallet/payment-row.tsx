@@ -1,9 +1,9 @@
-import {type Bank, type Card, getCardImageUrl} from '@/lib/api';
+import {type Card} from '@/lib/api';
 import type {WalletCard} from '@/lib/db';
 import {getTimelineForCard, resolveStatementDay} from '@/lib/card-dates';
-import {CardTimeline} from './card-timeline';
-
-export const MONTH_VI = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
+import {CardTimeline, CardTimelineSummary} from './card-timeline';
+import {CardImage} from "@/components/cards/card-image";
+import React from "react";
 
 /**
  * Returns dueDate if it is >= today (this month's cycle), otherwise advances by one month.
@@ -37,17 +37,9 @@ export function getPastOccurrence(dueDate: Date, today: Date = new Date()): Date
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function PaymentRow({
-                               date,
-                               walletCard,
-                               catalogCard,
-                               bank,
-                               variant,
-                           }: {
-    date: Date;
+export function PaymentRow({walletCard, catalogCard, variant}: {
     walletCard: WalletCard;
     catalogCard: Card | undefined;
-    bank: Bank | undefined;
     variant: 'past' | 'today' | 'upcoming';
 }) {
     const now = new Date();
@@ -90,10 +82,11 @@ export function PaymentRow({
             <div className={`self-stretch w-px shrink-0 ${isToday ? 'bg-brand-blue' : 'bg-slate-100'}`}/>
 
             {/* Card image */}
-            <div className="shrink-0 w-16 aspect-[16/10] bg-slate-50 rounded-sm overflow-hidden self-center">
+            <div className="shrink-0 w-16 bg-slate-50">
                 {catalogCard ? (
-                    <img src={getCardImageUrl(catalogCard)} alt={catalogCard.name}
-                         className="w-full h-full object-contain"/>
+                    // <img src={getCardImageUrl(catalogCard)} alt={catalogCard.name}
+                    //      className="w-full h-full object-contain"/>
+                    <CardImage card={catalogCard}/>
                 ) : (
                     <div className="w-full h-full bg-slate-100 animate-pulse"/>
                 )}
@@ -101,12 +94,16 @@ export function PaymentRow({
 
             {/* Card info */}
             <div className="flex-1 min-w-0">
-                <p className="font-medium text-slate-900 truncate">
-                    {walletCard.nickname ?? catalogCard?.name ?? '-'}
-                </p>
-                {walletCard.nickname && catalogCard?.name && (
-                    <p className="text-sm text-slate-600 truncate">{catalogCard.name}</p>
-                )}
+                <div className="flex items-center gap-4">
+                    <div className="font-medium text-slate-900 truncate">
+                        {walletCard.nickname ?? catalogCard?.name ?? '-'}
+                    </div>
+                    {walletCard.nickname && catalogCard?.name && (
+                        <div className="text-sm text-slate-600 truncate">{catalogCard.name}</div>
+                    )}
+                    {/* Summary line */}
+                    {timeline && <CardTimelineSummary timeline={timeline}/>}
+                </div>
 
                 {/* Billing cycle timeline */}
                 {timeline && (

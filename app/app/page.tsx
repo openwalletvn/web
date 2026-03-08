@@ -163,10 +163,8 @@ export default function DashboardPage() {
               {previewUpcoming.map(({ walletCard, date }, i) => (
                 <PaymentRow
                   key={walletCard.id}
-                  date={date}
                   walletCard={walletCard}
                   catalogCard={catalogCards[walletCard.cardId]}
-                  bank={banks[walletCard.bankId]}
                   variant="upcoming"
                 />
               ))}
