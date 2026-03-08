@@ -52,8 +52,6 @@ export function PaymentRow({
 }) {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const daysUntil = Math.round((date.getTime() - today.getTime()) / 86_400_000);
-    const isPast = variant === 'past';
     const isToday = variant === 'today';
 
     // Build timeline for non-custom cards
@@ -66,14 +64,26 @@ export function PaymentRow({
         ? getTimelineForCard(statementDay, catalogCard.interest_free_days, today)
         : null;
 
+    // Days to the next event — mirrors the timeline summary
+    const milestones = timeline?.milestones ?? [];
+    const todayMilestone  = milestones.find((m) => m.isToday && m.type !== 'today') ?? null;
+    const firstUpcoming   = milestones.find((m) => m.isUpcoming) ?? null;
+    const daysToNext = firstUpcoming
+        ? Math.round((firstUpcoming.date.getTime() - today.getTime()) / 86_400_000)
+        : null;
+
     return (
         <div className="flex items-start gap-4 py-4 border-b border-dashed border-slate-100 last:border-0">
-            {/* Date block — payment due date */}
-            <div className="shrink-0 w-12 text-center">
-                <p className={`text-3xl font-bold leading-none ${isPast ? 'text-slate-400' : isToday ? 'text-brand-blue' : 'text-slate-800'}`}>
-                    {date.getDate()}
-                </p>
-                <p className="text-sm text-slate-600 mt-0.5">{MONTH_VI[date.getMonth()]}</p>
+            {/* Date block — days to next milestone */}
+            <div className="shrink-0 w-16 text-center">
+                {todayMilestone ? (
+                    <p className="text-xl font-bold leading-none text-brand-blue">Hôm nay</p>
+                ) : daysToNext !== null ? (
+                    <>
+                        <p className="text-3xl font-bold leading-none text-slate-800">{daysToNext}</p>
+                        <p className="text-sm text-slate-600 mt-0.5">ngày nữa</p>
+                    </>
+                ) : null}
             </div>
 
             {/* Divider */}

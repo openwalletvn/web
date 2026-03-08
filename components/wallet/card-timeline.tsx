@@ -1,6 +1,6 @@
 import React from 'react';
 import {cn} from '@/lib/utils';
-import type {Milestone, TimelineResult} from '@/lib/card-dates';
+import type {TimelineResult} from '@/lib/card-dates';
 
 /** Formats a date as "D/M" (e.g. "20/2", "6/3"). */
 function formatDM(date: Date): string {
@@ -29,11 +29,11 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
                             <React.Fragment key={i}>
                                 {i > 0 && (
                                     <div className={cn(
-                                        'h-px w-6 shrink-0 mt-2',
+                                        'h-px w-8 shrink-0 mt-2',
                                         lineIsPast ? 'bg-slate-200' : 'bg-brand-blue/30',
                                     )}/>
                                 )}
-                                <div className="flex flex-col items-center text-center w-[52px] shrink-0">
+                                <div className="flex flex-col items-center text-center w-[90px] shrink-0">
                                     {/* Dot */}
                                     <div className={cn(
                                         'w-4 h-4 rounded-full shrink-0',
@@ -44,7 +44,7 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
 
                                     {/* Date */}
                                     <p className={cn(
-                                        'text-[10px] font-medium mt-0.5 leading-tight',
+                                        'text-sm font-medium mt-0.5 leading-tight',
                                         isThisToday ? 'text-brand-blue' :
                                             isThisPast  ? 'text-slate-400' : 'text-slate-700',
                                     )}>
@@ -53,7 +53,7 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
 
                                     {/* Message label */}
                                     <p className={cn(
-                                        'text-[10px] leading-tight',
+                                        'text-sm leading-tight',
                                         isThisToday ? 'text-brand-blue font-semibold' :
                                             isThisPast  ? 'text-slate-400' : 'text-slate-600',
                                     )}>
@@ -62,10 +62,8 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
 
                                     {/* Cycle range */}
                                     {m.statement && (
-                                        <p className="text-[9px] text-slate-400 leading-tight mt-0.5">
-                                            {`kỳ ${formatDM(m.statement.start)}`}
-                                            <br/>
-                                            {`-${formatDM(m.statement.close)}`}
+                                        <p className="text-xs text-slate-400 leading-tight mt-0.5">
+                                            {`kỳ ${formatDM(m.statement.start)} - ${formatDM(m.statement.close)}`}
                                         </p>
                                     )}
                                 </div>
@@ -78,7 +76,7 @@ export function CardTimeline({timeline}: { timeline: TimelineResult }) {
             {/* Summary line */}
             {summary && (
                 <p className={cn(
-                    'text-xs mt-1.5',
+                    'text-sm mt-4',
                     firstUpcomingType === 'due' || todayIsDue ? 'text-amber-600' : 'text-slate-500',
                 )}>
                     {summary}
