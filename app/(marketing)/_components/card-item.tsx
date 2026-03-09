@@ -1,6 +1,6 @@
 'use client';
 
-import {useRef, useState} from 'react';
+import {useState} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useTranslations} from 'next-intl';
@@ -17,18 +17,6 @@ interface Props {
 export function CardItem({card}: Props) {
     const t = useTranslations('CardDetail');
     const router = useRouter();
-    const imageRef = useRef<HTMLDivElement>(null);
-    const [tilt, setTilt] = useState({x: 0, y: 0});
-    const [hovering, setHovering] = useState(false);
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        const el = imageRef.current;
-        if (!el) return;
-        const {left, top, width, height} = el.getBoundingClientRect();
-        const nx = (e.clientX - left) / width - 0.5;
-        const ny = (e.clientY - top) / height - 0.5;
-        setTilt({x: nx * 10, y: -ny * 10});
-    };
 
     const bank = card.bank_data;
     const isVertical = card.image?.orientation === 'vertical';
@@ -48,37 +36,18 @@ export function CardItem({card}: Props) {
                 "--glow-color": bank?.brand_color ? hexToRgba(bank?.brand_color, 0.45) : "rgba(0,0,0,0.45)",
             }}
         >
-            {/* Tilt wrapper - perspective 3D, mouse-tracked */}
-            <div
-                ref={imageRef}
-                onMouseMove={handleMouseMove}
-                onMouseEnter={() => setHovering(true)}
-                onMouseLeave={() => {
-                    setHovering(false);
-                    setTilt({x: 0, y: 0});
-                }}
-                className="relative"
-                style={{
-                    transform: `perspective(800px) rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`,
-                    transition: hovering ? 'transform 0.05s linear' : 'transform 0.5s ease',
-                }}
-            >
-                {/* Shadow div - painted first (behind shimmer wrapper), no overflow clip */}
-                {
-                    isVertical &&
-                    <div
-                        className="absolute left-1/2 top-1/2 w-[50%] h-[80%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_100px_var(--glow-color)]"/>
-                } {
-                !isVertical &&
-                <div
-                    className="absolute left-1/2 top-1/2 w-[50%] h-[50%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_80px_var(--glow-color)]"/>
-            }
-
-
-                {/* Shimmer + card image */}
+            {/* Card image with tilt + glow */}
+            <div className="relative">
+                {/* Shadow div - painted behind card image, no overflow clip */}
+                {isVertical &&
+                    <div className="absolute left-1/2 top-1/2 w-[50%] h-[80%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_100px_var(--glow-color)]"/>
+                }
+                {!isVertical &&
+                    <div className="absolute left-1/2 top-1/2 w-[50%] h-[50%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_80px_var(--glow-color)]"/>
+                }
                 <Link href={`/the/${card.id}`}
                       className="relative block group-hover:scale-105 transition-transform duration-300">
-                    <CardImage card={card}/>
+                    <CardImage card={card} tilt />
                 </Link>
             </div>
 
