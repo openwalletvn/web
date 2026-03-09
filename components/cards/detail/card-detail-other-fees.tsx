@@ -70,7 +70,7 @@ export function CardDetailOtherFees({ card }: Props) {
                 entry={fees.foreign}
             />
             <FeeBox
-                label="Ngoại tệ (DCC)"
+                label="Ngoại tệ bằng VND"
                 entry={fees.foreign_dcc}
             />
         </div>

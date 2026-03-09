@@ -17,18 +17,21 @@ function NoteLines({ note }: { note: string }) {
     );
 }
 
-function WaiverBadge({ waiver }: { waiver: FeeWaiver }) {
-    if (waiver.waiver && !waiver.condition) {
+function WaiverDisplay({ waiver }: { waiver: FeeWaiver }) {
+    if (waiver.waiver && waiver.condition) {
+        return (
+            <div className="flex flex-col gap-0.5">
+                <p className="text-2xl font-bold text-green-600">Miễn phí</p>
+                <p className="text-xs text-slate-600">
+                    với điều kiện: {waiver.condition}
+                </p>
+            </div>
+        );
+    }
+    if (waiver.waiver) {
         return (
             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
                 ✓ Miễn phí
-            </span>
-        );
-    }
-    if (waiver.waiver && waiver.condition) {
-        return (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
-                ✓ Có điều kiện
             </span>
         );
     }
@@ -89,12 +92,7 @@ export function CardDetailFees({ card }: Props) {
                                     {formatFee(annual)}
                                 </p>
                                 {annual.first_year && (
-                                    <>
-                                        <WaiverBadge waiver={annual.first_year} />
-                                        {annual.first_year.condition && (
-                                            <p className="text-xs text-slate-600">{annual.first_year.condition}</p>
-                                        )}
-                                    </>
+                                    <WaiverDisplay waiver={annual.first_year} />
                                 )}
                                 {annual.note && <NoteLines note={annual.note} />}
                             </>
@@ -111,12 +109,7 @@ export function CardDetailFees({ card }: Props) {
                                     {formatFee(annual)}
                                 </p>
                                 {annual.subsequent_years && (
-                                    <>
-                                        <WaiverBadge waiver={annual.subsequent_years} />
-                                        {annual.subsequent_years.condition && (
-                                            <p className="text-xs text-slate-600">{annual.subsequent_years.condition}</p>
-                                        )}
-                                    </>
+                                    <WaiverDisplay waiver={annual.subsequent_years} />
                                 )}
                             </>
                         ) : (
