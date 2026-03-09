@@ -72,19 +72,32 @@ export interface CardImage {
     lqip?: string;
 }
 
-export interface CardFeeEntry {
-    amount: number;
-    type: 'currency' | 'rate';
-    note: string;
+export interface FeeWaiver {
+    waiver: boolean;
+    condition?: string;
 }
 
+export interface FeeEntry {
+    amount: number;
+    type: 'currency' | 'rate';
+    note?: string;
+}
+
+export interface FeeEntryWithWaiver extends FeeEntry {
+    first_year?: FeeWaiver;
+    subsequent_years?: FeeWaiver;
+}
+
+/** @deprecated Use FeeEntry instead */
+export type CardFeeEntry = FeeEntry;
+
 export interface CardFees {
-    annual?: CardFeeEntry;
-    annual_supplementary?: CardFeeEntry;
-    issuance?: CardFeeEntry;
-    cancellation?: CardFeeEntry;
-    foreign?: CardFeeEntry;
-    foreign_dcc?: CardFeeEntry;
+    annual?: FeeEntryWithWaiver;
+    annual_supplementary?: FeeEntry;
+    issuance?: FeeEntry;
+    cancellation?: FeeEntry;
+    foreign?: FeeEntry;
+    foreign_dcc?: FeeEntry;
 }
 
 export interface CardSource {
