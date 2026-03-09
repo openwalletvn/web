@@ -31,10 +31,10 @@ export function buildCardPageMeta(card: Card, bank: Bank | null): CardPageMeta {
                 : 'Thẻ ghi nợ';
 
     const feesSpec =
-        card.annual_fee === 0
+        card.fees?.annual?.amount === 0
             ? 'Miễn phí thường niên'
-            : card.annual_fee != null
-                ? `${card.annual_fee.toLocaleString('vi-VN')} VNĐ/năm`
+            : card.fees?.annual != null
+                ? `${card.fees.annual.amount.toLocaleString('vi-VN')} VNĐ/năm`
                 : undefined;
 
     const jsonLd = {

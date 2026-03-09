@@ -18,7 +18,7 @@ export async function Header() {
     '/the-tin-dung': allCards.filter((c) => c.card_type.includes('credit')).length,
     '/the-ghi-no': allCards.filter((c) => c.card_type.includes('debit')).length,
     '/the-tin-dung-mien-phi-thuong-nien': allCards.filter(
-      (c) => c.card_type.includes('credit') && c.annual_fee === 0
+      (c) => c.card_type.includes('credit') && c.fees?.annual?.amount === 0
     ).length,
     '/the-tin-dung-noi-dia': allCards.filter(
       (c) => c.card_type.includes('credit') && c.card_network === 'napas'
@@ -27,7 +27,7 @@ export async function Header() {
       (c) => c.card_type.includes('credit') && c.card_type.includes('debit')
     ).length,
     '/the-ghi-no-mien-phi': allCards.filter(
-      (c) => c.card_type.includes('debit') && c.annual_fee === 0
+      (c) => c.card_type.includes('debit') && c.fees?.annual?.amount === 0
     ).length,
     '/the-ghi-no-noi-dia': allCards.filter(
       (c) => c.card_type.includes('debit') && c.card_network === 'napas'

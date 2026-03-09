@@ -72,6 +72,27 @@ export interface CardImage {
     lqip?: string;
 }
 
+export interface CardFeeEntry {
+    amount: number;
+    type: 'currency' | 'rate';
+    note: string;
+}
+
+export interface CardFees {
+    annual?: CardFeeEntry;
+    annual_supplementary?: CardFeeEntry;
+    issuance?: CardFeeEntry;
+    cancellation?: CardFeeEntry;
+    foreign?: CardFeeEntry;
+    foreign_dcc?: CardFeeEntry;
+}
+
+export interface CardSource {
+    label: string;
+    url: string;
+    page?: number;
+}
+
 export interface Card {
     id: string;
     name: string;
@@ -85,7 +106,8 @@ export interface Card {
     co_brand_data?: Brand;
     card_network_data?: Network;
     card_type: CardType[];
-    annual_fee?: number | null;
+    fees?: CardFees;
+    sources?: CardSource[];
     currency?: string;
     interest_free_days?: number;
     statement_date?: number;

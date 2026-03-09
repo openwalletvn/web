@@ -257,13 +257,13 @@ export function CardDetailForm({
               label="Loại thẻ"
               value={card.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(' / ')}
             />
-            {card.annual_fee != null && (
+            {card.fees?.annual != null && (
               <ApiInfoRow
                 label="Phí thường niên"
                 value={
-                  card.annual_fee === 0
+                  card.fees.annual.amount === 0
                     ? <span className="text-green-600">Miễn phí</span>
-                    : `${card.annual_fee.toLocaleString('vi-VN')}đ`
+                    : `${card.fees.annual.amount.toLocaleString('vi-VN')}đ`
                 }
               />
             )}

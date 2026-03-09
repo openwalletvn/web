@@ -86,11 +86,11 @@ export function CardItem({card}: Props) {
                 {/* Text content - fades out on hover */}
                 <div className="transition-opacity duration-150 group-hover:opacity-0">
                     <p className="font-medium text-slate-800 leading-tight">{card.name}</p>
-                    {card.annual_fee != null && (
+                    {card.fees?.annual != null && (
                         <p className="text-sm text-slate-500">
-                            {card.annual_fee === 0
+                            {card.fees.annual.amount === 0
                                 ? t('free')
-                                : `${card.annual_fee.toLocaleString()} ${card.currency ?? 'VND'}`}
+                                : `${card.fees.annual.amount.toLocaleString()} ${card.currency ?? 'VND'}`}
                         </p>
                     )}
                     <div className="flex flex-wrap gap-1 mt-1">

@@ -45,11 +45,11 @@ export function WalletCardBadges({
         <DashedBadge>Đến {walletCard.validThru}</DashedBadge>
       )}
 
-      {catalogCard?.annual_fee != null && (
-        catalogCard.annual_fee === 0 ? (
+      {catalogCard?.fees?.annual != null && (
+        catalogCard.fees.annual.amount === 0 ? (
           <DashedBadge variant="green">Miễn phí thường niên</DashedBadge>
         ) : (
-          <DashedBadge>PTN: {catalogCard.annual_fee.toLocaleString('vi-VN')}đ</DashedBadge>
+          <DashedBadge>PTN: {catalogCard.fees.annual.amount.toLocaleString('vi-VN')}đ</DashedBadge>
         )
       )}
 
