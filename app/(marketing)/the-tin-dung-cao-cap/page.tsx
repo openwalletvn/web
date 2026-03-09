@@ -45,7 +45,7 @@ export default async function PremiumCreditPage() {
     });
 
     // Sort all cards by annual fee asc, then group by network
-    const sorted = [...cards].sort((a, b) => (a.annual_fee ?? 0) - (b.annual_fee ?? 0));
+    const sorted = [...cards].sort((a, b) => (a.fees?.annual?.amount ?? 0) - (b.fees?.annual?.amount ?? 0));
 
     const networkMap = new Map<string, { name: string; cards: typeof sorted }>();
     for (const card of sorted) {

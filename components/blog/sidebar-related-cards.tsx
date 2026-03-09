@@ -40,11 +40,11 @@ export async function SidebarRelatedCards({ cardSlugs }: Props) {
           const imageUrl = getCardImageUrl(card);
 
             const fee =
-                card.annual_fee == null
+                card.fees?.annual == null
                     ? null
-                    : card.annual_fee === 0
+                    : card.fees.annual.amount === 0
                         ? 'Miễn phí'
-                        : `${card.annual_fee.toLocaleString('vi-VN')} ${card.currency ?? 'VND'}`;
+                        : `${card.fees.annual.amount.toLocaleString('vi-VN')} ${card.currency ?? 'VND'}`;
 
             const networkLabel = card.card_network
                 ? `${card.card_network}${card.card_tier ? ` ${card.card_tier}` : ''}`

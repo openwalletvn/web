@@ -169,10 +169,10 @@ function CardsGridInner({
     }, [cards]);
     const tierFilterUseful = availableTiers.length > 1;
 
-    const feeFilterUseful = cards.some((c) => c.annual_fee != null && c.annual_fee > 0);
+    const feeFilterUseful = cards.some((c) => c.fees?.annual != null && c.fees.annual.amount > 0);
 
     const sortFilterUseful = useMemo(
-        () => cards.filter((c) => c.annual_fee != null).length > 1,
+        () => cards.filter((c) => c.fees?.annual != null).length > 1,
         [cards]
     );
 
@@ -187,22 +187,22 @@ function CardsGridInner({
         if (bankId) result = result.filter((c) => c.bank_id === bankId);
         if (coBrand) result = result.filter((c) => c.co_brand === coBrand);
         if (contactless) result = result.filter((c) => c.contactless_methods?.includes(contactless));
-        if (fee === 'free') result = result.filter((c) => c.annual_fee === 0);
-        if (fee === 'unknown') result = result.filter((c) => c.annual_fee == null);
+        if (fee === 'free') result = result.filter((c) => c.fees?.annual?.amount === 0);
+        if (fee === 'unknown') result = result.filter((c) => c.fees?.annual == null);
         const bucket = FEE_BUCKETS.find((b) => b.value === fee);
         if (bucket) {
             result = result.filter((c) => {
-                if (c.annual_fee == null) return false;
-                if (c.annual_fee < bucket.min) return false;
-                if (bucket.max !== null && c.annual_fee > bucket.max) return false;
+                if (c.fees?.annual == null) return false;
+                if (c.fees.annual.amount < bucket.min) return false;
+                if (bucket.max !== null && c.fees.annual.amount > bucket.max) return false;
                 return true;
             });
         }
 
         if (sort === 'fee_asc') {
-            result = [...result].sort((a, b) => (a.annual_fee ?? 0) - (b.annual_fee ?? 0));
+            result = [...result].sort((a, b) => (a.fees?.annual?.amount ?? 0) - (b.fees?.annual?.amount ?? 0));
         } else if (sort === 'fee_desc') {
-            result = [...result].sort((a, b) => (b.annual_fee ?? 0) - (a.annual_fee ?? 0));
+            result = [...result].sort((a, b) => (b.fees?.annual?.amount ?? 0) - (a.fees?.annual?.amount ?? 0));
         } else if (sort === 'tier_asc') {
             result = [...result].sort((a, b) => (a.card_tier_data?.rank ?? Infinity) - (b.card_tier_data?.rank ?? Infinity));
         }

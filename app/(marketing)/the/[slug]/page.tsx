@@ -5,7 +5,6 @@ import {getTranslations, getLocale} from 'next-intl/server';
 import {Badge} from '@/components/ui/badge';
 import {getBank, getBankImageUrl, getCard, getCards, getWalletImageUrl} from '@/lib/api';
 import {MetalBadge} from '@/components/cards/metal-badge';
-import {getFeeBucket} from '@/lib/fee-buckets';
 import {CardImage} from '@/components/cards/card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {AddToWalletButton} from './_add-to-wallet-button';
@@ -108,25 +107,6 @@ export default async function CardPage({params}: Props) {
                         <AddToWalletButton card={card}/>
 
                         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-base">
-                            {card.annual_fee != null && (() => {
-                                const feeBucket = card.annual_fee > 0 ? getFeeBucket(card.annual_fee) : null;
-                                return (
-                                    <>
-                                        <dt className="text-slate-500">{t('annual_fee')}</dt>
-                                        <dd className="font-medium">
-                      <span className="text-slate-900">
-                        {card.annual_fee === 0 ? t('free') : `${card.annual_fee.toLocaleString()} ${card.currency ?? ''}`}
-                      </span>
-                                            {feeBucket && (
-                                                <Link href={`/the?fee=${feeBucket.value}&sort=fee_desc`}
-                                                      className="block text-sm text-slate-400 hover:text-brand-blue underline underline-offset-2 transition-colors mt-0.5">
-                                                    Xem thêm thẻ {feeBucket.label}
-                                                </Link>
-                                            )}
-                                        </dd>
-                                    </>
-                                );
-                            })()}
                             {card.interest_free_days !== undefined && (
                                 <>
                                     <dt className="text-slate-500">{t('interest_free_days')}</dt>
@@ -164,6 +144,63 @@ export default async function CardPage({params}: Props) {
                                 </>
                             )}
                         </dl>
+
+                        {card.fees && Object.keys(card.fees).length > 0 && (() => {
+                            const FEE_LABELS: Record<string, string> = {
+                                annual: 'Phí thường niên',
+                                annual_supplementary: 'Phí thường niên thẻ phụ',
+                                issuance: 'Phí phát hành',
+                                cancellation: 'Phí huỷ thẻ',
+                                foreign: 'Phí giao dịch ngoại tệ',
+                                foreign_dcc: 'Phí giao dịch ngoại tệ (DCC)',
+                            };
+                            const entries = (Object.keys(FEE_LABELS) as (keyof typeof FEE_LABELS)[])
+                                .filter((k) => card.fees![k as keyof typeof card.fees] != null)
+                                .map((k) => ({ key: k, label: FEE_LABELS[k], entry: card.fees![k as keyof typeof card.fees]! }));
+                            if (entries.length === 0) return null;
+                            return (
+                                <div>
+                                    <h2 className="text-base font-semibold text-slate-700 mb-2">Biểu phí</h2>
+                                    <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-base">
+                                        {entries.map(({ key, label, entry }) => (
+                                            <>
+                                                <dt key={`${key}-dt`} className="text-slate-500">{label}</dt>
+                                                <dd key={`${key}-dd`} className="font-medium">
+                                                    {entry.type === 'currency' ? (
+                                                        entry.amount === 0
+                                                            ? <span className="text-green-600">Miễn phí</span>
+                                                            : <span className="text-slate-900">{entry.amount.toLocaleString('vi-VN')}đ</span>
+                                                    ) : (
+                                                        <span className="text-slate-900">{entry.amount}%</span>
+                                                    )}
+                                                    {entry.note && (
+                                                        <span className="block text-sm text-slate-400 mt-0.5">{entry.note}</span>
+                                                    )}
+                                                </dd>
+                                            </>
+                                        ))}
+                                        {card.sources && card.sources.length > 0 && (
+                                            <>
+                                                <dt className="text-slate-500">Nguồn</dt>
+                                                <dd className="flex flex-col gap-0.5">
+                                                    {card.sources.map((src, i) => (
+                                                        <a
+                                                            key={i}
+                                                            href={src.page != null ? `${src.url}#page=${src.page}` : src.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-sm text-brand-blue hover:underline"
+                                                        >
+                                                            {src.label}
+                                                        </a>
+                                                    ))}
+                                                </dd>
+                                            </>
+                                        )}
+                                    </dl>
+                                </div>
+                            );
+                        })()}
 
                         {card.contactless_methods_data && card.contactless_methods_data.length > 0 && (
                             <div>

@@ -21,9 +21,9 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
     cards = cards.filter((c) => !!c.co_brand);
   }
   if (filters?.sort === 'fee_asc') {
-    cards = [...cards].sort((a, b) => (a.annual_fee ?? 0) - (b.annual_fee ?? 0));
+    cards = [...cards].sort((a, b) => (a.fees?.annual?.amount ?? 0) - (b.fees?.annual?.amount ?? 0));
   } else if (filters?.sort === 'fee_desc') {
-    cards = [...cards].sort((a, b) => (b.annual_fee ?? 0) - (a.annual_fee ?? 0));
+    cards = [...cards].sort((a, b) => (b.fees?.annual?.amount ?? 0) - (a.fees?.annual?.amount ?? 0));
   }
 
   const displayed = limit ? cards.slice(0, limit) : cards;
