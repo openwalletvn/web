@@ -50,13 +50,14 @@ interface Props {
 export function CardFeesBlock({ fees, sources }: Props) {
     const annual = fees.annual;
 
-    const secondaryFees: { key: keyof CardFees; label: string }[] = [
+    const allSecondaryFees: { key: keyof CardFees; label: string }[] = [
         { key: 'annual_supplementary', label: 'Thẻ phụ' },
         { key: 'issuance', label: 'Phát hành' },
         { key: 'cancellation', label: 'Hủy thẻ' },
         { key: 'foreign', label: 'Ngoại tệ' },
         { key: 'foreign_dcc', label: 'Ngoại tệ (DCC)' },
-    ].filter(({ key }) => fees[key] != null) as { key: keyof CardFees; label: string }[];
+    ];
+    const secondaryFees = allSecondaryFees.filter(({ key }) => fees[key] != null);
 
     return (
         <div className="flex flex-col gap-3">
