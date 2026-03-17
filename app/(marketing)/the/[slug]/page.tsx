@@ -77,7 +77,7 @@ export default async function CardPage({ params }: Props) {
                             <AddToWalletButton card={card} />
                             {process.env.NODE_ENV === 'development' && (
                                 <a
-                                    href={`http://localhost:3003/edit-card.html?id=${card.id}`}
+                                    href={`http://localhost:3004/#/cards/${card.id}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center justify-center px-4 py-2 border border-dashed border-orange-300 bg-orange-50 text-orange-700 rounded-sm hover:border-orange-400 hover:bg-orange-100 transition-colors text-sm font-medium w-full"
@@ -91,6 +91,14 @@ export default async function CardPage({ params }: Props) {
                     {/* Right column: scrollable sections */}
                     <div className="flex-1 flex flex-col gap-8 min-w-0">
                         <CardDetailHeader card={card} bank={bank} />
+                        {card.description && (
+                            <section className="flex flex-col gap-4">
+                                <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Về thẻ này</h2>
+                                {card.description.split('\n\n').map((para, i) => (
+                                    <p key={i} className="text-sm text-slate-800">{para}</p>
+                                ))}
+                            </section>
+                        )}
                         <CardDetailBillingCycle card={card} bank={bank} />
                         <CardDetailFees card={card} bank={bank} />
                         <CardDetailOtherFees card={card} bank={bank} />

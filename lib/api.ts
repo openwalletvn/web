@@ -131,6 +131,7 @@ export interface Card {
     last_modified?: string;
     is_metal?: boolean;
     for_business?: boolean;
+    description?: string;
 }
 
 export type CardSort = 'fee_asc' | 'fee_desc';
