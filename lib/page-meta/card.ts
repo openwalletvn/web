@@ -13,7 +13,8 @@ export interface CardPageMeta {
 
 export function buildCardPageMeta(card: Card, bank: Bank | null): CardPageMeta {
     const bankName = bank?.name ?? '';
-    const description = `${card.name} - thẻ ${card.card_network} ${card.card_type.join('/')} ${bankName ? `của ${bankName}` : 'trên Open Wallet'}.`;
+    const fallbackDescription = `${card.name} - thẻ ${card.card_network} ${card.card_type.join('/')} ${bankName ? `của ${bankName}` : 'trên Open Wallet'}.`;
+    const description = card.description ? card.description.slice(0, 160) : fallbackDescription;
     const title = `${card.name} | Open Wallet`;
     const url = `${BASE_URL}/the/${card.id}`;
 
