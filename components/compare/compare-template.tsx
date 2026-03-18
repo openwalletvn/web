@@ -1,50 +1,89 @@
-import type { Card } from '@/lib/api';
+'use client';
+
+import {useEffect, useRef, useState} from 'react';
+import type {Card} from '@/lib/api';
 import Link from 'next/link';
-import { CardImage } from '@/components/cards/card-image';
-import { CompareTable } from './compare-table';
+import {CardImage} from '@/components/cards/card-image';
+import {CompareTable} from './compare-table';
 
 interface Props {
-    cardA: Card;
-    cardB: Card;
+    cards: Card[];
     children?: React.ReactNode;
 }
 
-export function CompareTemplate({ cardA, cardB, children }: Props) {
+export function CompareTemplate({cards, children}: Props) {
+    const cardHeaderRef = useRef<HTMLDivElement>(null);
+    const [showSticky, setShowSticky] = useState(false);
+
+    useEffect(() => {
+        const el = cardHeaderRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => setShowSticky(!entry.isIntersecting),
+            {threshold: 0}
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
+    const colStyle = {gridTemplateColumns: `repeat(${cards.length}, 1fr)`};
+
     return (
         <div>
-            {/* Card headers side by side */}
-            <div className="flex items-start gap-6 mb-10">
-                <div className="flex-1 flex flex-col items-center gap-3">
-                    <Link href={`/the/${cardA.id}`} className="w-48 block">
-                        <CardImage card={cardA} />
-                    </Link>
-                    <Link
-                        href={`/the/${cardA.id}`}
-                        className="text-base font-semibold text-slate-900 hover:text-brand-red transition-colors text-center"
-                    >
-                        {cardA.name}
-                    </Link>
-                </div>
-
-                <div className="text-2xl font-bold text-slate-300 shrink-0 pt-12">vs</div>
-
-                <div className="flex-1 flex flex-col items-center gap-3">
-                    <Link href={`/the/${cardB.id}`} className="w-48 block">
-                        <CardImage card={cardB} />
-                    </Link>
-                    <Link
-                        href={`/the/${cardB.id}`}
-                        className="text-base font-semibold text-slate-900 hover:text-brand-red transition-colors text-center"
-                    >
-                        {cardB.name}
-                    </Link>
+            {/* ── Sticky mini header ────────────────────────────────────────── */}
+            <div
+                className={`fixed top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm transition-transform duration-200 ease-out ${
+                    showSticky ? 'translate-y-0' : '-translate-y-full'
+                }`}
+            >
+                <div className="min-h-[80px] max-w-[980px] mx-auto py-2 flex items-center">
+                    <div className="grid w-full" style={colStyle}>
+                        {cards.map((card) => (
+                            <div key={card.id} className="flex items-center gap-2">
+                                <Link href={`/the/${card.id}`} className="block">
+                                    <CardImage card={card} tilt className="h-[60px] w-auto"/>
+                                </Link>
+                                <Link
+                                    href={`/the/${card.id}`}
+                                    className="text-sm font-semibold text-slate-900 hover:text-brand-red transition-colors line-clamp-2"
+                                >
+                                    {card.name}
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
-            {/* Comparison table */}
-            <CompareTable cardA={cardA} cardB={cardB} />
+            {/* ── Main card header ──────────────────────────────────────────── */}
+            <div ref={cardHeaderRef} className="grid mb-8" style={colStyle}>
+                {cards.map((card) => (
+                    <div key={card.id} className="flex flex-col gap-3">
+                        <Link href={`/the/${card.id}`} className="h-[200px] flex items-end">
+                            {card.image?.orientation === "vertical" ? (
+                                <div className="h-full flex justify-center items-center">
+                                    <CardImage card={card} tilt className="h-full w-auto"/>
+                                </div>
+                            ) : (
+                                <div className="w-full max-w-[200px] flex justify-center items-center">
+                                    <CardImage card={card} tilt className="w-full"/>
+                                </div>
+                            )}
+                        </Link>
+                        <Link
+                            href={`/the/${card.id}`}
+                            className="text-base font-semibold text-slate-900 hover:text-brand-red transition-colors"
+                        >
+                            {card.name}
+                        </Link>
+                    </div>
+                ))}
+            </div>
 
-            {/* Editorial MDX content */}
+            {/* ── Comparison table ──────────────────────────────────────────── */}
+            <CompareTable cards={cards}/>
+
+            {/* ── Editorial MDX content ─────────────────────────────────────── */}
             {children && (
                 <div className="mt-12 prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline">
                     {children}

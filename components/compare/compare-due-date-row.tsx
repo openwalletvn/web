@@ -1,13 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { IconCalendarTime } from '@tabler/icons-react';
 import { getRelatedStatements } from '@/lib/card-dates';
 import type { Card } from '@/lib/api';
 
 interface Props {
-    cardA: Card;
-    cardB: Card;
+    cards: Card[];
 }
 
 function getNextDue(card: Card): string {
@@ -21,30 +19,22 @@ function getNextDue(card: Card): string {
     return `ngày ${day}/${month}`;
 }
 
-export function CompareDueDateRow({ cardA, cardB }: Props) {
-    const [dueA, setDueA] = useState<string | null>(null);
-    const [dueB, setDueB] = useState<string | null>(null);
+export function CompareDueDateRow({ cards }: Props) {
+    const [dues, setDues] = useState<(string | null)[]>(() => Array(cards.length).fill(null));
 
     useEffect(() => {
-        setDueA(getNextDue(cardA));
-        setDueB(getNextDue(cardB));
-    }, [cardA, cardB]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const resolved = dueA !== null && dueB !== null;
-    const same = resolved && dueA === dueB;
-    const valueClass = same ? 'text-slate-400' : 'text-slate-800';
+        setDues(cards.map(getNextDue));
+    }, [cards]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <div className="py-6 border-b border-slate-100 last:border-0">
-            <div className="flex items-center justify-center gap-1.5 mb-4 text-slate-400">
-                <IconCalendarTime size={13} />
-                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Ngày đến hạn dự kiến
-                </span>
-            </div>
-            <div className="grid grid-cols-2">
-                <div className={`text-center text-lg font-semibold ${valueClass}`}>{dueA ?? '…'}</div>
-                <div className={`text-center text-lg font-semibold ${valueClass}`}>{dueB ?? '…'}</div>
+        <div className="py-3">
+            <p className="text-xs text-slate-400 mb-1.5">Ngày đến hạn dự kiến</p>
+            <div className="grid" style={{ gridTemplateColumns: `repeat(${cards.length}, 1fr)` }}>
+                {dues.map((due, i) => (
+                    <div key={i} className="text-lg font-semibold text-slate-800">
+                        {due ?? '…'}
+                    </div>
+                ))}
             </div>
         </div>
     );
