@@ -1,5 +1,5 @@
-import { ImageResponse } from 'next/og';
-import { OG_SIZE } from '@/lib/og-card';
+import {ImageResponse} from 'next/og';
+import {OG_SIZE} from '@/lib/og-card';
 
 interface CompareOgImageOptions {
     titleA: string;
@@ -29,48 +29,6 @@ export function createCompareOgImage({
                     position: 'relative',
                 }}
             >
-                {/* Red bottom accent line */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        height: '10px',
-                        backgroundColor: '#dc2626',
-                    }}
-                />
-
-                {/* Site name - top-left */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '40px',
-                        left: '48px',
-                        color: 'rgba(255,255,255,0.8)',
-                        fontSize: '26px',
-                        fontWeight: 800,
-                        letterSpacing: '0.02em',
-                    }}
-                >
-                    OpenWallet.vn
-                </div>
-
-                {/* "vs" centered */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        color: 'rgba(255,255,255,0.2)',
-                        fontSize: '96px',
-                        fontWeight: 800,
-                        letterSpacing: '0.02em',
-                    }}
-                >
-                    vs
-                </div>
 
                 {/* Card A — left half */}
                 {imageUrlA && isVerticalA ? (
@@ -78,18 +36,8 @@ export function createCompareOgImage({
                         <img src={imageUrlA} style={{
                             objectFit: 'contain',
                             position: 'absolute',
-                            bottom: '10px',
+                            bottom: '20px',
                             left: '100px',
-                            width: '440px',
-                            height: '550px',
-                            transform: 'rotate(25deg)',
-                            opacity: '0.7',
-                        }} alt="" />
-                        <img src={imageUrlA} style={{
-                            objectFit: 'contain',
-                            position: 'absolute',
-                            bottom: '-10px',
-                            left: '60px',
                             width: '460px',
                             height: '570px',
                             transform: 'rotate(8deg)',
@@ -100,18 +48,8 @@ export function createCompareOgImage({
                         <img src={imageUrlA} style={{
                             objectFit: 'contain',
                             position: 'absolute',
-                            left: '0px',
-                            bottom: '60px',
-                            width: '520px',
-                            height: '550px',
-                            transform: 'rotate(-10deg)',
-                            opacity: '0.7',
-                        }} alt="" />
-                        <img src={imageUrlA} style={{
-                            objectFit: 'contain',
-                            position: 'absolute',
-                            left: '-10px',
-                            bottom: '-20px',
+                            left: '-20px',
+                            bottom: '30px',
                             width: '550px',
                             height: '550px',
                             transform: 'rotate(5deg)',
@@ -119,20 +57,7 @@ export function createCompareOgImage({
                     </>
                 )}
 
-                {/* Card A name — bottom-left */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        bottom: '24px',
-                        left: '48px',
-                        color: '#ffffff',
-                        fontSize: '32px',
-                        fontWeight: 700,
-                        maxWidth: '480px',
-                    }}
-                >
-                    {titleA}
-                </div>
+
 
                 {/* Card B — right half */}
                 {imageUrlB && isVerticalB ? (
@@ -140,18 +65,8 @@ export function createCompareOgImage({
                         <img src={imageUrlB} style={{
                             objectFit: 'contain',
                             position: 'absolute',
-                            bottom: '10px',
-                            right: '100px',
-                            width: '440px',
-                            height: '550px',
-                            transform: 'rotate(-25deg)',
-                            opacity: '0.7',
-                        }} alt="" />
-                        <img src={imageUrlB} style={{
-                            objectFit: 'contain',
-                            position: 'absolute',
-                            bottom: '-10px',
-                            right: '60px',
+                            bottom: '30px',
+                            left: '650px',
                             width: '460px',
                             height: '570px',
                             transform: 'rotate(-8deg)',
@@ -162,18 +77,8 @@ export function createCompareOgImage({
                         <img src={imageUrlB} style={{
                             objectFit: 'contain',
                             position: 'absolute',
-                            right: '0px',
-                            bottom: '60px',
-                            width: '520px',
-                            height: '550px',
-                            transform: 'rotate(10deg)',
-                            opacity: '0.7',
-                        }} alt="" />
-                        <img src={imageUrlB} style={{
-                            objectFit: 'contain',
-                            position: 'absolute',
-                            right: '-10px',
-                            bottom: '-20px',
+                            left: '680px',
+                            bottom: '30px',
                             width: '550px',
                             height: '550px',
                             transform: 'rotate(-5deg)',
@@ -181,20 +86,93 @@ export function createCompareOgImage({
                     </>
                 )}
 
+
+                {/* "vs" centered */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        color: 'rgba(255,255,255,1)',
+                        fontSize: '96px',
+                        fontWeight: 800,
+                        letterSpacing: '0.02em',
+                    }}
+                >
+                    vs
+                </div>
+
+                {/* Gradient bottom accent line */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        height: '160px',
+                        backgroundImage: 'linear-gradient(to top, rgba(15, 23, 42, 1), rgba(30, 41, 59, 0))',//'#dc2626',
+                    }}
+                />
+
+
+                {/* Site name - top-left */}
+                {isVerticalA ?
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: '100px',
+                            left: '-50px',
+                            color: 'rgba(255,255,255,0.8)',
+                            fontSize: '26px',
+                            fontWeight: 800,
+                            transform: 'rotate(-90deg) translate(0,0)',
+                            letterSpacing: '0.02em',
+                        }}
+                    >
+                        OpenWallet.vn
+                    </div> :
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: '20px',
+                            left: '30px',
+                            color: 'rgba(255,255,255,0.8)',
+                            fontSize: '26px',
+                            fontWeight: 800,
+                            letterSpacing: '0.02em',
+                        }}
+                    >
+                        OpenWallet.vn
+                    </div>
+                }
+
                 {/* Card B name — bottom-right */}
                 <div
                     style={{
                         position: 'absolute',
                         bottom: '24px',
                         right: '48px',
-                        color: '#ffffff',
+                        color: '#fff',
                         fontSize: '32px',
                         fontWeight: 700,
-                        maxWidth: '480px',
-                        textAlign: 'right',
                     }}
                 >
                     {titleB}
+                </div>
+
+                {/* Card A name — bottom-left */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        bottom: '24px',
+                        left: '48px',
+                        color: '#fff',
+                        fontSize: '32px',
+                        fontWeight: 700,
+                    }}
+                >
+                    {titleA}
                 </div>
             </div>
         ),

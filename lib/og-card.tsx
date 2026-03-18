@@ -24,6 +24,21 @@ export function createCardOgImage({title, description, cardImageUrl, isVertical 
                     position: 'relative',
                 }}
             >
+                {/* Gradient bottom accent line */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        left: '-200px',
+                        right: 0,
+                        top: '-220px',
+                        height: '1200px',
+                        width: '1500px',
+                        transform: 'rotate(-25deg)',
+                        backgroundImage: 'linear-gradient(to bottom, rgba(220, 38, 30, .7),  rgba(0,0,0,0))',//'#dc2626',
+                    }}
+                />
+
+
                 {/* Left: title + description, anchored to bottom-left */}
                 <div
                     style={{
@@ -98,7 +113,7 @@ export function createCardOgImage({title, description, cardImageUrl, isVertical 
                                     width: '440px',
                                     height: '550px',
                                     transform: 'rotate(-25deg)',
-                                    opacity: '0.7'
+                                    opacity: '0.9'
                                 }
                             } alt=""/>
                             <img src={cardImageUrl} style={
@@ -125,7 +140,7 @@ export function createCardOgImage({title, description, cardImageUrl, isVertical 
                                     width: '520px',
                                     height: '550px',
                                     transform: 'rotate(10deg)',
-                                    opacity: '0.7'
+                                    opacity: '0.9'
                                 }
                             } alt=""/>
                             <img src={cardImageUrl} style={
