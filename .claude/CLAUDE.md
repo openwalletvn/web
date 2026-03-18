@@ -103,10 +103,17 @@ All public pages emit `<script type="application/ld+json">` via `lib/page-meta/`
 - **Never** use raw `fetch()` for API calls — always go through `apiFetch()`.
 - The `apiUrl` constant in `lib/api.ts` handles base URL; pass only the path to `apiFetch()` (e.g. `apiFetch('/api/v1/cards')`).
 
+## Learnings & Concepts
+
+Personal knowledge base for concepts and patterns encountered while building this project.
+
+- **Notes:** `.claude/docs/learnings/` — review anytime to consolidate knowledge
+
 ## Meta-rules
 
 1. **Before starting any task**, check `.claude/commands/` for a relevant command file.
 2. **After creating a new command**, add it to the commands table below.
+3. **After solving any non-trivial task**, check whether new concepts, patterns, or decisions were involved — if yes, suggest updating `.claude/docs/learnings/` and offer to write the note. Topics worth noting: anything about static export constraints, SEO/JSON-LD patterns, Dexie/IndexedDB, MDX pipeline, Next.js App Router patterns, performance decisions, or tools encountered for the first time.
 
 ## Custom commands
 
