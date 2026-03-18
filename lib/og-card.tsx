@@ -2,14 +2,24 @@ import {ImageResponse} from 'next/og';
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
+function hexToRgba(hex: string, alpha: number): string {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 interface OgImageOptions {
     title: string;
     description?: string;
     isVertical?: boolean;
-    cardImageUrl: string
+    cardImageUrl: string;
+    accentColor?: string;
 }
 
-export function createCardOgImage({title, description, cardImageUrl, isVertical = false}: OgImageOptions) {
+export function createCardOgImage({title, description, cardImageUrl, isVertical = false, accentColor}: OgImageOptions) {
+    const accent = accentColor ? hexToRgba(accentColor, 0.95) : 'rgba(220, 38, 30, .7)';
     return new ImageResponse(
         (
             <div
@@ -34,7 +44,7 @@ export function createCardOgImage({title, description, cardImageUrl, isVertical 
                         height: '1200px',
                         width: '1500px',
                         transform: 'rotate(-25deg)',
-                        backgroundImage: 'linear-gradient(to bottom, rgba(220, 38, 30, .7),  rgba(0,0,0,0))',//'#dc2626',
+                        backgroundImage: `linear-gradient(to bottom, ${accent}, rgba(0,0,0,0))`,
                     }}
                 />
 
