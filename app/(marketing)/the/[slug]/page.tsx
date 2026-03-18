@@ -12,6 +12,8 @@ import { CardDetailOtherFees } from '@/components/cards/detail/card-detail-other
 import { CardDetailSources } from '@/components/cards/detail/card-detail-sources';
 import { CardDetailLastModified } from '@/components/cards/detail/card-detail-last-modified';
 import { CardDetailRelated } from '@/components/cards/detail/card-detail-related';
+import { CardDetailCompare } from '@/components/cards/detail/card-detail-compare';
+import { getCardComparePairs } from '@/lib/api';
 
 export async function generateStaticParams() {
     const cards = await getCards();
@@ -51,10 +53,25 @@ export default async function CardPage({ params }: Props) {
         );
     }
 
-    const [bank, relatedCards] = await Promise.all([
+    const [bank, relatedCards, comparePairs] = await Promise.all([
         getBank(card.bank_id).catch(() => null),
         getCards({ bank_id: card.bank_id }).catch(() => []),
+        getCardComparePairs(card.id).catch(() => []),
     ]);
+
+    // Build compare cards list and links map
+    const compareCardIds = comparePairs
+        .map((p) => (p.a === card.id ? p.b : p.a))
+        .filter(Boolean);
+    const compareCardsRaw = await Promise.all(
+        compareCardIds.map((id) => getCard(id).catch(() => null)),
+    );
+    const compareCards = compareCardsRaw.filter((c): c is NonNullable<typeof c> => c !== null);
+    const compareLinks: Record<string, string> = {};
+    for (const other of compareCards) {
+        const [a, b] = [card.id, other.id].sort();
+        compareLinks[other.id] = `/so-sanh/${a}-vs-${b}`;
+    }
 
     const { jsonLd, breadcrumbItems } = buildCardPageMeta(card, bank);
     const isVertical = card.image?.orientation === 'vertical';
@@ -107,6 +124,11 @@ export default async function CardPage({ params }: Props) {
                     </div>
                 </div>
 
+                <CardDetailCompare
+                    currentCard={card}
+                    compareCards={compareCards}
+                    compareLinks={compareLinks}
+                />
                 <CardDetailRelated cards={sameTypeCards} currentCardId={card.id} />
             </div>
         </div>

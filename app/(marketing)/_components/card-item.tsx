@@ -12,9 +12,11 @@ import {MetalBadge} from '@/components/cards/metal-badge';
 
 interface Props {
     card: Card;
+    href?: string;
+    badge?: string;
 }
 
-export function CardItem({card}: Props) {
+export function CardItem({card, href, badge}: Props) {
     const t = useTranslations('CardDetail');
     const router = useRouter();
 
@@ -38,6 +40,16 @@ export function CardItem({card}: Props) {
         >
             {/* Card image with tilt + glow */}
             <div className="relative">
+                {badge && (
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full z-10 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                        <span className="whitespace-nowrap px-2 py-1 rounded bg-slate-800 text-white text-[11px] font-medium leading-tight shadow">
+                            {badge}
+                        </span>
+                        <svg width="10" height="6" viewBox="0 0 10 6" className="text-slate-800 fill-current">
+                            <path d="M0 0 L5 6 L10 0 Z" />
+                        </svg>
+                    </div>
+                )}
                 {/* Shadow div - painted behind card image, no overflow clip */}
                 {isVertical &&
                     <div className="absolute left-1/2 top-1/2 w-[50%] h-[80%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_100px_var(--glow-color)]"/>
@@ -45,7 +57,8 @@ export function CardItem({card}: Props) {
                 {!isVertical &&
                     <div className="absolute left-1/2 top-1/2 w-[50%] h-[50%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_80px_var(--glow-color)]"/>
                 }
-                <Link href={`/the/${card.id}`}
+                <Link href={href ?? `/the/${card.id}`}
+                      aria-label={badge}
                       className="relative block group-hover:scale-105 transition-transform duration-300">
                     <CardImage card={card} tilt />
                 </Link>

@@ -11,6 +11,12 @@ export interface RecentEntry {
     visitedAt: number;
 }
 
+// Canonical form: sorted IDs joined with comma, handles both "a,b" and "a-vs-b" formats
+function normalizePair(pair: string): string {
+    const ids = pair.includes(',') ? pair.split(',') : pair.split('-vs-');
+    return ids.filter(Boolean).sort().join(',');
+}
+
 function readStorage(): RecentEntry[] {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -43,16 +49,18 @@ export function useRecentCompares(): UseRecentComparesReturn {
     }, []);
 
     const addCompare = useCallback((pair: string) => {
+        const key = normalizePair(pair);
         const updated = [
-            { pair, visitedAt: Date.now() },
-            ...readStorage().filter((e) => e.pair !== pair),
+            { pair: key, visitedAt: Date.now() },
+            ...readStorage().filter((e) => normalizePair(e.pair) !== key),
         ].slice(0, MAX_ENTRIES);
         writeStorage(updated);
         setRecentCompares(updated);
     }, []);
 
     const removeCompare = useCallback((pair: string) => {
-        const updated = readStorage().filter((e) => e.pair !== pair);
+        const key = normalizePair(pair);
+        const updated = readStorage().filter((e) => normalizePair(e.pair) !== key);
         writeStorage(updated);
         setRecentCompares(updated);
     }, []);
