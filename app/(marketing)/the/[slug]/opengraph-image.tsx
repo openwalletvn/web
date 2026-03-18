@@ -29,6 +29,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         const bankRes = await apiFetch(`/api/v1/banks/${card.bank_id}`);
         const bankJson = await bankRes.json();
         const bankName: string = bankJson.success ? (bankJson.data.name ?? '') : '';
+        const brandColor: string | undefined = bankJson.success ? bankJson.data.brand_color : undefined;
 
         const rawImageUrl = card.image?.url ?? null;
 
@@ -63,7 +64,8 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             title: card.name,
             description,
             cardImageUrl: cardImageUrl ? cardImageUrl : '',
-            isVertical
+            isVertical,
+            accentColor: brandColor,
         });
     } catch {
         return createOgImage({title: slug, description: 'Open Wallet · The ngan hang'});
