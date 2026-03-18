@@ -1,14 +1,16 @@
 import fs from 'fs'
 import path from 'path'
 import { MetadataRoute } from 'next'
+import { getComparePairs } from '@/lib/api'
 import { apiFetch } from '@/lib/api'
+import { getCompareMdxPairs } from '@/lib/compare-mdx'
 
 export const dynamic = 'force-static'
 
 const BASE_URL = 'https://openwallet.vn'
 
 // Folders handled separately or not pages
-const EXCLUDED_DIRS = ['ngan-hang', 'the', 'tin-tuc', 'docs']
+const EXCLUDED_DIRS = ['ngan-hang', 'the', 'tin-tuc', 'docs', 'so-sanh']
 
 function getStaticPages(): string[] {
   const dir = path.join(process.cwd(), 'app/(marketing)')
@@ -63,10 +65,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }
 
+  // 5. Compare pairs
+  const [apiPairs, mdxPairs] = await Promise.all([
+    getComparePairs().catch(() => []),
+    Promise.resolve(getCompareMdxPairs()),
+  ])
+  const allPairs = [...new Set([...apiPairs.map((p) => `${p.a}-vs-${p.b}`), ...mdxPairs])]
+  const comparePages = [
+    { url: `${BASE_URL}/so-sanh`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    ...allPairs.map((pair) => ({
+      url: `${BASE_URL}/so-sanh/${pair}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    })),
+  ]
+
   return [
     ...staticPages,
     ...bankPages,
     ...cardPages,
     changelogPage,
+    ...comparePages,
   ]
 }

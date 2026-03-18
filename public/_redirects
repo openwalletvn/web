@@ -1,3 +1,4 @@
 /cards/*  /the/:splat  301
 /banks/*  /ngan-hang/:splat  301
 /blog/*  /tin-tuc/:splat  301
+/so-sanh/*  /so-sanh/index.html  200
