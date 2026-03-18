@@ -336,3 +336,25 @@ export async function getCardComparePairs(id: string): Promise<ComparePair[]> {
     if (!json.success) throw new Error(`Failed to fetch compare pairs for card: ${id}`);
     return json.data.map(([a, b]) => ({ a, b }));
 }
+
+/**
+ * Given a list of card IDs, fetch all their compare pairs and return
+ * up to `max` unique partner card IDs (excluding the input IDs themselves).
+ */
+export async function getComparableCardIds(cardIds: string[], max = 6): Promise<string[]> {
+    const allPairs = await Promise.all(cardIds.map((id) => getCardComparePairs(id).catch(() => [])));
+    const inputSet = new Set(cardIds);
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const pairs of allPairs) {
+        for (const { a, b } of pairs) {
+            const partner = inputSet.has(a) ? b : a;
+            if (!seen.has(partner) && !inputSet.has(partner)) {
+                seen.add(partner);
+                result.push(partner);
+                if (result.length >= max) return result;
+            }
+        }
+    }
+    return result;
+}
