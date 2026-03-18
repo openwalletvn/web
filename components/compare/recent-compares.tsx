@@ -74,7 +74,7 @@ export function RecentCompares({ pairs, onRemove }: Props) {
                             >
                                 <div className="flex items-center gap-3 min-w-0">
                                     {searchCards.map((sc, i) => (
-                                        <div key={ids[i]} className="flex items-center gap-1.5">
+                                        <div key={ids[i]} className="flex items-center gap-1.5 w-[200px]">
                                             {i > 0 && <span className="text-slate-300 text-xs">·</span>}
                                             {sc ? (
                                                 <CardImage
@@ -84,7 +84,7 @@ export function RecentCompares({ pairs, onRemove }: Props) {
                                             ) : (
                                                 <div className="h-7 w-11 bg-slate-100 rounded-sm shrink-0" />
                                             )}
-                                            <span className="text-sm text-slate-700 truncate max-w-[120px]">
+                                            <span className="text-sm text-slate-700 truncate">
                                                 {sc?.name ?? ids[i]}
                                             </span>
                                         </div>
