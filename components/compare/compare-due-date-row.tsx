@@ -5,7 +5,7 @@ import { getRelatedStatements } from '@/lib/card-dates';
 import type { Card } from '@/lib/api';
 
 interface Props {
-    cards: Card[];
+    cards: (Card | null)[];
 }
 
 function getNextDue(card: Card): string {
@@ -23,7 +23,7 @@ export function CompareDueDateRow({ cards }: Props) {
     const [dues, setDues] = useState<(string | null)[]>(() => Array(cards.length).fill(null));
 
     useEffect(() => {
-        setDues(cards.map(getNextDue));
+        setDues(cards.map((c) => c ? getNextDue(c) : '—'));
     }, [cards]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
@@ -31,7 +31,7 @@ export function CompareDueDateRow({ cards }: Props) {
             <p className="text-xs text-slate-400 mb-1.5">Ngày đến hạn dự kiến</p>
             <div className="grid" style={{ gridTemplateColumns: `repeat(${cards.length}, 1fr)` }}>
                 {dues.map((due, i) => (
-                    <div key={i} className="text-lg font-semibold text-slate-800">
+                    <div key={i} className={`text-lg font-semibold ${due === '—' ? 'text-slate-300' : 'text-slate-800'}`}>
                         {due ?? '…'}
                     </div>
                 ))}

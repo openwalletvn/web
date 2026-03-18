@@ -30,22 +30,39 @@ export function CardSearchInput({
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchCard[]>([]);
     const [open, setOpen] = useState(false);
+    const [editing, setEditing] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const excluded = new Set([
         ...(excludeId ? [excludeId] : []),
         ...(excludeIds ?? []),
     ]);
 
+    // Reset editing when value changes externally
+    useEffect(() => {
+        setEditing(false);
+        setQuery('');
+        setOpen(false);
+    }, [value]);
+
     useEffect(() => {
         function onPointerDown(e: PointerEvent) {
             if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
                 setOpen(false);
+                if (editing) { setEditing(false); setQuery(''); }
             }
         }
         document.addEventListener('pointerdown', onPointerDown);
         return () => document.removeEventListener('pointerdown', onPointerDown);
-    }, []);
+    }, [editing]);
+
+    function enterEditing() {
+        load();
+        setEditing(true);
+        setQuery(value?.name ?? '');
+        setTimeout(() => { inputRef.current?.focus(); inputRef.current?.select(); }, 0);
+    }
 
     function handleFocus() {
         load();
@@ -70,14 +87,33 @@ export function CardSearchInput({
         setQuery('');
         setResults([]);
         setOpen(false);
+        setEditing(false);
     }
 
-    function handleClear() {
-        onChange(null);
-        setQuery('');
-        setResults([]);
-        setOpen(false);
+    function handleXClick() {
+        if (editing) {
+            // Cancel edit — keep current value
+            setEditing(false);
+            setQuery('');
+            setOpen(false);
+        } else {
+            // Clear selected card
+            onChange(null);
+            setQuery('');
+            setResults([]);
+            setOpen(false);
+        }
     }
+
+    function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === 'Escape') {
+            setEditing(false);
+            setQuery('');
+            setOpen(false);
+        }
+    }
+
+    const showInput = !value || editing;
 
     const wrapperClass = underline
         ? 'relative flex items-center border-b border-slate-300 bg-transparent focus-within:border-slate-700 transition-colors'
@@ -93,35 +129,43 @@ export function CardSearchInput({
                     <IconSearch size={15} className="absolute left-3 text-slate-400 pointer-events-none shrink-0" />
                 )}
 
-                {value ? (
-                    underline ? (
-                        <span className="flex-1 py-2 pr-6 text-sm font-medium text-slate-900 truncate">
-                            {value.name}
-                        </span>
-                    ) : (
-                        <div className="flex items-center gap-2 flex-1 pl-9 pr-8 py-2 min-w-0">
-                            {value.image_url && (
-                                <img src={value.image_url} alt={value.name} className="h-5 w-8 object-contain shrink-0" />
-                            )}
-                            <span className="text-sm text-slate-900 truncate font-medium">{value.name}</span>
-                            <span className="text-xs text-slate-500 truncate">{value.bank_name}</span>
-                        </div>
-                    )
-                ) : (
+                {showInput ? (
                     <input
+                        ref={inputRef}
                         type="text"
                         value={query}
                         onChange={handleChange}
                         onFocus={handleFocus}
+                        onKeyDown={handleKeyDown}
                         placeholder={placeholder ?? t('search_placeholder')}
                         className={`flex-1 py-2 text-sm bg-transparent outline-none placeholder:text-slate-400 ${underline ? 'pr-6' : 'pl-9 pr-8'}`}
                     />
+                ) : (
+                    underline ? (
+                        <span
+                            onClick={enterEditing}
+                            className="flex-1 py-2 pr-6 text-sm font-medium text-slate-900 truncate cursor-text"
+                        >
+                            {value!.name}
+                        </span>
+                    ) : (
+                        <div
+                            onClick={enterEditing}
+                            className="flex items-center gap-2 flex-1 pl-9 pr-8 py-2 min-w-0 cursor-text"
+                        >
+                            {value!.image_url && (
+                                <img src={value!.image_url} alt={value!.name} className="h-5 w-8 object-contain shrink-0" />
+                            )}
+                            <span className="text-sm text-slate-900 truncate font-medium">{value!.name}</span>
+                            <span className="text-xs text-slate-500 truncate">{value!.bank_name}</span>
+                        </div>
+                    )
                 )}
 
-                {(value || query) && (
+                {(value || editing || query) && (
                     <button
                         type="button"
-                        onClick={handleClear}
+                        onClick={handleXClick}
                         className="absolute right-1 text-slate-400 hover:text-slate-600 transition-colors p-1"
                     >
                         <IconX size={13} />
