@@ -6,14 +6,9 @@ import { IconX } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
 import type { Card } from '@/lib/api';
 import type { SearchCard } from '@/lib/search-types';
-import type { RecentEntry } from '@/lib/use-recent-compares';
+import { useRecentCompares, normalizePair } from '@/lib/use-recent-compares';
 import { useCardSearch } from '@/lib/use-card-search';
 import { CardImage } from '@/components/cards/card-image';
-
-interface Props {
-    pairs: RecentEntry[];
-    onRemove: (pair: string) => void;
-}
 
 // CardImage needs a full Card object; build a minimal one from SearchCard
 function toCardShell(sc: SearchCard): Card {
@@ -48,13 +43,32 @@ function formatRelativeTime(ts: number): string {
     return `${diffD} ngày trước`;
 }
 
-export function RecentCompares({ pairs, onRemove }: Props) {
+interface Props {
+    excludePair?: string;
+}
+
+export function RecentCompares({ excludePair }: Props = {}) {
     const t = useTranslations('ComparePage');
+    const { recentCompares, removeCompare } = useRecentCompares();
+    const excludeKey = excludePair ? normalizePair(excludePair) : null;
     const { lookup, load } = useCardSearch();
 
     useEffect(() => { load(); }, [load]);
 
-    if (pairs.length === 0) return null;
+    // Deduplicate by normalized key, preferring SEO slug format
+    const bestByKey = new Map<string, typeof recentCompares[0]>();
+    for (const e of recentCompares) {
+        const key = normalizePair(e.pair);
+        const cur = bestByKey.get(key);
+        if (!cur || (e.pair.includes('-vs-') && !cur.pair.includes('-vs-'))) {
+            bestByKey.set(key, e);
+        }
+    }
+    const visible = [...bestByKey.values()].filter(
+        (e) => !excludeKey || normalizePair(e.pair) !== excludeKey
+    );
+
+    if (visible.length === 0) return null;
 
     return (
         <div className="mt-16 pt-10 border-t border-slate-100">
@@ -62,14 +76,18 @@ export function RecentCompares({ pairs, onRemove }: Props) {
                 {t('recent_title')}
             </h2>
             <div className="divide-y divide-slate-100">
-                {pairs.map(({ pair, visitedAt }) => {
+                {visible.map(({ pair, visitedAt }) => {
                     const ids = pair.includes(',') ? pair.split(',') : pair.split('-vs-');
                     const searchCards = ids.map((id) => lookup(id));
+
+                    const href = pair.includes('-vs-')
+                        ? `/so-sanh/${pair}`
+                        : `/so-sanh?compare=${ids.join(',')}`;
 
                     return (
                         <div key={pair} className="group flex items-center gap-3 py-3">
                             <Link
-                                href={`/so-sanh?compare=${ids.join(',')}`}
+                                href={href}
                                 className="flex-1 flex items-center gap-4 min-w-0 hover:opacity-80 transition-opacity"
                             >
                                 <div className="flex items-center gap-3 min-w-0">
@@ -77,10 +95,7 @@ export function RecentCompares({ pairs, onRemove }: Props) {
                                         <div key={ids[i]} className="flex items-center gap-1.5 w-[200px]">
                                             {i > 0 && <span className="text-slate-300 text-xs">·</span>}
                                             {sc ? (
-                                                <CardImage
-                                                    card={toCardShell(sc)}
-                                                    className="h-7 w-auto shrink-0"
-                                                />
+                                                <CardImage card={toCardShell(sc)} className="h-7 w-auto shrink-0" />
                                             ) : (
                                                 <div className="h-7 w-11 bg-slate-100 rounded-sm shrink-0" />
                                             )}
@@ -96,7 +111,7 @@ export function RecentCompares({ pairs, onRemove }: Props) {
                             </Link>
                             <button
                                 type="button"
-                                onClick={() => onRemove(pair)}
+                                onClick={() => removeCompare(pair)}
                                 className="shrink-0 w-5 h-5 flex items-center justify-center text-slate-300 hover:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"
                                 aria-label="Xoá"
                             >

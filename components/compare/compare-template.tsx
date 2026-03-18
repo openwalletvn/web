@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import type { Card } from '@/lib/api';
+import {useEffect, useRef, useState} from 'react';
+import type {Card} from '@/lib/api';
 import Link from 'next/link';
-import { CardImage } from '@/components/cards/card-image';
-import { CompareTable } from './compare-table';
+import {CardImage} from '@/components/cards/card-image';
+import {CompareTable} from './compare-table';
 
 interface Props {
     cards: (Card | null)[];
@@ -72,17 +72,19 @@ export function CompareTemplate({ cards, children, onStickyChange }: Props) {
                     <div key={card?.id ?? i} className="flex flex-col gap-3">
                         {card ? (
                             <>
-                                <Link href={`/the/${card.id}`} className="h-[200px] flex items-end">
-                                    {card.image?.orientation === 'vertical' ? (
-                                        <div className="h-full flex items-center">
-                                            <CardImage card={card} tilt className="h-full w-auto" />
-                                        </div>
-                                    ) : (
-                                        <div className="w-full max-w-[200px]">
-                                            <CardImage card={card} tilt className="w-full" />
-                                        </div>
-                                    )}
-                                </Link>
+                                <div className="flex items-end h-[200px]">
+                                    <Link href={`/the/${card.id}`}>
+                                        {card.image?.orientation === 'vertical' ? (
+                                            <div className="h-[200px] flex items-center">
+                                                <CardImage card={card} tilt className="h-full w-auto" />
+                                            </div>
+                                        ) : (
+                                            <div className="w-full max-w-[200px]">
+                                                <CardImage card={card} tilt className="w-full" />
+                                            </div>
+                                        )}
+                                    </Link>
+                                </div>
                                 <Link
                                     href={`/the/${card.id}`}
                                     className="text-base font-semibold text-slate-900 hover:text-brand-red transition-colors"
@@ -91,7 +93,7 @@ export function CompareTemplate({ cards, children, onStickyChange }: Props) {
                                 </Link>
                             </>
                         ) : (
-                            <div className="h-[200px] flex items-end">
+                            <div className="flex items-end">
                                 <div className="w-full max-w-[200px] aspect-[16/10] bg-slate-100 rounded-lg" />
                             </div>
                         )}
