@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useSyncExternalStore, useCallback } from 'react';
 
 const STORAGE_KEY = 'compare_recent';
 const MAX_ENTRIES = 10;
@@ -16,6 +16,12 @@ export function normalizePair(pair: string): string {
     const ids = pair.includes(',') ? pair.split(',') : pair.split('-vs-');
     return ids.filter(Boolean).sort().join(',');
 }
+
+// ─── Module-level store ────────────────────────────────────────────────────────
+
+type Listener = () => void;
+const listeners = new Set<Listener>();
+let cache: RecentEntry[] | null = null;
 
 function readStorage(): RecentEntry[] {
     try {
@@ -35,6 +41,28 @@ function writeStorage(entries: RecentEntry[]): void {
     } catch {}
 }
 
+function getSnapshot(): RecentEntry[] {
+    if (cache === null) cache = readStorage();
+    return cache;
+}
+
+const EMPTY: RecentEntry[] = [];
+function getServerSnapshot(): RecentEntry[] {
+    return EMPTY;
+}
+
+function notify(updated: RecentEntry[]): void {
+    cache = updated;
+    for (const l of listeners) l();
+}
+
+function subscribe(listener: Listener): () => void {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+}
+
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+
 interface UseRecentComparesReturn {
     recentCompares: RecentEntry[];
     addCompare: (pair: string) => void;
@@ -42,30 +70,26 @@ interface UseRecentComparesReturn {
 }
 
 export function useRecentCompares(): UseRecentComparesReturn {
-    const [recentCompares, setRecentCompares] = useState<RecentEntry[]>([]);
-
-    useEffect(() => {
-        setRecentCompares(readStorage());
-    }, []);
+    const recentCompares = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
     const addCompare = useCallback((pair: string) => {
         const key = normalizePair(pair);
-        const existing = readStorage().find((e) => normalizePair(e.pair) === key);
-        // Always prefer the SEO slug format (a-vs-b) over ?compare format
+        const current = readStorage();
+        const existing = current.find((e) => normalizePair(e.pair) === key);
         const preferred = pair.includes('-vs-') ? pair : (existing?.pair.includes('-vs-') ? existing.pair : pair);
         const updated = [
             { pair: preferred, visitedAt: Date.now() },
-            ...readStorage().filter((e) => normalizePair(e.pair) !== key),
+            ...current.filter((e) => normalizePair(e.pair) !== key),
         ].slice(0, MAX_ENTRIES);
         writeStorage(updated);
-        setRecentCompares(updated);
+        notify(updated);
     }, []);
 
     const removeCompare = useCallback((pair: string) => {
         const key = normalizePair(pair);
         const updated = readStorage().filter((e) => normalizePair(e.pair) !== key);
         writeStorage(updated);
-        setRecentCompares(updated);
+        notify(updated);
     }, []);
 
     return { recentCompares, addCompare, removeCompare };

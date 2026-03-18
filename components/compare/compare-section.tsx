@@ -9,6 +9,7 @@ import { getCard } from '@/lib/api';
 import { CardSearchInput } from '@/components/compare/card-search-input';
 import { CompareTemplate } from '@/components/compare/compare-template';
 import { RecentCompares } from '@/components/compare/recent-compares';
+import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
 import { useRecentCompares } from '@/lib/use-recent-compares';
 import { useCardSearch } from '@/lib/use-card-search';
 
@@ -27,9 +28,10 @@ interface InnerProps {
     defaultPair?: string;
     children?: React.ReactNode;
     excludePair?: string;
+    fallbackCardIds?: string[];
 }
 
-function CompareSectionInner({ defaultPair, children, excludePair }: InnerProps) {
+function CompareSectionInner({ defaultPair, children, excludePair, fallbackCardIds }: InnerProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -42,6 +44,9 @@ function CompareSectionInner({ defaultPair, children, excludePair }: InnerProps)
     const { lookup, load, initialized } = useCardSearch();
     const lastProcessedParam = useRef<string | undefined>(undefined);
     const lastSynced = useRef(searchParams.get('compare') ?? '');
+    // Ref so the prefill effect can read the latest value without it being a dependency
+    const recentComparesRef = useRef(recentCompares);
+    recentComparesRef.current = recentCompares;
 
     useEffect(() => { load(); }, [load]);
 
@@ -58,11 +63,16 @@ function CompareSectionInner({ defaultPair, children, excludePair }: InnerProps)
             setCards(next);
             setNumSlots(Math.max(2, ids.length));
             lastSynced.current = param;
-        } else if (lastProcessedParam.current === '') {
+        } else {
+            // Only prefill from recent if there will still be visible entries after
+            // (prefilling from entry[0] excludes it from the list, so need > 1 to show something)
+            const recentEntry = !defaultPair && recentComparesRef.current.length > 1
+                ? recentComparesRef.current[0]
+                : undefined;
             const ids = defaultPair
                 ? parseIds(defaultPair)
-                : recentCompares[0]
-                    ? parseIds(recentCompares[0].pair)
+                : recentEntry
+                    ? parseIds(recentEntry.pair)
                     : DEFAULT_CARD_IDS;
             const next = Array<SearchCard | null>(MAX_CARDS).fill(null);
             ids.forEach((id, i) => { next[i] = lookup(id); });
@@ -72,7 +82,7 @@ function CompareSectionInner({ defaultPair, children, excludePair }: InnerProps)
         }
 
         setPrefillDone(true);
-    }, [initialized, lookup, searchParams, recentCompares, defaultPair]);
+    }, [initialized, lookup, searchParams, defaultPair]);
 
     const selectedKey = cards.filter((c): c is SearchCard => c !== null).map((c) => c.id).join(',');
     const selectedCount = cards.filter(Boolean).length;
@@ -199,6 +209,7 @@ function CompareSectionInner({ defaultPair, children, excludePair }: InnerProps)
             )}
 
             <RecentCompares excludePair={excludePair ?? selectedKey} />
+            <CompareSuggestedCards fallbackCardIds={fallbackCardIds} />
         </>
     );
 }
@@ -209,12 +220,13 @@ interface Props {
     defaultPair?: string;
     children?: React.ReactNode;
     excludePair?: string;
+    fallbackCardIds?: string[];
 }
 
-export function CompareSection({ defaultPair, children, excludePair }: Props) {
+export function CompareSection({ defaultPair, children, excludePair, fallbackCardIds }: Props) {
     return (
         <Suspense>
-            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair}>
+            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair} fallbackCardIds={fallbackCardIds}>
                 {children}
             </CompareSectionInner>
         </Suspense>
