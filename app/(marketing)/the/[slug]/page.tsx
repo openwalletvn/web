@@ -74,7 +74,7 @@ export default async function CardPage({ params }: Props) {
                     <div className={`shrink-0 w-full ${isVertical ? 'lg:w-48' : 'lg:w-72'} lg:sticky lg:top-8`}>
                         <CardImage card={card} tilt />
                         <div className="mt-4 flex flex-col gap-2">
-                            <AddToWalletButton card={card} />
+                            {/*<AddToWalletButton card={card} />*/}
                             {process.env.NODE_ENV === 'development' && (
                                 <a
                                     href={`http://localhost:3004/#/cards/${card.id}`}
