@@ -3,8 +3,10 @@ import type { Card, CardFees } from '@/lib/api';
 import { getNetworkImageUrl } from '@/lib/api';
 import { CompareDueDateRow } from './compare-due-date-row';
 
+const empty = <span className="text-slate-300">—</span>;
+
 interface Props {
-    cards: Card[];
+    cards: (Card | null)[];
 }
 
 const CARD_TYPE_LABELS: Record<string, string> = {
@@ -56,59 +58,48 @@ function Row({ label, values }: RowProps) {
 
 export function CompareTable({ cards }: Props) {
     const purelyDebit = (c: Card) => c.card_type.every((t) => t === 'debit' || t === 'atm');
-    const showPaymentSection = cards.some((c) => !purelyDebit(c));
+    const showPaymentSection = cards.some((c) => c && !purelyDebit(c));
 
     // ── Section 1 — identity ──────────────────────────────────────────────────
-    const banks = cards.map((c) => c.bank_data?.name ?? c.bank_id);
-
     const networkValues = cards.map((c) => {
+        if (!c) return empty;
         const logoUrl = c.card_network_data?.logo_url;
         const name = c.card_network_data?.name ?? c.card_network.toUpperCase();
         const label = [name, c.card_tier].filter(Boolean).join(' ');
         return (
             <span className="inline-flex items-center gap-1.5">
                 {logoUrl && (
-                    <img
-                        src={getNetworkImageUrl(logoUrl)}
-                        alt={name}
-                        style={{ height: 20 }}
-                        className="object-contain inline-block"
-                    />
+                    <img src={getNetworkImageUrl(logoUrl)} alt={name} style={{ height: 20 }} className="object-contain inline-block" />
                 )}
                 <span>{label}</span>
             </span>
         );
     });
-    const types = cards.map((c) => c.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(', '));
+    const types = cards.map((c) => c ? c.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(', ') : empty);
 
     // ── Section 2 — fees ──────────────────────────────────────────────────────
     const feeRows: Array<{ label: string; key: keyof CardFees }> = [
-        { label: 'Thường niên',    key: 'annual' },
-        { label: 'Thẻ phụ',       key: 'annual_supplementary' },
-        { label: 'Phát hành',     key: 'issuance' },
-        { label: 'Hủy thẻ',       key: 'cancellation' },
-        { label: 'Ngoại tệ',      key: 'foreign' },
-        { label: 'Ngoại tệ DCC',  key: 'foreign_dcc' },
+        { label: 'Thường niên',   key: 'annual' },
+        { label: 'Thẻ phụ',      key: 'annual_supplementary' },
+        { label: 'Phát hành',    key: 'issuance' },
+        { label: 'Hủy thẻ',      key: 'cancellation' },
+        { label: 'Ngoại tệ',     key: 'foreign' },
+        { label: 'Ngoại tệ DCC', key: 'foreign_dcc' },
     ];
 
     // ── Section 3 — payment ───────────────────────────────────────────────────
-    const statements = cards.map((c) => c.statement_date ? `Ngày ${c.statement_date}` : '—');
-    const freeDays = cards.map((c) => c.interest_free_days ? `${c.interest_free_days} ngày` : '—');
+    const statements = cards.map((c) => c ? (c.statement_date ? `Ngày ${c.statement_date}` : '—') : empty);
+    const freeDays = cards.map((c) => c ? (c.interest_free_days ? `${c.interest_free_days} ngày` : '—') : empty);
 
     // ── Section 4 — utility ───────────────────────────────────────────────────
     const contactlessValues = cards.map((c) => {
+        if (!c) return empty;
         const methods = c.contactless_methods_data;
         if (!methods || methods.length === 0) return <span>—</span>;
         return (
             <div className="flex flex-row flex-wrap items-center gap-1.5">
                 {methods.map((m) => (
-                    <img
-                        key={m.id}
-                        src={getNetworkImageUrl(m.logo_url)}
-                        alt={m.name}
-                        style={{ height: 24 }}
-                        className="object-contain"
-                    />
+                    <img key={m.id} src={getNetworkImageUrl(m.logo_url)} alt={m.name} style={{ height: 24 }} className="object-contain" />
                 ))}
             </div>
         );
@@ -119,11 +110,10 @@ export function CompareTable({ cards }: Props) {
             {/* Section 1 — identity */}
             <Row
                 label="Ngân hàng"
-                values={cards.map((c, i) => (
-                    <Link key={c.id} href={`/ngan-hang/${c.bank_id}`} className="hover:text-brand-blue transition-colors">
-                        {banks[i]}
-                    </Link>
-                ))}
+                values={cards.map((c, i) => c
+                    ? <Link key={i} href={`/ngan-hang/${c.bank_id}`} className="hover:text-brand-blue transition-colors">{c.bank_data?.name ?? c.bank_id}</Link>
+                    : empty
+                )}
             />
             <Row label="Mạng lưới" values={networkValues} />
             <Row label="Loại thẻ" values={types} />
@@ -131,8 +121,8 @@ export function CompareTable({ cards }: Props) {
             {/* Section 2 — fees */}
             <SectionHeader label="Phí" />
             {feeRows.map(({ label, key }) => {
-                if (!cards.some((c) => c.fees?.[key] != null)) return null;
-                const values = cards.map((c) => formatFee(c.fees?.[key]));
+                if (!cards.some((c) => c?.fees?.[key] != null)) return null;
+                const values = cards.map((c) => c ? formatFee(c.fees?.[key]) : empty);
                 return <Row key={key} label={label} values={values} />;
             })}
 

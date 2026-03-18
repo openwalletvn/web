@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { IconPlus, IconX } from '@tabler/icons-react';
 import type { SearchCard } from '@/lib/search-types';
@@ -15,37 +15,8 @@ import { useCardSearch } from '@/lib/use-card-search';
 
 const MAX_CARDS = 3;
 
-// ─── Card slot ────────────────────────────────────────────────────────────────
-
-interface CardSlotProps {
-    card: SearchCard | null;
-    onChange: (c: SearchCard | null) => void;
-    excludeIds: string[];
-    onRemove?: () => void;
-}
-
-function CardSlot({ card, onChange, excludeIds, onRemove }: CardSlotProps) {
-    return (
-        <div className="relative min-w-0">
-            {onRemove && (
-                <button
-                    type="button"
-                    onClick={onRemove}
-                    className="absolute -top-2 -right-2 z-10 w-5 h-5 flex items-center justify-center bg-slate-200 hover:bg-slate-300 rounded-full text-slate-500 transition-colors"
-                    aria-label="Xoá"
-                >
-                    <IconX size={10} />
-                </button>
-            )}
-            <CardSearchInput
-                value={card}
-                onChange={onChange}
-                excludeIds={excludeIds}
-                underline
-            />
-        </div>
-    );
-}
+// Default cards shown when the user has no recent comparisons
+const DEFAULT_CARD_IDS = ['sacombank-uniq', 'msb-visa-online'];
 
 // ─── Inner page (needs Suspense boundary for useSearchParams) ─────────────────
 
@@ -56,70 +27,108 @@ function ComparePageInner() {
 
     const [cards, setCards] = useState<(SearchCard | null)[]>(() => Array(MAX_CARDS).fill(null));
     const [numSlots, setNumSlots] = useState(2);
-    const [showTable, setShowTable] = useState(false);
     const [prefillDone, setPrefillDone] = useState(false);
+    const [stickyVisible, setStickyVisible] = useState(false);
 
     const { recentCompares, removeCompare, addCompare } = useRecentCompares();
     const { lookup, load, initialized } = useCardSearch();
-    const prefilled = useRef(false);
-    // Initialise lastSynced from the current URL so we skip a redundant replace on load
+    const lastProcessedParam = useRef<string | undefined>(undefined);
     const lastSynced = useRef(searchParams.get('compare') ?? '');
 
     useEffect(() => { load(); }, [load]);
 
-    // Pre-fill slots from ?compare=id1,id2[,...] once index is ready
+    // Process ?compare= URL param whenever it changes (or on first load)
     useEffect(() => {
-        if (!initialized || prefilled.current) return;
-        prefilled.current = true;
-        const param = searchParams.get('compare');
+        if (!initialized) return;
+        const param = searchParams.get('compare') ?? '';
+        if (lastProcessedParam.current === param) return;
+        lastProcessedParam.current = param;
+
         if (param) {
             const ids = param.split(',').filter(Boolean).slice(0, MAX_CARDS);
             const next = Array<SearchCard | null>(MAX_CARDS).fill(null);
             ids.forEach((id, i) => { next[i] = lookup(id); });
             setCards(next);
             setNumSlots(Math.max(2, ids.length));
-            setShowTable(true);
-            addCompare(ids.join(','));
+            lastSynced.current = param;
+        } else if (lastProcessedParam.current === '') {
+            // First load with no param: silent auto-load, no URL change
+            const firstRecent = recentCompares[0];
+            const ids = firstRecent
+                ? (firstRecent.pair.includes(',') ? firstRecent.pair.split(',') : firstRecent.pair.split('-vs-'))
+                : DEFAULT_CARD_IDS;
+            const next = Array<SearchCard | null>(MAX_CARDS).fill(null);
+            ids.forEach((id, i) => { next[i] = lookup(id); });
+            lastSynced.current = ids.join(',');
+            setCards(next);
+            setNumSlots(Math.max(2, ids.length));
         }
+
         setPrefillDone(true);
-    }, [initialized, lookup, searchParams, addCompare]);
+    }, [initialized, lookup, searchParams, recentCompares]);
 
-    // Derived: comma-separated IDs of currently selected cards
+    // Derived: non-null selected card IDs joined for URL/fetch key
     const selectedKey = cards.filter((c): c is SearchCard => c !== null).map((c) => c.id).join(',');
+    const selectedCount = cards.filter(Boolean).length;
 
-    // Sync ?compare= URL whenever the table is visible and the selection changes
+    // Sync URL — clear when < 2, update when ≥ 2
     useEffect(() => {
-        if (!showTable || !prefillDone) return;
-        if (!selectedKey || selectedKey === lastSynced.current) return;
-        lastSynced.current = selectedKey;
-        router.replace(`/so-sanh?compare=${selectedKey}`, { scroll: false });
-    }, [selectedKey, showTable, prefillDone, router]);
-
-    // Fetch full Card objects whenever the table is shown or the selection changes
-    const [fullCards, setFullCards] = useState<Card[]>([]);
-    const [loadingCards, setLoadingCards] = useState(false);
-    const fetchedKey = useRef('');
-    useEffect(() => {
-        if (!showTable) {
-            setFullCards([]);
-            fetchedKey.current = '';
+        if (!prefillDone) return;
+        if (selectedCount < 2) {
+            if (lastSynced.current !== '') {
+                lastSynced.current = '';
+                lastProcessedParam.current = '';
+                router.replace('/so-sanh', { scroll: false });
+            }
             return;
         }
-        const ids = selectedKey.split(',').filter(Boolean);
-        if (ids.length < 2 || selectedKey === fetchedKey.current) return;
-        fetchedKey.current = selectedKey;
-        setLoadingCards(true);
-        Promise.all(ids.map((id) => getCard(id)))
-            .then(setFullCards)
-            .catch(() => setFullCards([]))
-            .finally(() => setLoadingCards(false));
-    }, [showTable, selectedKey]);
+        if (!selectedKey || selectedKey === lastSynced.current) return;
+        lastSynced.current = selectedKey;
+        lastProcessedParam.current = selectedKey;
+        router.replace(`/so-sanh?compare=${selectedKey}`, { scroll: false });
+    }, [selectedKey, selectedCount, prefillDone, router]);
+
+    // Per-ID card cache — fetch on demand, never re-fetch
+    const [cardCache, setCardCache] = useState<Record<string, Card>>({});
+    const fetchingIds = useRef<Set<string>>(new Set());
+    useEffect(() => {
+        cards.filter((c): c is SearchCard => c !== null).forEach(({ id }) => {
+            if (cardCache[id] || fetchingIds.current.has(id)) return;
+            fetchingIds.current.add(id);
+            getCard(id)
+                .then((card) => setCardCache((prev) => ({ ...prev, [id]: card })))
+                .catch(() => { })
+                .finally(() => fetchingIds.current.delete(id));
+        });
+    }, [cards, cardCache]);
+
+    // Slot-aligned array — length always equals numSlots
+    const slotCards: (Card | null)[] = Array.from({ length: numSlots }, (_, i) => {
+        const id = cards[i]?.id;
+        return id ? (cardCache[id] ?? null) : null;
+    });
+
+    const isLoading = cards.filter(Boolean).some((c) => !cardCache[c!.id]);
+
+    // Save to recent only when sticky header visible + ≥ 2 valid cards
+    const lastSavedKey = useRef('');
+    useEffect(() => {
+        if (!stickyVisible) return;
+        const validCards = slotCards.filter((c): c is Card => c !== null);
+        if (validCards.length < 2) return;
+        const key = validCards.map((c) => c.id).join(',');
+        if (key === lastSavedKey.current) return;
+        lastSavedKey.current = key;
+        addCompare(key);
+    }, [stickyVisible, slotCards, addCompare]);
 
     function setCard(i: number, card: SearchCard | null) {
         setCards((prev) => { const next = [...prev]; next[i] = card; return next; });
     }
 
     function removeCard(i: number) {
+        // Collapse the slot if it's the last extra one
+        if (i === numSlots - 1 && numSlots > 2) setNumSlots((n) => n - 1);
         setCards((prev) => {
             const next = [...prev];
             for (let j = i; j < MAX_CARDS - 1; j++) next[j] = next[j + 1];
@@ -128,75 +137,62 @@ function ComparePageInner() {
         });
     }
 
-    function handleCompare() {
-        addCompare(selectedKey);
-        setShowTable(true);
-    }
-
-    const selectedCount = cards.filter(Boolean).length;
+    const allActiveSlotsFilled = cards.slice(0, numSlots).every(Boolean);
 
     return (
         <div className="px-4 py-12">
             <div className="max-w-[980px] mx-auto">
                 <h1 className="text-3xl font-bold text-slate-900 mb-8">{t('title')}</h1>
 
-                {/* Fixed-width card columns — always MAX_CARDS wide */}
-                <div className="flex">
-                    {Array.from({ length: MAX_CARDS }, (_, i) => {
+                {/* Card picker */}
+                <div className="flex items-center gap-2">
+                    {Array.from({ length: numSlots }, (_, i) => {
                         const card = cards[i];
-                        const isActive = i < numSlots;
-                        const isAdd = i === numSlots && numSlots < MAX_CARDS && cards[numSlots - 1] !== null;
+                        const isExtraSlot = i >= 2;
                         const excludeIds = cards
                             .filter((c, j): c is SearchCard => c !== null && j !== i)
                             .map((c) => c.id);
-
                         return (
-                            <div
-                                key={i}
-                                style={{ width: `${100 / MAX_CARDS}%` }}
-                                className="px-1.5 first:pl-0 last:pr-0"
-                            >
-                                {isActive ? (
-                                    <CardSlot
-                                        card={card}
-                                        onChange={(c) => setCard(i, c)}
-                                        excludeIds={excludeIds}
-                                        onRemove={card ? () => removeCard(i) : undefined}
-                                    />
-                                ) : isAdd ? (
+                            <div key={i} className="relative" style={{ width: `${100 / MAX_CARDS}%` }}>
+                                {isExtraSlot && (
                                     <button
                                         type="button"
-                                        onClick={() => setNumSlots(i + 1)}
-                                        className="w-full h-9 flex items-center justify-center border border-dashed border-slate-200 rounded-sm text-slate-300 hover:text-slate-400 hover:border-slate-300 transition-colors"
-                                        title="Thêm thẻ để so sánh"
+                                        onClick={() => removeCard(i)}
+                                        className="absolute -top-1.5 -right-1.5 z-10 w-4 h-4 flex items-center justify-center bg-slate-200 hover:bg-red-100 hover:text-red-400 rounded-full text-slate-400 transition-colors"
+                                        title="Bỏ cột này"
                                     >
-                                        <IconPlus size={14} />
+                                        <IconX size={8} />
                                     </button>
-                                ) : null}
+                                )}
+                                <CardSearchInput
+                                    value={card}
+                                    onChange={(c) => c ? setCard(i, c) : removeCard(i)}
+                                    excludeIds={excludeIds}
+                                    underline
+                                />
                             </div>
                         );
                     })}
+                    {numSlots < MAX_CARDS && allActiveSlotsFilled && (
+                        <button
+                            type="button"
+                            onClick={() => setNumSlots(numSlots + 1)}
+                            title="Thêm thẻ để so sánh"
+                            className="w-5 h-5 shrink-0 flex items-center justify-center border border-dashed border-slate-300 rounded-full text-slate-400 hover:text-slate-600 hover:border-slate-400 transition-colors"
+                        >
+                            <IconPlus size={10} />
+                        </button>
+                    )}
                 </div>
 
-                {/* Compare button */}
-                <div className="mt-6">
-                    <button
-                        onClick={handleCompare}
-                        disabled={selectedCount < 2}
-                        className="px-6 py-2 bg-brand-red text-white rounded-sm text-sm font-medium disabled:opacity-50 transition-opacity"
-                    >
-                        {t('compare_button')}
-                    </button>
-                </div>
-
-                {/* Compare table — shown only after button click or URL pre-fill */}
-                {showTable && (
+                {/* Compare table — shown when ≥ 2 cards selected, always numSlots columns */}
+                {selectedCount >= 2 && (
                     <div className="mt-10">
-                        {loadingCards ? (
+                        {isLoading ? (
                             <p className="text-sm text-slate-500">{t('loading')}</p>
-                        ) : fullCards.length >= 2 ? (
-                            <CompareTemplate cards={fullCards} />
-                        ) : null}
+                        ) : (
+                            <CompareTemplate cards={slotCards} onStickyChange={setStickyVisible} />
+                        )}
                     </div>
                 )}
 

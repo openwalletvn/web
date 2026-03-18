@@ -1,17 +1,18 @@
 'use client';
 
-import {useEffect, useRef, useState} from 'react';
-import type {Card} from '@/lib/api';
+import { useEffect, useRef, useState } from 'react';
+import type { Card } from '@/lib/api';
 import Link from 'next/link';
-import {CardImage} from '@/components/cards/card-image';
-import {CompareTable} from './compare-table';
+import { CardImage } from '@/components/cards/card-image';
+import { CompareTable } from './compare-table';
 
 interface Props {
-    cards: Card[];
+    cards: (Card | null)[];
     children?: React.ReactNode;
+    onStickyChange?: (visible: boolean) => void;
 }
 
-export function CompareTemplate({cards, children}: Props) {
+export function CompareTemplate({ cards, children, onStickyChange }: Props) {
     const cardHeaderRef = useRef<HTMLDivElement>(null);
     const [showSticky, setShowSticky] = useState(false);
 
@@ -19,14 +20,18 @@ export function CompareTemplate({cards, children}: Props) {
         const el = cardHeaderRef.current;
         if (!el) return;
         const observer = new IntersectionObserver(
-            ([entry]) => setShowSticky(!entry.isIntersecting),
-            {threshold: 0}
+            ([entry]) => {
+                const visible = !entry.isIntersecting;
+                setShowSticky(visible);
+                onStickyChange?.(visible);
+            },
+            { threshold: 0 }
         );
         observer.observe(el);
         return () => observer.disconnect();
-    }, []);
+    }, [onStickyChange]);
 
-    const colStyle = {gridTemplateColumns: `repeat(${cards.length}, 1fr)`};
+    const colStyle = { gridTemplateColumns: `repeat(${cards.length}, 1fr)` };
 
     return (
         <div>
@@ -38,17 +43,23 @@ export function CompareTemplate({cards, children}: Props) {
             >
                 <div className="min-h-[80px] max-w-[980px] mx-auto py-2 flex items-center">
                     <div className="grid w-full" style={colStyle}>
-                        {cards.map((card) => (
-                            <div key={card.id} className="flex items-center gap-2">
-                                <Link href={`/the/${card.id}`} className="block">
-                                    <CardImage card={card} tilt className="h-[60px] w-auto"/>
-                                </Link>
-                                <Link
-                                    href={`/the/${card.id}`}
-                                    className="text-sm font-semibold text-slate-900 hover:text-brand-red transition-colors line-clamp-2"
-                                >
-                                    {card.name}
-                                </Link>
+                        {cards.map((card, i) => (
+                            <div key={card?.id ?? i} className="flex items-center gap-2">
+                                {card ? (
+                                    <>
+                                        <Link href={`/the/${card.id}`} className="block shrink-0">
+                                            <CardImage card={card} tilt className="h-[60px] w-auto" />
+                                        </Link>
+                                        <Link
+                                            href={`/the/${card.id}`}
+                                            className="text-sm font-semibold text-slate-900 hover:text-brand-red transition-colors line-clamp-2"
+                                        >
+                                            {card.name}
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <div className="h-[60px] w-[96px] bg-slate-100 rounded-sm shrink-0" />
+                                )}
                             </div>
                         ))}
                     </div>
@@ -57,31 +68,39 @@ export function CompareTemplate({cards, children}: Props) {
 
             {/* ── Main card header ──────────────────────────────────────────── */}
             <div ref={cardHeaderRef} className="grid mb-8" style={colStyle}>
-                {cards.map((card) => (
-                    <div key={card.id} className="flex flex-col gap-3">
-                        <Link href={`/the/${card.id}`} className="h-[200px] flex items-end">
-                            {card.image?.orientation === "vertical" ? (
-                                <div className="h-full flex justify-center items-center">
-                                    <CardImage card={card} tilt className="h-full w-auto"/>
-                                </div>
-                            ) : (
-                                <div className="w-full max-w-[200px] flex justify-center items-center">
-                                    <CardImage card={card} tilt className="w-full"/>
-                                </div>
-                            )}
-                        </Link>
-                        <Link
-                            href={`/the/${card.id}`}
-                            className="text-base font-semibold text-slate-900 hover:text-brand-red transition-colors"
-                        >
-                            {card.name}
-                        </Link>
+                {cards.map((card, i) => (
+                    <div key={card?.id ?? i} className="flex flex-col gap-3">
+                        {card ? (
+                            <>
+                                <Link href={`/the/${card.id}`} className="h-[200px] flex items-end">
+                                    {card.image?.orientation === 'vertical' ? (
+                                        <div className="h-full flex items-center">
+                                            <CardImage card={card} tilt className="h-full w-auto" />
+                                        </div>
+                                    ) : (
+                                        <div className="w-full max-w-[200px]">
+                                            <CardImage card={card} tilt className="w-full" />
+                                        </div>
+                                    )}
+                                </Link>
+                                <Link
+                                    href={`/the/${card.id}`}
+                                    className="text-base font-semibold text-slate-900 hover:text-brand-red transition-colors"
+                                >
+                                    {card.name}
+                                </Link>
+                            </>
+                        ) : (
+                            <div className="h-[200px] flex items-end">
+                                <div className="w-full max-w-[200px] aspect-[16/10] bg-slate-100 rounded-lg" />
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
 
             {/* ── Comparison table ──────────────────────────────────────────── */}
-            <CompareTable cards={cards}/>
+            <CompareTable cards={cards} />
 
             {/* ── Editorial MDX content ─────────────────────────────────────── */}
             {children && (
