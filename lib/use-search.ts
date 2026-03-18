@@ -8,7 +8,7 @@ import type { SearchCard, SearchBank, SearchPost, SearchIndex } from './search-t
 let cachedIndex: SearchIndex | null = null;
 let fetchPromise: Promise<SearchIndex> | null = null;
 
-async function fetchIndex(): Promise<SearchIndex> {
+export async function fetchIndex(): Promise<SearchIndex> {
   if (cachedIndex) return cachedIndex;
   if (fetchPromise) return fetchPromise;
 

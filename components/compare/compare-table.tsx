@@ -1,4 +1,16 @@
+import Link from 'next/link';
+import {
+    IconBuildingBank,
+    IconCreditCard,
+    IconCategory,
+    IconCash,
+    IconCurrencyDollar,
+    IconWifi,
+    IconCalendar,
+    IconStar,
+} from '@tabler/icons-react';
 import type { Card } from '@/lib/api';
+import { CompareDueDateRow } from './compare-due-date-row';
 
 interface Props {
     cardA: Card;
@@ -22,76 +34,131 @@ function formatFee(fee?: { amount: number; type: string } | null): string {
     return `${fee.amount.toLocaleString('vi-VN')} VNĐ/năm`;
 }
 
-function formatBool(val?: boolean): string {
-    if (val === true) return 'Có';
-    if (val === false) return 'Không';
-    return '—';
+// ─── Row component ────────────────────────────────────────────────────────────
+
+interface CompareRowProps {
+    icon: React.ReactNode;
+    label: string;
+    valA: React.ReactNode;
+    valB: React.ReactNode;
+    same?: boolean;
 }
 
+function CompareRow({ icon, label, valA, valB, same }: CompareRowProps) {
+    const valueClass = same ? 'text-slate-400' : 'text-slate-800';
+    return (
+        <div className="py-6 border-b border-slate-100 last:border-0">
+            <div className="flex items-center justify-center gap-1.5 mb-4 text-slate-400">
+                {icon}
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{label}</span>
+            </div>
+            <div className="grid grid-cols-2">
+                <div className={`text-center text-lg font-semibold ${valueClass}`}>{valA}</div>
+                <div className={`text-center text-lg font-semibold ${valueClass}`}>{valB}</div>
+            </div>
+        </div>
+    );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export function CompareTable({ cardA, cardB }: Props) {
-    const rows = [
-        {
-            label: 'Mạng thanh toán',
-            a: cardA.card_network?.toUpperCase() ?? '—',
-            b: cardB.card_network?.toUpperCase() ?? '—',
-        },
-        {
-            label: 'Hạng thẻ',
-            a: cardA.card_tier ?? '—',
-            b: cardB.card_tier ?? '—',
-        },
-        {
-            label: 'Loại thẻ',
-            a: cardA.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(', '),
-            b: cardB.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(', '),
-        },
-        {
-            label: 'Phí thường niên',
-            a: formatFee(cardA.fees?.annual),
-            b: formatFee(cardB.fees?.annual),
-        },
-        {
-            label: 'Phí giao dịch ngoại tệ',
-            a: formatFee(cardA.fees?.foreign),
-            b: formatFee(cardB.fees?.foreign),
-        },
-        {
-            label: 'Ngày miễn lãi',
-            a: cardA.interest_free_days ? `${cardA.interest_free_days} ngày` : '—',
-            b: cardB.interest_free_days ? `${cardB.interest_free_days} ngày` : '—',
-        },
-        {
-            label: 'Thẻ kim loại',
-            a: formatBool(cardA.is_metal),
-            b: formatBool(cardB.is_metal),
-        },
-        {
-            label: 'Dành cho doanh nghiệp',
-            a: formatBool(cardA.for_business),
-            b: formatBool(cardB.for_business),
-        },
-    ];
+    const purelyDebit = (c: Card) => c.card_type.every((t) => t === 'debit' || t === 'atm');
+    const showCreditRows = !purelyDebit(cardA) || !purelyDebit(cardB);
+
+    const bankA = cardA.bank_data?.name ?? cardA.bank_id;
+    const bankB = cardB.bank_data?.name ?? cardB.bank_id;
+
+    const networkA = [cardA.card_network.toUpperCase(), cardA.card_tier].filter(Boolean).join(' · ');
+    const networkB = [cardB.card_network.toUpperCase(), cardB.card_tier].filter(Boolean).join(' · ');
+
+    const typeA = cardA.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(', ');
+    const typeB = cardB.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(', ');
+
+    const annualA = formatFee(cardA.fees?.annual);
+    const annualB = formatFee(cardB.fees?.annual);
+
+    const foreignA = formatFee(cardA.fees?.foreign);
+    const foreignB = formatFee(cardB.fees?.foreign);
+
+    const contactlessA = cardA.contactless_methods_data?.map((m) => m.name).join(', ')
+        ?? cardA.contactless_methods?.join(', ')
+        ?? '—';
+    const contactlessB = cardB.contactless_methods_data?.map((m) => m.name).join(', ')
+        ?? cardB.contactless_methods?.join(', ')
+        ?? '—';
+
+    const statementA = cardA.statement_date ? `Ngày ${cardA.statement_date}` : '—';
+    const statementB = cardB.statement_date ? `Ngày ${cardB.statement_date}` : '—';
+
+    const daysA = cardA.interest_free_days ? `${cardA.interest_free_days} ngày` : '—';
+    const daysB = cardB.interest_free_days ? `${cardB.interest_free_days} ngày` : '—';
 
     return (
-        <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-                <thead>
-                    <tr className="border-b border-dashed border-slate-200">
-                        <th className="text-left py-3 pr-4 text-slate-500 font-medium w-1/3">Tiêu chí</th>
-                        <th className="text-left py-3 px-4 text-slate-900 font-semibold w-1/3">{cardA.name}</th>
-                        <th className="text-left py-3 px-4 text-slate-900 font-semibold w-1/3">{cardB.name}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows.map((row) => (
-                        <tr key={row.label} className="border-b border-dashed border-slate-100">
-                            <td className="py-3 pr-4 text-slate-500">{row.label}</td>
-                            <td className="py-3 px-4 text-slate-800">{row.a}</td>
-                            <td className="py-3 px-4 text-slate-800">{row.b}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+        <div>
+            {/* Rows */}
+            <CompareRow
+                icon={<IconBuildingBank size={13} />}
+                label="Ngân hàng"
+                valA={<Link href={`/ngan-hang/${cardA.bank_id}`} className="hover:text-brand-blue transition-colors">{bankA}</Link>}
+                valB={<Link href={`/ngan-hang/${cardB.bank_id}`} className="hover:text-brand-blue transition-colors">{bankB}</Link>}
+                same={cardA.bank_id === cardB.bank_id}
+            />
+            <CompareRow
+                icon={<IconStar size={13} />}
+                label="Mạng lưới"
+                valA={networkA}
+                valB={networkB}
+                same={networkA === networkB}
+            />
+            <CompareRow
+                icon={<IconCategory size={13} />}
+                label="Loại thẻ"
+                valA={typeA}
+                valB={typeB}
+                same={typeA === typeB}
+            />
+            <CompareRow
+                icon={<IconCash size={13} />}
+                label="Phí thường niên"
+                valA={annualA}
+                valB={annualB}
+                same={annualA === annualB}
+            />
+            <CompareRow
+                icon={<IconCurrencyDollar size={13} />}
+                label="Phí ngoại tệ"
+                valA={foreignA}
+                valB={foreignB}
+                same={foreignA === foreignB}
+            />
+            <CompareRow
+                icon={<IconWifi size={13} />}
+                label="Thanh toán không tiếp xúc"
+                valA={contactlessA}
+                valB={contactlessB}
+                same={contactlessA === contactlessB}
+            />
+
+            {showCreditRows && (
+                <>
+                    <CompareRow
+                        icon={<IconCalendar size={13} />}
+                        label="Ngày sao kê"
+                        valA={statementA}
+                        valB={statementB}
+                        same={statementA === statementB}
+                    />
+                    <CompareRow
+                        icon={<IconCreditCard size={13} />}
+                        label="Số ngày miễn lãi"
+                        valA={daysA}
+                        valB={daysB}
+                        same={daysA === daysB}
+                    />
+                    <CompareDueDateRow cardA={cardA} cardB={cardB} />
+                </>
+            )}
         </div>
     );
 }

@@ -7,6 +7,7 @@ import { buildComparePageMeta } from '@/lib/page-meta/compare';
 import { CompareTemplate } from '@/components/compare/compare-template';
 import { CompareTable } from '@/components/compare/compare-table';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { RecordCompareVisit } from '@/components/compare/record-compare-visit';
 
 interface Props {
     params: Promise<{ pair: string }>;
@@ -55,13 +56,25 @@ export default async function ComparePairPage({ params }: Props) {
     const mdx = lookupCompareMdx(pair);
     const { jsonLd, breadcrumbItems } = buildComparePageMeta(cardA, cardB, mdx?.frontmatter);
     const hasContent = mdx && mdx.content.trim().length > 0;
+    const tier = hasContent ? 'editorial' : 'programmatic';
 
     return (
         <div className="px-4 py-12">
-            <div className="max-w-container mx-auto">
+<div className="max-w-container mx-auto">
+                <RecordCompareVisit pair={pair} />
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
                 <Breadcrumbs items={breadcrumbItems} />
-                <div className="mt-8">
+                <div className="mt-6 mb-8">
+                    <h1 className="text-2xl font-bold text-slate-900">
+                        {mdx?.frontmatter.title ?? `So sánh ${cardA.name} vs ${cardB.name}`}
+                    </h1>
+                    {process.env.NODE_ENV === 'development' && (
+                        <span className="inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 border border-dashed border-slate-300 rounded text-xs text-slate-500 font-mono">
+                            {tier} · {pair}
+                        </span>
+                    )}
+                </div>
+                <div>
                     {hasContent ? (
                         <CompareTemplate cardA={cardA} cardB={cardB}>
                             <MDXRemote

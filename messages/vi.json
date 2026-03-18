@@ -295,13 +295,15 @@
     "business_cards_subtitle": "Tổng hợp thẻ ngân hàng dành cho doanh nghiệp, hộ kinh doanh tại Việt Nam"
   },
   "ComparePage": {
-    "title": "So sánh thẻ tín dụng",
+    "title": "So sánh thẻ",
     "description": "So sánh các thẻ tín dụng Việt Nam",
     "pick_card_a": "Chọn thẻ thứ nhất",
     "pick_card_b": "Chọn thẻ thứ hai",
     "compare_button": "So sánh",
     "loading": "Đang tải...",
     "not_found": "Không tìm thấy thẻ",
-    "vs": "vs"
+    "vs": "vs",
+    "search_placeholder": "Tìm thẻ...",
+    "recent_title": "Đã xem gần đây"
   }
 }
