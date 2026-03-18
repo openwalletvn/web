@@ -12,7 +12,7 @@ export interface RecentEntry {
 }
 
 // Canonical form: sorted IDs joined with comma, handles both "a,b" and "a-vs-b" formats
-function normalizePair(pair: string): string {
+export function normalizePair(pair: string): string {
     const ids = pair.includes(',') ? pair.split(',') : pair.split('-vs-');
     return ids.filter(Boolean).sort().join(',');
 }
@@ -50,8 +50,11 @@ export function useRecentCompares(): UseRecentComparesReturn {
 
     const addCompare = useCallback((pair: string) => {
         const key = normalizePair(pair);
+        const existing = readStorage().find((e) => normalizePair(e.pair) === key);
+        // Always prefer the SEO slug format (a-vs-b) over ?compare format
+        const preferred = pair.includes('-vs-') ? pair : (existing?.pair.includes('-vs-') ? existing.pair : pair);
         const updated = [
-            { pair: key, visitedAt: Date.now() },
+            { pair: preferred, visitedAt: Date.now() },
             ...readStorage().filter((e) => normalizePair(e.pair) !== key),
         ].slice(0, MAX_ENTRIES);
         writeStorage(updated);
