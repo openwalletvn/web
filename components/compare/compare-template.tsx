@@ -15,9 +15,9 @@ export function CompareTemplate({ cardA, cardB, children }: Props) {
             {/* Card headers side by side */}
             <div className="flex items-start gap-6 mb-10">
                 <div className="flex-1 flex flex-col items-center gap-3">
-                    <div className="w-48">
+                    <Link href={`/the/${cardA.id}`} className="w-48 block">
                         <CardImage card={cardA} />
-                    </div>
+                    </Link>
                     <Link
                         href={`/the/${cardA.id}`}
                         className="text-base font-semibold text-slate-900 hover:text-brand-red transition-colors text-center"
@@ -29,9 +29,9 @@ export function CompareTemplate({ cardA, cardB, children }: Props) {
                 <div className="text-2xl font-bold text-slate-300 shrink-0 pt-12">vs</div>
 
                 <div className="flex-1 flex flex-col items-center gap-3">
-                    <div className="w-48">
+                    <Link href={`/the/${cardB.id}`} className="w-48 block">
                         <CardImage card={cardB} />
-                    </div>
+                    </Link>
                     <Link
                         href={`/the/${cardB.id}`}
                         className="text-base font-semibold text-slate-900 hover:text-brand-red transition-colors text-center"
