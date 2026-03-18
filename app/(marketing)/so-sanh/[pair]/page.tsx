@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getCard, getComparePairs, getComparableCardIds } from '@/lib/api';
+import { getCard, getComparePairs, getComparableCards } from '@/lib/api';
 import { lookupCompareMdx, getCompareMdxPairs } from '@/lib/compare-mdx';
 import { buildComparePageMeta } from '@/lib/page-meta/compare';
 import { CompareTable } from '@/components/compare/compare-table';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { RecordCompareVisit } from '@/components/compare/record-compare-visit';
 import { CompareSection } from '@/components/compare/compare-section';
+import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
 
 interface Props {
     params: Promise<{ pair: string }>;
@@ -53,9 +54,9 @@ export default async function ComparePairPage({ params }: Props) {
     ]);
     if (!cardA || !cardB) notFound();
 
-    const [mdx, fallbackCardIds] = await Promise.all([
+    const [mdx, suggestedCards] = await Promise.all([
         Promise.resolve(lookupCompareMdx(pair)),
-        getComparableCardIds([idA, idB]).catch(() => []),
+        getComparableCards([idA, idB]).catch(() => []),
     ]);
     const { jsonLd, breadcrumbItems } = buildComparePageMeta(cardA, cardB, mdx?.frontmatter);
     const hasContent = mdx && mdx.content.trim().length > 0;
@@ -69,7 +70,7 @@ export default async function ComparePairPage({ params }: Props) {
                 <h1 className="text-3xl font-bold text-slate-900 mt-6 mb-8">
                     {mdx?.frontmatter.title ?? `So sánh ${cardA.name} vs ${cardB.name}`}
                 </h1>
-                <CompareSection defaultPair={pair} excludePair={pair} fallbackCardIds={fallbackCardIds}>
+                <CompareSection defaultPair={pair} excludePair={pair}>
                     {hasContent && (
                         <MDXRemote
                             source={mdx.content}
@@ -77,6 +78,9 @@ export default async function ComparePairPage({ params }: Props) {
                         />
                     )}
                 </CompareSection>
+            </div>
+            <div className="max-w-container mx-auto">
+                <CompareSuggestedCards cards={suggestedCards} />
             </div>
         </div>
     );

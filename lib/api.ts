@@ -358,3 +358,10 @@ export async function getComparableCardIds(cardIds: string[], max = 6): Promise<
     }
     return result;
 }
+
+/** Fetch full Card objects for the comparable partners of the given card IDs. */
+export async function getComparableCards(cardIds: string[], max = 6): Promise<Card[]> {
+    const ids = await getComparableCardIds(cardIds, max);
+    const cards = await Promise.all(ids.map((id) => getCard(id).catch(() => null)));
+    return cards.filter((c): c is Card => c !== null);
+}

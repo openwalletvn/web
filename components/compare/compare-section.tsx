@@ -9,7 +9,6 @@ import { getCard } from '@/lib/api';
 import { CardSearchInput } from '@/components/compare/card-search-input';
 import { CompareTemplate } from '@/components/compare/compare-template';
 import { RecentCompares } from '@/components/compare/recent-compares';
-import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
 import { useRecentCompares } from '@/lib/use-recent-compares';
 import { useCardSearch } from '@/lib/use-card-search';
 
@@ -28,10 +27,9 @@ interface InnerProps {
     defaultPair?: string;
     children?: React.ReactNode;
     excludePair?: string;
-    fallbackCardIds?: string[];
 }
 
-function CompareSectionInner({ defaultPair, children, excludePair, fallbackCardIds }: InnerProps) {
+function CompareSectionInner({ defaultPair, children, excludePair }: InnerProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -209,7 +207,6 @@ function CompareSectionInner({ defaultPair, children, excludePair, fallbackCardI
             )}
 
             <RecentCompares excludePair={excludePair ?? selectedKey} />
-            <CompareSuggestedCards fallbackCardIds={fallbackCardIds} />
         </>
     );
 }
@@ -220,13 +217,12 @@ interface Props {
     defaultPair?: string;
     children?: React.ReactNode;
     excludePair?: string;
-    fallbackCardIds?: string[];
 }
 
-export function CompareSection({ defaultPair, children, excludePair, fallbackCardIds }: Props) {
+export function CompareSection({ defaultPair, children, excludePair }: Props) {
     return (
         <Suspense>
-            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair} fallbackCardIds={fallbackCardIds}>
+            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair}>
                 {children}
             </CompareSectionInner>
         </Suspense>
