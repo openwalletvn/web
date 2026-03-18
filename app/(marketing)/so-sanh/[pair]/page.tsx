@@ -76,14 +76,14 @@ export default async function ComparePairPage({ params }: Props) {
                 </div>
                 <div>
                     {hasContent ? (
-                        <CompareTemplate cardA={cardA} cardB={cardB}>
+                        <CompareTemplate cards={[cardA, cardB]}>
                             <MDXRemote
                                 source={mdx.content}
-                                components={{ CompareTable: () => <CompareTable cardA={cardA} cardB={cardB} /> }}
+                                components={{ CompareTable: () => <CompareTable cards={[cardA, cardB]} /> }}
                             />
                         </CompareTemplate>
                     ) : (
-                        <CompareTemplate cardA={cardA} cardB={cardB} />
+                        <CompareTemplate cards={[cardA, cardB]} />
                     )}
                 </div>
             </div>

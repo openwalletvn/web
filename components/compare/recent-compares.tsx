@@ -39,13 +39,14 @@ export function RecentCompares({ pairs, onRemove }: Props) {
             </h2>
             <div className="flex flex-wrap gap-2">
                 {pairs.map(({ pair, visitedAt }) => {
-                    const ids = pair.split('-vs-');
+                    // Handle both legacy (-vs-) and current (,) storage formats
+                    const ids = pair.includes(',') ? pair.split(',') : pair.split('-vs-');
                     const cards = ids.map((id) => lookup(id));
 
                     return (
                         <div key={pair} className="relative group">
                             <Link
-                                href={`/so-sanh/${pair}`}
+                                href={`/so-sanh?compare=${ids.join(',')}`}
                                 className="flex items-center gap-2 p-2.5 border border-dashed border-slate-200 rounded-sm hover:border-slate-300 hover:bg-slate-50 transition-colors"
                             >
                                 {cards.map((card, i) => (
