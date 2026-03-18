@@ -132,6 +132,7 @@ export interface Card {
     is_metal?: boolean;
     for_business?: boolean;
     description?: string;
+    score?: number; // Computed data completeness score (0–100)
 }
 
 export type CardSort = 'fee_asc' | 'fee_desc';
@@ -293,6 +294,23 @@ export async function getNetwork(id: string): Promise<Network> {
     return json.data;
 }
 
+export interface ComparePair {
+    a: string;
+    b: string;
+}
+
+interface ComparePairsResponse {
+    success: boolean;
+    data: [string, string][];
+    meta: { total: number };
+}
+
+interface CardComparePairsResponse {
+    success: boolean;
+    data: [string, string][];
+    meta: { total: number; card_id: string };
+}
+
 interface TierOrderResponse {
     success: boolean;
     data: CardTierOrder;
@@ -303,4 +321,18 @@ export async function getTiers(): Promise<CardTierOrder> {
     const json = (await res.json()) as TierOrderResponse;
     if (!json.success) throw new Error('Failed to fetch tiers');
     return json.data;
+}
+
+export async function getComparePairs(): Promise<ComparePair[]> {
+    const res = await apiFetch('/api/v1/compare-pairs');
+    const json = (await res.json()) as ComparePairsResponse;
+    if (!json.success) throw new Error('Failed to fetch compare pairs');
+    return json.data.map(([a, b]) => ({ a, b }));
+}
+
+export async function getCardComparePairs(id: string): Promise<ComparePair[]> {
+    const res = await apiFetch(`/api/v1/cards/${id}/compare-pairs`);
+    const json = (await res.json()) as CardComparePairsResponse;
+    if (!json.success) throw new Error(`Failed to fetch compare pairs for card: ${id}`);
+    return json.data.map(([a, b]) => ({ a, b }));
 }
