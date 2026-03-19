@@ -9,6 +9,8 @@ import type {Card} from '@/lib/api';
 import {getBankImageUrl} from '@/lib/api';
 import {CardImage} from '@/components/cards/card-image';
 import {MetalBadge} from '@/components/cards/metal-badge';
+import {NetworkBadge} from '@/components/shared/network-badge';
+import {CardTypeBadges} from '@/components/shared/card-type-badge';
 
 interface Props {
     card: Card;
@@ -75,22 +77,14 @@ export function CardItem({card, href, badge}: Props) {
                                 : `${card.fees.annual.amount.toLocaleString()} ${card.currency ?? 'VND'}`}
                         </p>
                     )}
-                    <div className="flex flex-wrap gap-1 mt-1">
+                    <div className="flex flex-wrap items-center gap-1 mt-1">
                         {card.status === 'discontinued' && (
                             <span className="px-1.5 py-0.5 border border-dashed border-amber-400 text-amber-600 bg-amber-50 text-[11px]">
                                 Dừng phát hành
                             </span>
                         )}
-                        <span
-                            className="px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium capitalize">
-                            {card.card_network}{card.card_tier ? ` ${card.card_tier}` : ''}
-                        </span>
-                        {card.card_type.map((type) => (
-                            <span key={type}
-                                  className="px-1.5 py-0.5 border border-dashed border-slate-300 text-slate-500 capitalize">
-                                {type}
-                            </span>
-                        ))}
+                        <NetworkBadge card={card} variant="slim" />
+                        <CardTypeBadges types={card.card_type} />
                         {card.is_metal && <MetalBadge />}
                     </div>
                 </div>
