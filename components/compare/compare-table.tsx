@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Card, CardFees } from '@/lib/api';
 import { getNetworkImageUrl } from '@/lib/api';
 import { CompareDueDateRow } from './compare-due-date-row';
+import { NetworkBadge } from '@/components/shared/network-badge';
 
 const empty = <span className="text-slate-300">—</span>;
 
@@ -61,20 +62,7 @@ export function CompareTable({ cards }: Props) {
     const showPaymentSection = cards.some((c) => c && !purelyDebit(c));
 
     // ── Section 1 — identity ──────────────────────────────────────────────────
-    const networkValues = cards.map((c) => {
-        if (!c) return empty;
-        const logoUrl = c.card_network_data?.logo_url;
-        const name = c.card_network_data?.name ?? c.card_network.toUpperCase();
-        const label = [name, c.card_tier].filter(Boolean).join(' ');
-        return (
-            <span className="inline-flex items-center gap-1.5">
-                {logoUrl && (
-                    <img src={getNetworkImageUrl(logoUrl)} alt={name} style={{ height: 20 }} className="object-contain inline-block" />
-                )}
-                <span>{label}</span>
-            </span>
-        );
-    });
+    const networkValues = cards.map((c) => c ? <NetworkBadge card={c} /> : empty);
     const types = cards.map((c) => c ? c.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(', ') : empty);
 
     // ── Section 2 — fees ──────────────────────────────────────────────────────

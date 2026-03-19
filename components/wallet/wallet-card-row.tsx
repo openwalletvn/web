@@ -1,17 +1,11 @@
 'use client';
 
-import {useState} from 'react';
 import Link from 'next/link';
-import {useSortable} from '@dnd-kit/sortable';
-import {CSS} from '@dnd-kit/utilities';
-import {IconArrowForwardUp, IconGripVertical} from '@tabler/icons-react';
-import {type Bank, type Card} from '@/lib/api';
-import {getMyCardUrl} from '@/lib/routes';
-import {CardImage} from '@/components/cards/card-image';
-import type {CardStatus, WalletCard} from '@/lib/db';
-import type {AppWallet} from '@/lib/app-db';
-import {WalletCardBadges} from './wallet-card-badges';
-import {MoveToWalletPicker} from './move-to-wallet-picker';
+import { type Bank, type Card } from '@/lib/api';
+import { getMyCardUrl } from '@/lib/routes';
+import { CardImage } from '@/components/cards/card-image';
+import type { CardStatus, WalletCard } from '@/lib/db';
+import { WalletCardBadges } from './wallet-card-badges';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -105,133 +99,5 @@ export function WalletCardContent({
         </select>
       )}
     </>
-  );
-}
-
-// ─── Move button + picker dropdown ───────────────────────────────────────────
-
-function MoveButton({
-  walletCard,
-  otherWallets,
-}: {
-  walletCard: WalletCard;
-  otherWallets: AppWallet[];
-}) {
-  const [open, setOpen] = useState(false);
-
-  if (otherWallets.length === 0) return null;
-
-  return (
-    <div className="relative shrink-0 self-center">
-      <button
-        onClick={(e) => { e.preventDefault(); setOpen((v) => !v); }}
-        className="p-1.5 text-slate-300 hover:text-slate-500 transition-colors"
-        aria-label="Chuyển sang ví khác"
-        title="Chuyển sang ví"
-      >
-        <IconArrowForwardUp size={16} />
-      </button>
-
-      {open && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute right-0 top-full mt-1 z-50 w-52 bg-white border border-dashed border-slate-200 rounded-sm shadow-md overflow-hidden">
-            <MoveToWalletPicker
-              walletCard={walletCard}
-              otherWallets={otherWallets}
-              onMoved={() => setOpen(false)}
-              onClose={() => setOpen(false)}
-            />
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-// ─── Plain row (sorted mode) ──────────────────────────────────────────────────
-
-export function WalletCardRow({
-  walletCard,
-  catalogCard,
-  bank,
-  creditBadge,
-  creditLimit,
-  onStatusChange,
-  otherWallets = [],
-}: {
-  walletCard: WalletCard;
-  catalogCard: Card | undefined;
-  bank: Bank | undefined;
-  creditBadge?: CreditBadge;
-  creditLimit?: number;
-  onStatusChange?: (walletCard: WalletCard, status: CardStatus) => void;
-  otherWallets?: AppWallet[];
-}) {
-  return (
-    <div className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm bg-white hover:border-slate-300 transition-colors">
-      <WalletCardContent
-        walletCard={walletCard}
-        catalogCard={catalogCard}
-        bank={bank}
-        creditBadge={creditBadge}
-        creditLimit={creditLimit}
-        onStatusChange={onStatusChange}
-      />
-      <MoveButton walletCard={walletCard} otherWallets={otherWallets} />
-    </div>
-  );
-}
-
-// ─── Sortable row (custom order mode) ────────────────────────────────────────
-
-export function SortableWalletCard({
-  walletCard,
-  catalogCard,
-  bank,
-  creditBadge,
-  creditLimit,
-  onStatusChange,
-  otherWallets = [],
-}: {
-  walletCard: WalletCard;
-  catalogCard: Card | undefined;
-  bank: Bank | undefined;
-  creditBadge?: CreditBadge;
-  creditLimit?: number;
-  onStatusChange?: (walletCard: WalletCard, status: CardStatus) => void;
-  otherWallets?: AppWallet[];
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: walletCard.id,
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }}
-      className="flex items-center gap-3 p-3 border border-dashed border-slate-200 rounded-sm bg-white hover:border-slate-300 transition-colors"
-    >
-      <WalletCardContent
-        walletCard={walletCard}
-        catalogCard={catalogCard}
-        bank={bank}
-        creditBadge={creditBadge}
-        creditLimit={creditLimit}
-        onStatusChange={onStatusChange}
-      />
-      <MoveButton walletCard={walletCard} otherWallets={otherWallets} />
-      <button
-        {...attributes}
-        {...listeners}
-        className="shrink-0 p-1.5 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing touch-none"
-        aria-label="Kéo để sắp xếp"
-      >
-        <IconGripVertical size={18} />
-      </button>
-    </div>
   );
 }
