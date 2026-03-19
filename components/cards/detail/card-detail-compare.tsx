@@ -1,5 +1,5 @@
 import type { Card } from '@/lib/api';
-import { CardItem } from '@/app/(marketing)/_components/card-item';
+import { CardTile } from '@/components/cards/variants/card-tile';
 
 // ─── Tuning knobs ────────────────────────────────────────────────────────────
 const CARDS_BELOW = 3;              // cards with fee <= current card's fee
@@ -84,7 +84,7 @@ export function CardDetailCompare({ currentCard, compareCards, compareLinks }: P
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
                 {cards.map((card) => (
-                    <CardItem
+                    <CardTile
                         key={card.id}
                         card={card}
                         href={compareLinks[card.id]}

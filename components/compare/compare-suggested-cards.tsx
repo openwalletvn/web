@@ -1,5 +1,5 @@
 import type { Card } from '@/lib/api';
-import { CardItem } from '@/app/(marketing)/_components/card-item';
+import { CardTile } from '@/components/cards/variants/card-tile';
 
 interface Props {
     cards: Card[];
@@ -18,7 +18,7 @@ export function CompareSuggestedCards({
             <h2 className="text-lg font-semibold text-slate-800 mb-6">Có thể bạn muốn xem</h2>
             <div className={`grid ${gridClassName} gap-6`}>
                 {cards.map((card) => (
-                    <CardItem key={card.id} card={card} />
+                    <CardTile key={card.id} card={card} />
                 ))}
             </div>
         </div>
