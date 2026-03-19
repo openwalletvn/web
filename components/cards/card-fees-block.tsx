@@ -1,4 +1,5 @@
 import type { CardFees, FeeEntry, FeeWaiver, CardSource } from '@/lib/api';
+import { formatFee } from '@/lib/utils';
 
 function FeeNote({ note }: { note: string }) {
     const lines = note.split('|').map((l) => l.trim()).filter(Boolean);
@@ -11,14 +12,6 @@ function FeeNote({ note }: { note: string }) {
     );
 }
 
-function formatAmount(entry: FeeEntry): string {
-    if (entry.type === 'currency') {
-        return entry.amount === 0
-            ? 'Miễn phí'
-            : `${entry.amount.toLocaleString('vi-VN')}đ`;
-    }
-    return `${entry.amount.toFixed(2)}%`;
-}
 
 function WaiverBadge({ waiver }: { waiver: FeeWaiver }) {
     if (waiver.waiver && !waiver.condition) {
@@ -67,7 +60,7 @@ export function CardFeesBlock({ fees, sources }: Props) {
                     <span className="text-sm font-semibold text-slate-700">Phí thường niên</span>
                     {annual ? (
                         <span className={`text-lg font-bold ${annual.amount === 0 ? 'text-green-600' : 'text-slate-900'}`}>
-                            {formatAmount(annual)}
+                            {formatFee(annual)}
                         </span>
                     ) : (
                         <span className="text-sm text-slate-400">Chưa có thông tin</span>
@@ -118,7 +111,7 @@ export function CardFeesBlock({ fees, sources }: Props) {
                                 <div className="flex items-baseline justify-between gap-3">
                                     <span className="text-xs text-slate-500">{label}</span>
                                     <span className={`text-sm font-medium shrink-0 ${entry.amount === 0 && entry.type === 'currency' ? 'text-green-600' : 'text-slate-900'}`}>
-                                        {formatAmount(entry)}
+                                        {formatFee(entry)}
                                     </span>
                                 </div>
                                 {entry.note && <FeeNote note={entry.note} />}

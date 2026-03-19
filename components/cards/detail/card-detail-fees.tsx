@@ -1,10 +1,5 @@
 import type { Card, Bank, FeeEntry, FeeEntryWithWaiver, FeeWaiver } from '@/lib/api';
-
-function formatFee(entry: FeeEntry): string {
-    if (entry.amount === 0) return 'Miễn phí';
-    if (entry.type === 'currency') return `${entry.amount.toLocaleString('vi-VN')}đ`;
-    return `${entry.amount.toFixed(2)}%`;
-}
+import { formatFee } from '@/lib/utils';
 
 function NoteLines({ note }: { note: string }) {
     const lines = note.split('|').map((l) => l.trim()).filter(Boolean);

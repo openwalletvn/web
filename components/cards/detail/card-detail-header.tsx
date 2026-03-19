@@ -1,9 +1,10 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import type { Card, Bank } from '@/lib/api';
-import { getBankImageUrl, getWalletImageUrl } from '@/lib/api';
 import { MetalBadge } from '@/components/cards/metal-badge';
 import { CoBrandDisplay } from '@/components/cards/co-brand-display';
+import { BankDisplay } from '@/components/shared/bank-display';
+import { NetworkBadge } from '@/components/shared/network-badge';
+import { CardTypeBadges } from '@/components/shared/card-type-badge';
+import { ContactlessBadge } from '@/components/shared/contactless-badge';
 
 interface Props {
     card: Card;
@@ -13,19 +14,7 @@ interface Props {
 export function CardDetailHeader({ card, bank }: Props) {
     return (
         <div className="flex flex-col gap-3">
-            {bank && (
-                <Link
-                    href={`/ngan-hang/${bank.id}`}
-                    className="flex items-center gap-2 w-fit group"
-                >
-                    <div className="relative w-5 h-5 shrink-0">
-                        <Image src={getBankImageUrl(bank.logo_url)} alt="" fill className="object-contain" />
-                    </div>
-                    <span className="text-sm text-slate-700 group-hover:text-slate-700 transition-colors">
-                        {bank.name}
-                    </span>
-                </Link>
-            )}
+            {bank && <BankDisplay bank={bank} asLink />}
 
             <h1 className="text-3xl font-bold text-slate-900 leading-tight">{card.name}</h1>
 
@@ -35,17 +24,8 @@ export function CardDetailHeader({ card, bank }: Props) {
                         Dừng phát hành
                     </span>
                 )}
-                <span className="px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium capitalize">
-                    {card.card_network}{card.card_tier ? ` ${card.card_tier}` : ''}
-                </span>
-                {card.card_type.map((type) => (
-                    <span
-                        key={type}
-                        className="px-1.5 py-0.5 border border-dashed border-slate-300 text-slate-700 capitalize"
-                    >
-                        {type}
-                    </span>
-                ))}
+                <NetworkBadge card={card} />
+                <CardTypeBadges types={card.card_type} />
                 {card.is_metal && <MetalBadge />}
             </div>
 
@@ -61,16 +41,8 @@ export function CardDetailHeader({ card, bank }: Props) {
 
             {card.contactless_methods_data && card.contactless_methods_data.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                    {card.contactless_methods_data.map((wallet) => (
-                        <div
-                            key={wallet.id}
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 border border-dashed border-slate-200 rounded-sm"
-                        >
-                            <div className="relative w-5 h-5">
-                                <Image src={getWalletImageUrl(wallet.logo_url)} alt="" fill className="object-contain" />
-                            </div>
-                            <span className="text-xs text-slate-600">{wallet.name}</span>
-                        </div>
+                    {card.contactless_methods_data.map((method) => (
+                        <ContactlessBadge key={method.id} method={method} />
                     ))}
                 </div>
             )}
