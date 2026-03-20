@@ -123,9 +123,11 @@ function FooterRow({ label, value }: { label: string; value: string }) {
 function CashbackSection({ cashback, categoryMap, merchantMap }: { cashback: CashbackBenefit; categoryMap: Map<string, CashbackCategory>; merchantMap: Map<string, Merchant> }) {
     const hasFooter = cashback.min_spend_per_period || cashback.global_cap || cashback.redemption || cashback.note;
 
+    const sortedRules = [...cashback.rules].sort((a, b) => (b.rate_max ?? b.rate) - (a.rate_max ?? a.rate));
+
     return (
         <div className="space-y-3">
-            {cashback.rules.map((rule, i) => (
+            {sortedRules.map((rule, i) => (
                 <RuleCard key={i} rule={rule} categoryMap={categoryMap} merchantMap={merchantMap} />
             ))}
 
