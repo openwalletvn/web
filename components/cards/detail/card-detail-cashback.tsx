@@ -1,11 +1,11 @@
-import type { Card, CashbackBenefit, CashbackCategory, CashbackRule } from '@/lib/api';
+import type { Card, CashbackBenefit, CashbackCategory, CashbackRule, Merchant } from '@/lib/api';
+import { getCashbackCategories, getMerchants } from '@/lib/api';
 import { BadgePercent, CircleCheckBig, CircleDollarSign, Info, MessageCircleWarning } from 'lucide-react';
 
-// ─── Formatters ────────────────────────────────────────────────────────────
+// ─── Formatters ─────────────────────────────────────────────────────────────
 
 function formatRate(rate: number): string {
     const pct = rate * 100;
-    // Avoid floating point noise: 0.05 → 5, 0.015 → 1.5
     const rounded = Math.round(pct * 100) / 100;
     return `${rounded}%`;
 }
@@ -14,25 +14,7 @@ function formatVnd(amount: number): string {
     return amount.toLocaleString('vi-VN') + 'đ';
 }
 
-// ─── Category labels ────────────────────────────────────────────────────────
-
-const CATEGORY_LABELS: Record<CashbackCategory, string> = {
-    dining:        'Ăn uống',
-    travel:        'Du lịch',
-    shopping:      'Mua sắm',
-    groceries:     'Siêu thị',
-    fuel:          'Xăng dầu',
-    utilities:     'Hóa đơn',
-    entertainment: 'Giải trí',
-    health:        'Sức khỏe',
-    education:     'Giáo dục',
-    insurance:     'Bảo hiểm',
-    digital:       'Số / Online',
-    transport:     'Di chuyển',
-    other:         'Khác',
-};
-
-// ─── Redemption labels ──────────────────────────────────────────────────────
+// ─── Redemption labels ───────────────────────────────────────────────────────
 
 const REDEMPTION_LABELS: Record<string, string> = {
     auto_statement_credit: 'Tự động khấu trừ sao kê',
@@ -40,19 +22,21 @@ const REDEMPTION_LABELS: Record<string, string> = {
     points_pool:           'Tích điểm, đổi thưởng sau',
 };
 
-// ─── Sub-components ─────────────────────────────────────────────────────────
+// ─── Sub-components ──────────────────────────────────────────────────────────
 
-function CategoryBadge({ category }: { category: CashbackCategory }) {
+function CategoryBadge({ slug, categoryMap }: { slug: string; categoryMap: Map<string, CashbackCategory> }) {
+    const cat = categoryMap.get(slug);
+    const label = cat ? `${cat.icon} ${cat.label}` : slug;
     return (
         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
-            {CATEGORY_LABELS[category] ?? category}
+            {label}
         </span>
     );
 }
 
-function MerchantBadge({ slug }: { slug: string }) {
-    // Capitalise first letter for display
-    const label = slug.charAt(0).toUpperCase() + slug.slice(1);
+function MerchantBadge({ slug, merchantMap }: { slug: string; merchantMap: Map<string, Merchant> }) {
+    const merchant = merchantMap.get(slug);
+    const label = merchant?.label ?? (slug.charAt(0).toUpperCase() + slug.slice(1));
     return (
         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
             {label}
@@ -60,7 +44,7 @@ function MerchantBadge({ slug }: { slug: string }) {
     );
 }
 
-function RuleCard({ rule }: { rule: CashbackRule }) {
+function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; categoryMap: Map<string, CashbackCategory>; merchantMap: Map<string, Merchant> }) {
     const rateLabel = rule.rate_max
         ? `${formatRate(rule.rate)} – ${formatRate(rule.rate_max)}`
         : formatRate(rule.rate);
@@ -72,7 +56,6 @@ function RuleCard({ rule }: { rule: CashbackRule }) {
             <BadgePercent className="w-4 h-4 min-w-4 text-slate-500 translate-y-0.5 shrink-0" />
 
             <div className="space-y-3 w-full">
-                {/* Rate + catch-all label */}
                 <p className="text-sm font-semibold text-slate-900">
                     {rateLabel}
                     {isCatchAll && (
@@ -80,7 +63,6 @@ function RuleCard({ rule }: { rule: CashbackRule }) {
                     )}
                 </p>
 
-                {/* Categories */}
                 {rule.categories && rule.categories.length > 0 && (
                     <div className="space-y-1.5">
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
@@ -88,14 +70,13 @@ function RuleCard({ rule }: { rule: CashbackRule }) {
                             Danh mục áp dụng
                         </div>
                         <div className="flex flex-wrap gap-1.5">
-                            {rule.categories.map((cat) => (
-                                <CategoryBadge key={cat} category={cat} />
+                            {rule.categories.map((slug) => (
+                                <CategoryBadge key={slug} slug={slug} categoryMap={categoryMap} />
                             ))}
                         </div>
                     </div>
                 )}
 
-                {/* Merchants */}
                 {rule.merchants && rule.merchants.length > 0 && (
                     <div className="space-y-1.5">
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
@@ -104,19 +85,17 @@ function RuleCard({ rule }: { rule: CashbackRule }) {
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                             {rule.merchants.map((m) => (
-                                <MerchantBadge key={m} slug={m} />
+                                <MerchantBadge key={m} slug={m} merchantMap={merchantMap} />
                             ))}
                         </div>
                     </div>
                 )}
 
-                {/* Per-rule cap */}
                 <div className="flex items-center gap-1.5 text-xs text-slate-600">
                     <CircleDollarSign className="w-3.5 h-3.5 text-slate-400" />
                     {rule.cap ? `Tối đa ${formatVnd(rule.cap.amount)} / kỳ sao kê` : 'Không giới hạn'}
                 </div>
 
-                {/* Note */}
                 {rule.note && (
                     <div className="space-y-1">
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
@@ -141,15 +120,13 @@ function FooterRow({ label, value }: { label: string; value: string }) {
     );
 }
 
-// ─── Main component ─────────────────────────────────────────────────────────
-
-function CashbackSection({ cashback }: { cashback: CashbackBenefit }) {
+function CashbackSection({ cashback, categoryMap, merchantMap }: { cashback: CashbackBenefit; categoryMap: Map<string, CashbackCategory>; merchantMap: Map<string, Merchant> }) {
     const hasFooter = cashback.min_spend_per_period || cashback.global_cap || cashback.redemption || cashback.note;
 
     return (
         <div className="space-y-3">
             {cashback.rules.map((rule, i) => (
-                <RuleCard key={i} rule={rule} />
+                <RuleCard key={i} rule={rule} categoryMap={categoryMap} merchantMap={merchantMap} />
             ))}
 
             {hasFooter && (
@@ -181,17 +158,26 @@ function CashbackSection({ cashback }: { cashback: CashbackBenefit }) {
     );
 }
 
+// ─── Main component (async server component) ─────────────────────────────────
+
 interface Props {
     card: Card;
 }
 
-export function CardDetailCashback({ card }: Props) {
+export async function CardDetailCashback({ card }: Props) {
     if (!card.cashback) return null;
+
+    const [categories, merchants] = await Promise.all([
+        getCashbackCategories().catch(() => [] as CashbackCategory[]),
+        getMerchants().catch(() => [] as Merchant[]),
+    ]);
+    const categoryMap = new Map(categories.map((c) => [c.slug, c]));
+    const merchantMap = new Map(merchants.map((m) => [m.slug, m]));
 
     return (
         <section className="flex flex-col gap-4">
             <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Hoàn tiền</h2>
-            <CashbackSection cashback={card.cashback} />
+            <CashbackSection cashback={card.cashback} categoryMap={categoryMap} merchantMap={merchantMap} />
         </section>
     );
 }

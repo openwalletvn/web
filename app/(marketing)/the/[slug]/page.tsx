@@ -13,6 +13,7 @@ import {CardDetailLastModified} from '@/components/cards/detail/card-detail-last
 import {CardDetailRelated} from '@/components/cards/detail/card-detail-related';
 import {CardDetailCompare} from '@/components/cards/detail/card-detail-compare';
 import {CardDetailCashback} from '@/components/cards/detail/card-detail-cashback';
+import {CardDetailIntents} from '@/components/cards/detail/card-detail-intents';
 
 export async function generateStaticParams() {
     const cards = await getCards();
@@ -118,6 +119,7 @@ export default async function CardPage({ params }: Props) {
                         <CardDetailBillingCycle card={card} bank={bank} />
                         <CardDetailFees card={card} bank={bank} />
                         <CardDetailOtherFees card={card} bank={bank} />
+                        <CardDetailIntents card={card} />
                         <CardDetailCashback card={card}/>
                         <CardDetailSources card={card} bank={bank} />
                         <CardDetailLastModified card={card} bank={bank} />
