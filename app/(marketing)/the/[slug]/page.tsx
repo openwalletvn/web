@@ -1,19 +1,18 @@
-import type { Metadata } from 'next';
+import type {Metadata} from 'next';
 import Link from 'next/link';
-import { getCard, getCards, getBank } from '@/lib/api';
-import { CardImage } from '@/components/cards/card-image';
-import { Breadcrumbs } from '@/components/layout/breadcrumbs';
-import { buildCardPageMeta } from '@/lib/page-meta/card';
-import { AddToWalletButton } from './_add-to-wallet-button';
-import { CardDetailHeader } from '@/components/cards/detail/card-detail-header';
-import { CardDetailBillingCycle } from '@/components/cards/detail/card-detail-billing-cycle';
-import { CardDetailFees } from '@/components/cards/detail/card-detail-fees';
-import { CardDetailOtherFees } from '@/components/cards/detail/card-detail-other-fees';
-import { CardDetailSources } from '@/components/cards/detail/card-detail-sources';
-import { CardDetailLastModified } from '@/components/cards/detail/card-detail-last-modified';
-import { CardDetailRelated } from '@/components/cards/detail/card-detail-related';
-import { CardDetailCompare } from '@/components/cards/detail/card-detail-compare';
-import { getCardComparePairs } from '@/lib/api';
+import {getBank, getCard, getCardComparePairs, getCards} from '@/lib/api';
+import {CardImage} from '@/components/cards/card-image';
+import {Breadcrumbs} from '@/components/layout/breadcrumbs';
+import {buildCardPageMeta} from '@/lib/page-meta/card';
+import {CardDetailHeader} from '@/components/cards/detail/card-detail-header';
+import {CardDetailBillingCycle} from '@/components/cards/detail/card-detail-billing-cycle';
+import {CardDetailFees} from '@/components/cards/detail/card-detail-fees';
+import {CardDetailOtherFees} from '@/components/cards/detail/card-detail-other-fees';
+import {CardDetailSources} from '@/components/cards/detail/card-detail-sources';
+import {CardDetailLastModified} from '@/components/cards/detail/card-detail-last-modified';
+import {CardDetailRelated} from '@/components/cards/detail/card-detail-related';
+import {CardDetailCompare} from '@/components/cards/detail/card-detail-compare';
+import {CardDetailCashback} from '@/components/cards/detail/card-detail-cashback';
 
 export async function generateStaticParams() {
     const cards = await getCards();
@@ -119,6 +118,7 @@ export default async function CardPage({ params }: Props) {
                         <CardDetailBillingCycle card={card} bank={bank} />
                         <CardDetailFees card={card} bank={bank} />
                         <CardDetailOtherFees card={card} bank={bank} />
+                        <CardDetailCashback card={card}/>
                         <CardDetailSources card={card} bank={bank} />
                         <CardDetailLastModified card={card} bank={bank} />
                     </div>
