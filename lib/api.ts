@@ -100,20 +100,29 @@ export interface CardFees {
     foreign_dcc?: FeeEntry;
 }
 
-export type CashbackCategory =
-    | 'dining'
-    | 'travel'
-    | 'shopping'
-    | 'groceries'
-    | 'fuel'
-    | 'utilities'
-    | 'entertainment'
-    | 'health'
-    | 'education'
-    | 'insurance'
-    | 'digital'
-    | 'transport'
-    | 'other';
+export interface CashbackCategory {
+    slug: string;
+    label: string;
+    icon: string; // emoji
+}
+
+export interface Merchant {
+    slug: string;
+    label: string;
+    category: string;
+    url?: string;
+    co_brand?: string;
+}
+
+export interface Intent {
+    slug: string;
+    label: string;
+    group: string;
+    icon: string; // emoji
+    merchants: string[];
+    categories: string[];
+    co_brands: string[];
+}
 
 export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'points_pool';
 
@@ -125,7 +134,7 @@ export interface CashbackRule {
     rate: number;           // decimal, e.g. 0.05 = 5%
     rate_max?: number;      // decimal, e.g. 0.10 = 10% — present when tiered/conditional
     cap?: CashbackCap;      // per-rule cap; absent = uncapped
-    categories?: CashbackCategory[];
+    categories?: string[];  // category slugs, resolved via /api/v1/cashback-categories
     merchants?: string[];   // merchant slugs, e.g. "grab", "shopee"
     note?: string;
 }
@@ -171,6 +180,7 @@ export interface Card {
     for_business?: boolean;
     description?: string;
     score?: number; // Computed data completeness score (0–100)
+    intents?: string[];
     cashback?: CashbackBenefit;
 }
 
@@ -303,6 +313,45 @@ interface BrandListResponse {
 interface BrandDetailResponse {
     success: boolean;
     data: Brand;
+}
+
+interface CashbackCategoriesResponse {
+    success: boolean;
+    data: CashbackCategory[];
+    meta: { total: number };
+}
+
+export async function getCashbackCategories(): Promise<CashbackCategory[]> {
+    const res = await apiFetch('/api/v1/cashback-categories');
+    const json = (await res.json()) as CashbackCategoriesResponse;
+    if (!json.success) throw new Error('Failed to fetch cashback categories');
+    return json.data;
+}
+
+interface MerchantsResponse {
+    success: boolean;
+    data: Merchant[];
+    meta: { total: number };
+}
+
+export async function getMerchants(): Promise<Merchant[]> {
+    const res = await apiFetch('/api/v1/merchants');
+    const json = (await res.json()) as MerchantsResponse;
+    if (!json.success) throw new Error('Failed to fetch merchants');
+    return json.data;
+}
+
+interface IntentsResponse {
+    success: boolean;
+    data: Intent[];
+    meta: { total: number };
+}
+
+export async function getIntents(): Promise<Intent[]> {
+    const res = await apiFetch('/api/v1/intents');
+    const json = (await res.json()) as IntentsResponse;
+    if (!json.success) throw new Error('Failed to fetch intents');
+    return json.data;
 }
 
 export async function getBrands(): Promise<Brand[]> {
