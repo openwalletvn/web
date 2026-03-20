@@ -100,6 +100,44 @@ export interface CardFees {
     foreign_dcc?: FeeEntry;
 }
 
+export type CashbackCategory =
+    | 'dining'
+    | 'travel'
+    | 'shopping'
+    | 'groceries'
+    | 'fuel'
+    | 'utilities'
+    | 'entertainment'
+    | 'health'
+    | 'education'
+    | 'insurance'
+    | 'digital'
+    | 'transport'
+    | 'other';
+
+export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'points_pool';
+
+export interface CashbackCap {
+    amount: number; // VND
+}
+
+export interface CashbackRule {
+    rate: number;           // decimal, e.g. 0.05 = 5%
+    rate_max?: number;      // decimal, e.g. 0.10 = 10% — present when tiered/conditional
+    cap?: CashbackCap;      // per-rule cap; absent = uncapped
+    categories?: CashbackCategory[];
+    merchants?: string[];   // merchant slugs, e.g. "grab", "shopee"
+    note?: string;
+}
+
+export interface CashbackBenefit {
+    rules: CashbackRule[];
+    global_cap?: CashbackCap;
+    min_spend_per_period?: number; // VND
+    redemption?: CashbackRedemption;
+    note?: string;
+}
+
 export interface CardSource {
     label: string;
     url: string;
@@ -133,6 +171,7 @@ export interface Card {
     for_business?: boolean;
     description?: string;
     score?: number; // Computed data completeness score (0–100)
+    cashback?: CashbackBenefit;
 }
 
 export type CardSort = 'fee_asc' | 'fee_desc';
