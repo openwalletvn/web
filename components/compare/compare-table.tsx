@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { Card, CardFees } from '@/lib/api';
+import type { Card, CardFees, Intent } from '@/lib/api';
 import { getNetworkImageUrl } from '@/lib/api';
 import { CompareDueDateRow } from './compare-due-date-row';
 import { NetworkBadge } from '@/components/shared/network-badge';
@@ -8,6 +8,7 @@ const empty = <span className="text-slate-300">—</span>;
 
 interface Props {
     cards: (Card | null)[];
+    intentMap?: Map<string, Intent>;
 }
 
 const CARD_TYPE_LABELS: Record<string, string> = {
@@ -57,7 +58,7 @@ function Row({ label, values }: RowProps) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function CompareTable({ cards }: Props) {
+export function CompareTable({ cards, intentMap = new Map() }: Props) {
     const purelyDebit = (c: Card) => c.card_type.every((t) => t === 'debit' || t === 'atm');
     const showPaymentSection = cards.some((c) => c && !purelyDebit(c));
 
@@ -95,7 +96,38 @@ export function CompareTable({ cards }: Props) {
 
     return (
         <div>
-            {/* Section 1 — identity */}
+            {/* Section 1 — intents */}
+            {cards.some((c) => c?.intents?.length) && (
+                <>
+                    <SectionHeader label="Phù hợp với" />
+                    <Row
+                        label="Mục đích sử dụng"
+                        values={cards.map((c) => {
+                            if (!c?.intents?.length) return empty;
+                            const intents = c.intents
+                                .map((slug) => intentMap.get(slug))
+                                .filter((i): i is Intent => i !== undefined);
+                            if (!intents.length) return empty;
+                            return (
+                                <div className="flex flex-wrap gap-1.5">
+                                    {intents.map((intent) => (
+                                        <span
+                                            key={intent.slug}
+                                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700"
+                                        >
+                                            <span>{intent.icon}</span>
+                                            {intent.label}
+                                        </span>
+                                    ))}
+                                </div>
+                            );
+                        })}
+                    />
+                </>
+            )}
+
+            {/* Section 2 — identity */}
+            <SectionHeader label="Thông tin" />
             <Row
                 label="Ngân hàng"
                 values={cards.map((c, i) => c
@@ -106,7 +138,7 @@ export function CompareTable({ cards }: Props) {
             <Row label="Mạng lưới" values={networkValues} />
             <Row label="Loại thẻ" values={types} />
 
-            {/* Section 2 — fees */}
+            {/* Section 3 — fees */}
             <SectionHeader label="Phí" />
             {feeRows.map(({ label, key }) => {
                 if (!cards.some((c) => c?.fees?.[key] != null)) return null;
@@ -124,7 +156,7 @@ export function CompareTable({ cards }: Props) {
                 </>
             )}
 
-            {/* Section 4 — utility */}
+            {/* Section 5 — utility */}
             <SectionHeader label="Tiện ích" />
             <Row label="Thanh toán không tiếp xúc" values={contactlessValues} />
         </div>

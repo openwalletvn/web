@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { IconPlus, IconX } from '@tabler/icons-react';
 import type { SearchCard } from '@/lib/search-types';
-import type { Card } from '@/lib/api';
+import type { Card, Intent } from '@/lib/api';
 import { getCard } from '@/lib/api';
 import { CardSearchInput } from '@/components/compare/card-search-input';
 import { CompareTemplate } from '@/components/compare/compare-template';
@@ -27,9 +27,10 @@ interface InnerProps {
     defaultPair?: string;
     children?: React.ReactNode;
     excludePair?: string;
+    intentMap?: Map<string, Intent>;
 }
 
-function CompareSectionInner({ defaultPair, children, excludePair }: InnerProps) {
+function CompareSectionInner({ defaultPair, children, excludePair, intentMap }: InnerProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -199,7 +200,7 @@ function CompareSectionInner({ defaultPair, children, excludePair }: InnerProps)
                     {isLoading ? (
                         <p className="text-sm text-slate-500">Đang tải...</p>
                     ) : (
-                        <CompareTemplate cards={slotCards} onStickyChange={setStickyVisible}>
+                        <CompareTemplate cards={slotCards} onStickyChange={setStickyVisible} intentMap={intentMap}>
                             {children}
                         </CompareTemplate>
                     )}
@@ -217,12 +218,13 @@ interface Props {
     defaultPair?: string;
     children?: React.ReactNode;
     excludePair?: string;
+    intentMap?: Map<string, Intent>;
 }
 
-export function CompareSection({ defaultPair, children, excludePair }: Props) {
+export function CompareSection({ defaultPair, children, excludePair, intentMap }: Props) {
     return (
         <Suspense>
-            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair}>
+            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair} intentMap={intentMap}>
                 {children}
             </CompareSectionInner>
         </Suspense>
