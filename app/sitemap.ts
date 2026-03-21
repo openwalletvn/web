@@ -70,11 +70,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getComparePairs().catch(() => []),
     Promise.resolve(getCompareMdxPairs()),
   ])
-  const allPairs = [...new Set([...apiPairs.map((p) => `${p.a}-vs-${p.b}`), ...mdxPairs])]
+  const allPairs = [...new Set([...apiPairs.map((p) => p.compare_path), ...mdxPairs.map((p) => `/${p}`)])]
   const comparePages = [
     { url: `${BASE_URL}/so-sanh`, changeFrequency: 'monthly' as const, priority: 0.8 },
     ...allPairs.map((pair) => ({
-      url: `${BASE_URL}/so-sanh/${pair}`,
+      url: `${BASE_URL}/so-sanh${pair}`,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     })),

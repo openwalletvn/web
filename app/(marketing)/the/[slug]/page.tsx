@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import Link from 'next/link';
-import {getBank, getCard, getCardComparePairs, getCards} from '@/lib/api';
+import {getBank, getCard, getCards, getRelatedCards} from '@/lib/api';
 import {CardImage} from '@/components/cards/card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCardPageMeta} from '@/lib/page-meta/card';
@@ -53,25 +53,11 @@ export default async function CardPage({ params }: Props) {
         );
     }
 
-    const [bank, relatedCards, comparePairs] = await Promise.all([
+    const [bank, relatedCards, compareCards] = await Promise.all([
         getBank(card.bank_id).catch(() => null),
         getCards({ bank_id: card.bank_id }).catch(() => []),
-        getCardComparePairs(card.id).catch(() => []),
+        getRelatedCards(card.id).catch(() => []),
     ]);
-
-    // Build compare cards list and links map
-    const compareCardIds = comparePairs
-        .map((p) => (p.a === card.id ? p.b : p.a))
-        .filter(Boolean);
-    const compareCardsRaw = await Promise.all(
-        compareCardIds.map((id) => getCard(id).catch(() => null)),
-    );
-    const compareCards = compareCardsRaw.filter((c): c is NonNullable<typeof c> => c !== null);
-    const compareLinks: Record<string, string> = {};
-    for (const other of compareCards) {
-        const [a, b] = [card.id, other.id].sort();
-        compareLinks[other.id] = `/so-sanh/${a}-vs-${b}`;
-    }
 
     const { jsonLd, breadcrumbItems } = buildCardPageMeta(card, bank);
     const isVertical = card.image?.orientation === 'vertical';
@@ -129,7 +115,6 @@ export default async function CardPage({ params }: Props) {
                 <CardDetailCompare
                     currentCard={card}
                     compareCards={compareCards}
-                    compareLinks={compareLinks}
                 />
                 <CardDetailRelated cards={sameTypeCards} currentCardId={card.id} />
             </div>
