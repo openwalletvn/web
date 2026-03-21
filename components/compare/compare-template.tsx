@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useRef, useState} from 'react';
-import type {Card} from '@/lib/api';
+import type {Card, Intent} from '@/lib/api';
 import Link from 'next/link';
 import {CardImage} from '@/components/cards/card-image';
 import {CompareTable} from './compare-table';
@@ -10,9 +10,10 @@ interface Props {
     cards: (Card | null)[];
     children?: React.ReactNode;
     onStickyChange?: (visible: boolean) => void;
+    intentMap?: Map<string, Intent>;
 }
 
-export function CompareTemplate({ cards, children, onStickyChange }: Props) {
+export function CompareTemplate({ cards, children, onStickyChange, intentMap }: Props) {
     const cardHeaderRef = useRef<HTMLDivElement>(null);
     const [showSticky, setShowSticky] = useState(false);
 
@@ -102,7 +103,7 @@ export function CompareTemplate({ cards, children, onStickyChange }: Props) {
             </div>
 
             {/* ── Comparison table ──────────────────────────────────────────── */}
-            <CompareTable cards={cards} />
+            <CompareTable cards={cards} intentMap={intentMap} />
 
             {/* ── Editorial MDX content ─────────────────────────────────────── */}
             {children && (

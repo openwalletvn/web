@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getCard, getComparePairs, getRelatedCardsForMany } from '@/lib/api';
+import { getCard, getComparePairs, getRelatedCardsForMany, getIntents } from '@/lib/api';
 import { lookupCompareMdx, getCompareMdxPairs } from '@/lib/compare-mdx';
 import { buildComparePageMeta } from '@/lib/page-meta/compare';
 import { CompareTable } from '@/components/compare/compare-table';
@@ -54,10 +54,12 @@ export default async function ComparePairPage({ params }: Props) {
     ]);
     if (!cardA || !cardB) notFound();
 
-    const [mdx, suggestedCards] = await Promise.all([
+    const [mdx, suggestedCards, allIntents] = await Promise.all([
         Promise.resolve(lookupCompareMdx(pair)),
         getRelatedCardsForMany([idA, idB]).catch(() => []),
+        getIntents().catch(() => []),
     ]);
+    const intentMap = new Map(allIntents.map((i) => [i.slug, i]));
     const { jsonLd, breadcrumbItems } = buildComparePageMeta(cardA, cardB, mdx?.frontmatter);
     const hasContent = mdx && mdx.content.trim().length > 0;
 
@@ -70,11 +72,11 @@ export default async function ComparePairPage({ params }: Props) {
                 <h1 className="text-3xl font-bold text-slate-900 mt-6 mb-8">
                     {mdx?.frontmatter.title ?? `So sánh ${cardA.name} vs ${cardB.name}`}
                 </h1>
-                <CompareSection defaultPair={pair} excludePair={pair}>
+                <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap}>
                     {hasContent && (
                         <MDXRemote
                             source={mdx.content}
-                            components={{ CompareTable: () => <CompareTable cards={[cardA, cardB]} /> }}
+                            components={{ CompareTable: () => <CompareTable cards={[cardA, cardB]} intentMap={intentMap} /> }}
                         />
                     )}
                 </CompareSection>
