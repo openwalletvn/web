@@ -14,6 +14,10 @@ function formatVnd(amount: number): string {
     return amount.toLocaleString('vi-VN') + 'đ';
 }
 
+function formatCap(amount: number): string {
+    return amount === -1 ? 'Hoàn không giới hạn' : formatVnd(amount);
+}
+
 // ─── Redemption labels ───────────────────────────────────────────────────────
 
 const REDEMPTION_LABELS: Record<string, string> = {
@@ -93,7 +97,9 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
 
                 <div className="flex items-center gap-1.5 text-xs text-slate-600">
                     <CircleDollarSign className="w-3.5 h-3.5 text-slate-400" />
-                    {rule.cap ? `Tối đa ${formatVnd(rule.cap.amount)} / kỳ sao kê` : 'Không giới hạn'}
+                    {rule.cap && rule.cap.amount !== -1
+                        ? `Tối đa ${formatCap(rule.cap.amount)}${rule.cap_max ? ` – ${formatCap(rule.cap_max.amount)}` : ''} / kỳ sao kê`
+                        : 'Hoàn không giới hạn'}
                 </div>
 
                 {rule.note && (
@@ -142,7 +148,7 @@ function CashbackSection({ cashback, categoryMap, merchantMap }: { cashback: Cas
                     {cashback.global_cap && (
                         <FooterRow
                             label="Trần hoàn tiền tổng"
-                            value={`${formatVnd(cashback.global_cap.amount)} / kỳ`}
+                            value={cashback.global_cap.amount === -1 ? 'Hoàn không giới hạn' : `${formatVnd(cashback.global_cap.amount)}${cashback.global_cap_max ? ` – ${formatCap(cashback.global_cap_max.amount)}` : ''} / kỳ`}
                         />
                     )}
                     {cashback.redemption && (

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { getCard, getComparePairs, getComparableCards } from '@/lib/api';
+import { getCard, getComparePairs, getRelatedCardsForMany } from '@/lib/api';
 import { lookupCompareMdx, getCompareMdxPairs } from '@/lib/compare-mdx';
 import { buildComparePageMeta } from '@/lib/page-meta/compare';
 import { CompareTable } from '@/components/compare/compare-table';
@@ -19,7 +19,7 @@ export async function generateStaticParams() {
         getComparePairs().catch(() => []),
         Promise.resolve(getCompareMdxPairs()),
     ]);
-    const apiPairStrings = apiPairs.map((p) => `${p.a}-vs-${p.b}`);
+    const apiPairStrings = apiPairs.map((p) => p.compare_path.slice(1));
     const all = [...new Set([...apiPairStrings, ...mdxPairs])];
     return all.map((pair) => ({ pair }));
 }
@@ -56,7 +56,7 @@ export default async function ComparePairPage({ params }: Props) {
 
     const [mdx, suggestedCards] = await Promise.all([
         Promise.resolve(lookupCompareMdx(pair)),
-        getComparableCards([idA, idB]).catch(() => []),
+        getRelatedCardsForMany([idA, idB]).catch(() => []),
     ]);
     const { jsonLd, breadcrumbItems } = buildComparePageMeta(cardA, cardB, mdx?.frontmatter);
     const hasContent = mdx && mdx.content.trim().length > 0;

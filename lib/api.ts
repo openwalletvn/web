@@ -134,6 +134,7 @@ export interface CashbackRule {
     rate: number;           // decimal, e.g. 0.05 = 5%
     rate_max?: number;      // decimal, e.g. 0.10 = 10% — present when tiered/conditional
     cap?: CashbackCap;      // per-rule cap; absent = uncapped
+    cap_max?: CashbackCap;  // upper bound of cap range — present when tiered/conditional
     categories?: string[];  // category slugs, resolved via /api/v1/cashback-categories
     merchants?: string[];   // merchant slugs, e.g. "grab", "shopee"
     note?: string;
@@ -142,6 +143,7 @@ export interface CashbackRule {
 export interface CashbackBenefit {
     rules: CashbackRule[];
     global_cap?: CashbackCap;
+    global_cap_max?: CashbackCap;
     min_spend_per_period?: number; // VND
     redemption?: CashbackRedemption;
     note?: string;
@@ -385,17 +387,23 @@ export async function getNetwork(id: string): Promise<Network> {
 export interface ComparePair {
     a: string;
     b: string;
+    compare_path: string;
+}
+
+export interface RelatedCard extends Card {
+    relevance_score: number;
+    compare_path: string;
 }
 
 interface ComparePairsResponse {
     success: boolean;
-    data: [string, string][];
+    data: ComparePair[];
     meta: { total: number };
 }
 
-interface CardComparePairsResponse {
+interface RelatedCardsResponse {
     success: boolean;
-    data: [string, string][];
+    data: RelatedCard[];
     meta: { total: number; card_id: string };
 }
 
@@ -415,41 +423,32 @@ export async function getComparePairs(): Promise<ComparePair[]> {
     const res = await apiFetch('/api/v1/compare-pairs');
     const json = (await res.json()) as ComparePairsResponse;
     if (!json.success) throw new Error('Failed to fetch compare pairs');
-    return json.data.map(([a, b]) => ({ a, b }));
+    return json.data;
 }
 
-export async function getCardComparePairs(id: string): Promise<ComparePair[]> {
-    const res = await apiFetch(`/api/v1/cards/${id}/compare-pairs`);
-    const json = (await res.json()) as CardComparePairsResponse;
-    if (!json.success) throw new Error(`Failed to fetch compare pairs for card: ${id}`);
-    return json.data.map(([a, b]) => ({ a, b }));
+export async function getRelatedCards(id: string): Promise<RelatedCard[]> {
+    const res = await apiFetch(`/api/v1/cards/${id}/related`);
+    const json = (await res.json()) as RelatedCardsResponse;
+    if (!json.success) throw new Error(`Failed to fetch related cards for: ${id}`);
+    return json.data;
 }
 
 /**
- * Given a list of card IDs, fetch all their compare pairs and return
- * up to `max` unique partner card IDs (excluding the input IDs themselves).
+ * Fetch related cards for multiple card IDs, merge in API order,
+ * deduplicating and excluding the source card IDs themselves.
  */
-export async function getComparableCardIds(cardIds: string[], max = 6): Promise<string[]> {
-    const allPairs = await Promise.all(cardIds.map((id) => getCardComparePairs(id).catch(() => [])));
-    const inputSet = new Set(cardIds);
+export async function getRelatedCardsForMany(cardIds: string[]): Promise<RelatedCard[]> {
+    const allResults = await Promise.all(cardIds.map((id) => getRelatedCards(id).catch(() => [])));
+    const excludeSet = new Set(cardIds);
     const seen = new Set<string>();
-    const result: string[] = [];
-    for (const pairs of allPairs) {
-        for (const { a, b } of pairs) {
-            const partner = inputSet.has(a) ? b : a;
-            if (!seen.has(partner) && !inputSet.has(partner)) {
-                seen.add(partner);
-                result.push(partner);
-                if (result.length >= max) return result;
+    const result: RelatedCard[] = [];
+    for (const cards of allResults) {
+        for (const card of cards) {
+            if (!seen.has(card.id) && !excludeSet.has(card.id)) {
+                seen.add(card.id);
+                result.push(card);
             }
         }
     }
     return result;
-}
-
-/** Fetch full Card objects for the comparable partners of the given card IDs. */
-export async function getComparableCards(cardIds: string[], max = 6): Promise<Card[]> {
-    const ids = await getComparableCardIds(cardIds, max);
-    const cards = await Promise.all(ids.map((id) => getCard(id).catch(() => null)));
-    return cards.filter((c): c is Card => c !== null);
 }

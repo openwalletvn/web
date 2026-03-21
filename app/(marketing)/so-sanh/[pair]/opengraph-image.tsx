@@ -13,7 +13,7 @@ export async function generateStaticParams() {
         getComparePairs().catch(() => []),
         Promise.resolve(getCompareMdxPairs()),
     ]);
-    const apiPairStrings = apiPairs.map((p) => `${p.a}-vs-${p.b}`);
+    const apiPairStrings = apiPairs.map((p) => p.compare_path.slice(1));
     const all = [...new Set([...apiPairStrings, ...mdxPairs])];
     return all.map((pair) => ({ pair }));
 }
