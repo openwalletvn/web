@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { IconError404 } from '@tabler/icons-react';
+import { SoSanh404Redirect } from '@/components/layout/so-sanh-404-redirect';
 
 export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
+      <SoSanh404Redirect />
       <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-sm border border-dashed border-slate-200">
         <IconError404 className="size-10 text-slate-400" stroke={1.5} />
       </div>
