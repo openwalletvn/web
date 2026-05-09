@@ -159,20 +159,6 @@ interface Account {
 }
 ```
 
-### Example row
-
-```json
-{
-  "id": "acc_f4e5d6c7",
-  "email": "phuc@openwallet.vn",
-  "created_at": "2026-03-01T08:00:00Z",
-  "last_login_at": "2026-03-07T02:15:00Z",
-  "early_adopter": true,
-  "pro_reason": "early_adopter",
-  "sync_enabled": true
-}
-```
-
 ### Notes
 
 - Auth via magic link (Resend email), no password
@@ -212,18 +198,6 @@ interface Wallet {
 }
 ```
 
-### Example row
-
-```json
-{
-  "id": "wal_x9y8z7",
-  "account_id": "acc_f4e5d6c7",
-  "name": "Ví chính",
-  "created_at": "2026-03-01T08:00:00Z",
-  "updated_at": "2026-03-05T10:00:00Z"
-}
-```
-
 ---
 
 ## 🔮 wallet_cards (Planned — Phase 5: Auth + Sync)
@@ -256,7 +230,7 @@ CREATE INDEX idx_wallet_cards_wallet_id ON wallet_cards(wallet_id);
 
 ### Due date computation model
 
-When `payment_due_date_source = 'calculated'` (the default), the due date is **never stored** — it is derived client-side at runtime:
+When `payment_due_date_source = 'calculated'` (the default), the due date is **never stored** — derived client-side at runtime:
 
 ```
 cycleClose = statementDay / resultMonth
@@ -264,11 +238,11 @@ cycleStart = statementDay+1 / (resultMonth − 1)   ← first day of the billing
 dueDate    = cycleStart + interestFreeDays          ← from catalog card
 ```
 
-`interestFreeDays` comes from the card catalog API (`Card.interest_free_days`).
-`statement_day` is the user override; if null, the catalog's `statement_date` is used.
-See `lib/card-dates.ts` → `getStatementObject()` for the canonical implementation.
+`interestFreeDays` comes from `Card.interest_free_days` in catalog API.
+`statement_day` is user override; if null, catalog's `statement_date` is used.
+See `lib/card-dates.ts` → `getStatementObject()` for canonical implementation.
 
-When `payment_due_date_source = 'custom'`, `payment_due_day` stores the user-set day of month and overrides all computation.
+When `payment_due_date_source = 'custom'`, `payment_due_day` stores user-set day of month.
 
 ### TypeScript
 
@@ -282,57 +256,13 @@ interface WalletCard {
   nickname?: string;
   statement_day?: number;
   payment_due_date_source: 'calculated' | 'custom';
-  payment_due_day?: number;   // only set when payment_due_date_source = 'custom'
+  payment_due_day?: number;
   notify_statement: boolean;
   notify_due: boolean;
   notify_days_before: number;
   notify_adapter?: 'discord' | 'telegram' | 'email' | 'zalo';
   created_at: string;
   updated_at: string;
-}
-```
-
-### Example row (calculated due date)
-
-```json
-{
-  "id": "card_k1l2m3",
-  "wallet_id": "wal_x9y8z7",
-  "card_id": "tcb-visa-platinum",
-  "bank_id": "techcombank",
-  "card_type": "credit",
-  "nickname": "Visa chính",
-  "statement_day": 5,
-  "payment_due_date_source": "calculated",
-  "payment_due_day": null,
-  "notify_statement": false,
-  "notify_due": true,
-  "notify_days_before": 2,
-  "notify_adapter": "discord",
-  "created_at": "2026-03-01T08:30:00Z",
-  "updated_at": "2026-03-05T10:00:00Z"
-}
-```
-
-### Example row (custom due date)
-
-```json
-{
-  "id": "card_n4o5p6",
-  "wallet_id": "wal_x9y8z7",
-  "card_id": "vcb-mastercard-classic",
-  "bank_id": "vietcombank",
-  "card_type": "credit",
-  "nickname": null,
-  "statement_day": null,
-  "payment_due_date_source": "custom",
-  "payment_due_day": 15,
-  "notify_statement": false,
-  "notify_due": true,
-  "notify_days_before": 1,
-  "notify_adapter": "telegram",
-  "created_at": "2026-02-10T09:00:00Z",
-  "updated_at": "2026-02-10T09:00:00Z"
 }
 ```
 
