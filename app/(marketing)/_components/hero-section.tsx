@@ -39,7 +39,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                     </div>
 
                     <CardImageTag
-                        src="/cards/sacombank-uniq.avif"
+                        src="/the/sacombank-uniq.avif"
                         alt="Sacombank Uniq"
                         width={72}
                         height={114}
@@ -47,7 +47,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                         className="w-[128px] absolute top-1/4 left-0"
                     />
                     <CardImageTag
-                        src="/cards/msb-visa-online.avif"
+                        src="/the/msb-visa-online.avif"
                         alt="MSB Visa Online"
                         width={130}
                         height={82}
@@ -93,7 +93,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                     </div>
 
                     <CardImageTag
-                        src="/cards/woori-vv-hype-point-gold.avif"
+                        src="/the/woori-vv-hype-point-gold.avif"
                         alt="Woori Card"
                         width={63}
                         height={100}
