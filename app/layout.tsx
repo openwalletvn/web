@@ -5,7 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import "./globals.css";
 
 const calSans = Cal_Sans({
-  subsets: ["latin"],
+  subsets: ["latin", "vietnamese"],
   weight: "400",
   variable: "--font-display",
 });

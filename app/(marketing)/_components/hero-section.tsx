@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
 import {CheckCircle, CreditCard, Settings} from 'lucide-react';
+import {BadgeNumberIcon} from './badge-number-icon';
 
 export async function HeroSection({cardCount, bankCount}: { cardCount: number; bankCount: number }) {
     const hero = await getTranslations('hero');
@@ -11,7 +12,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
             className="w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center py-16 overflow-hidden">
 
             {/* Heading */}
-            <h1 className="text-[clamp(2.8rem,7vw,5rem)] font-bold text-black leading-[1.05] tracking-tight text-center mb-10 px-4">
+            <h1 className="text-[clamp(2.8rem,7vw,5rem)] text-black leading-[1.05] tracking-hero text-center mb-10 px-4">
                 Tra cứu thẻ.<br/>So sánh thẻ.
             </h1>
 
@@ -27,14 +28,12 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                 <div className="hidden md:flex flex-col items-end justify-center gap-6 h-full py-8">
 
                     {/* 100+ cards badge (orange) */}
-                    <div
-                        className="flex items-center gap-2 bg-primary text-white rounded-2xl px-3 py-2.5 shadow-lg self-end">
-                        <CreditCard className="w-5 h-5 shrink-0 opacity-90"/>
-                        <div className="flex flex-col leading-tight">
-                            <span className="text-xl font-bold leading-none">{cardCount}+</span>
-                            <span className="text-[10px] opacity-80 mt-0.5">thẻ ngân hàng</span>
-                        </div>
-                    </div>
+                    <BadgeNumberIcon
+                        iconPosition="left"
+                        number={`${cardCount}+`}
+                        icon={CreditCard}
+                        text="Thẻ ngân hàng"
+                    />
 
                     {/* 2 stacked card images */}
                     <div className="flex flex-col gap-2 items-end">
@@ -70,34 +69,22 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                 {/* ── RIGHT COLUMN ── */}
                 <div className="hidden md:flex flex-col items-start justify-center gap-6 h-full py-8">
 
-                    {/* 25+ banks badge (white) */}
-                    <div
-                        className="flex items-center gap-2.5 bg-white border border-border rounded-2xl px-3 py-2.5 shadow-md">
-                        <div className="flex flex-col leading-tight">
-                            <span className="text-xl font-bold text-black leading-none">{bankCount}+</span>
-                            <span className="text-[10px] text-text-muted mt-0.5">ngân hàng</span>
-                        </div>
-                        <Settings className="w-4 h-4 text-text-subtle shrink-0"/>
-                        {/*<Image*/}
-                        {/*    src="/cards/kbank-cashback-plus.avif"*/}
-                        {/*    alt="KBank"*/}
-                        {/*    width={52}*/}
-                        {/*    height={33}*/}
-                        {/*    className="rounded-md object-cover"*/}
-                        {/*/>*/}
-                    </div>
+                    {/* 25+ banks badge */}
+                    <BadgeNumberIcon
+                        iconPosition="right"
+                        color="black"
+                        number={`${bankCount}+`}
+                        icon={Settings}
+                        text="ngân hàng"
+                    />
 
-                    {/* 100% free badge (white + orange icon) */}
-                    <div
-                        className="flex items-center gap-2.5 bg-white border border-border rounded-2xl px-3 py-2.5 shadow-md">
-                        <div className="flex flex-col leading-tight">
-                            <span className="text-xl font-bold text-black leading-none">100%</span>
-                            <span className="text-[10px] text-text-muted mt-0.5">miễn phí</span>
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-                            <CheckCircle className="w-4 h-4 text-white"/>
-                        </div>
-                    </div>
+                    {/* 100% free badge */}
+                    <BadgeNumberIcon
+                        iconPosition="right"
+                        number="100%"
+                        icon={CheckCircle}
+                        text="miễn phí"
+                    />
 
                     {/* Extra card + label */}
                     <div className="flex flex-col items-start gap-1">
