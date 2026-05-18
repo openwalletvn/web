@@ -47,8 +47,8 @@ export async function generateMetadata(): Promise<Metadata> {
       description: tog('description'),
     },
     icons: {
-      icon: '/icon.svg',
-      apple: '/icon.svg',
+      icon: '/icon.png',
+      apple: '/icon.png',
     },
   };
 }
