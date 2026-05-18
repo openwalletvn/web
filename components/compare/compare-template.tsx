@@ -94,7 +94,7 @@ export function CompareTemplate({ cards, children, onStickyChange, intentMap }: 
                                 </Link>
                             </>
                         ) : (
-                            <div className="flex items-end">
+                            <div className="flex items-end h-[200px]">
                                 <div className="w-full max-w-[200px] aspect-[16/10] bg-slate-100 rounded-lg" />
                             </div>
                         )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { IconX } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
@@ -52,8 +52,10 @@ export function RecentCompares({ excludePair }: Props = {}) {
     const { recentCompares, removeCompare } = useRecentCompares();
     const excludeKey = excludePair ? normalizePair(excludePair) : null;
     const { lookup, load } = useCardSearch();
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => { load(); }, [load]);
+    useEffect(() => { setMounted(true); }, []);
 
     // Deduplicate by normalized key, preferring SEO slug format
     const bestByKey = new Map<string, typeof recentCompares[0]>();
@@ -68,10 +70,10 @@ export function RecentCompares({ excludePair }: Props = {}) {
         (e) => !excludeKey || normalizePair(e.pair) !== excludeKey
     );
 
-    if (visible.length === 0) return null;
+    if (!mounted || visible.length === 0) return null;
 
     return (
-        <div className="mt-16 pt-10 border-t border-slate-100">
+        <div className="mt-16 pt-10 border-t border-slate-100 animate-in fade-in duration-500">
             <h2 className="text-lg font-semibold text-slate-800 mb-4">
                 {t('recent_title')}
             </h2>

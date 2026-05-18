@@ -21,6 +21,43 @@ function parseIds(pair: string): string[] {
     return (pair.includes(',') ? pair.split(',') : pair.split('-vs-')).filter(Boolean);
 }
 
+// ─── Loading skeleton matching CompareTemplate dimensions ────────────────────
+
+function CompareTemplateSkeleton({ numSlots }: { numSlots: number }) {
+    const colStyle = { gridTemplateColumns: `repeat(${numSlots}, 1fr)` };
+    return (
+        <div className="animate-pulse">
+            <div className="grid mb-8" style={colStyle}>
+                {Array.from({ length: numSlots }, (_, i) => (
+                    <div key={i} className="flex flex-col gap-3">
+                        <div className="flex items-end h-[200px]">
+                            <div className="w-full max-w-[200px] aspect-[16/10] bg-slate-100 rounded-lg" />
+                        </div>
+                        <div className="h-5 w-2/3 bg-slate-100 rounded" />
+                    </div>
+                ))}
+            </div>
+            {[3, 4, 2].map((rowCount, s) => (
+                <div key={s}>
+                    <div className="mt-10 border-t border-slate-100 pt-5 mb-2">
+                        <div className="h-3.5 w-14 bg-slate-100 rounded" />
+                    </div>
+                    {Array.from({ length: rowCount }, (_, r) => (
+                        <div key={r} className="py-3">
+                            <div className="h-3 w-20 bg-slate-100 rounded mb-1.5" />
+                            <div className="grid" style={colStyle}>
+                                {Array.from({ length: numSlots }, (_, c) => (
+                                    <div key={c} className="h-7 w-16 bg-slate-100 rounded" />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+}
+
 // ─── Inner (needs Suspense for useSearchParams) ───────────────────────────────
 
 interface InnerProps {
@@ -195,17 +232,21 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap }: 
             </div>
 
             {/* Compare table */}
-            {selectedCount >= 2 && (
+            {!initialized || !prefillDone ? (
+                <div className="mt-10">
+                    <CompareTemplateSkeleton numSlots={numSlots} />
+                </div>
+            ) : selectedCount >= 2 ? (
                 <div className="mt-10">
                     {isLoading ? (
-                        <p className="text-sm text-slate-500">Đang tải...</p>
+                        <CompareTemplateSkeleton numSlots={numSlots} />
                     ) : (
                         <CompareTemplate cards={slotCards} onStickyChange={setStickyVisible} intentMap={intentMap}>
                             {children}
                         </CompareTemplate>
                     )}
                 </div>
-            )}
+            ) : null}
 
             <RecentCompares excludePair={excludePair ?? selectedKey} />
         </>
