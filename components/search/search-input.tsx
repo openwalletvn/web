@@ -13,7 +13,7 @@ export function SearchInput({
   placeholder = 'Tìm kiếm thẻ, ngân hàng, bài viết...',
 }: SearchInputProps) {
   return (
-    <div className="flex items-center gap-2 border-b px-3">
+    <div className="ow-search-input flex items-center gap-2 border-b px-3">
       <IconSearch className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         value={query}

@@ -31,7 +31,7 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
 
   if (displayed.length === 0) {
     return (
-      <section className="py-12 px-4 max-w-container mx-auto w-full">
+      <section className="ow-cards-section py-12 px-4 max-w-container mx-auto w-full">
         {heading && <h2 className="text-3xl font-bold text-slate-900 mb-4">{heading}</h2>}
         <p className="text-slate-500">{t('no_cards')}</p>
       </section>
@@ -39,7 +39,7 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
   }
 
   return (
-    <section className="py-12 px-4 max-w-container mx-auto w-full">
+    <section className="ow-cards-section py-12 px-4 max-w-container mx-auto w-full">
       {heading && (
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-slate-900">{heading}</h2>
@@ -66,7 +66,7 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
 
 export function CardsSectionSkeleton() {
   return (
-    <section className="py-12 px-4 max-w-container mx-auto w-full">
+    <section className="ow-cards-section-skeleton py-12 px-4 max-w-container mx-auto w-full">
       <div className="mb-8">
         <div className="h-9 w-24 bg-slate-200 rounded animate-pulse" />
         <div className="border-t border-dashed border-slate-200 mt-3" />

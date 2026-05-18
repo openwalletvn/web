@@ -52,12 +52,12 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
   }, [db, bankId]);
 
   if (loading) {
-    return <div className="h-16 bg-slate-50 border border-dashed border-slate-200 rounded-sm animate-pulse" />;
+    return <div className="ow-credit-pool-selector h-16 bg-slate-50 border border-dashed border-slate-200 rounded-sm animate-pulse" />;
   }
 
   if (accounts.length === 0) {
     return (
-      <div>
+      <div className="ow-credit-pool-selector">
         <label className="block font-medium text-slate-600 mb-1">Hạn mức tín dụng (VND)</label>
         <input
           type="number"
@@ -71,7 +71,7 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
   }
 
   return (
-    <div>
+    <div className="ow-credit-pool-selector">
       <label className="block font-medium text-slate-600 mb-2">Hạn mức tín dụng</label>
       <div className="space-y-2">
         {/* Create new pool */}

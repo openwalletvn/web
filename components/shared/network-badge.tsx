@@ -15,16 +15,16 @@ export function NetworkBadge({ card, size = 'sm', variant = 'full' }: Props) {
     if (variant === 'slim') {
         if (logoUrl) {
             return (
-                <img src={getNetworkImageUrl(logoUrl)} alt={label} style={{ height: imgHeight }} className="object-contain" />
+                <img src={getNetworkImageUrl(logoUrl)} alt={label} style={{ height: imgHeight }} className="ow-network-badge object-contain" />
             );
         }
         return (
-            <span className="text-[10px] font-medium text-slate-500 capitalize">{label}</span>
+            <span className="ow-network-badge text-[10px] font-medium text-slate-500 capitalize">{label}</span>
         );
     }
 
     return (
-        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium capitalize">
+        <span className="ow-network-badge inline-flex items-center gap-1 px-1.5 py-0.5 border border-dashed border-brand-blue text-brand-blue font-medium capitalize">
             {logoUrl && (
                 <img src={getNetworkImageUrl(logoUrl)} alt="" style={{ height: imgHeight }} className="object-contain" />
             )}

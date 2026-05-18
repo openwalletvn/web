@@ -35,7 +35,7 @@ export function CompareTemplate({ cards, children, onStickyChange, intentMap }: 
     const colStyle = { gridTemplateColumns: `repeat(${cards.length}, 1fr)` };
 
     return (
-        <div>
+        <div className="ow-compare-template">
             {/* ── Sticky mini header ────────────────────────────────────────── */}
             <div
                 className={`fixed top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm transition-transform duration-200 ease-out ${

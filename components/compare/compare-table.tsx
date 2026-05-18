@@ -95,7 +95,7 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
     });
 
     return (
-        <div>
+        <div className="ow-compare-table">
             {/* Section 1 — intents */}
             {cards.some((c) => c?.intents?.length) && (
                 <>

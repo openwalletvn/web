@@ -23,7 +23,7 @@ export function WalletCardBadges({
   const isInactive = walletCard.status === 'expired' || walletCard.status === 'canceled';
 
   return (
-    <div className="flex flex-wrap gap-1 mt-1.5">
+    <div className="ow-wallet-card-badges flex flex-wrap gap-1 mt-1.5">
       {walletCard.status && walletCard.status !== 'active' && (
         <DashedBadge variant={isInactive ? 'amber' : 'default'}>
           {STATUS_LABELS[walletCard.status]}

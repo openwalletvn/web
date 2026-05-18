@@ -18,7 +18,7 @@ export async function CardDetailIntents({ card }: Props) {
     if (!cardIntents.length) return null;
 
     return (
-        <section className="flex flex-col gap-3">
+        <section className="ow-card-detail-intents flex flex-col gap-3">
             <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Phù hợp với</h2>
             <div className="flex flex-wrap gap-2">
                 {cardIntents.map((intent) => (

@@ -27,7 +27,7 @@ export function CompareDueDateRow({ cards }: Props) {
     }, [cards]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <div className="py-3">
+        <div className="ow-compare-due-date-row py-3">
             <p className="text-xs text-slate-400 mb-1.5">Ngày đến hạn dự kiến</p>
             <div className="grid" style={{ gridTemplateColumns: `repeat(${cards.length}, 1fr)` }}>
                 {dues.map((due, i) => (

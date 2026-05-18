@@ -28,12 +28,12 @@ export function CoBrandDisplay({ brand, fallback }: Props) {
         href={brand.link}
         target="_blank"
         rel="noopener noreferrer"
-        className="font-medium text-slate-900 hover:text-brand-blue transition-colors"
+        className="ow-co-brand-display font-medium text-slate-900 hover:text-brand-blue transition-colors"
       >
         {content}
       </a>
     );
   }
 
-  return <span className="font-medium text-slate-900">{content}</span>;
+  return <span className="ow-co-brand-display font-medium text-slate-900">{content}</span>;
 }

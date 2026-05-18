@@ -11,7 +11,7 @@ export function CardDetailRelated({ cards, currentCardId }: Props) {
     if (related.length === 0) return null;
 
     return (
-        <div className="mt-16">
+        <div className="ow-card-detail-related mt-16">
             <h2 className="text-2xl font-bold text-slate-900 mb-8">Thẻ cùng ngân hàng</h2>
             <CardMasonry cards={related} />
         </div>

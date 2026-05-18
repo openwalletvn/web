@@ -14,7 +14,7 @@ export function CompareSuggestedCards({
     if (cards.length === 0) return null;
 
     return (
-        <div className="mt-16 pt-10 border-t border-slate-100">
+        <div className="ow-compare-suggested-cards mt-16 pt-10 border-t border-slate-100">
             <h2 className="text-lg font-semibold text-slate-800 mb-6">Có thể bạn muốn xem</h2>
             <div className={`grid ${gridClassName} gap-6`}>
                 {cards.map((card) => (

@@ -15,7 +15,7 @@ export interface BreadcrumbSegment {
 
 export function Breadcrumbs({ items }: { items: BreadcrumbSegment[] }) {
   return (
-    <Breadcrumb className="mb-6">
+    <Breadcrumb className="ow-breadcrumbs mb-6">
       <BreadcrumbList>
         {items.map((item, i) => (
           <Fragment key={item.href ?? item.label}>

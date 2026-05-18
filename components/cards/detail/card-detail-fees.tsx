@@ -48,7 +48,7 @@ export function CardDetailFees({ card }: Props) {
     const annual = fees.annual as FeeEntryWithWaiver | undefined;
 
     return (
-        <section className="flex flex-col gap-4">
+        <section className="ow-card-detail-fees flex flex-col gap-4">
             <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Biểu phí</h2>
 
             <div className="relative">

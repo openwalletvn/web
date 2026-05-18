@@ -118,7 +118,7 @@ export function CardsFilter({
   const contactlessChipData = contactless ? availableContactless.find((w) => w.id === contactless) : null;
 
   return (
-    <div className={`space-y-3 transition-opacity${isPending ? ' opacity-60 pointer-events-none' : ''}`}>
+    <div className={`ow-cards-filter space-y-3 transition-opacity${isPending ? ' opacity-60 pointer-events-none' : ''}`}>
       {/* Filter controls */}
       <div className="flex gap-2 flex-wrap items-center">
         {!hideTypeFilter && typeFilterUseful && (

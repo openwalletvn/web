@@ -31,7 +31,7 @@ export function CardTimelineSummary({timeline}: { timeline: TimelineResult }) {
 export function CardTimeline({timeline}: { timeline: TimelineResult }) {
     const {milestones} = timeline;
     return (
-        <div>
+        <div className="ow-card-timeline">
             {/* Horizontal milestone track */}
             <div className="overflow-x-auto">
                 <div className="flex items-start">

@@ -23,7 +23,7 @@ export function BankFilterBar({ walletCards, banks, selectedBankId, onSelect }: 
   if (bankIds.length < 2) return null;
 
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 mb-6 scrollbar-none">
+    <div className="ow-bank-filter-bar flex gap-2 overflow-x-auto pb-1 mb-6 scrollbar-none">
       {bankIds.map((bankId) => {
         const bank = banks[bankId];
         if (!bank) return null;

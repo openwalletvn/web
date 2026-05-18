@@ -25,7 +25,7 @@ export function BankSelectionStep({
 
   if (loading) {
     return (
-      <div className="grid grid-cols-3 gap-3">
+      <div className="ow-bank-selection-step grid grid-cols-3 gap-3">
         {Array.from({ length: 9 }).map((_, i) => (
           <div key={i} className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm">
             <div className="w-12 h-12 bg-slate-100 rounded-sm animate-pulse" />
@@ -37,7 +37,7 @@ export function BankSelectionStep({
   }
 
   return (
-    <div>
+    <div className="ow-bank-selection-step">
       <input
         ref={inputRef}
         type="text"

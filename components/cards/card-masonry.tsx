@@ -10,7 +10,7 @@ export function CardMasonry({ cards }: { cards: Card[] }) {
   return (
     <Masonry
       breakpointCols={breakpointCols}
-      className="flex -ml-4 w-auto -mb-8"
+      className="ow-card-masonry flex -ml-4 w-auto -mb-8"
       columnClassName="pl-4 bg-clip-padding"
     >
       {cards.map((card) => (

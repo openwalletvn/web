@@ -57,7 +57,7 @@ export function Accordion({ type, collapsible = false, className = '', children 
 
   return (
     <AccordionContext.Provider value={{ openItems, toggleItem }}>
-      <div className={className}>{children}</div>
+      <div className={`ow-accordion ${className}`}>{children}</div>
     </AccordionContext.Provider>
   )
 }
@@ -68,7 +68,7 @@ export function AccordionItem({ value, className = '', children }: AccordionItem
 
   return (
     <AccordionItemContext.Provider value={{ value, isOpen }}>
-      <div className={className}>{children}</div>
+      <div className={`ow-accordion-item ${className}`}>{children}</div>
     </AccordionItemContext.Provider>
   )
 }
@@ -81,7 +81,7 @@ export function AccordionTrigger({ className = '', children }: AccordionTriggerP
     <button
       type="button"
       onClick={() => toggleItem(value)}
-      className={`flex w-full items-center justify-between ${className}`}
+      className={`ow-accordion-trigger flex w-full items-center justify-between ${className}`}
     >
       {children}
       <ChevronDown
@@ -99,7 +99,7 @@ export function AccordionContent({ children }: AccordionContentProps) {
   if (!isOpen) return null
 
   return (
-    <div className="overflow-hidden transition-all duration-200">
+    <div className="ow-accordion-content overflow-hidden transition-all duration-200">
       {children}
     </div>
   )

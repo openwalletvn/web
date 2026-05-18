@@ -57,7 +57,7 @@ export function CardTile({
 
     return (
         <div
-            className="flex flex-col gap-2 group relative cursor-pointer"
+            className="ow-card-tile flex flex-col gap-2 group relative cursor-pointer"
             style={{
                 // @ts-ignore
                 '--glow-color': bank?.brand_color ? hexToRgba(bank.brand_color, 0.45) : 'rgba(0,0,0,0.45)',

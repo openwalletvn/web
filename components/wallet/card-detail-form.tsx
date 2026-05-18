@@ -235,7 +235,7 @@ export function CardDetailForm({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8 items-start">
+    <div className="ow-card-detail-form grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8 items-start">
 
       {/* ── Left column: card image + uneditable API info ── */}
       <div className="space-y-5">

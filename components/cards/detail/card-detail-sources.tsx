@@ -10,7 +10,7 @@ export function CardDetailSources({ card }: Props) {
     if (!hasSources && !card.card_link) return null;
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="ow-card-detail-sources flex flex-col gap-2">
             <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider">
                 Nguồn &amp; liên kết
             </p>

@@ -24,7 +24,7 @@ export function CardRow({ card, bank, badges = {}, slot }: Props) {
     const isVertical = card.image?.orientation === 'vertical';
 
     return (
-        <div className="flex items-center gap-3">
+        <div className="ow-card-row flex items-center gap-3">
             {/* Card image */}
             <div className="shrink-0 w-20">
                 {isVertical ? (

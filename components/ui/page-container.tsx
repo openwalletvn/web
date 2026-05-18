@@ -17,7 +17,7 @@ export function PageContainer({
   className?: string;
 }) {
   return (
-    <div className={cn('px-4 py-8 mx-auto', maxWidthClasses[maxWidth], className)}>
+    <div className={cn('ow-page-container px-4 py-8 mx-auto', maxWidthClasses[maxWidth], className)}>
       {children}
     </div>
   );

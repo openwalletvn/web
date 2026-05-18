@@ -120,7 +120,7 @@ export function CardSearchInput({
         : 'relative flex items-center border border-slate-300 rounded-sm bg-white focus-within:border-brand-blue focus-within:ring-1 focus-within:ring-brand-blue/30 transition-colors';
 
     return (
-        <div ref={containerRef} className="relative">
+        <div ref={containerRef} className="ow-card-search-input relative">
             {label && (
                 <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
             )}

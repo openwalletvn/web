@@ -65,7 +65,7 @@ export function PaymentRow({walletCard, catalogCard, variant}: {
         : null;
 
     return (
-        <div className="flex items-start gap-4 py-4 border-b border-dashed border-slate-100 last:border-0">
+        <div className="ow-payment-row flex items-start gap-4 py-4 border-b border-dashed border-slate-100 last:border-0">
             {/* Date block — days to next milestone */}
             <div className="shrink-0 w-16 text-center">
                 {todayMilestone ? (

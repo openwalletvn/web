@@ -13,7 +13,7 @@ export function CardDetailCompare({ currentCard, compareCards }: Props) {
     if (cards.length === 0) return null;
 
     return (
-        <div className="mt-16">
+        <div className="ow-card-detail-compare mt-16">
             <h2 className="text-2xl font-bold text-slate-900 mb-2">
                 Các thẻ liên quan đến {currentCard.name}
             </h2>

@@ -33,7 +33,7 @@ export interface FilterChipProps {
 
 export function FilterChip({ label, logoUrl, onRemove }: FilterChipProps) {
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-sm font-medium">
+    <span className="ow-filter-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-sm font-medium">
       {logoUrl && <img src={logoUrl} alt="" className="w-auto h-[14px] object-contain shrink-0" />}
       {label}
       <button onClick={onRemove} className="hover:text-slate-900 leading-none ml-0.5">×</button>

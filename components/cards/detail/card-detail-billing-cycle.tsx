@@ -48,7 +48,7 @@ export function CardDetailBillingCycle({ card }: Props) {
     if (!isCreditCard || !hasData) return null;
 
     return (
-        <div className="pt-10 relative">
+        <div className="ow-card-detail-billing-cycle pt-10 relative">
             {/* Track */}
             <div className="flex items-center">
                 {/* Left node */}

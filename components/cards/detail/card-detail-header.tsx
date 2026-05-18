@@ -13,7 +13,7 @@ interface Props {
 
 export function CardDetailHeader({ card, bank }: Props) {
     return (
-        <div className="flex flex-col gap-3">
+        <div className="ow-card-detail-header flex flex-col gap-3">
             {bank && <BankDisplay bank={bank} asLink />}
 
             <h1 className="text-3xl font-bold text-slate-900 leading-tight">{card.name}</h1>

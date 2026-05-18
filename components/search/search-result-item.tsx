@@ -27,7 +27,7 @@ export function SearchResultItem({
     <CommandItem
       value={value}
       onSelect={() => onSelect(url)}
-      className="cursor-pointer gap-3"
+      className="ow-search-result-item cursor-pointer gap-3"
     >
       {imageUrl && (
         <div

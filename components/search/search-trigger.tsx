@@ -12,7 +12,7 @@ export function SearchTrigger({ onClick, className }: SearchTriggerProps) {
       type="button"
       onClick={onClick}
       className={cn(
-        'flex w-full items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-400 transition-colors hover:border-slate-300 hover:bg-white',
+        'ow-search-trigger flex w-full items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-slate-400 transition-colors hover:border-slate-300 hover:bg-white',
         className,
       )}
     >

@@ -68,12 +68,12 @@ export function CardSlim({ card, bank, badges = {}, showThumb = false, asLink = 
         return (
             <Link
                 href={`/the/${card.id}`}
-                className="flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50/60 transition-colors group"
+                className="ow-card-slim flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50/60 transition-colors group"
             >
                 {content}
             </Link>
         );
     }
 
-    return <div className="flex items-center gap-2.5">{content}</div>;
+    return <div className="ow-card-slim flex items-center gap-2.5">{content}</div>;
 }

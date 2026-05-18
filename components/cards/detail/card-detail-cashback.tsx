@@ -183,7 +183,7 @@ export async function CardDetailCashback({ card }: Props) {
     const merchantMap = new Map(merchants.map((m) => [m.slug, m]));
 
     return (
-        <section className="flex flex-col gap-4">
+        <section className="ow-card-detail-cashback flex flex-col gap-4">
             <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Hoàn tiền</h2>
             <CashbackSection cashback={card.cashback} categoryMap={categoryMap} merchantMap={merchantMap} />
         </section>

@@ -57,7 +57,7 @@ export function MoveToWalletPicker({ walletCard, otherWallets, onMoved, onClose 
   // ── Moving spinner ──
   if (phase.kind === 'moving') {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 text-slate-500 text-sm">
+      <div className="ow-move-to-wallet-picker flex items-center gap-2 px-3 py-2 text-slate-500 text-sm">
         <IconLoader2 size={14} className="animate-spin shrink-0" />
         Đang chuyển...
       </div>
@@ -68,7 +68,7 @@ export function MoveToWalletPicker({ walletCard, otherWallets, onMoved, onClose 
   if (phase.kind === 'confirm') {
     const { destination, siblingCount, totalCount } = phase;
     return (
-      <div className="p-3 space-y-3">
+      <div className="ow-move-to-wallet-picker p-3 space-y-3">
         <p className="text-sm text-amber-700 bg-amber-50 border border-dashed border-amber-300 rounded-sm px-2.5 py-2 leading-snug">
           Thẻ này thông với {siblingCount} thẻ khác (cùng hạn mức tín dụng).
           Tất cả {totalCount} thẻ sẽ được chuyển cùng nhau sang{' '}
@@ -94,7 +94,7 @@ export function MoveToWalletPicker({ walletCard, otherWallets, onMoved, onClose 
 
   // ── Wallet list ──
   return (
-    <div className="py-1">
+    <div className="ow-move-to-wallet-picker py-1">
       <p className="px-3 py-1 text-xs font-medium text-slate-500 uppercase tracking-wide">
         Chuyển sang
       </p>

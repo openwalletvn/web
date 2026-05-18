@@ -15,6 +15,6 @@ export function CardDetailLastModified({ card }: Props) {
     });
 
     return (
-        <p className="text-xs text-slate-600">Cập nhật lần cuối: {formatted}</p>
+        <p className="ow-card-detail-last-modified text-xs text-slate-600">Cập nhật lần cuối: {formatted}</p>
     );
 }

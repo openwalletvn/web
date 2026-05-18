@@ -27,11 +27,11 @@ export function BankDisplay({ bank, size = 'sm', asLink = false, showName = true
 
     if (asLink) {
         return (
-            <Link href={`/ngan-hang/${bank.id}`} className="flex items-center gap-2 w-fit group">
+            <Link href={`/ngan-hang/${bank.id}`} className="ow-bank-display flex items-center gap-2 w-fit group">
                 {content}
             </Link>
         );
     }
 
-    return <div className="flex items-center gap-2">{content}</div>;
+    return <div className="ow-bank-display flex items-center gap-2">{content}</div>;
 }

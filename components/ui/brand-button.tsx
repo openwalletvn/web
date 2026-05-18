@@ -24,7 +24,7 @@ export function BrandButton({
     <Button
       variant="default"
       className={cn(
-        "rounded-[48px] px-6 py-4 font-[family-name:var(--font-display)] text-[18px] font-normal leading-[1.3]",
+        "ow-brand-button rounded-[48px] px-6 py-4 font-[family-name:var(--font-display)] text-[18px] font-normal leading-[1.3]",
         brandVariantClasses[brandVariant],
         className,
       )}

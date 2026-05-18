@@ -50,7 +50,7 @@ export function CardDetailOtherFees({ card }: Props) {
     const { fees } = card;
 
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="ow-card-detail-other-fees grid grid-cols-2 sm:grid-cols-4 gap-3">
             <FeeBox
                 label="Thẻ phụ · Phí thường niên"
                 entry={fees.annual_supplementary}

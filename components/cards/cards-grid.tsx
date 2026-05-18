@@ -228,7 +228,7 @@ function CardsGridInner({
     const anyFilterShown = !(hideTypeFilter && hideNetworkFilter && hideBankFilter && hideCoBrandFilter && hideContactlessFilter && hideTierFilter && hideFeeFilter && hideSortFilter);
 
     return (
-        <div>
+        <div className="ow-cards-grid">
             {heading && (
                 <div className="mb-8">
 

@@ -16,7 +16,7 @@ export function CardImage({card, className, classNameVertical, tilt = false}: Pr
     const imageUrl = getCardImageUrl(card);
     const width = card.image?.width ?? (isVertical ? 2 : 16);
     const height = card.image?.height ?? (isVertical ? 3 : 10);
-    const containerClass = cn('card-image w-full', className, isVertical ? classNameVertical : className);
+    const containerClass = cn('ow-card-image w-full', className, isVertical ? classNameVertical : className);
 
     if (!imageUrl) {
         return <div className={cn(containerClass, 'relative overflow-hidden')} style={{aspectRatio: `${width} / ${height}`}}/>;

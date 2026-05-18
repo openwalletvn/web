@@ -73,7 +73,7 @@ export function RecentCompares({ excludePair }: Props = {}) {
     if (!mounted || visible.length === 0) return null;
 
     return (
-        <div className="mt-16 pt-10 border-t border-slate-100 animate-in fade-in duration-500">
+        <div className="ow-recent-compares mt-16 pt-10 border-t border-slate-100 animate-in fade-in duration-500">
             <h2 className="text-lg font-semibold text-slate-800 mb-4">
                 {t('recent_title')}
             </h2>

@@ -24,7 +24,7 @@ export function Nav2() {
     const pathname = usePathname();
 
     return (
-        <nav className="flex flex-row items-center xl:gap-8 gap-4">
+        <nav className="ow-nav2 flex flex-row items-center xl:gap-8 gap-4">
             {NAV2_ITEMS.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 return (

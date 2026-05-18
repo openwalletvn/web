@@ -19,7 +19,7 @@ export function BrandBadge({ brandVariant = "default", className, ...props }: Pr
     <Badge
       variant="outline"
       className={cn(
-        "rounded-[52px] px-4 py-1 text-[12px] font-semibold leading-[1.3] tracking-[0.0625rem] uppercase",
+        "ow-brand-badge rounded-[52px] px-4 py-1 text-[12px] font-semibold leading-[1.3] tracking-[0.0625rem] uppercase",
         variantClasses[brandVariant],
         className,
       )}

@@ -13,7 +13,7 @@ export function EmptyState({
   action?: { label: string; href: string };
 }) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
+    <div className="ow-empty-state flex flex-col items-center justify-center py-20 text-center">
       <div className="w-16 h-16 border border-dashed border-slate-200 rounded-sm flex items-center justify-center mb-5">
         {icon}
       </div>

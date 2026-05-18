@@ -10,7 +10,7 @@ export function FormField({
   children: ReactNode;
 }) {
   return (
-    <div>
+    <div className="ow-form-field">
       {label && <label className="block font-medium text-slate-600 mb-1">{label}</label>}
       {hint && <p className="text-slate-400 mb-1">{hint}</p>}
       {children}

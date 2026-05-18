@@ -21,11 +21,11 @@ export function CardInline({ card, badges = {}, showLogo = true, asLink = false 
 
     if (asLink) {
         return (
-            <Link href={`/the/${card.id}`} className="hover:text-brand-blue transition-colors">
+            <Link href={`/the/${card.id}`} className="ow-card-inline hover:text-brand-blue transition-colors">
                 {content}
             </Link>
         );
     }
 
-    return content;
+    return <span className="ow-card-inline">{content}</span>;
 }

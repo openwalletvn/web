@@ -16,7 +16,7 @@ export function CardSelectionStep({
   onSelect: (card: Card) => void;
 }) {
   return (
-    <div>
+    <div className="ow-card-selection-step">
       <div className="flex items-center gap-2 mb-5 p-2.5 border border-dashed border-slate-200 rounded-sm w-fit">
         <img src={getBankImageUrl(bank.logo_url)} alt={bank.name} className="w-7 h-7 object-contain" />
         <span className="text-sm font-medium text-slate-700">{bank.name}</span>

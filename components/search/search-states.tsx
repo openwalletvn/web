@@ -3,7 +3,7 @@ import { IconLoader2 } from '@tabler/icons-react';
 
 export function SearchLoading() {
   return (
-    <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-500">
+    <div className="ow-search-loading flex items-center justify-center gap-2 py-6 text-sm text-slate-500">
       <IconLoader2 className="size-4 animate-spin" />
       <span>Đang tìm...</span>
     </div>
@@ -12,7 +12,7 @@ export function SearchLoading() {
 
 export function SearchError({ message }: { message: string }) {
   return (
-    <div className="py-6 text-center text-sm text-red-500">
+    <div className="ow-search-error py-6 text-center text-sm text-red-500">
       {message}
     </div>
   );

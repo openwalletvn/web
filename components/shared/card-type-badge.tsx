@@ -16,7 +16,7 @@ interface Props {
 
 export function CardTypeBadge({ type }: Props) {
     return (
-        <span className="px-1.5 py-0.5 border border-dashed border-slate-300 text-slate-700 capitalize">
+        <span className="ow-card-type-badge px-1.5 py-0.5 border border-dashed border-slate-300 text-slate-700 capitalize">
             {CARD_TYPE_LABELS[type] ?? type}
         </span>
     );
