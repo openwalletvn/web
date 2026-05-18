@@ -20,7 +20,7 @@ export function BadgeNumberIcon({
 }: BadgeNumberIconProps) {
     const iconEl = (
         <div className="w-14 aspect-square flex justify-center items-center bg-white rounded-full shrink-0">
-            <Icon className="w-8 h-8"/>
+            <Icon className="w-6 h-6"/>
         </div>
     );
 

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
 import {CheckCircle, CreditCard, Settings} from 'lucide-react';
 import {BadgeNumberIcon} from './badge-number-icon';
+import {CardImageTag} from '@/components/cards/card-image-tag';
 
 export async function HeroSection({cardCount, bankCount}: { cardCount: number; bankCount: number }) {
     const hero = await getTranslations('hero');
@@ -37,19 +38,21 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
                     {/* 2 stacked card images */}
                     <div className="flex flex-col gap-2 items-end">
-                        <Image
+                        <CardImageTag
                             src="/cards/msb-visa-online.avif"
                             alt="MSB Visa Online"
                             width={130}
                             height={82}
-                            className="rounded-xl shadow-lg object-cover rotate-[-5deg]"
+                            tilt={true}
+                            className="w-[130px] shadow-lg rotate-[-5deg]"
                         />
-                        <Image
+                        <CardImageTag
                             src="/cards/sacombank-uniq.avif"
                             alt="Sacombank Uniq"
                             width={114}
                             height={72}
-                            className="rounded-xl shadow-lg object-cover rotate-[4deg] mr-2"
+                            tilt={true}
+                            className="w-[114px] shadow-lg rotate-[4deg] mr-2"
                         />
                     </div>
                 </div>
@@ -88,14 +91,14 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
                     {/* Extra card + label */}
                     <div className="flex flex-col items-start gap-1">
-                        <Image
+                        <CardImageTag
                             src="/cards/woori-vv-hype-point-gold.avif"
                             alt="Woori Card"
                             width={100}
                             height={63}
-                            className="rounded-xl shadow-md object-cover rotate-[3deg]"
+                            tilt={true}
+                            className="w-[100px] shadow-md rotate-[3deg]"
                         />
-                        {/*<span className="text-[10px] text-text-subtle pl-1">Mở Ví thẻ</span>*/}
                     </div>
                 </div>
             </div>
