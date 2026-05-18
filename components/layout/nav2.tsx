@@ -24,7 +24,7 @@ export function Nav2() {
     const pathname = usePathname();
 
     return (
-        <nav className="flex flex-row items-center gap-8">
+        <nav className="flex flex-row items-center xl:gap-8 gap-4">
             {NAV2_ITEMS.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 return (
@@ -32,7 +32,7 @@ export function Nav2() {
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            'flex flex-row items-center gap-1 transition-colors',
+                            'flex flex-row items-center gap-1 transition-colors text-nowrap',
                             isActive ? 'text-brand-red' : 'text-black hover:text-brand-red'
                         )}
                         style={textStyle}
