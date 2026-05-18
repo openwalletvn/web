@@ -4,9 +4,9 @@ import { cn } from '@/lib/utils';
 export type BadgeVariant = 'default' | 'blue' | 'red' | 'amber' | 'green';
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: 'border-slate-300 text-slate-500',
-  blue:    'border-brand-blue text-brand-blue',
-  red:     'border-brand-red text-brand-red',
+  default: 'border-border-mid text-text-muted',
+  blue:    'border-blue-500 text-blue-600',
+  red:     'border-primary text-primary',
   amber:   'border-amber-500 text-amber-600',
   green:   'border-green-600 text-green-700',
 };
