@@ -53,7 +53,7 @@ export default async function HomePage() {
                             className="h-16 w-16 mb-8"
                         />
 
-                        <h1 className="text-7xl md:text-8xl font-bold text-slate-900 leading-none tracking-tight mb-6">
+                        <h1 className="text-7xl md:text-8xl font-bold text-slate-900 leading-none  mb-6">
                             {heroTitle('title')}
                         </h1>
 
