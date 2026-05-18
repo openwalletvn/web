@@ -20,7 +20,6 @@ export function CardImageTag({src, alt, width, height, lqip, tilt = false, class
     const containerRef = useRef<HTMLDivElement>(null);
     const [radius, setRadius] = useState(0);
     const [loaded, setLoaded] = useState(false);
-    const [ratio, setRatio] = useState(`${width} / ${height}`);
     const [tiltState, setTiltState] = useState({x: 0, y: 0});
     const [hovering, setHovering] = useState(false);
 
@@ -36,13 +35,7 @@ export function CardImageTag({src, alt, width, height, lqip, tilt = false, class
         return () => observer.disconnect();
     }, []);
 
-    const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-        const img = e.currentTarget;
-        if (img.naturalWidth && img.naturalHeight) {
-            setRatio(`${img.naturalWidth} / ${img.naturalHeight}`);
-        }
-        setLoaded(true);
-    };
+    const handleLoad = () => setLoaded(true);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const el = containerRef.current;
@@ -68,12 +61,12 @@ export function CardImageTag({src, alt, width, height, lqip, tilt = false, class
         <div
             ref={containerRef}
             className={cn('card-image-tag relative overflow-hidden group/shimmer', className)}
-            style={{aspectRatio: ratio, borderRadius: radius, ...tiltStyle}}
+            style={{aspectRatio: `${width} / ${height}`, borderRadius: radius, ...tiltStyle}}
             {...tiltHandlers}
         >
             {!loaded && !lqip && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <IconCreditCard size={32} className="text-slate-300"/>
+                    <IconCreditCard size={24} className="text-slate-300"/>
                 </div>
             )}
             <Image
