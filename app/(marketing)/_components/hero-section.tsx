@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
-import {CheckCircle, CreditCard, Settings} from 'lucide-react';
+import {IconCircleCheck, IconCreditCard, IconSettings} from '@tabler/icons-react';
 import {BadgeNumberIcon} from './badge-number-icon';
 import {CardImageTag} from '@/components/cards/card-image-tag';
 
@@ -33,7 +33,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                         <BadgeNumberIcon
                             iconPosition="left"
                             number={`${cardCount}+`}
-                            icon={CreditCard}
+                            icon={IconCreditCard}
                             text="Thẻ ngân hàng"
                         />
                     </div>
@@ -78,7 +78,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                             iconPosition="right"
                             color="black"
                             number={`${bankCount}+`}
-                            icon={Settings}
+                            icon={IconSettings}
                             text="ngân hàng"
                         />
                     </div>
@@ -87,7 +87,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                     <BadgeNumberIcon
                         iconPosition="right"
                         number="100%"
-                        icon={CheckCircle}
+                        icon={IconCircleCheck}
                         text="miễn phí"
                     />
                     </div>

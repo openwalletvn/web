@@ -1,6 +1,6 @@
 import type { Card, CashbackBenefit, CashbackCategory, CashbackRule, Merchant } from '@/lib/api';
 import { getCashbackCategories, getMerchants } from '@/lib/api';
-import { BadgePercent, CircleCheckBig, CircleDollarSign, Info, MessageCircleWarning } from 'lucide-react';
+import { IconCirclePercentage, IconCircleCheck, IconCurrencyDollar, IconInfoCircle, IconMessageExclamation } from '@tabler/icons-react';
 
 // ─── Formatters ─────────────────────────────────────────────────────────────
 
@@ -57,7 +57,7 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
 
     return (
         <div className="flex gap-3 border-dashed border border-slate-300 p-4 w-full hover:bg-slate-50 transition-colors">
-            <BadgePercent className="w-4 h-4 min-w-4 text-slate-500 translate-y-0.5 shrink-0" />
+            <IconCirclePercentage className="w-4 h-4 min-w-4 text-slate-500 translate-y-0.5 shrink-0" />
 
             <div className="space-y-3 w-full">
                 <p className="text-sm font-semibold text-slate-900">
@@ -70,7 +70,7 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
                 {rule.categories && rule.categories.length > 0 && (
                     <div className="space-y-1.5">
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                            <CircleCheckBig className="w-3.5 h-3.5 text-green-600" />
+                            <IconCircleCheck className="w-3.5 h-3.5 text-green-600" />
                             Danh mục áp dụng
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -84,7 +84,7 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
                 {rule.merchants && rule.merchants.length > 0 && (
                     <div className="space-y-1.5">
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                            <CircleCheckBig className="w-3.5 h-3.5 text-green-600" />
+                            <IconCircleCheck className="w-3.5 h-3.5 text-green-600" />
                             Merchants
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -96,7 +96,7 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
                 )}
 
                 <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                    <CircleDollarSign className="w-3.5 h-3.5 text-slate-400" />
+                    <IconCurrencyDollar className="w-3.5 h-3.5 text-slate-400" />
                     {rule.cap && rule.cap.amount !== -1
                         ? `Tối đa ${formatCap(rule.cap.amount)}${rule.cap_max ? ` – ${formatCap(rule.cap_max.amount)}` : ''} / kỳ sao kê`
                         : 'Hoàn không giới hạn'}
@@ -105,7 +105,7 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
                 {rule.note && (
                     <div className="space-y-1">
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                            <MessageCircleWarning className="w-3.5 h-3.5" />
+                            <IconMessageExclamation className="w-3.5 h-3.5" />
                             Ghi chú
                         </div>
                         <p className="text-xs text-slate-600 leading-snug">{rule.note}</p>
@@ -119,7 +119,7 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
 function FooterRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex items-start gap-2 text-xs text-slate-600">
-            <Info className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />
+            <IconInfoCircle className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />
             <span className="w-40 shrink-0 text-slate-500">{label}</span>
             <span className="text-slate-800">{value}</span>
         </div>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ExternalLink, Landmark } from 'lucide-react';
+import { IconExternalLink, IconBuildingBank } from '@tabler/icons-react';
 import type { Card, Bank } from '@/lib/api';
 import { getBankImageUrl } from '@/lib/api';
 import { CardImage } from '@/components/cards/card-image';
@@ -124,7 +124,7 @@ export function CardTile({
                                 {bank?.logo_url ? (
                                     <img src={getBankImageUrl(bank.logo_url)} alt={bank.name} className="w-full h-full object-contain p-1.5" />
                                 ) : (
-                                    <Landmark className="size-4" />
+                                    <IconBuildingBank className="size-4" />
                                 )}
                             </Link>
                             <span className="text-[10px] text-slate-500 text-center leading-tight">Xem ngân hàng</span>
@@ -138,7 +138,7 @@ export function CardTile({
                                     rel="noopener noreferrer"
                                     className="flex items-center justify-center size-10 rounded-full bg-white border border-dashed border-slate-300 shadow-sm text-slate-600 hover:border-brand-blue hover:text-brand-blue transition-all"
                                 >
-                                    <ExternalLink className="size-4" />
+                                    <IconExternalLink className="size-4" />
                                 </a>
                                 <span className="text-[10px] text-slate-500 text-center leading-tight">Xem trang thẻ</span>
                             </div>
