@@ -64,28 +64,28 @@ export async function Header() {
     const totalBanks = banks.length;
 
     return (
-        <header className="py-5">
-            <div className="max-w-container mx-auto w-full px-4 h-16 grid grid-cols-3 items-center">
+        <header className="xl:py-5 py-3">
+            <div className="max-w-container mx-auto w-full px-4 h-16 flex justify-between xl:grid xl:grid-cols-3 items-center">
 
                 {/* Left: logo */}
                 <div className="flex items-center">
                     <Link href="/" className="flex items-center gap-2 shrink-0">
-                        <img src="/icon.svg" alt="Open Wallet" className="h-20 w-20"/>
+                        <img src="/icon.svg" alt="Open Wallet" className="xl:h-20 h-10 aspect-square"/>
                     </Link>
                 </div>
 
                 {/* Center: nav */}
-                <div className="hidden md:flex justify-center">
+                <div className="hidden xl:flex justify-center">
                     <Nav2/>
                 </div>
 
                 {/* Right: search + mobile trigger */}
                 <div className="flex items-center gap-2 justify-end">
-                    <div className="hidden md:block w-56">
+                    <div className="hidden xl:block w-56">
                         <SearchDialog/>
                     </div>
                     {/*<WalletNavButton />*/}
-                    <div className="md:hidden flex items-center">
+                    <div className="xl:hidden flex items-center">
                         <SearchDialog mobileOnly/>
                         <MobileNav banks={banks}/>
                     </div>
