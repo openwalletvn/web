@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
-import { League_Spartan } from "next/font/google";
+import { Cal_Sans, Inter_Tight } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import "./globals.css";
 
-const leagueSpartan = League_Spartan({
+const calSans = Cal_Sans({
   subsets: ["latin"],
-  variable: "--font-league-spartan",
+  weight: "400",
+  variable: "--font-display",
+});
+
+const interTight = Inter_Tight({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-body",
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -40,8 +47,8 @@ export async function generateMetadata(): Promise<Metadata> {
       description: tog('description'),
     },
     icons: {
-      icon: '/icon.jpg',
-      apple: '/icon.jpg',
+      icon: '/icon.svg',
+      apple: '/icon.svg',
     },
   };
 }
@@ -52,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={leagueSpartan.variable}>
+    <html lang="vi" className={`${calSans.variable} ${interTight.variable}`}>
       <body className="antialiased">
         <NextIntlClientProvider>
           {children}
