@@ -23,83 +23,83 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                 Mobile: collapses to phone only + stat row below.
             */}
             <div
-                className="w-full max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-[180px_1fr_180px] lg:grid-cols-[210px_1fr_210px] gap-4 items-center">
+                className="w-full h-[700px] flex justify-center">
 
                 {/* ── LEFT COLUMN ── */}
-                <div className="hidden md:flex flex-col items-end justify-center gap-6 h-full py-8">
+                <div className="hidden md:block w-[320px] h-[500px] relative">
 
                     {/* 100+ cards badge (orange) */}
-                    <BadgeNumberIcon
-                        iconPosition="left"
-                        number={`${cardCount}+`}
-                        icon={CreditCard}
-                        text="Thẻ ngân hàng"
-                    />
-
-                    {/* 2 stacked card images */}
-                    <div className="flex flex-col gap-2 items-end">
-                        <CardImageTag
-                            src="/cards/msb-visa-online.avif"
-                            alt="MSB Visa Online"
-                            width={130}
-                            height={82}
-                            tilt={true}
-                            className="w-[130px] shadow-lg rotate-[-5deg]"
-                        />
-                        <CardImageTag
-                            src="/cards/sacombank-uniq.avif"
-                            alt="Sacombank Uniq"
-                            width={72}
-                            height={114}
-                            tilt={true}
-                            className="w-[100px] shadow-lg rotate-[4deg]"
+                    <div className="absolute top-0 right-0">
+                        <BadgeNumberIcon
+                            iconPosition="left"
+                            number={`${cardCount}+`}
+                            icon={CreditCard}
+                            text="Thẻ ngân hàng"
                         />
                     </div>
+
+                    <CardImageTag
+                        src="/cards/sacombank-uniq.avif"
+                        alt="Sacombank Uniq"
+                        width={72}
+                        height={114}
+                        tilt={true}
+                        className="w-[128px] absolute top-1/4 left-0"
+                    />
+                    <CardImageTag
+                        src="/cards/msb-visa-online.avif"
+                        alt="MSB Visa Online"
+                        width={130}
+                        height={82}
+                        tilt={true}
+                        className="w-[160px] absolute bottom-0 right-[10%]"
+                    />
                 </div>
 
                 {/* ── CENTER: phone ── */}
-                <div className="flex justify-center">
+                <div
+                    className="w-[620px] aspect-[6/7] relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-[200px] before:bg-gradient-to-t before:from-white before:to-transparent before:z-10">
                     <Image
                         src="/hero-mockup.png"
                         alt="Open Wallet app on phone"
                         width={320}
                         height={570}
-                        className="w-full max-w-[220px] sm:max-w-[280px] md:max-w-full h-auto object-contain drop-shadow-xl"
+                        className="w-full h-full object-contain"
                         priority
                     />
                 </div>
 
                 {/* ── RIGHT COLUMN ── */}
-                <div className="hidden md:flex flex-col items-start justify-center gap-6 h-full py-8">
+                <div className="hidden md:block w-[320px] h-[500px] relative">
 
                     {/* 25+ banks badge */}
-                    <BadgeNumberIcon
-                        iconPosition="right"
-                        color="black"
-                        number={`${bankCount}+`}
-                        icon={Settings}
-                        text="ngân hàng"
-                    />
+                    <div className="absolute top-[6%] left-0">
+                        <BadgeNumberIcon
+                            iconPosition="right"
+                            color="black"
+                            number={`${bankCount}+`}
+                            icon={Settings}
+                            text="ngân hàng"
+                        />
+                    </div>
 
-                    {/* 100% free badge */}
+                    <div className="absolute bottom-[5%] left-[5%]">
                     <BadgeNumberIcon
                         iconPosition="right"
                         number="100%"
                         icon={CheckCircle}
                         text="miễn phí"
                     />
-
-                    {/* Extra card + label */}
-                    <div className="flex flex-col items-start gap-1">
-                        <CardImageTag
-                            src="/cards/woori-vv-hype-point-gold.avif"
-                            alt="Woori Card"
-                            width={63}
-                            height={100}
-                            tilt={true}
-                            className="w-[100px] shadow-md rotate-[3deg]"
-                        />
                     </div>
+
+                    <CardImageTag
+                        src="/cards/woori-vv-hype-point-gold.avif"
+                        alt="Woori Card"
+                        width={63}
+                        height={100}
+                        tilt={true}
+                        className="w-[110px] absolute top-[30%] right-[5%]"
+                    />
                 </div>
             </div>
 
