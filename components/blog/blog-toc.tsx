@@ -15,7 +15,7 @@ export function BlogToc({ headings }: Props) {
   if (headings.length === 0) return null;
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
+    <Collapsible open={open} onOpenChange={setOpen} className="ow-blog-toc">
       <div className="border border-dashed border-slate-200 rounded-sm">
         <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2.5 hover:bg-slate-50/60 transition-colors group">
           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mục lục</span>

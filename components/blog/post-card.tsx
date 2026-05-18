@@ -12,7 +12,7 @@ export function PostCard({ post }: Props) {
   return (
     <Link
       href={`/tin-tuc/${slug}`}
-      className="flex flex-col border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors overflow-hidden"
+      className="ow-post-card flex flex-col border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors overflow-hidden"
     >
       {frontmatter.cover_image && (
         <div className="aspect-[2/1] overflow-hidden bg-slate-100">

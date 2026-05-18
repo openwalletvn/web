@@ -9,7 +9,7 @@ export function CategoryFilter({ categories, activeSlug }: Props) {
   if (categories.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="ow-category-filter flex flex-wrap gap-2">
       <Link
         href="/tin-tuc"
         className={`inline-flex items-center gap-1.5 px-3 py-1.5 border border-dashed rounded-sm text-sm transition-colors ${

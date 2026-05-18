@@ -53,7 +53,7 @@ export function CardFeesBlock({ fees, sources }: Props) {
     const secondaryFees = allSecondaryFees.filter(({ key }) => fees[key] != null);
 
     return (
-        <div className="flex flex-col gap-3">
+        <div className="ow-card-fees-block flex flex-col gap-3">
             {/* Annual fee box */}
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-start justify-between gap-3">

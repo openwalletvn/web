@@ -17,6 +17,12 @@ Vietnamese-first web app: public card-comparison site (SEO, static export) + pri
 3. **Vietnamese-first** — UI/content targets Vietnamese users. Technical terms stay English.
 4. **SEO-first** — every public page has JSON-LD, OG metadata, sitemap entries.
 
+## Component conventions
+- Every component's wrapper element **must** have a class name matching its filename, prefixed with `ow-`.
+- Pattern: `ow-<filename-kebab-case>` → e.g. `post-card.tsx` → `ow-post-card`, `card-image.tsx` → `ow-card-image`.
+- Prepend to existing `className` string. No new wrapper elements.
+- Purpose: identify components in browser DevTools inspector.
+
 ## API authentication
 - Always use `apiFetch()` from `lib/api.ts` — auto-injects `X-OpenWallet-Key` header.
 - Never use `NEXT_PUBLIC_` prefix for `OPENWALLET_API_KEY` — server-only build secret.

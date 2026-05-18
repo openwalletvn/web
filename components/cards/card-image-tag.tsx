@@ -60,7 +60,7 @@ export function CardImageTag({src, alt, width, height, lqip, tilt = false, class
     return (
         <div
             ref={containerRef}
-            className={cn('card-image-tag relative overflow-hidden group/shimmer', className)}
+            className={cn('ow-card-image-tag relative overflow-hidden group/shimmer', className)}
             style={{aspectRatio: `${width} / ${height}`, borderRadius: radius, ...tiltStyle}}
             {...tiltHandlers}
         >

@@ -9,7 +9,7 @@ export function TagList({ tags, activeSlug }: Props) {
   if (tags.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="ow-tag-list flex flex-wrap gap-2">
       {tags.map(({ name, slug, count }) => (
         <Link
           key={slug}

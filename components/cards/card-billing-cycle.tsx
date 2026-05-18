@@ -9,7 +9,7 @@ export function CardBillingCycle({ interestFreeDays, statementDate }: Props) {
     const dueApprox = raw > 28;
 
     return (
-        <div className="mt-2">
+        <div className="ow-card-billing-cycle mt-2">
             {/* Timeline strip */}
             <div className="relative flex items-center">
                 {/* Node 1: Chốt sao kê */}
