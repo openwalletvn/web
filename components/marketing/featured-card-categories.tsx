@@ -1,6 +1,6 @@
 export function FeaturedCardCategories() {
     return (
-        <section className="ow-featured-card-categories ow-container py-32 relative z-20">
+        <section className="ow-featured-card-categories ow-container lg:py-32 py-16 relative z-20">
             <h2>Danh mục thẻ nổi bật</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:mt-10 mt-6">

@@ -40,9 +40,11 @@ export default async function HomePage() {
                 dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
             />
 
-            <div className="p-3 relative">
+            <div className="relative">
                 <GradientShader/>
-                <HeroSection cardCount={cards.length} bankCount={banks.length}/>
+                <div className="lg:p-3 p-2">
+                    <HeroSection cardCount={cards.length} bankCount={banks.length}/>
+                </div>
                 <FeaturedCardCategories/>
             </div>
 

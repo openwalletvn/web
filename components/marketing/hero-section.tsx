@@ -10,13 +10,13 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
     return (
         <section
-            className="ow-hero-section relative z-20 w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center overflow-hidden bg-[#F7F7F7] pt-32 pb-16"
+            className="ow-hero-section relative z-20 w-full flex flex-col items-center justify-center overflow-hidden bg-[#F7F7F7] lg:pt-32 pt-16 lg:pb-16 pb-16 rounded-tl-[15px] rounded-tr-[15px]"
             style={{clipPath: 'url(#hero-clip)'}}>
 
             <svg width="0" height="0" aria-hidden="true" style={{position: 'absolute'}}>
                 <defs>
                     <clipPath id="hero-clip" clipPathUnits="objectBoundingBox">
-                        <path d="M0 0.014585C0 0.006530 0.005044 0 0.011268 0H0.988732C0.995662 0 1 0.006530 1 0.014585V0.820849C1 0.827481 0.996542 0.833279 0.991584 0.834960L0.510200 0.997934C0.504609 0.999918 0.498734 0.999927 0.493139 0.998042L0.008433 0.835218C0.003467 0.833548 0 0.827017 0 0.820830V0.014585Z"/>
+                        <path d="M0 0H1V0.820849C1 0.827481 0.996542 0.833279 0.991584 0.834960L0.510200 0.997934C0.504609 0.999918 0.498734 0.999927 0.493139 0.998042L0.008433 0.835218C0.003467 0.833548 0 0.827017 0 0.820830Z"/>
                     </clipPath>
                 </defs>
             </svg>
