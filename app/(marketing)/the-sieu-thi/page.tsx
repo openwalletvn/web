@@ -13,11 +13,9 @@ const BREADCRUMB_ITEMS = [
  {label: TITLE},
 ];
 
-const CARD_IDS: string[] = [];
-
 export async function generateMetadata(): Promise<Metadata> {
  const allCards = await getCards();
- const cards = allCards.filter((c) => CARD_IDS.includes(c.id));
+ const cards = allCards.filter((c) => c.intents?.includes('groceries'));
  const {metadata} = buildCollectionPageMeta({
  title: `${TITLE} | Open Wallet`,
  description: DESCRIPTION,
@@ -30,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SieuThiCardsPage() {
  const [allCards, banks] = await Promise.all([getCards(), getBanks()]);
- const cards = allCards.filter((c) => CARD_IDS.includes(c.id));
+ const cards = allCards.filter((c) => c.intents?.includes('groceries'));
 
  const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
  title: `${TITLE} | Open Wallet`,
