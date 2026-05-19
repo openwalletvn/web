@@ -3,6 +3,7 @@ import {getBanks, getCards} from '@/lib/api';
 import {CardRankingTable} from '@/components/marketing/card-ranking-table';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
+import {BrowseCategories} from '@/components/marketing/browse-categories';
 
 const TITLE = 'Thẻ Chi Tiêu Dịch Vụ Số';
 const DESCRIPTION = 'Tổng hợp thẻ tín dụng và ghi nợ có ưu đãi thanh toán dịch vụ số như AI (ChatGPT, Claude, Gemini), streaming (Netflix, Spotify)';
@@ -41,6 +42,7 @@ export default async function DichVuSoCardsPage() {
  return (
  <MarketingPageShell title={TITLE} description={DESCRIPTION} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
  <CardRankingTable cards={cards} banks={banks} intentSlug="digital" title="Xếp hạng thẻ theo cashback dịch vụ số"/>
+ <BrowseCategories excludeHref={URL}/>
  </MarketingPageShell>
  );
 }

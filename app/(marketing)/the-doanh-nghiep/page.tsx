@@ -3,6 +3,7 @@ import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
+import {BrowseCategories} from '@/components/marketing/browse-categories';
 
 const TITLE = 'Thẻ Doanh Nghiệp';
 const DESCRIPTION = 'Tra cứu tất cả thẻ ngân hàng dành cho doanh nghiệp tại Việt Nam';
@@ -47,6 +48,7 @@ export default async function BusinessCardsPage() {
  hideTypeFilter
  noCardsLabel={'Không tìm thấy thẻ nào.'}
  />
+ <BrowseCategories excludeHref={URL}/>
  </MarketingPageShell>
  );
 }

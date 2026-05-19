@@ -3,6 +3,7 @@ import {getBanks, getCards} from '@/lib/api';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {CardRankingTable} from '@/components/marketing/card-ranking-table';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
+import {BrowseCategories} from '@/components/marketing/browse-categories';
 
 const TITLE = 'Thẻ Shopee';
 const DESCRIPTION = 'Tra cứu tất cả thẻ tín dụng và ghi nợ liên kết Shopee từ các ngân hàng Việt Nam';
@@ -48,6 +49,7 @@ export default async function ShopeeCardsPage() {
                 intentSlug="shopee"
                 title="Xếp hạng thẻ theo cashback Shopee"
             />
+            <BrowseCategories excludeHref={URL}/>
         </MarketingPageShell>
     );
 }

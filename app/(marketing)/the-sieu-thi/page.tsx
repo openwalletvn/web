@@ -3,6 +3,7 @@ import {getBanks, getCards} from '@/lib/api';
 import {CardRankingTable} from '@/components/marketing/card-ranking-table';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
+import {BrowseCategories} from '@/components/marketing/browse-categories';
 
 const TITLE = 'Thẻ Siêu Thị';
 const DESCRIPTION = 'Tổng hợp thẻ tín dụng và ghi nợ có ưu đãi mua sắm tại siêu thị như Coopmart, Go, Lotte, AEON';
@@ -41,6 +42,7 @@ export default async function SieuThiCardsPage() {
  return (
  <MarketingPageShell title={TITLE} description={DESCRIPTION} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
  <CardRankingTable cards={cards} banks={banks} intentSlug="groceries" title="Xếp hạng thẻ theo cashback siêu thị"/>
+ <BrowseCategories excludeHref={URL}/>
  </MarketingPageShell>
  );
 }

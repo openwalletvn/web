@@ -103,7 +103,7 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
     return (
         <section className="ow-card-ranking-table">
             <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
-                {title && <h2 className="mb-0">{title}</h2>}
+                {title && <h2 className="mb-0 text-card-heading">{title}</h2>}
                 <div className="flex items-center gap-2 shrink-0">
                     <span className="text-body-sm text-text-muted">Chi tiêu mỗi kỳ</span>
                     <div className="flex items-center gap-1">

@@ -3,6 +3,7 @@ import {getBanks, getCards} from '@/lib/api';
 import {CardRankingTable} from '@/components/marketing/card-ranking-table';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
+import {BrowseCategories} from '@/components/marketing/browse-categories';
 
 const TITLE = 'Thẻ Chi Tiêu Giáo Dục';
 const DESCRIPTION = 'Tổng hợp thẻ tín dụng và ghi nợ có ưu đãi thanh toán học phí, trường học, giáo dục';
@@ -41,6 +42,7 @@ export default async function GiaoDucCardsPage() {
  return (
  <MarketingPageShell title={TITLE} description={DESCRIPTION} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
  <CardRankingTable cards={cards} banks={banks} intentSlug="education" title="Xếp hạng thẻ theo cashback giáo dục"/>
+ <BrowseCategories excludeHref={URL}/>
  </MarketingPageShell>
  );
 }
