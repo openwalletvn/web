@@ -23,10 +23,10 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                 Mobile: collapses to phone only + stat row below.
             */}
             <div
-                className="w-full h-[700px] flex justify-center">
+                className="w-full h-[480px] md:h-[600px] lg:h-[700px] flex justify-center px-6">
 
                 {/* ── LEFT COLUMN ── */}
-                <div className="hidden md:block w-[320px] h-[500px] relative">
+                <div className="hidden md:block w-[240px] lg:w-[320px] h-[500px] relative">
 
                     {/* 100+ cards badge (orange) */}
                     <div className="absolute top-0 right-0">
@@ -58,7 +58,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
                 {/* ── CENTER: phone ── */}
                 <div
-                    className="w-[620px] aspect-[6/7] relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-[200px] before:bg-gradient-to-t before:from-white before:to-transparent before:z-10">
+                    className="w-full max-w-[320px] md:max-w-[480px] lg:max-w-[620px] aspect-[6/7] relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-[200px] before:bg-gradient-to-t before:from-white before:to-transparent before:z-10">
                     <Image
                         src="/hero-mockup.png"
                         alt="Open Wallet app on phone"
@@ -70,7 +70,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                 </div>
 
                 {/* ── RIGHT COLUMN ── */}
-                <div className="hidden md:block w-[320px] h-[500px] relative">
+                <div className="hidden md:block w-[240px] lg:w-[320px] h-[500px] relative">
 
                     {/* 25+ banks badge */}
                     <div className="absolute top-[6%] left-0">
@@ -88,7 +88,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                         iconPosition="right"
                         number="100%"
                         icon={IconCircleCheck}
-                        text="miễn phí"
+                        text="độc lập"
                     />
                     </div>
 
@@ -109,15 +109,13 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                     <span className="text-sm font-bold text-primary">{cardCount}+</span>
                     <span className="text-xs text-text-muted">thẻ</span>
                 </div>
-                <div className="w-px h-4 bg-border"/>
                 <div className="flex items-center gap-1.5 bg-bg-muted rounded-full px-3 py-1.5">
                     <span className="text-sm font-bold text-black">{bankCount}+</span>
                     <span className="text-xs text-text-muted">ngân hàng</span>
                 </div>
-                <div className="w-px h-4 bg-border"/>
                 <div className="flex items-center gap-1.5 bg-bg-muted rounded-full px-3 py-1.5">
                     <span className="text-sm font-bold text-black">100%</span>
-                    <span className="text-xs text-text-muted">miễn phí</span>
+                    <span className="text-xs text-text-muted">độc lập</span>
                 </div>
             </div>
 
