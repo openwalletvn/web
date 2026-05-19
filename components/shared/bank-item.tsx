@@ -15,13 +15,13 @@ export function BankItem({ bank }: Props) {
             <div className="relative h-20 aspect-video">
                 <Image src={getBankImageUrl(bank.logo_url)} alt="" fill className="object-contain"/>
             </div>
-            <div className="text-base text-slate-600 text-center leading-tight max-w-[280px]">{bank.full_name}</div>
+            <div className="text-body text-slate-600 text-center max-w-[280px]">{bank.full_name}</div>
             <div className="flex gap-3">
                 {(bank.stats?.card_count ?? 0) > 0 && (
-                    <span className="text-sm text-slate-400">{bank.stats!.card_count} thẻ</span>
+                    <span className="text-body-sm text-slate-400">{bank.stats!.card_count} thẻ</span>
                 )}
                 {(bank.networks?.length ?? 0) > 0 && (
-                    <span className="text-sm text-slate-400">{bank.networks?.length} mạng thẻ</span>
+                    <span className="text-body-sm text-slate-400">{bank.networks?.length} mạng thẻ</span>
                 )}
             </div>
         </Link>
