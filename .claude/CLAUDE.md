@@ -52,6 +52,7 @@ Supporting files: `lib/cashback-calc.ts` (cashback estimation), `components/mark
 2. After creating a command: add it to the commands table below.
 3. After non-trivial task: check if `.claude/docs/learnings/` needs a new note.
 4. **Question-only mode:** If the message starts with `question:` or `answer me:`, only answer — do NOT edit any files or run any commands.
+5. **Changelog:** After card data or feature changes, add entry to `content/changelog.mdx`. Use `/add-changelog`. Card/feature scope only — no UI or page structure changes.
 
 ## Custom commands
 

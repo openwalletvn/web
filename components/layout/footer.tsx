@@ -19,6 +19,7 @@ const LINKS = {
         {label: 'Thẻ', href: '/the'},
         {label: 'Tin tức', href: '/tin-tuc'},
         {label: 'Về OpenWallet', href: '/ve-openwallet'},
+        {label: 'Changelog', href: '/changelog'},
     ],
 };
 
@@ -42,9 +43,9 @@ export function Footer() {
 
                             {/* Link columns */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 flex-1">
+                                <LinkColumn heading="Danh mục" links={LINKS.categories}/>
                                 <LinkColumn heading="Công cụ" links={LINKS.tools}/>
                                 <LinkColumn heading="Pháp lý" links={LINKS.legal}/>
-                                <LinkColumn heading="Danh mục" links={LINKS.categories}/>
                             </div>
                         </div>
 
