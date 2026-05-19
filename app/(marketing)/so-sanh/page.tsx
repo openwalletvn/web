@@ -16,7 +16,7 @@ export default async function ComparePage() {
                 <h1 className="mb-8">So sánh thẻ</h1>
                 <CompareSection intentMap={intentMap} />
             </div>
-            <div className="max-w-container mx-auto">
+            <div className="ow-container">
                 <CompareSuggestedCards cards={suggestedCards} />
             </div>
         </div>

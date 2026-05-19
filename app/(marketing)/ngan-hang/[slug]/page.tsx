@@ -61,7 +61,7 @@ export default async function BankPage({params}: Props) {
 
     return (
         <div className="px-4 py-12">
-            <div className="max-w-container mx-auto space-y-16">
+            <div className="ow-container space-y-16">
                 <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
                 <Breadcrumbs items={breadcrumbItems}/>
 

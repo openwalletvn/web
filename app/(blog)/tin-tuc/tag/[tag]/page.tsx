@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import {getAllTags, getPostsByTag} from '@/lib/mdx';
 import {PostList} from '@/components/blog/post-list';
 import {TagList} from '@/components/blog/tag-list';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
+import {BlogPageShell} from '@/components/layout/blog-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 
 interface Props {
@@ -54,29 +54,23 @@ export default async function TagPage({params}: Props) {
  ],
  });
 
- return (
- <div className="px-4 py-12">
- <div className="max-w-container mx-auto">
- <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
- <Breadcrumbs items={breadcrumbItems}/>
+    return (
+        <BlogPageShell
+            title={<><span className="text-text-muted font-normal">#</span>{displayName}</>}
+            description={`${posts.length} bài viết với thẻ này`}
+            breadcrumbItems={breadcrumbItems}
+            jsonLd={jsonLd}
+        >
+            <PostList posts={posts} emptyMessage={`Chưa có bài viết nào với thẻ "${displayName}".`}/>
 
- <h1 className="mb-1">
- <span className="text-slate-500 font-normal">#</span>
- {displayName}
- </h1>
- <p className="text-slate-500 mb-8">{`${posts.length} bài viết với thẻ này`}</p>
-
- <PostList posts={posts} emptyMessage={`Chưa có bài viết nào với thẻ "${displayName}".`}/>
-
- {tags.length > 0 && (
- <div className="mt-12">
- <h2 className="text-label text-text-muted mb-3">
- Các thẻ khác
- </h2>
- <TagList tags={tags} activeSlug={slug}/>
- </div>
- )}
- </div>
- </div>
- );
+            {tags.length > 0 && (
+                <div className="mt-12">
+                    <h2 className="text-label text-text-muted mb-3">
+                        Các thẻ khác
+                    </h2>
+                    <TagList tags={tags} activeSlug={slug}/>
+                </div>
+            )}
+        </BlogPageShell>
+    );
 }

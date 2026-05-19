@@ -3,7 +3,7 @@
 import {useState} from 'react';
 import Link from 'next/link';
 import type {Bank, Card} from '@/lib/api';
-import {rankCards, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
+import {rankCards, getTiebreakerReason, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
 import {CardImage} from '@/components/cards/card-image';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {IconChevronLeft, IconChevronRight} from '@tabler/icons-react';

@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
@@ -36,20 +36,13 @@ export default async function CardsPage() {
     });
 
     return (
-        <div className="px-4 py-12">
-            <div className="max-w-container mx-auto">
-                <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
-                <Breadcrumbs items={breadcrumbItems}/>
-
-                <h1 className="mb-6">Thẻ ngân hàng</h1>
-
-                <CardsGrid
-                    cards={allCards}
-                    banks={banks}
-                    noCardsLabel='Không tìm thấy thẻ nào.'
-                    useUrlState={true}
-                />
-            </div>
-        </div>
+        <MarketingPageShell title="Thẻ ngân hàng" breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
+            <CardsGrid
+                cards={allCards}
+                banks={banks}
+                noCardsLabel='Không tìm thấy thẻ nào.'
+                useUrlState={true}
+            />
+        </MarketingPageShell>
     );
 }

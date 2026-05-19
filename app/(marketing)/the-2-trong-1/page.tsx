@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const TITLE = 'Thẻ 2 Trong 1';
 const DESCRIPTION = 'Tra cứu tất cả thẻ 2 trong 1 (tín dụng + ghi nợ) từ các ngân hàng Việt Nam';
@@ -40,21 +40,13 @@ export default async function TwoInOneCardsPage() {
  });
 
  return (
- <div className="px-4 py-12">
- <div className="max-w-container mx-auto">
- <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
- <Breadcrumbs items={breadcrumbItems}/>
-
- <h1 className="mb-2">{'Thẻ 2 Trong 1'}</h1>
- <p className="text-slate-500 mb-8">{'Thẻ đa chức năng kết hợp tính năng tín dụng và ghi nợ'}</p>
-
+ <MarketingPageShell title={'Thẻ 2 Trong 1'} description={'Thẻ đa chức năng kết hợp tính năng tín dụng và ghi nợ'} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
  <CardsGrid
  cards={cards}
  banks={banks}
  hideTypeFilter
  noCardsLabel={'Không tìm thấy thẻ nào.'}
  />
- </div>
- </div>
+ </MarketingPageShell>
  );
 }

@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const TITLE = 'Thẻ Ghi Nợ Mastercard';
 const DESCRIPTION = 'Tra cứu tất cả thẻ ghi nợ Mastercard từ các ngân hàng Việt Nam';
@@ -40,21 +40,13 @@ export default async function DebitMastercardPage() {
  });
 
  return (
- <div className="px-4 py-12">
- <div className="max-w-container mx-auto">
- <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
- <Breadcrumbs items={breadcrumbItems}/>
-
- <h1 className="mb-2">{'Thẻ Ghi Nợ Mastercard'}</h1>
- <p className="text-slate-500 mb-8">{'So sánh thẻ ghi nợ Mastercard từ các ngân hàng Việt Nam'}</p>
-
+ <MarketingPageShell title={'Thẻ Ghi Nợ Mastercard'} description={'So sánh thẻ ghi nợ Mastercard từ các ngân hàng Việt Nam'} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
  <CardsGrid
  cards={cards}
  banks={banks}
  hideTypeFilter
  noCardsLabel={'Không tìm thấy thẻ nào.'}
  />
- </div>
- </div>
+ </MarketingPageShell>
  );
 }

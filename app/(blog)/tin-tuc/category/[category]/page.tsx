@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import {getAllCategories, getPostsByCategory} from '@/lib/mdx';
 import {PostList} from '@/components/blog/post-list';
 import {CategoryFilter} from '@/components/blog/category-filter';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
+import {BlogPageShell} from '@/components/layout/blog-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 
 interface Props {
@@ -54,21 +54,18 @@ export default async function CategoryPage({params}: Props) {
  ],
  });
 
- return (
- <div className="px-4 py-12">
- <div className="max-w-container mx-auto">
- <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
- <Breadcrumbs items={breadcrumbItems}/>
+    return (
+        <BlogPageShell
+            title={displayName}
+            description={`${posts.length} bài viết trong chủ đề này`}
+            breadcrumbItems={breadcrumbItems}
+            jsonLd={jsonLd}
+        >
+            <div className="mb-6">
+                <CategoryFilter categories={categories} activeSlug={slug}/>
+            </div>
 
- <h1 className="mb-1">{displayName}</h1>
- <p className="text-slate-500 mb-8">{`${posts.length} bài viết trong chủ đề này`}</p>
-
- <div className="mb-6">
- <CategoryFilter categories={categories} activeSlug={slug}/>
- </div>
-
- <PostList posts={posts} emptyMessage={`Chưa có bài viết nào trong chủ đề "${displayName}".`}/>
- </div>
- </div>
- );
+            <PostList posts={posts} emptyMessage={`Chưa có bài viết nào trong chủ đề "${displayName}".`}/>
+        </BlogPageShell>
+    );
 }

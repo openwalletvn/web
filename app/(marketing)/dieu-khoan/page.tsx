@@ -1,4 +1,5 @@
 import type {Metadata} from 'next';
+import {ProsePageShell} from '@/components/layout/prose-page-shell';
 
 export const metadata: Metadata = {
     title: 'Điều khoản sử dụng | OpenWallet',
@@ -7,12 +8,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
     return (
-        <div className="ow-dieu-khoan py-16 sm:py-24">
-            <div className="ow-container">
-                <div className="max-w-3xl mx-auto">
-                    <h1 className="text-section mb-4">Điều khoản sử dụng</h1>
-                    <p className="text-body text-slate-500 mb-12">Cập nhật lần cuối: 19 tháng 5, 2026</p>
-
+        <ProsePageShell title="Điều khoản sử dụng" subtitle="Cập nhật lần cuối: 19 tháng 5, 2026">
                     <div className="flex flex-col gap-10">
                         <Section title="1. Giới thiệu">
                             <p>Chào mừng bạn đến với OpenWallet (<strong>openwallet.vn</strong>). Bằng cách truy cập hoặc sử dụng website này, bạn đồng ý bị ràng buộc bởi các điều khoản và điều kiện dưới đây. Nếu bạn không đồng ý với bất kỳ điều khoản nào, vui lòng ngừng sử dụng dịch vụ.</p>
@@ -71,9 +67,7 @@ export default function Page() {
                             <p>Nếu có thắc mắc về điều khoản sử dụng, vui lòng liên hệ chúng tôi qua email: <a href="mailto:hello@openwallet.vn" className="underline hover:opacity-70 transition-opacity">hello@openwallet.vn</a></p>
                         </Section>
                     </div>
-                </div>
-            </div>
-        </div>
+        </ProsePageShell>
     );
 }
 

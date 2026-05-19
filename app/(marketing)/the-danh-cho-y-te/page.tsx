@@ -1,52 +1,46 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
 import {CardRankingTable} from '@/components/marketing/card-ranking-table';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const TITLE = 'Thẻ Chi Tiêu Y Tế';
 const DESCRIPTION = 'Tổng hợp thẻ tín dụng và ghi nợ có ưu đãi thanh toán y tế, bệnh viện, sức khỏe';
 const URL = '/the-danh-cho-y-te';
 const BREADCRUMB_ITEMS = [
- {label: 'Trang chủ', href: '/'},
- {label: 'Thẻ', href: '/the'},
- {label: TITLE},
+    {label: 'Trang chủ', href: '/'},
+    {label: 'Thẻ', href: '/the'},
+    {label: TITLE},
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
- const allCards = await getCards();
- const cards = allCards.filter((c) => c.intents?.includes('health'));
- const {metadata} = buildCollectionPageMeta({
- title: `${TITLE} | Open Wallet`,
- description: DESCRIPTION,
- url: URL,
- items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
- breadcrumbItems: BREADCRUMB_ITEMS,
- });
- return metadata;
+    const allCards = await getCards();
+    const cards = allCards.filter((c) => c.intents?.includes('health'));
+    const {metadata} = buildCollectionPageMeta({
+        title: `${TITLE} | Open Wallet`,
+        description: DESCRIPTION,
+        url: URL,
+        items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
+        breadcrumbItems: BREADCRUMB_ITEMS,
+    });
+    return metadata;
 }
 
 export default async function YTeCardsPage() {
- const [allCards, banks] = await Promise.all([getCards(), getBanks()]);
- const cards = allCards.filter((c) => c.intents?.includes('health'));
+    const [allCards, banks] = await Promise.all([getCards(), getBanks()]);
+    const cards = allCards.filter((c) => c.intents?.includes('health'));
 
- const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
- title: `${TITLE} | Open Wallet`,
- description: DESCRIPTION,
- url: URL,
- items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
- breadcrumbItems: BREADCRUMB_ITEMS,
- });
+    const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
+        title: `${TITLE} | Open Wallet`,
+        description: DESCRIPTION,
+        url: URL,
+        items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
+        breadcrumbItems: BREADCRUMB_ITEMS,
+    });
 
- return (
- <div className="px-4 py-12">
- <div className="max-w-container mx-auto">
- <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
- <Breadcrumbs items={breadcrumbItems}/>
- <h1 className="mb-2">{TITLE}</h1>
- <p className="text-slate-500 mb-8">{DESCRIPTION}</p>
- <CardRankingTable cards={cards} banks={banks} intentSlug="health" title="Xếp hạng thẻ theo cashback y tế"/>
- </div>
- </div>
- );
+    return (
+        <MarketingPageShell title={TITLE} description={DESCRIPTION} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
+            <CardRankingTable cards={cards} banks={banks} intentSlug="health" title="Xếp hạng thẻ theo cashback y tế"/>
+        </MarketingPageShell>
+    );
 }

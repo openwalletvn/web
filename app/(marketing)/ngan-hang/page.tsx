@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
 import {getBanks} from '@/lib/api';
 import {BankItem} from '@/components/shared/bank-item';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
@@ -33,20 +33,12 @@ export default async function BanksPage() {
     });
 
     return (
-        <div className="ow-banks-page py-12">
-            <div className="ow-container">
-                <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
-                <Breadcrumbs items={breadcrumbItems}/>
-
-                <h1 className="mb-1">Ngân hàng</h1>
-                <p className="text-text-muted mb-8">{`${banks.length} ngân hàng`}</p>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {banks.map((bank) => (
-                        <BankItem key={bank.id} bank={bank}/>
-                    ))}
-                </div>
+        <MarketingPageShell title="Ngân hàng" description={`${banks.length} ngân hàng`} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {banks.map((bank) => (
+                    <BankItem key={bank.id} bank={bank}/>
+                ))}
             </div>
-        </div>
+        </MarketingPageShell>
     );
 }

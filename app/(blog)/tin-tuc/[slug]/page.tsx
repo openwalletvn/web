@@ -42,7 +42,7 @@ export default async function BlogPostPage({params}: Props) {
     const cardSlugs = frontmatter.card_slugs ?? [];
 
     return (
-        <div className="px-4 py-12">
+        <div className="md:pt-16 md:pb-32 pt-8 pb-14">
             {process.env.NODE_ENV === 'development' && (
                 <a
                     href={`http://localhost:3004/blog/${slug}`}
@@ -53,7 +53,7 @@ export default async function BlogPostPage({params}: Props) {
                     ✏️ Edit images
                 </a>
             )}
-            <div className="max-w-container mx-auto">
+            <div className="ow-container">
                 <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
                 <Breadcrumbs items={breadcrumbItems}/>
 

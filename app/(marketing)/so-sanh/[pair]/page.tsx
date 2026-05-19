@@ -81,7 +81,7 @@ export default async function ComparePairPage({ params }: Props) {
                     )}
                 </CompareSection>
             </div>
-            <div className="max-w-container mx-auto">
+            <div className="ow-container">
                 <CompareSuggestedCards cards={suggestedCards} />
             </div>
         </div>

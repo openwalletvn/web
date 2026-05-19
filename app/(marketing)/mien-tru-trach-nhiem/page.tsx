@@ -1,4 +1,5 @@
 import type {Metadata} from 'next';
+import {ProsePageShell} from '@/components/layout/prose-page-shell';
 
 export const metadata: Metadata = {
     title: 'Miễn trừ trách nhiệm | OpenWallet',
@@ -7,12 +8,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
     return (
-        <div className="ow-mien-tru-trach-nhiem py-16 sm:py-24">
-            <div className="ow-container">
-                <div className="max-w-3xl mx-auto">
-                    <h1 className="text-section mb-4">Miễn trừ trách nhiệm</h1>
-                    <p className="text-body text-slate-500 mb-12">Cập nhật lần cuối: 19 tháng 5, 2026</p>
-
+        <ProsePageShell title="Miễn trừ trách nhiệm" subtitle="Cập nhật lần cuối: 19 tháng 5, 2026">
                     <div className="flex flex-col gap-10">
                         <Section title="1. Thông tin chỉ mang tính tham khảo">
                             <p>Toàn bộ nội dung trên <strong>openwallet.vn</strong>, bao gồm thông tin thẻ ngân hàng, so sánh sản phẩm, bài viết phân tích và hướng dẫn, chỉ mang tính chất thông tin và tham khảo.</p>
@@ -55,9 +51,7 @@ export default function Page() {
                             <p>Nếu bạn phát hiện thông tin không chính xác hoặc cần làm rõ, vui lòng liên hệ: <a href="mailto:hello@openwallet.vn" className="underline hover:opacity-70 transition-opacity">hello@openwallet.vn</a></p>
                         </Section>
                     </div>
-                </div>
-            </div>
-        </div>
+        </ProsePageShell>
     );
 }
 

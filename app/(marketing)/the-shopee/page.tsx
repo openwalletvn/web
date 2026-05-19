@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {CardRankingTable} from '@/components/marketing/card-ranking-table';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const TITLE = 'Thẻ Shopee';
 const DESCRIPTION = 'Tra cứu tất cả thẻ tín dụng và ghi nợ liên kết Shopee từ các ngân hàng Việt Nam';
@@ -41,21 +41,13 @@ export default async function ShopeeCardsPage() {
         breadcrumbItems: BREADCRUMB_ITEMS,
     });
     return (
-        <div className="px-4 py-12">
-            <div className="max-w-container mx-auto">
-                <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
-                <Breadcrumbs items={breadcrumbItems}/>
-
-                <h1 className="mb-2">{TITLE}</h1>
-                <p className="text-slate-500 mb-8">{DESCRIPTION}</p>
-
-                <CardRankingTable
-                    cards={cards}
-                    banks={banks}
-                    intentSlug="shopee"
-                    title="Xếp hạng thẻ theo cashback Shopee"
-                />
-            </div>
-        </div>
+        <MarketingPageShell title={TITLE} description={DESCRIPTION} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
+            <CardRankingTable
+                cards={cards}
+                banks={banks}
+                intentSlug="shopee"
+                title="Xếp hạng thẻ theo cashback Shopee"
+            />
+        </MarketingPageShell>
     );
 }

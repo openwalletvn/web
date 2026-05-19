@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const TITLE = 'Thẻ Tín Dụng Miễn Phí Thường Niên';
 const DESCRIPTION = 'Tra cứu tất cả thẻ tín dụng miễn phí thường niên từ các ngân hàng Việt Nam';
@@ -45,14 +45,7 @@ export default async function CreditFreePage() {
  });
 
  return (
- <div className="px-4 py-12">
- <div className="max-w-container mx-auto">
- <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
- <Breadcrumbs items={breadcrumbItems}/>
-
- <h1 className="mb-2">{'Thẻ Tín Dụng Miễn Phí Thường Niên'}</h1>
- <p className="text-slate-500 mb-8">{'Thẻ tín dụng không có phí thường niên'}</p>
-
+ <MarketingPageShell title={'Thẻ Tín Dụng Miễn Phí Thường Niên'} description={'Thẻ tín dụng không có phí thường niên'} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
  <CardsGrid
  cards={filteredCards}
  banks={banks}
@@ -60,7 +53,6 @@ export default async function CreditFreePage() {
  hideFeeFilter
  noCardsLabel={'Không tìm thấy thẻ nào.'}
  />
- </div>
- </div>
+ </MarketingPageShell>
  );
 }

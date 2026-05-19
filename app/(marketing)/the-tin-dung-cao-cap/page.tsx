@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const TITLE = 'Thẻ tín dụng cao cấp';
 const DESCRIPTION = 'Tổng hợp các thẻ tín dụng cao cấp nhất Việt Nam: Visa Infinite, Visa Signature, Mastercard World Elite và nhiều hơn nữa. So sánh ưu đãi, phí thường niên và đặc quyền.';
@@ -64,14 +64,7 @@ export default async function PremiumCreditPage() {
  });
 
  return (
- <div className="px-4 py-12">
- <div className="max-w-container mx-auto">
- <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
- <Breadcrumbs items={breadcrumbItems}/>
-
- <h1 className="mb-2">{'Thẻ tín dụng cao cấp'}</h1>
- <p className="text-slate-500 mb-8">{'Tổng hợp thẻ tín dụng hạng cao từ tất cả các mạng lưới — Visa, Mastercard, JCB, Amex và UnionPay.'}</p>
-
+ <MarketingPageShell title={'Thẻ tín dụng cao cấp'} description={'Tổng hợp thẻ tín dụng hạng cao từ tất cả các mạng lưới: Visa, Mastercard, JCB, Amex và UnionPay.'} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
  <div className="space-y-16">
  {networkSections.map(([key, {name, cards: networkCards}]) => (
  <CardsGrid
@@ -91,7 +84,6 @@ export default async function PremiumCreditPage() {
  />
  ))}
  </div>
- </div>
- </div>
+ </MarketingPageShell>
  );
 }

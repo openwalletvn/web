@@ -1,4 +1,5 @@
 import type {Metadata} from 'next';
+import {ProsePageShell} from '@/components/layout/prose-page-shell';
 
 export const metadata: Metadata = {
     title: 'Về OpenWallet | Ai đứng sau dự án này',
@@ -7,12 +8,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
     return (
-        <div className="ow-ve-openwallet py-16 sm:py-24">
-            <div className="ow-container">
-                <div className="max-w-2xl mx-auto">
-
-                    <h1 className="text-section mb-12">Về OpenWallet</h1>
-
+        <ProsePageShell title="Về OpenWallet">
                     <div className="flex flex-col gap-10">
                         <Section title="Chúng tôi là ai">
                             <p>OpenWallet được vận hành bởi <a href="https://perxel.com" target="_blank" rel="noopener noreferrer"><strong>PERXEL CO., LTD</strong></a>, một development studio nhỏ tại Sài Gòn.</p>
@@ -41,9 +37,7 @@ export default function Page() {
                             <p>Đây là dự án cộng đồng, được làm với sự thận trọng, chia sẻ miễn phí. Nếu bạn phát hiện thông tin không chính xác hoặc có góp ý, hãy liên hệ qua <a href="mailto:hello@openwallet.vn" className="underline hover:opacity-70 transition-opacity">hello@openwallet.vn</a>.</p>
                         </Section>
                     </div>
-                </div>
-            </div>
-        </div>
+        </ProsePageShell>
     );
 }
 

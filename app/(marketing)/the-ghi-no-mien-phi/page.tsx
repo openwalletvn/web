@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const TITLE = 'Thẻ Ghi Nợ Miễn Phí';
 const DESCRIPTION = 'Tra cứu tất cả thẻ ghi nợ miễn phí thường niên từ các ngân hàng Việt Nam';
@@ -45,21 +45,13 @@ export default async function DebitFreePage() {
  });
 
  return (
- <div className="px-4 py-12">
- <div className="max-w-container mx-auto">
- <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
- <Breadcrumbs items={breadcrumbItems}/>
-
- <h1 className="mb-2">{'Thẻ Ghi Nợ Miễn Phí'}</h1>
- <p className="text-slate-500 mb-8">{'Thẻ ghi nợ không có phí thường niên'}</p>
-
+ <MarketingPageShell title={'Thẻ Ghi Nợ Miễn Phí'} description={'Thẻ ghi nợ không có phí thường niên'} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
  <CardsGrid
  cards={filteredCards}
  banks={banks}
  hideTypeFilter hideFeeFilter
  noCardsLabel={'Không tìm thấy thẻ nào.'}
  />
- </div>
- </div>
+ </MarketingPageShell>
  );
 }

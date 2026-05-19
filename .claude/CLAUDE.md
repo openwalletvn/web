@@ -43,13 +43,9 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 
 ## Card ranking
 
-Marketing category pages (the-shopee, the-sieu-thi, etc.) use `CardRankingTable` with cashback-based ranking:
-- `lib/cashback-calc.ts` — estimates cashback for a spend profile; rules applied in order (specific-first), caps and min_spend respected
-- `lib/card-ranker.ts` — sorts cards by estimated cashback; default spend = 3M VND/kỳ
-- `components/marketing/card-ranking-table.tsx` — client component with spend selector (1M–20M) + ←/→ steppers
-- Intent slug passed per page (e.g. `intentSlug="shopee"`); multi-intent supported via `spendProfile` object
+**Single source of truth: `lib/card-ranker.ts`** — ranking factors and priority order documented in the JSDoc above `rankCards()`.
 
-See `.claude/docs/architecture.md` for full file reference.
+Supporting files: `lib/cashback-calc.ts` (cashback estimation), `components/marketing/card-ranking-table.tsx` (UI with spend selector).
 
 ## Meta-rules
 1. Before any task: check `.claude/commands/` for a relevant command file.

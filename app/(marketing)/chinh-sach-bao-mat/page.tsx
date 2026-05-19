@@ -1,4 +1,5 @@
 import type {Metadata} from 'next';
+import {ProsePageShell} from '@/components/layout/prose-page-shell';
 
 export const metadata: Metadata = {
     title: 'Chính sách bảo mật | OpenWallet',
@@ -7,12 +8,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
     return (
-        <div className="ow-chinh-sach-bao-mat py-16 sm:py-24">
-            <div className="ow-container">
-                <div className="max-w-3xl mx-auto">
-                    <h1 className="text-section mb-4">Chính sách bảo mật</h1>
-                    <p className="text-body text-slate-500 mb-12">Cập nhật lần cuối: 19 tháng 5, 2026</p>
-
+        <ProsePageShell title="Chính sách bảo mật" subtitle="Cập nhật lần cuối: 19 tháng 5, 2026">
                     <div className="flex flex-col gap-10">
                         <Section title="1. Cam kết bảo mật">
                             <p>OpenWallet (<strong>openwallet.vn</strong>) được vận hành bởi <strong>Perxel</strong>. Chúng tôi coi trọng sự riêng tư của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng và bảo vệ thông tin khi bạn sử dụng dịch vụ.</p>
@@ -71,9 +67,7 @@ export default function Page() {
                             <p>Mọi thắc mắc về chính sách bảo mật, vui lòng liên hệ: <a href="mailto:hello@openwallet.vn" className="underline hover:opacity-70 transition-opacity">hello@openwallet.vn</a></p>
                         </Section>
                     </div>
-                </div>
-            </div>
-        </div>
+        </ProsePageShell>
     );
 }
 
