@@ -159,7 +159,7 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
 
             <p className="flex items-center gap-1.5 text-body-sm text-text-muted mt-4">
                 <IconInfoCircle size={14} className="shrink-0"/>
-                Xếp hạng theo hoàn tiền ước tính · cùng hoàn tiền thì ưu tiên Visa/Mastercard và phí thường niên thấp hơn.
+                Xếp hạng theo hoàn tiền ước tính · cùng hoàn tiền thì ưu tiên phí thường niên thấp hơn, sau đó Visa/Mastercard.
             </p>
         </section>
     );
