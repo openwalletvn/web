@@ -10,7 +10,7 @@ export function BankItem({ bank }: Props) {
     return (
         <Link
             href={`/ngan-hang/${bank.id}`}
-            className="flex flex-col items-center gap-2 hover:bg-slate-50/60 transition-colors p-2"
+            className="ow-bank-item flex flex-col items-center gap-2 hover:bg-slate-50/60 transition-colors p-2"
         >
             <div className="relative h-20 aspect-video">
                 <Image src={getBankImageUrl(bank.logo_url)} alt="" fill className="object-contain"/>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { getBanks } from '@/lib/api';
-import { BankItem } from './bank-item';
+import { BankItem } from '@/components/shared/bank-item';
 
 interface Props {
   limit?: number;
@@ -13,7 +13,7 @@ export async function BanksSection({ limit, showViewAll }: Props) {
   const displayed = limit ? banks.slice(0, limit) : banks;
 
   return (
-    <section className="py-12 px-4 max-w-container mx-auto w-full">
+    <section className="ow-banks-section py-12 px-4 max-w-container mx-auto w-full">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-slate-900">{t('title')}</h2>
         <div className="border-t border-dashed border-slate-300 mt-3" />
@@ -42,7 +42,7 @@ export async function BanksSection({ limit, showViewAll }: Props) {
 
 export function BanksSectionSkeleton() {
   return (
-    <section className="py-12 px-4 max-w-container mx-auto w-full">
+    <section className="ow-banks-section py-12 px-4 max-w-container mx-auto w-full">
       <div className="mb-8">
         <div className="h-9 w-24 bg-slate-200 rounded animate-pulse" />
         <div className="border-t border-dashed border-slate-200 mt-3" />

@@ -33,7 +33,7 @@ export function BadgeNumberIcon({
 
     return (
         <div className={cn(
-            'badge-number-icon flex items-center gap-2 rounded-full p-2',
+            'ow-badge-number-icon flex items-center gap-2 rounded-full p-2',
             color === 'primary' ? 'bg-primary' : 'bg-black',
             className,
         )}>

@@ -1,7 +1,7 @@
 import type {Metadata} from 'next';
 import {getTranslations} from 'next-intl/server';
 import {getBanks} from '@/lib/api';
-import {BankItem} from '../_components/bank-item';
+import {BankItem} from '@/components/shared/bank-item';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 

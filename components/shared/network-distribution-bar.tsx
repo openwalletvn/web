@@ -24,7 +24,7 @@ export function NetworkDistributionBar({networkCounts, networksData, totalCards}
         }));
 
     return (
-        <div className="space-y-2">
+        <div className="ow-network-distribution-bar space-y-2">
             {/* Labels row */}
             <div className="flex w-full items-end min-h-10">
                 {segments.map(({networkId, count, pct, networkData}) => (

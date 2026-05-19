@@ -5,7 +5,7 @@ import {getTranslations} from 'next-intl/server';
 import {getBank, getBankImageUrl, getBanks, getCards} from '@/lib/api';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {CardsGrid} from '@/components/cards/cards-grid';
-import {NetworkDistributionBar} from '@/app/(marketing)/_components/network-distribution-bar';
+import {NetworkDistributionBar} from '@/components/shared/network-distribution-bar';
 import {buildBankPageMeta} from '@/lib/page-meta/bank';
 
 export async function generateStaticParams() {

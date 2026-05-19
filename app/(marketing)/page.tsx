@@ -2,10 +2,10 @@
 import {Suspense} from 'react';
 // import {getTranslations} from 'next-intl/server';
 import {getBanks, getCards} from '@/lib/api';
-import {BanksSection, BanksSectionSkeleton} from './_components/banks-section';
+import {BanksSection, BanksSectionSkeleton} from '@/components/marketing/banks-section';
 import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
-import {HeroSection} from './_components/hero-section';
+import {HeroSection} from '@/components/marketing/hero-section';
 
 export default async function HomePage() {
     const [banks, cards] = await Promise.all([

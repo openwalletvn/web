@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {getTranslations} from 'next-intl/server';
 import {IconCircleCheck, IconCreditCard, IconSettings} from '@tabler/icons-react';
-import {BadgeNumberIcon} from './badge-number-icon';
+import {BadgeNumberIcon} from '@/components/shared/badge-number-icon';
 import {CardImageTag} from '@/components/cards/card-image-tag';
 
 export async function HeroSection({cardCount, bankCount}: { cardCount: number; bankCount: number }) {
@@ -10,7 +10,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
     return (
         <section
-            className="w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center py-16 overflow-hidden">
+            className="ow-hero-section w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center py-16 overflow-hidden">
 
             {/* Heading */}
             <h1 className="text-[clamp(2.8rem,7vw,5rem)] text-black leading-[1.05] tracking-hero text-center mb-10 px-4">
