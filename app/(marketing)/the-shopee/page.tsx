@@ -15,7 +15,12 @@ const BREADCRUMB_ITEMS = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
- const cards = await getCards({co_brand: 'shopee'});
+ const [coBrandCards, intentCards] = await Promise.all([
+ getCards({co_brand: 'shopee'}),
+ getCards({intent: 'shopee'}),
+ ]);
+ const coBrandIds = new Set(coBrandCards.map((c) => c.id));
+ const cards = [...coBrandCards, ...intentCards.filter((c) => !coBrandIds.has(c.id))];
  const {metadata} = buildCollectionPageMeta({
  title: `${TITLE} | Open Wallet`,
  description: DESCRIPTION,
@@ -27,11 +32,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ShopeeCardsPage() {
- const [cards, banks, t] = await Promise.all([
+ const [coBrandCards, intentCards, banks, t] = await Promise.all([
  getCards({co_brand: 'shopee'}),
+ getCards({intent: 'shopee'}),
  getBanks(),
  getTranslations('SeoPages'),
  ]);
+ const coBrandIds = new Set(coBrandCards.map((c) => c.id));
+ const cards = [
+ ...coBrandCards,
+ ...intentCards.filter((c) => !coBrandIds.has(c.id)),
+ ];
 
  const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
  title: `${TITLE} | Open Wallet`,

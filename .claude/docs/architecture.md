@@ -71,7 +71,7 @@ All public pages emit `<script type="application/ld+json">` via `lib/page-meta/`
 
 | Fn | Endpoint |
 |----|---------|
-| `getCards(filters?)` | `/api/v1/cards` |
+| `getCards(filters?)` | `/api/v1/cards` — supports `type`, `network`, `bank_id`, `co_brand`, `intent`, `tier`, `metal`, `for_business`, `network_tier`, `contactless` |
 | `getCard(id)` | `/api/v1/cards/{id}` |
 | `getRelatedCards(id)` | `/api/v1/cards/{id}/related` |
 | `getRelatedCardsForMany(ids[])` | parallel `getRelatedCards` with `.catch(() => [])` |
