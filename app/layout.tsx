@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cal_Sans, Inter_Tight } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
+import { BodyClass } from '@/components/layout/body-class';
 import "./globals.css";
 
 const calSans = Cal_Sans({
@@ -61,6 +62,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${calSans.variable} ${interTight.variable}`}>
       <body className="antialiased">
+        <BodyClass />
         <NextIntlClientProvider>
           {children}
         </NextIntlClientProvider>
