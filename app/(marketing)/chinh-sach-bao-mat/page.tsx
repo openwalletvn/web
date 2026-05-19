@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 
 export const metadata: Metadata = {
     title: 'Chính sách bảo mật | OpenWallet',
-    description: 'Chính sách bảo mật của OpenWallet — cách chúng tôi thu thập, sử dụng và bảo vệ thông tin của bạn.',
+    description: 'Chính sách bảo mật của OpenWallet: cách chúng tôi thu thập, sử dụng và bảo vệ thông tin của bạn.',
 };
 
 export default function Page() {
@@ -38,7 +38,7 @@ export default function Page() {
                         <Section title="4. Chia sẻ thông tin">
                             <p>Chúng tôi có thể chia sẻ thông tin trong các trường hợp sau:</p>
                             <ul>
-                                <li><strong>Nhà cung cấp dịch vụ:</strong> Các đối tác kỹ thuật giúp vận hành website (hosting, phân tích) — chỉ trong phạm vi cần thiết và có ràng buộc bảo mật.</li>
+                                <li><strong>Nhà cung cấp dịch vụ:</strong> Các đối tác kỹ thuật giúp vận hành website (hosting, phân tích), chỉ trong phạm vi cần thiết và có ràng buộc bảo mật.</li>
                                 <li><strong>Yêu cầu pháp lý:</strong> Khi có yêu cầu từ cơ quan nhà nước có thẩm quyền theo quy định pháp luật Việt Nam.</li>
                                 <li><strong>Bảo vệ quyền lợi:</strong> Khi cần thiết để bảo vệ quyền lợi, tài sản hoặc sự an toàn của OpenWallet, người dùng hoặc công chúng.</li>
                             </ul>

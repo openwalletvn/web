@@ -37,6 +37,10 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 - **Headings**: `##`, `###`, `####` only (no `#`). Auto-TOC generated.
 - **Images**: `/public/images/posts/<slug>/<filename>.webp`
 
+## Writing rules
+- **No em dashes (—):** Never use em dashes in any page content or metadata. Replace with a comma, colon, parentheses, or restructure the sentence. Em dashes are a visible AI writing signal.
+- **Tone for public pages:** Professional and honest, not corporate or casual. Use "chúng tôi" consistently. Avoid overly informal phrasing.
+
 ## Meta-rules
 1. Before any task: check `.claude/commands/` for a relevant command file.
 2. After creating a command: add it to the commands table below.

@@ -17,6 +17,7 @@ const LINKS = {
         {label: 'Ngân hàng', href: '/ngan-hang'},
         {label: 'Thẻ', href: '/the'},
         {label: 'Tin tức', href: '/tin-tuc'},
+        {label: 'Về OpenWallet', href: '/ve-openwallet'},
     ],
 };
 

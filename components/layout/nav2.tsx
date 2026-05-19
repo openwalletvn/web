@@ -9,6 +9,7 @@ const NAV2_ITEMS = [
     {label: 'Thẻ', href: '/the'},
     {label: 'Tin tức', href: '/tin-tuc'},
     {label: 'So sánh', href: '/so-sanh'},
+    {label: 'Về chúng tôi', href: '/ve-openwallet'},
 ];
 
 const textStyle: React.CSSProperties = {

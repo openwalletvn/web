@@ -89,6 +89,7 @@ export const MENU: NavItem[] = [
 
     {label: 'Tin tức', href: '/tin-tuc'},
     {label: 'So sánh', href: '/so-sanh'},
+    {label: 'Về chúng tôi', href: '/ve-openwallet'},
 ];
 
 export {isDropdown};
