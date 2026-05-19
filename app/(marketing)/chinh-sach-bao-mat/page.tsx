@@ -15,7 +15,7 @@ export default function Page() {
 
                     <div className="flex flex-col gap-10">
                         <Section title="1. Cam kết bảo mật">
-                            <p>OpenWallet coi trọng sự riêng tư của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng và bảo vệ thông tin khi bạn sử dụng <strong>openwallet.vn</strong>.</p>
+                            <p>OpenWallet (<strong>openwallet.vn</strong>) được vận hành bởi <strong>Perxel</strong>. Chúng tôi coi trọng sự riêng tư của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng và bảo vệ thông tin khi bạn sử dụng dịch vụ.</p>
                         </Section>
 
                         <Section title="2. Thông tin chúng tôi thu thập">

@@ -35,7 +35,7 @@ export default function Page() {
                         </Section>
 
                         <Section title="4. Quan hệ với ngân hàng và đối tác">
-                            <p>OpenWallet có thể có quan hệ đối tác thương mại với một số ngân hàng và tổ chức tài chính. Điều này có thể ảnh hưởng đến cách các sản phẩm được hiển thị hoặc xếp hạng trên website. Chúng tôi cam kết công khai các mối quan hệ này khi có liên quan.</p>
+                            <p>Hiện tại OpenWallet không có quan hệ đối tác thương mại với bất kỳ ngân hàng hay tổ chức tài chính nào. Nếu trong tương lai các quan hệ đó được thiết lập, chúng tôi cam kết công khai rõ ràng tại các vị trí liên quan trên website.</p>
                             <p>Sự xuất hiện của một sản phẩm hoặc ngân hàng trên OpenWallet không đồng nghĩa với việc chúng tôi bảo lãnh hay khuyến nghị sản phẩm đó.</p>
                         </Section>
 

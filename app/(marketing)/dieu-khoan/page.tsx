@@ -39,7 +39,16 @@ export default function Page() {
                         </Section>
 
                         <Section title="4. Sở hữu trí tuệ">
-                            <p>Toàn bộ nội dung trên OpenWallet — bao gồm văn bản, hình ảnh, logo, dữ liệu và thiết kế — thuộc sở hữu của OpenWallet hoặc các đối tác cấp phép. Bạn được phép chia sẻ liên kết đến website, nhưng không được sao chép, tái bản hoặc sử dụng thương mại nội dung mà không có sự đồng ý bằng văn bản.</p>
+                            <p>Thông tin về sản phẩm tài chính (lãi suất, phí, tính năng thẻ) là dữ liệu công khai thuộc về các ngân hàng và tổ chức phát hành tương ứng. OpenWallet không tuyên bố quyền sở hữu đối với các dữ liệu này.</p>
+                            <p>Các nội dung và tính năng sau đây thuộc quyền sở hữu của OpenWallet:</p>
+                            <ul>
+                                <li>Bài viết phân tích, hướng dẫn và nội dung biên tập gốc</li>
+                                <li>Thiết kế giao diện, trải nghiệm người dùng và mã nguồn nền tảng</li>
+                                <li>Thuật toán xếp hạng và so sánh thẻ</li>
+                                <li>Tính năng gợi ý thẻ và so sánh thẻ cá nhân hóa</li>
+                                <li>Các tính năng hiện tại và tương lai của nền tảng, bao gồm Wallet App và WalletAI</li>
+                            </ul>
+                            <p>Bạn được phép chia sẻ liên kết đến website, nhưng không được sao chép, tái bản hoặc sử dụng thương mại các nội dung và tính năng thuộc sở hữu của OpenWallet mà không có sự đồng ý bằng văn bản.</p>
                         </Section>
 
                         <Section title="5. Liên kết bên ngoài">
