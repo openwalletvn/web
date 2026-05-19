@@ -37,14 +37,14 @@ function CashbackDisplay({ranked}: {ranked: RankedCard}) {
 
     if (cashback === 0) {
         return (
-            <div className="flex flex-col items-end gap-0.5">
+            <div className="flex flex-col items-start sm:items-end gap-0.5">
                 <span className="text-body-sm text-text-muted">Chưa có ưu đãi</span>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col items-end gap-0.5">
+        <div className="flex flex-col items-start sm:items-end gap-0.5">
             <span className="text-body-lg font-semibold text-primary">
                 +{cashback.toLocaleString('vi-VN')}đ
             </span>
@@ -175,13 +175,13 @@ function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta}: {
     const isTop3 = rank <= 3 && !muted;
 
     return (
-        <div className={`flex items-center gap-4 rounded-lg p-4 ${
+        <div className={`flex items-center gap-3 rounded-lg p-3 sm:p-4 ${
             isTop3
                 ? 'bg-white border-2 border-primary shadow-sm'
                 : 'bg-white border border-slate-100'
         }`}>
             {/* Rank + tiebreaker direction */}
-            <div className="w-12 shrink-0 flex flex-col items-center gap-0.5">
+            <div className="w-10 sm:w-12 shrink-0 flex flex-col items-center gap-0.5">
                 {muted ? (
                     <span className="text-label text-text-muted">#{ranked.rank}</span>
                 ) : (
@@ -200,35 +200,37 @@ function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta}: {
             </div>
 
             {/* Card image (clickable) */}
-            <Link href={`/the/${card.id}`} className="shrink-0 w-20">
-                <CardImage card={card} className="w-20"/>
+            <Link href={`/the/${card.id}`} className="shrink-0 w-16 sm:w-20">
+                <CardImage card={card} className="w-16 sm:w-20"/>
             </Link>
 
-            {/* Card info */}
-            <div className="flex-1 min-w-0">
-                <Link href={`/the/${card.id}`} className={`text-body font-semibold truncate block hover:underline ${muted ? 'text-text-muted' : 'text-black'}`}>
-                    {card.name}
-                </Link>
-                {card.bank_data && (
-                    <p className="text-body-sm text-text-muted truncate">{card.bank_data.name}</p>
-                )}
-                {card.fees?.annual != null && (
-                    <p className="text-body-sm text-text-muted">
-                        {card.fees.annual.amount === 0
-                            ? 'Miễn phí thường niên'
-                            : `Phí ${card.fees.annual.amount.toLocaleString('vi-VN')}đ/năm`}
-                    </p>
-                )}
-                {tiebreakerReason && (
-                    <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
-                        {tiebreakerReason}
-                    </span>
-                )}
-            </div>
+            {/* Card info + cashback */}
+            <div className="flex flex-1 min-w-0 flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                <div className="flex-1 min-w-0">
+                    <Link href={`/the/${card.id}`} className={`text-body font-semibold truncate block hover:underline ${muted ? 'text-text-muted' : 'text-black'}`}>
+                        {card.name}
+                    </Link>
+                    {card.bank_data && (
+                        <p className="text-body-sm text-text-muted truncate">{card.bank_data.name}</p>
+                    )}
+                    {card.fees?.annual != null && (
+                        <p className="text-body-sm text-text-muted">
+                            {card.fees.annual.amount === 0
+                                ? 'Miễn phí thường niên'
+                                : `Phí ${card.fees.annual.amount.toLocaleString('vi-VN')}đ/năm`}
+                        </p>
+                    )}
+                    {tiebreakerReason && (
+                        <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                            {tiebreakerReason}
+                        </span>
+                    )}
+                </div>
 
-            {/* Cashback */}
-            <div className="shrink-0">
-                <CashbackDisplay ranked={ranked}/>
+                {/* Cashback */}
+                <div className="shrink-0 sm:text-right">
+                    <CashbackDisplay ranked={ranked}/>
+                </div>
             </div>
         </div>
     );
