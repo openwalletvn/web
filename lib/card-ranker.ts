@@ -31,12 +31,18 @@ export function getTiebreakerReason(winner: Card, loser: Card): string | null {
     const netW = NETWORK_POPULARITY[winner.card_network] ?? 99;
     const netL = NETWORK_POPULARITY[loser.card_network] ?? 99;
     if (netW < netL) {
-        const name = winner.card_network.charAt(0).toUpperCase() + winner.card_network.slice(1);
-        return `Mạng ${name} phổ biến hơn`;
+        const w = winner.card_network.charAt(0).toUpperCase() + winner.card_network.slice(1);
+        const l = loser.card_network.charAt(0).toUpperCase() + loser.card_network.slice(1);
+        return `${w} phổ biến hơn ${l}`;
     }
     const feeW = winner.fees?.annual?.amount ?? 0;
     const feeL = loser.fees?.annual?.amount ?? 0;
-    if (feeW < feeL) return feeW === 0 ? 'Miễn phí thường niên' : 'Phí thường niên thấp hơn';
+    if (feeW < feeL) {
+        const loserFeeStr = feeL.toLocaleString('vi-VN');
+        return feeW === 0
+            ? `Miễn phí thường niên · ${loser.name} tính ${loserFeeStr}đ/năm`
+            : `Phí ${feeW.toLocaleString('vi-VN')}đ/năm · ${loser.name} tính ${loserFeeStr}đ/năm`;
+    }
     return null;
 }
 

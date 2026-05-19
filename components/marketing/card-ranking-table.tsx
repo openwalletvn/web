@@ -6,7 +6,7 @@ import type {Bank, Card} from '@/lib/api';
 import {rankCards, getTiebreakerReason, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
 import {CardImage} from '@/components/cards/card-image';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {IconChevronLeft, IconChevronRight} from '@tabler/icons-react';
+import {IconChevronLeft, IconChevronRight, IconChevronUp, IconChevronDown, IconInfoCircle} from '@tabler/icons-react';
 
 const SPEND_OPTIONS = [
     {value: 1_000_000,  label: '1 triệu/kỳ'},
@@ -75,6 +75,21 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
     const withCashback = rankedCards.filter(r => r.result.cashback > 0);
     const noCashback = rankedCards.filter(r => r.result.cashback === 0);
 
+    const tiebreakerReasons = new Map<string, string>();
+    const tiebreakerDelta = new Map<string, number>();
+    for (let i = 0; i < withCashback.length - 1; i++) {
+        const curr = withCashback[i];
+        const next = withCashback[i + 1];
+        if (curr.result.cashback === next.result.cashback) {
+            const reason = getTiebreakerReason(curr.card, next.card);
+            if (reason) {
+                tiebreakerReasons.set(curr.card.id, reason);
+                tiebreakerDelta.set(curr.card.id, (tiebreakerDelta.get(curr.card.id) ?? 0) + 1);
+                tiebreakerDelta.set(next.card.id, (tiebreakerDelta.get(next.card.id) ?? 0) - 1);
+            }
+        }
+    }
+
     return (
         <section className="ow-card-ranking-table">
             <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
@@ -114,7 +129,12 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
 
             <div className="flex flex-col gap-3">
                 {withCashback.map(ranked => (
-                    <RankedRow key={ranked.card.id} ranked={ranked}/>
+                    <RankedRow
+                        key={ranked.card.id}
+                        ranked={ranked}
+                        tiebreakerReason={tiebreakerReasons.get(ranked.card.id)}
+                        tiebreakerDelta={tiebreakerDelta.get(ranked.card.id)}
+                    />
                 ))}
 
                 {noCashback.length > 0 && (
@@ -126,42 +146,59 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
                     </>
                 )}
             </div>
+
+            <p className="flex items-center gap-1.5 text-body-sm text-text-muted mt-4">
+                <IconInfoCircle size={14} className="shrink-0"/>
+                Xếp hạng theo hoàn tiền ước tính · cùng hoàn tiền thì ưu tiên Visa/Mastercard và phí thường niên thấp hơn.
+            </p>
         </section>
     );
 }
 
-function RankedRow({ranked, muted = false}: {ranked: RankedCard; muted?: boolean}) {
+function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta}: {
+    ranked: RankedCard;
+    muted?: boolean;
+    tiebreakerReason?: string;
+    tiebreakerDelta?: number;
+}) {
     const {card, rank} = ranked;
     const isTop3 = rank <= 3 && !muted;
 
     return (
-        <Link
-            href={`/the/${card.id}`}
-            className={`flex items-center gap-4 rounded-lg p-4 transition-colors hover:bg-bg-muted ${
-                isTop3
-                    ? 'bg-white border-2 border-primary shadow-sm'
-                    : 'bg-white border border-slate-100'
-            }`}
-        >
-            {/* Rank */}
-            <div className="w-12 shrink-0 flex justify-center">
+        <div className={`flex items-center gap-4 rounded-lg p-4 ${
+            isTop3
+                ? 'bg-white border-2 border-primary shadow-sm'
+                : 'bg-white border border-slate-100'
+        }`}>
+            {/* Rank + tiebreaker direction */}
+            <div className="w-12 shrink-0 flex flex-col items-center gap-0.5">
                 {muted ? (
                     <span className="text-label text-text-muted">#{ranked.rank}</span>
                 ) : (
                     <RankBadge rank={rank}/>
                 )}
+                {tiebreakerDelta !== undefined && tiebreakerDelta > 0 && (
+                    <span className="flex items-center text-emerald-500 text-[10px] font-semibold leading-none">
+                        <IconChevronUp size={10}/>{tiebreakerDelta}
+                    </span>
+                )}
+                {tiebreakerDelta !== undefined && tiebreakerDelta < 0 && (
+                    <span className="flex items-center text-orange-400 text-[10px] font-semibold leading-none">
+                        <IconChevronDown size={10}/>{Math.abs(tiebreakerDelta)}
+                    </span>
+                )}
             </div>
 
-            {/* Card image */}
-            <div className="shrink-0 w-20">
+            {/* Card image (clickable) */}
+            <Link href={`/the/${card.id}`} className="shrink-0 w-20">
                 <CardImage card={card} className="w-20"/>
-            </div>
+            </Link>
 
             {/* Card info */}
             <div className="flex-1 min-w-0">
-                <p className={`text-body font-semibold truncate ${muted ? 'text-text-muted' : 'text-black'}`}>
+                <Link href={`/the/${card.id}`} className={`text-body font-semibold truncate block hover:underline ${muted ? 'text-text-muted' : 'text-black'}`}>
                     {card.name}
-                </p>
+                </Link>
                 {card.bank_data && (
                     <p className="text-body-sm text-text-muted truncate">{card.bank_data.name}</p>
                 )}
@@ -172,12 +209,17 @@ function RankedRow({ranked, muted = false}: {ranked: RankedCard; muted?: boolean
                             : `Phí ${card.fees.annual.amount.toLocaleString('vi-VN')}đ/năm`}
                     </p>
                 )}
+                {tiebreakerReason && (
+                    <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                        {tiebreakerReason}
+                    </span>
+                )}
             </div>
 
             {/* Cashback */}
             <div className="shrink-0">
                 <CashbackDisplay ranked={ranked}/>
             </div>
-        </Link>
+        </div>
     );
 }
