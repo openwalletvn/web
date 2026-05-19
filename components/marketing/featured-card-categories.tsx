@@ -20,8 +20,7 @@ export function FeaturedCardCategories() {
                     <div className="md:rounded-xl rounded-lg p-6 flex flex-col gap-3 flex-1 bg-primary text-white">
                         <h3>Dịch vụ số</h3>
                         <ul className="list-disc list-inside space-y-1">
-                            <li><a href="/the-cho-ai">AI: ChatGPT, Claude, Gemini,...</a></li>
-                            <li><a href="/the-cho-streaming">Streaming: Netflix, Spotify,...</a></li>
+                            <li><a href="/the-chi-tieu-dich-vu-so">Dịch vụ số (AI, Netflix, Spotify,...)</a></li>
                         </ul>
                     </div>
 

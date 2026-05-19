@@ -1,8 +1,8 @@
-import Link from 'next/link';
 import {getBanks, getCards, getNetworks} from '@/lib/api';
 import {MobileNav} from './mobile-nav';
 import {SearchDialog} from '@/components/search/search-dialog';
 import {Nav2} from "@/components/layout/nav2";
+import {Logo} from "@/components/layout/logo";
 
 const NETWORK_TIER_FILTER = 'visa:infinite,visa:signature,mastercard:world-elite,mastercard:world,amex:platinum,jcb:ultimate';
 
@@ -69,9 +69,7 @@ export async function Header() {
 
                 {/* Left: logo */}
                 <div className="flex items-center">
-                    <Link href="/" className="flex items-center gap-2 shrink-0">
-                        <img src="/icon.svg" alt="Open Wallet" className="xl:h-20 h-10 aspect-square"/>
-                    </Link>
+                    <Logo className="xl:h-20 h-10" />
                 </div>
 
                 {/* Center: nav */}

@@ -4,20 +4,18 @@ import {CardsGrid} from '@/components/cards/cards-grid';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 
-const TITLE = 'Thẻ Cho AI';
-const DESCRIPTION = 'Tổng hợp thẻ tín dụng và ghi nợ phù hợp để thanh toán các dịch vụ AI như ChatGPT, Claude, Gemini';
-const URL = '/the-cho-ai';
+const TITLE = 'Thẻ Chi Tiêu Dịch Vụ Số';
+const DESCRIPTION = 'Tổng hợp thẻ tín dụng và ghi nợ có ưu đãi thanh toán dịch vụ số như AI (ChatGPT, Claude, Gemini), streaming (Netflix, Spotify)';
+const URL = '/the-chi-tieu-dich-vu-so';
 const BREADCRUMB_ITEMS = [
  {label: 'Trang chủ', href: '/'},
  {label: 'Thẻ', href: '/the'},
  {label: TITLE},
 ];
 
-const CARD_IDS: string[] = [];
-
 export async function generateMetadata(): Promise<Metadata> {
  const allCards = await getCards();
- const cards = allCards.filter((c) => CARD_IDS.includes(c.id));
+ const cards = allCards.filter((c) => c.intents?.includes('digital'));
  const {metadata} = buildCollectionPageMeta({
  title: `${TITLE} | Open Wallet`,
  description: DESCRIPTION,
@@ -28,9 +26,9 @@ export async function generateMetadata(): Promise<Metadata> {
  return metadata;
 }
 
-export default async function AICardsPage() {
+export default async function DichVuSoCardsPage() {
  const [allCards, banks] = await Promise.all([getCards(), getBanks()]);
- const cards = allCards.filter((c) => CARD_IDS.includes(c.id));
+ const cards = allCards.filter((c) => c.intents?.includes('digital'));
 
  const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
  title: `${TITLE} | Open Wallet`,
