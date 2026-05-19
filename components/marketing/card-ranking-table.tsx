@@ -6,7 +6,7 @@ import type {Bank, Card} from '@/lib/api';
 import {rankCards, getTiebreakerReason, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
 import {CardImage} from '@/components/cards/card-image';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {IconChevronLeft, IconChevronRight, IconChevronUp, IconChevronDown, IconInfoCircle} from '@tabler/icons-react';
+import {IconChevronLeft, IconChevronRight, IconCaretUp, IconCaretDown, IconInfoCircle} from '@tabler/icons-react';
 
 const SPEND_OPTIONS = [
     {value: 1_000_000,  label: '1 triệu/kỳ'},
@@ -179,12 +179,12 @@ function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta}: {
                 )}
                 {tiebreakerDelta !== undefined && tiebreakerDelta > 0 && (
                     <span className="flex items-center text-emerald-500 text-[10px] font-semibold leading-none">
-                        <IconChevronUp size={10}/>{tiebreakerDelta}
+                        <IconCaretUp size={10}/>{tiebreakerDelta}
                     </span>
                 )}
                 {tiebreakerDelta !== undefined && tiebreakerDelta < 0 && (
                     <span className="flex items-center text-orange-400 text-[10px] font-semibold leading-none">
-                        <IconChevronDown size={10}/>{Math.abs(tiebreakerDelta)}
+                        <IconCaretDown size={10}/>{Math.abs(tiebreakerDelta)}
                     </span>
                 )}
             </div>
