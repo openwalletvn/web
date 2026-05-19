@@ -38,7 +38,7 @@ function CashbackDisplay({ranked}: {ranked: RankedCard}) {
     if (cashback === 0) {
         return (
             <div className="flex flex-col items-end gap-0.5">
-                <span className="text-body-sm text-text-muted">Không có ưu đãi</span>
+                <span className="text-body-sm text-text-muted">Chưa có ưu đãi</span>
             </div>
         );
     }
@@ -137,9 +137,9 @@ function RankedRow({ranked, muted = false}: {ranked: RankedCard; muted?: boolean
     return (
         <Link
             href={`/the/${card.id}`}
-            className={`flex items-center gap-4 rounded-xl p-4 transition-colors hover:bg-bg-muted ${
+            className={`flex items-center gap-4 rounded-lg p-4 transition-colors hover:bg-bg-muted ${
                 isTop3
-                    ? 'bg-white border border-slate-200 shadow-sm'
+                    ? 'bg-white border-2 border-primary shadow-sm'
                     : 'bg-white border border-slate-100'
             }`}
         >
