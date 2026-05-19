@@ -6,7 +6,7 @@ import type {Bank, Card} from '@/lib/api';
 import {rankCards, getTiebreakerReason, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
 import {CardImage} from '@/components/cards/card-image';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {IconChevronLeft, IconChevronRight, IconCaretUp, IconCaretDown, IconInfoCircle} from '@tabler/icons-react';
+import {IconChevronLeft, IconChevronRight, IconCaretUpFilled, IconCaretDownFilled, IconInfoCircle} from '@tabler/icons-react';
 
 const SPEND_OPTIONS = [
     {value: 1_000_000,  label: '1 triệu/kỳ'},
@@ -77,17 +77,27 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
 
     const tiebreakerReasons = new Map<string, string>();
     const tiebreakerDelta = new Map<string, number>();
-    for (let i = 0; i < withCashback.length - 1; i++) {
-        const curr = withCashback[i];
-        const next = withCashback[i + 1];
-        if (curr.result.cashback === next.result.cashback) {
-            const reason = getTiebreakerReason(curr.card, next.card);
-            if (reason) {
-                tiebreakerReasons.set(curr.card.id, reason);
-                tiebreakerDelta.set(curr.card.id, (tiebreakerDelta.get(curr.card.id) ?? 0) + 1);
-                tiebreakerDelta.set(next.card.id, (tiebreakerDelta.get(next.card.id) ?? 0) - 1);
+
+    // Group consecutive equal-cashback cards, compute absolute displacement from natural rank
+    let gi = 0;
+    while (gi < withCashback.length) {
+        let gj = gi;
+        while (gj < withCashback.length && withCashback[gj].result.cashback === withCashback[gi].result.cashback) gj++;
+        if (gj - gi > 1) {
+            const naturalRank = withCashback[gi].rank;
+            // Collect tiebreaker reasons for adjacent pairs within group
+            for (let k = gi; k < gj - 1; k++) {
+                const reason = getTiebreakerReason(withCashback[k].card, withCashback[k + 1].card);
+                if (reason) tiebreakerReasons.set(withCashback[k].card.id, reason);
+            }
+            // Top card gets +(groupSize-1), others get (naturalRank - actualRank)
+            const groupSize = gj - gi;
+            tiebreakerDelta.set(withCashback[gi].card.id, groupSize - 1);
+            for (let k = gi + 1; k < gj; k++) {
+                tiebreakerDelta.set(withCashback[k].card.id, naturalRank - withCashback[k].rank);
             }
         }
+        gi = gj;
     }
 
     return (
@@ -178,13 +188,13 @@ function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta}: {
                     <RankBadge rank={rank}/>
                 )}
                 {tiebreakerDelta !== undefined && tiebreakerDelta > 0 && (
-                    <span className="flex items-center text-emerald-500 text-[10px] font-semibold leading-none">
-                        <IconCaretUp size={10}/>{tiebreakerDelta}
+                    <span className="flex items-center gap-0.5 text-emerald-500 text-[10px] font-semibold leading-none">
+                        <IconCaretUpFilled size={10}/>{tiebreakerDelta}
                     </span>
                 )}
                 {tiebreakerDelta !== undefined && tiebreakerDelta < 0 && (
-                    <span className="flex items-center text-orange-400 text-[10px] font-semibold leading-none">
-                        <IconCaretDown size={10}/>{Math.abs(tiebreakerDelta)}
+                    <span className="flex items-center gap-0.5 text-orange-400 text-[10px] font-semibold leading-none">
+                        <IconCaretDownFilled size={10}/>{Math.abs(tiebreakerDelta)}
                     </span>
                 )}
             </div>
