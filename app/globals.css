@@ -206,4 +206,11 @@
     .max-w-container {
         max-width:1440px;
     }
+
+    .ow-container {
+        max-width:1440px;
+        margin-inline:auto;
+        padding-inline:1.5rem;
+        width:100%;
+    }
 }

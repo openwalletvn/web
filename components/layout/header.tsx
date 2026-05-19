@@ -65,7 +65,7 @@ export async function Header() {
 
     return (
         <header className="ow-header xl:py-5 py-3">
-            <div className="max-w-container mx-auto w-full px-4 h-16 flex justify-between xl:grid xl:grid-cols-3 items-center">
+            <div className="ow-container flex justify-between xl:grid xl:grid-cols-3 items-center">
 
                 {/* Left: logo */}
                 <div className="flex items-center">

@@ -6,7 +6,7 @@ export async function Footer() {
 
   return (
     <footer className="ow-footer bg-brand-dark border-t border-slate-800">
-      <div className="max-w-container mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-base text-slate-400">
+      <div className="ow-container py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-base text-slate-400">
         <span className="text-slate-300">{t('copyright', { year: new Date().getFullYear() })}</span>
         <nav className="flex items-center gap-6">
           <Link href="/" className="hover:text-white transition-colors">{t('home')}</Link>

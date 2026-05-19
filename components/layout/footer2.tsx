@@ -31,7 +31,7 @@ export function Footer2() {
             <div className="bg-[#EF3C23]">
 
                 {/* Main black box */}
-                <div className="max-w-container mx-auto px-4 sm:px-6 py-6 sm:py-10">
+                <div className="ow-container py-6 sm:py-10">
                     <div className="bg-black rounded-2xl px-6 py-8 sm:px-10 sm:py-10">
                         {/* Logo + columns */}
                         <div className="flex flex-col md:flex-row md:items-start gap-8 md:gap-0">
@@ -59,7 +59,7 @@ export function Footer2() {
 
                 {/* Bottom bar */}
                 <div
-                    className="max-w-container mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between gap-2 sm:gap-6">
+                    className="ow-container py-4 flex flex-col sm:flex-row justify-between gap-2 sm:gap-6">
                     <span className={metaCls}>© {new Date().getFullYear()} Openwallet. All rights reserved.</span>
                     <span className={`${metaCls} sm:text-right`}>
           Thông tin chỉ mang tính chất tham khảo, không phải lời khuyên đầu tư chuyên nghiệp.

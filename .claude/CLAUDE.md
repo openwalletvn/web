@@ -23,12 +23,8 @@ Vietnamese-first web app: public card-comparison site (SEO, static export) + pri
 - Prepend to existing `className` string. No new wrapper elements.
 - Purpose: identify components in browser DevTools inspector.
 
-## CSS & typography rules
-- **Typography source of truth:** `app/typography.css` — all text styles live here (h1–h6 base + utility classes).
-- **No hardcoded styles:** Never write hardcoded `font-size`, `font-weight`, `line-height`, `letter-spacing` values in components or inline styles. Always use an existing class from `app/typography.css`. If no class fits, stop and ask for approval before adding one.
-- **`globals.css` scope:** Variables and tokens only (`@theme`, `:root`, `@layer base` for non-typography resets). Typography belongs in `app/typography.css`.
-- **After any CSS/layout change:** Re-read these rules and confirm nothing violates them.
-- **Responsive layout:** Every component must be checked for mobile/tablet/desktop breakpoints. Never ship a layout change without verifying responsive behavior.
+## Layout & CSS rules
+See `@.claude/docs/layout.md` for container conventions and CSS/typography rules.
 
 ## API authentication
 - Always use `apiFetch()` from `lib/api.ts` — auto-injects `X-OpenWallet-Key` header.
@@ -57,3 +53,4 @@ Vietnamese-first web app: public card-comparison site (SEO, static export) + pri
 | `/add-changelog` | `commands/add-changelog.md` | Add a changelog entry |
 
 @.claude/docs/architecture.md
+@.claude/docs/layout.md
