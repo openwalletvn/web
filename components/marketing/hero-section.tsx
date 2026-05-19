@@ -10,15 +10,15 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
     return (
         <section
-            className="ow-hero-section relative z-20 w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center overflow-hidden
-            rounded-[15px] pt-32 pb-16
-            ">
+            className="ow-hero-section relative z-20 w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center overflow-hidden bg-[#F7F7F7] pt-32 pb-16"
+            style={{clipPath: 'url(#hero-clip)'}}>
 
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1420 1097" fill="none"
-                 preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                    d="M0 16C0 7.16345 7.16344 0 16 0H1404C1412.84 0 1420 7.16344 1420 16V900.471C1420 907.747 1415.09 914.107 1408.05 915.949L724.486 1094.83C716.545 1096.91 708.203 1096.92 700.258 1094.85L11.9747 915.935C4.92281 914.102 0 907.736 0 900.45V16Z"
-                    fill="#F7F7F7"/>
+            <svg width="0" height="0" aria-hidden="true" style={{position: 'absolute'}}>
+                <defs>
+                    <clipPath id="hero-clip" clipPathUnits="objectBoundingBox">
+                        <path d="M0 0.014585C0 0.006530 0.005044 0 0.011268 0H0.988732C0.995662 0 1 0.006530 1 0.014585V0.820849C1 0.827481 0.996542 0.833279 0.991584 0.834960L0.510200 0.997934C0.504609 0.999918 0.498734 0.999927 0.493139 0.998042L0.008433 0.835218C0.003467 0.833548 0 0.827017 0 0.820830V0.014585Z"/>
+                    </clipPath>
+                </defs>
             </svg>
 
             {/* Heading */}

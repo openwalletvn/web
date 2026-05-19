@@ -14,7 +14,7 @@ export const GradientShader = () => {
                 color3: {r: 255, g: 180, b: 180},
                 speed: 0.8,
                 scale: 2,
-                type: 'animated',
+                type: 'smoke',
                 noise: 0.18
             }}/>
 
