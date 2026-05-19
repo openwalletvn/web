@@ -23,6 +23,13 @@ Vietnamese-first web app: public card-comparison site (SEO, static export) + pri
 - Prepend to existing `className` string. No new wrapper elements.
 - Purpose: identify components in browser DevTools inspector.
 
+## CSS & typography rules
+- **Typography source of truth:** `app/typography.css` — all text styles live here (h1–h6 base + utility classes).
+- **No hardcoded styles:** Never write hardcoded `font-size`, `font-weight`, `line-height`, `letter-spacing` values in components or inline styles. Always use an existing class from `app/typography.css`. If no class fits, stop and ask for approval before adding one.
+- **`globals.css` scope:** Variables and tokens only (`@theme`, `:root`, `@layer base` for non-typography resets). Typography belongs in `app/typography.css`.
+- **After any CSS/layout change:** Re-read these rules and confirm nothing violates them.
+- **Responsive layout:** Every component must be checked for mobile/tablet/desktop breakpoints. Never ship a layout change without verifying responsive behavior.
+
 ## API authentication
 - Always use `apiFetch()` from `lib/api.ts` — auto-injects `X-OpenWallet-Key` header.
 - Never use `NEXT_PUBLIC_` prefix for `OPENWALLET_API_KEY` — server-only build secret.
@@ -38,6 +45,7 @@ Vietnamese-first web app: public card-comparison site (SEO, static export) + pri
 1. Before any task: check `.claude/commands/` for a relevant command file.
 2. After creating a command: add it to the commands table below.
 3. After non-trivial task: check if `.claude/docs/learnings/` needs a new note.
+4. **Question-only mode:** If the message starts with `question:` or `answer me:`, only answer — do NOT edit any files or run any commands.
 
 ## Custom commands
 

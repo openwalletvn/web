@@ -13,7 +13,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
             className="ow-hero-section w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center py-16 overflow-hidden">
 
             {/* Heading */}
-            <h1 className="text-[clamp(2.8rem,7vw,5rem)] text-black leading-[1.05] tracking-hero text-center mb-10 px-4">
+            <h1 className="text-hero text-center mb-10 px-4">
                 Tra cứu thẻ.<br/>So sánh thẻ.
             </h1>
 
