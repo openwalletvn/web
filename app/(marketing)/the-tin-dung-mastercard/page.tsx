@@ -1,5 +1,4 @@
 import type {Metadata} from 'next';
-import {getTranslations} from 'next-intl/server';
 import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -27,10 +26,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CreditMastercardPage() {
- const [cards, banks, t] = await Promise.all([
+ const [cards, banks] = await Promise.all([
  getCards({type: 'credit', network: 'mastercard'}),
  getBanks(),
- getTranslations('SeoPages'),
  ]);
 
  const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
@@ -47,14 +45,14 @@ export default async function CreditMastercardPage() {
  <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
  <Breadcrumbs items={breadcrumbItems}/>
 
- <h1 className="mb-2">{t('credit_mastercard')}</h1>
- <p className="text-slate-500 mb-8">{t('credit_mastercard_subtitle')}</p>
+ <h1 className="mb-2">{'Thẻ Tín Dụng Mastercard'}</h1>
+ <p className="text-slate-500 mb-8">{'So sánh thẻ tín dụng Mastercard từ các ngân hàng Việt Nam'}</p>
 
  <CardsGrid
  cards={cards}
  banks={banks}
  hideTypeFilter
- noCardsLabel={t('no_cards')}
+ noCardsLabel={'Không tìm thấy thẻ nào.'}
  />
  </div>
  </div>

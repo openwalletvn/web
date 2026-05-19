@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
 import {
   Select,
   SelectContent,
@@ -49,17 +48,16 @@ export interface TypeSelectProps {
 }
 
 export function TypeSelect({ value, onChange }: TypeSelectProps) {
-  const t = useTranslations('CardsFilter');
   return (
     <Select value={value ?? 'all'} onValueChange={onChange}>
       <SelectTrigger className="w-36">
-        <SelectValue placeholder={t('all_types')} />
+        <SelectValue placeholder='Tất cả loại' />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">{t('all_types')}</SelectItem>
-        <SelectItem value="credit">{t('type_credit')}</SelectItem>
-        <SelectItem value="debit">{t('type_debit')}</SelectItem>
-        <SelectItem value="prepaid">{t('type_prepaid')}</SelectItem>
+        <SelectItem value="all">Tất cả loại</SelectItem>
+        <SelectItem value="credit">Tín dụng</SelectItem>
+        <SelectItem value="debit">Ghi nợ</SelectItem>
+        <SelectItem value="prepaid">Trả trước</SelectItem>
         <SelectItem value="2in1">2-in-1</SelectItem>
       </SelectContent>
     </Select>
@@ -75,7 +73,6 @@ export interface NetworkSelectProps {
 }
 
 export function NetworkSelect({ value, networks, onChange }: NetworkSelectProps) {
-  const t = useTranslations('CardsFilter');
   const selected = value ? networks.find((n) => n.id === value) : null;
 
   return (
@@ -88,12 +85,12 @@ export function NetworkSelect({ value, networks, onChange }: NetworkSelectProps)
               <span>{selected.name}</span>
             </span>
           ) : (
-            <span className="text-muted-foreground">{t('all_networks')}</span>
+            <span className="text-muted-foreground">Tất cả mạng</span>
           )}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">{t('all_networks')}</SelectItem>
+        <SelectItem value="all">Tất cả mạng</SelectItem>
         {networks.map((n) => (
           <SelectItem key={n.id} value={n.id}>
             <span className="flex items-center gap-2">
@@ -177,7 +174,6 @@ export interface CoBrandSelectProps {
 }
 
 export function CoBrandSelect({ value, brands, onChange }: CoBrandSelectProps) {
-  const t = useTranslations('CardsFilter');
   const selected = value ? brands.find((b) => b.id === value) : null;
 
   return (
@@ -190,12 +186,12 @@ export function CoBrandSelect({ value, brands, onChange }: CoBrandSelectProps) {
               <span>{selected.name}</span>
             </span>
           ) : (
-            <span className="text-muted-foreground">{t('co_branded')}</span>
+            <span className="text-muted-foreground">Thẻ đồng thương hiệu</span>
           )}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">{t('all_brands')}</SelectItem>
+        <SelectItem value="all">Tất cả co-brand</SelectItem>
         {brands.map((b) => (
           <SelectItem key={b.id} value={b.id}>
             <span className="flex items-center gap-2">
@@ -218,7 +214,6 @@ export interface ContactlessSelectProps {
 }
 
 export function ContactlessSelect({ value, contactless, onChange }: ContactlessSelectProps) {
-  const t = useTranslations('CardsFilter');
   const selected = value ? contactless.find((w) => w.id === value) : null;
 
   return (
@@ -231,12 +226,12 @@ export function ContactlessSelect({ value, contactless, onChange }: ContactlessS
               <span>{selected.name}</span>
             </span>
           ) : (
-            <span className="text-muted-foreground">{t('all_contactless_methods')}</span>
+            <span className="text-muted-foreground">Tất cả phương thức thanh toán</span>
           )}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">{t('all_contactless_methods')}</SelectItem>
+        <SelectItem value="all">Tất cả phương thức thanh toán</SelectItem>
         {contactless.map((w) => (
           <SelectItem key={w.id} value={w.id}>
             <span className="flex items-center gap-2">
@@ -259,7 +254,6 @@ export interface TierSelectProps {
 }
 
 export function TierSelect({ value, tiers, onChange }: TierSelectProps) {
-  const t = useTranslations('CardsFilter');
   const selected = value ? tiers.find((t) => t.id === value) : null;
 
   return (
@@ -272,12 +266,12 @@ export function TierSelect({ value, tiers, onChange }: TierSelectProps) {
               <span>{selected.id.charAt(0).toUpperCase() + selected.id.slice(1)}</span>
             </span>
           ) : (
-            <span className="text-muted-foreground">{t('all_tiers')}</span>
+            <span className="text-muted-foreground">Tất cả hạng</span>
           )}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">{t('all_tiers')}</SelectItem>
+        <SelectItem value="all">Tất cả hạng</SelectItem>
         {tiers.map((tier) => (
           <SelectItem key={tier.id} value={tier.id}>
             <span className="flex items-center gap-2">
@@ -299,16 +293,15 @@ export interface FeeSelectProps {
 }
 
 export function FeeSelect({ value, onChange }: FeeSelectProps) {
-  const t = useTranslations('CardsFilter');
   return (
     <Select value={value ?? 'all'} onValueChange={onChange}>
       <SelectTrigger className="w-40">
-        <SelectValue placeholder={t('all_fees')} />
+        <SelectValue placeholder='Tất cả phí' />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="all">{t('all_fees')}</SelectItem>
-        <SelectItem value="free">{t('fee_free')}</SelectItem>
-        <SelectItem value="unknown">{t('fee_unknown')}</SelectItem>
+        <SelectItem value="all">Tất cả phí</SelectItem>
+        <SelectItem value="free">Miễn phí</SelectItem>
+        <SelectItem value="unknown">Không rõ phí</SelectItem>
         <SelectSeparator />
         {FEE_BUCKETS.map((b) => (
           <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>
@@ -326,17 +319,16 @@ export interface SortSelectProps {
 }
 
 export function SortSelect({ value, onChange }: SortSelectProps) {
-  const t = useTranslations('CardsFilter');
   return (
     <Select value={value ?? 'default'} onValueChange={onChange}>
       <SelectTrigger className="w-44">
-        <SelectValue placeholder={t('default_order')} />
+        <SelectValue placeholder='Thứ tự mặc định' />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="default">{t('default_order')}</SelectItem>
-        <SelectItem value="fee_asc">{t('sort_fee_asc')}</SelectItem>
-        <SelectItem value="fee_desc">{t('sort_fee_desc')}</SelectItem>
-        <SelectItem value="tier_asc">{t('sort_tier_asc')}</SelectItem>
+        <SelectItem value="default">Thứ tự mặc định</SelectItem>
+        <SelectItem value="fee_asc">Phí thường niên ↑</SelectItem>
+        <SelectItem value="fee_desc">Phí thường niên ↓</SelectItem>
+        <SelectItem value="tier_asc">Hạng thẻ (cao → thấp)</SelectItem>
       </SelectContent>
     </Select>
   );

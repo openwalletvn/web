@@ -1,5 +1,4 @@
 import type {Metadata} from 'next';
-import {getTranslations} from 'next-intl/server';
 import {getAllCategories, getPostsByCategory} from '@/lib/mdx';
 import {PostList} from '@/components/blog/post-list';
 import {CategoryFilter} from '@/components/blog/category-filter';
@@ -37,9 +36,6 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 
 export default async function CategoryPage({params}: Props) {
  const {category: slug} = await params;
- const [t] = await Promise.all([
- getTranslations('BlogPage'),
- ]);
 
  const categories = getAllCategories();
  const cat = categories.find((c) => c.slug === slug);
@@ -65,13 +61,13 @@ export default async function CategoryPage({params}: Props) {
  <Breadcrumbs items={breadcrumbItems}/>
 
  <h1 className="mb-1">{displayName}</h1>
- <p className="text-slate-500 mb-8">{t('category_count', {count: posts.length})}</p>
+ <p className="text-slate-500 mb-8">{`${posts.length} bài viết trong chủ đề này`}</p>
 
  <div className="mb-6">
  <CategoryFilter categories={categories} activeSlug={slug}/>
  </div>
 
- <PostList posts={posts} emptyMessage={t('category_empty', {name: displayName})}/>
+ <PostList posts={posts} emptyMessage={`Chưa có bài viết nào trong chủ đề "${displayName}".`}/>
  </div>
  </div>
  );

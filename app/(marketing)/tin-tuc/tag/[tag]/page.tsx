@@ -1,5 +1,4 @@
 import type {Metadata} from 'next';
-import {getTranslations} from 'next-intl/server';
 import {getAllTags, getPostsByTag} from '@/lib/mdx';
 import {PostList} from '@/components/blog/post-list';
 import {TagList} from '@/components/blog/tag-list';
@@ -37,9 +36,6 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 
 export default async function TagPage({params}: Props) {
  const {tag: slug} = await params;
- const [t] = await Promise.all([
- getTranslations('BlogPage'),
- ]);
 
  const tags = getAllTags();
  const found = tags.find((tag) => tag.slug === slug);
@@ -68,14 +64,14 @@ export default async function TagPage({params}: Props) {
  <span className="text-slate-500 font-normal">#</span>
  {displayName}
  </h1>
- <p className="text-slate-500 mb-8">{t('tag_count', {count: posts.length})}</p>
+ <p className="text-slate-500 mb-8">{`${posts.length} bài viết với thẻ này`}</p>
 
- <PostList posts={posts} emptyMessage={t('tag_empty', {name: displayName})}/>
+ <PostList posts={posts} emptyMessage={`Chưa có bài viết nào với thẻ "${displayName}".`}/>
 
  {tags.length > 0 && (
  <div className="mt-12">
  <h2 className="text-label text-text-muted mb-3">
- {t('other_tags')}
+ Các thẻ khác
  </h2>
  <TagList tags={tags} activeSlug={slug}/>
  </div>

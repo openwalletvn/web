@@ -3,7 +3,6 @@
 import {useSearchParams, useRouter, usePathname} from 'next/navigation';
 import {Suspense, useMemo, useState, useTransition} from 'react';
 import Link from 'next/link';
-import {useTranslations} from 'next-intl';
 import type {Bank, Card, CardSort, CardType} from '@/lib/api';
 import {FEE_BUCKETS} from '@/lib/fee-buckets';
 import {CardsFilter} from './cards-filter';
@@ -48,7 +47,6 @@ function CardsGridInner({
  const router = useRouter();
  const pathname = usePathname();
  const [isPending, startTransition] = useTransition();
- const t = useTranslations('CardsSection');
 
  // Local state (used when useUrlState=false)
  const [localType, setLocalType] = useState<string | null>(null);
@@ -212,7 +210,7 @@ function CardsGridInner({
 
  const displayed = limit ? filteredCards.slice(0, limit) : filteredCards;
  const heading = title;
- const emptyMessage = noCardsLabel ?? t('no_cards');
+ const emptyMessage = noCardsLabel ?? 'Không tìm thấy thẻ nào.';
 
  const filterValues = {
  type,
@@ -240,7 +238,7 @@ function CardsGridInner({
  </h2>
  </div>
 
- {showViewAll && <p className="text-slate-500 mt-3">{t('description')}</p>}
+ {showViewAll && <p className="text-slate-500 mt-3">Khám phá thẻ tín dụng, thẻ ghi nợ và thẻ trả trước từ các ngân hàng hàng đầu Việt Nam.</p>}
  </div>
  )}
 
@@ -301,7 +299,7 @@ function CardsGridInner({
  href="/the"
  className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
  >
- {t('view_all', {count: filteredCards.length})}
+ {`Xem tất cả ${filteredCards.length} thẻ →`}
  </Link>
  </div>
  )}

@@ -1,7 +1,6 @@
 import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import {getTranslations} from 'next-intl/server';
 import {getBank, getBankImageUrl, getBanks, getCards} from '@/lib/api';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {CardsGrid} from '@/components/cards/cards-grid';
@@ -33,9 +32,6 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 
 export default async function BankPage({params}: Props) {
     const {slug} = await params;
-    const [t] = await Promise.all([
-        getTranslations('BankDetail'),
-    ]);
 
     let bank;
     try {
@@ -44,8 +40,8 @@ export default async function BankPage({params}: Props) {
         return (
             <div className="flex items-center justify-center py-32 px-4">
                 <div className="text-center">
-                    <p className="text-card-heading mb-4">{t('not_found')}</p>
-                    <Link href="/ngan-hang" className="text-brand-red hover:underline">{t('back')}</Link>
+                    <p className="text-card-heading mb-4">Không tìm thấy ngân hàng</p>
+                    <Link href="/ngan-hang" className="text-brand-red hover:underline">← Quay lại Ngân hàng</Link>
                 </div>
             </div>
         );
@@ -142,7 +138,7 @@ export default async function BankPage({params}: Props) {
 
                 {businessCards.length > 0 && (
                     <CardsGrid cards={businessCards} banks={banks}
-                               title={`${t('business_cards')} (${businessCards.length})`}/>
+                               title={`Thẻ doanh nghiệp (${businessCards.length})`}/>
                 )}
             </div>
         </div>

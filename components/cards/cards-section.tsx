@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
 import { getCards, type CardFilters } from '@/lib/api';
 import { CardMasonry } from './card-masonry';
 
@@ -11,7 +10,7 @@ interface Props {
 }
 
 export async function CardsSection({ filters, title, limit, showViewAll }: Props) {
- const [t, allCards] = await Promise.all([getTranslations('CardsSection'), getCards(filters)]);
+ const allCards = await getCards(filters);
 
  let cards = allCards;
 
@@ -27,13 +26,13 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
  }
 
  const displayed = limit ? cards.slice(0, limit) : cards;
- const heading = title !== undefined ? title : t('title');
+ const heading = title !== undefined ? title : 'Thẻ';
 
  if (displayed.length === 0) {
  return (
  <section className="ow-cards-section py-12 px-4 max-w-container mx-auto w-full">
  {heading && <h2 className="mb-4">{heading}</h2>}
- <p className="text-slate-500">{t('no_cards')}</p>
+ <p className="text-slate-500">Không tìm thấy thẻ nào.</p>
  </section>
  );
  }
@@ -44,7 +43,7 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
  <div className="mb-8">
  <h2 className="">{heading}</h2>
  <div className="border-t border-dashed border-slate-300 mt-3" />
- {showViewAll && <p className="text-slate-500 mt-3">{t('description')}</p>}
+ {showViewAll && <p className="text-slate-500 mt-3">Khám phá thẻ tín dụng, thẻ ghi nợ và thẻ trả trước từ các ngân hàng hàng đầu Việt Nam.</p>}
  </div>
  )}
 
@@ -56,7 +55,7 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
  href="/the"
  className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
  >
- {t('view_all', { count: cards.length })}
+ {`Xem tất cả ${cards.length} thẻ →`}
  </Link>
  </div>
  )}

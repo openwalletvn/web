@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { IconX } from '@tabler/icons-react';
-import { useTranslations } from 'next-intl';
 import type { Card } from '@/lib/api';
 import type { SearchCard } from '@/lib/search-types';
 import { useRecentCompares, normalizePair } from '@/lib/use-recent-compares';
@@ -48,7 +47,6 @@ interface Props {
 }
 
 export function RecentCompares({ excludePair }: Props = {}) {
- const t = useTranslations('ComparePage');
  const { recentCompares, removeCompare } = useRecentCompares();
  const excludeKey = excludePair ? normalizePair(excludePair) : null;
  const { lookup, load } = useCardSearch();
@@ -75,7 +73,7 @@ export function RecentCompares({ excludePair }: Props = {}) {
  return (
  <div className="ow-recent-compares mt-16 pt-10 border-t border-slate-100 animate-in fade-in duration-500">
  <h2 className="text-card-heading mb-4">
- {t('recent_title')}
+ Đã xem gần đây
  </h2>
  <div className="divide-y divide-slate-100">
  {visible.map(({ pair, visitedAt }) => {

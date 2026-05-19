@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
 import { getBanks } from '@/lib/api';
 import { BankItem } from '@/components/shared/bank-item';
 
@@ -9,15 +8,15 @@ interface Props {
 }
 
 export async function BanksSection({ limit, showViewAll }: Props) {
- const [banks, t] = await Promise.all([getBanks(), getTranslations('BanksSection')]);
+ const banks = await getBanks();
  const displayed = limit ? banks.slice(0, limit) : banks;
 
  return (
  <section className="ow-banks-section ow-container py-12">
  <div className="mb-8">
- <h2 className="">{t('title')}</h2>
+ <h2 className="">Ngân hàng</h2>
  <div className="border-t border-dashed border-slate-300 mt-3" />
- <p className="text-slate-500 mt-3">{t('description')}</p>
+ <p className="text-slate-500 mt-3">Dữ liệu đầy đủ cho tất cả các ngân hàng lớn tại Việt Nam, được cập nhật thường xuyên.</p>
  </div>
 
  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -32,7 +31,7 @@ export async function BanksSection({ limit, showViewAll }: Props) {
  href="/ngan-hang"
  className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
  >
- {t('view_all', { count: banks.length })}
+ {`Xem tất cả ${banks.length} ngân hàng →`}
  </Link>
  </div>
  )}

@@ -1,5 +1,4 @@
 import type {Metadata} from 'next';
-import {getTranslations} from 'next-intl/server';
 import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -28,10 +27,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DebitFreePage() {
- const [allCards, banks, t] = await Promise.all([
+ const [allCards, banks] = await Promise.all([
  getCards(),
  getBanks(),
- getTranslations('SeoPages'),
  ]);
 
  const filteredCards = allCards.filter((c) =>
@@ -52,14 +50,14 @@ export default async function DebitFreePage() {
  <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
  <Breadcrumbs items={breadcrumbItems}/>
 
- <h1 className="mb-2">{t('debit_free')}</h1>
- <p className="text-slate-500 mb-8">{t('debit_free_subtitle')}</p>
+ <h1 className="mb-2">{'Thẻ Ghi Nợ Miễn Phí'}</h1>
+ <p className="text-slate-500 mb-8">{'Thẻ ghi nợ không có phí thường niên'}</p>
 
  <CardsGrid
  cards={filteredCards}
  banks={banks}
  hideTypeFilter hideFeeFilter
- noCardsLabel={t('no_cards')}
+ noCardsLabel={'Không tìm thấy thẻ nào.'}
  />
  </div>
  </div>

@@ -1,5 +1,4 @@
 import type {Metadata} from 'next';
-import {getTranslations} from 'next-intl/server';
 import {getAllPosts, getAllCategories, getAllTags} from '@/lib/mdx';
 import {PostList} from '@/components/blog/post-list';
 import {CategoryFilter} from '@/components/blog/category-filter';
@@ -25,10 +24,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BlogPage() {
-    const [t] = await Promise.all([
-        getTranslations('BlogPage'),
-    ]);
-
     const posts = getAllPosts();
     const categories = getAllCategories();
     const tags = getAllTags();
@@ -47,8 +42,8 @@ export default async function BlogPage() {
                 <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
                 <Breadcrumbs items={breadcrumbItems}/>
 
-                <h1 className="mb-1">{t('title')}</h1>
-                <p className="text-text-muted mb-8">{t('subtitle')}</p>
+                <h1 className="mb-1">Tin tức</h1>
+                <p className="text-text-muted mb-8">Kiến thức tài chính cá nhân, hướng dẫn sử dụng thẻ và mẹo quản lý chi tiêu.</p>
 
                 {categories.length > 0 && (
                     <div className="mb-6">
@@ -56,12 +51,12 @@ export default async function BlogPage() {
                     </div>
                 )}
 
-                <PostList posts={posts} emptyMessage={t('empty')}/>
+                <PostList posts={posts} emptyMessage='Chưa có bài viết nào. Quay lại sớm nhé!'/>
 
                 {tags.length > 0 && (
                     <div className="mt-12">
                         <h2 className="text-label text-text-muted mb-3">
-                            {t('topics')}
+                            Chủ đề
                         </h2>
                         <TagList tags={tags}/>
                     </div>

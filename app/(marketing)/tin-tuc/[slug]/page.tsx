@@ -2,7 +2,6 @@ import type {Metadata} from 'next';
 import Link from 'next/link';
 import {notFound} from 'next/navigation';
 import {MDXRemote} from 'next-mdx-remote/rsc';
-import {getTranslations} from 'next-intl/server';
 import {getAllPosts, getPostBySlug, getRelatedPosts, extractHeadings} from '@/lib/mdx';
 import {RelatedPosts} from '@/components/blog/related-posts';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -35,10 +34,6 @@ export default async function BlogPostPage({params}: Props) {
     const {slug} = await params;
     const post = getPostBySlug(slug);
     if (!post) notFound();
-
-    const [t] = await Promise.all([
-        getTranslations('BlogPage'),
-    ]);
 
     const {jsonLd, breadcrumbItems} = buildBlogPostPageMeta(post);
     const related = getRelatedPosts(post);
@@ -158,7 +153,7 @@ export default async function BlogPostPage({params}: Props) {
                                 href="/tin-tuc"
                                 className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors text-sm"
                             >
-                                {t('back')}
+                                ← Về trang Blog
                             </Link>
                         </div>
                     </div>

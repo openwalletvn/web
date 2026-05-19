@@ -1,5 +1,4 @@
 import type {Metadata} from 'next';
-import {getTranslations} from 'next-intl/server';
 import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -27,10 +26,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CoBrandedCardsPage() {
- const [cards, banks, t] = await Promise.all([
+ const [cards, banks] = await Promise.all([
  getCards({co_brand: true}),
  getBanks(),
- getTranslations('SeoPages'),
  ]);
 
  const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
@@ -47,13 +45,13 @@ export default async function CoBrandedCardsPage() {
  <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
  <Breadcrumbs items={breadcrumbItems}/>
 
- <h1 className="mb-2">{t('cobranded_cards')}</h1>
- <p className="text-slate-500 mb-8">{t('cobranded_cards_subtitle')}</p>
+ <h1 className="mb-2">{'Thẻ Đồng Thương Hiệu'}</h1>
+ <p className="text-slate-500 mb-8">{'Khám phá thẻ đồng thương hiệu với ưu đãi độc quyền'}</p>
 
  <CardsGrid
  cards={cards}
  banks={banks}
- noCardsLabel={t('no_cards')}
+ noCardsLabel={'Không tìm thấy thẻ nào.'}
  />
  </div>
  </div>

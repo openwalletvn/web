@@ -1,13 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {getTranslations} from 'next-intl/server';
 import {IconCircleCheck, IconCreditCard, IconSettings} from '@tabler/icons-react';
 import {BadgeNumberIcon} from '@/components/shared/badge-number-icon';
 import {CardImageTag} from '@/components/cards/card-image-tag';
 
-export async function HeroSection({cardCount, bankCount}: { cardCount: number; bankCount: number }) {
-    const hero = await getTranslations('hero');
-
+export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCount: number }) {
     return (
         <section
             className="ow-hero-section relative z-20 w-full flex flex-col items-center justify-center overflow-hidden bg-[#F7F7F7] lg:pt-32 pt-16 lg:pb-16 pb-16 rounded-tl-[15px] rounded-tr-[15px]"

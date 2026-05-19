@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { IconExternalLink, IconBuildingBank } from '@tabler/icons-react';
 import type { Card, Bank } from '@/lib/api';
 import { getBankImageUrl } from '@/lib/api';
@@ -35,7 +34,6 @@ export function CardTile({
     badges = {},
     showActions = true,
 }: Props) {
-    const t = useTranslations('CardDetail');
     const bank = bankProp !== undefined ? bankProp : (card.bank_data ?? null);
     const isVertical = card.image?.orientation === 'vertical';
 
@@ -97,7 +95,7 @@ export function CardTile({
                     {fee && card.fees?.annual != null && (
                         <p className="text-sm text-slate-500">
                             {card.fees.annual.amount === 0
-                                ? t('free')
+                                ? 'Miễn phí'
                                 : `${card.fees.annual.amount.toLocaleString()} ${card.currency ?? 'VND'}`}
                         </p>
                     )}
