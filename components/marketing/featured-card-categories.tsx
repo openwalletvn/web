@@ -28,9 +28,7 @@ export function FeaturedCardCategories() {
                     <div className="bg-black text-white md:rounded-xl rounded-lg p-6 flex flex-col gap-3 flex-1">
                         <h3>Thẻ doanh nghiệp</h3>
                         <ul className="list-disc list-inside space-y-1">
-                            <li><a href="/the-doanh-nghiep">Thẻ tín dụng doanh nghiệp</a></li>
-                            <li><a href="/the-doanh-nghiep">Thẻ ghi nợ doanh nghiệp</a></li>
-                            <li><a href="/the-doanh-nghiep-mien-phi">Thẻ doanh nghiệp miễn phí</a></li>
+                            <li><a href="/the-doanh-nghiep">Thẻ doanh nghiệp</a></li>
                         </ul>
                     </div>
                 </div>
