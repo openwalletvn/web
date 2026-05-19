@@ -41,6 +41,16 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 - **No em dashes (—):** Never use em dashes in any page content or metadata. Replace with a comma, colon, parentheses, or restructure the sentence. Em dashes are a visible AI writing signal.
 - **Tone for public pages:** Professional and honest, not corporate or casual. Use "chúng tôi" consistently. Avoid overly informal phrasing.
 
+## Card ranking
+
+Marketing category pages (the-shopee, the-sieu-thi, etc.) use `CardRankingTable` with cashback-based ranking:
+- `lib/cashback-calc.ts` — estimates cashback for a spend profile; rules applied in order (specific-first), caps and min_spend respected
+- `lib/card-ranker.ts` — sorts cards by estimated cashback; default spend = 3M VND/kỳ
+- `components/marketing/card-ranking-table.tsx` — client component with spend selector (1M–20M) + ←/→ steppers
+- Intent slug passed per page (e.g. `intentSlug="shopee"`); multi-intent supported via `spendProfile` object
+
+See `.claude/docs/architecture.md` for full file reference.
+
 ## Meta-rules
 1. Before any task: check `.claude/commands/` for a relevant command file.
 2. After creating a command: add it to the commands table below.

@@ -48,6 +48,8 @@ app/
 | `lib/mdx.ts` | Post parsing, queries, TOC extraction |
 | `lib/db.ts` | Dexie schema |
 | `lib/card-dates.ts` | Statement/due date computation (`getStatementObject`) |
+| `lib/cashback-calc.ts` | `calcCashback(card, spendProfile)` — estimates monthly cashback for a spend profile; handles rule ordering (specific-first), per-rule caps, min_spend gate, global cap. `calcIntentCashback` is single-intent wrapper. |
+| `lib/card-ranker.ts` | `rankCards(cards, spendProfile)` — sorts cards by estimated cashback descending. `DEFAULT_MONTHLY_SPEND = 3_000_000`. Used by `CardRankingTable`. |
 | `lib/use-search.ts` | Fuse.js search hook |
 | `content/posts/` | Blog MDX files (`<slug>.mdx`) |
 | `content/changelog/` | Changelog MDX (`YYYY-MM-DD-<slug>.mdx`) |
