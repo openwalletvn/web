@@ -25,6 +25,7 @@
     "dexie-react-hooks": "^4.2.0",
     "express": "^4.22.1",
     "fuse.js": "^7.1.0",
+    "gradflow": "^0.1.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.574.0",
     "mdast-util-find-and-replace": "^3.0.2",

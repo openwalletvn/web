@@ -15,18 +15,17 @@
         letter-spacing: var(--tracking-section);
     }
     h3 {
-        font-size: clamp(1.5rem, 3.5vw, var(--text-display-md));
+        font-size: clamp(1.125rem, 2vw, var(--text-card-heading));
         font-weight: 400;
-        line-height: var(--leading-tight);
-        letter-spacing: var(--tracking-display);
+        line-height: var(--leading-normal);
     }
     h4 {
-        font-size: clamp(1.125rem, 2.2vw, var(--text-card-heading));
+        font-size: clamp(1rem, 1.5vw, 1.25rem);
         font-weight: 400;
         line-height: var(--leading-normal);
     }
     h5 {
-        font-size: clamp(1rem, 1.5vw, var(--text-ui));
+        font-size: clamp(1rem, 1.2vw, var(--text-ui));
         font-weight: 400;
         line-height: var(--leading-normal);
     }

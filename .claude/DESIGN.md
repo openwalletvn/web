@@ -76,6 +76,17 @@ font-family: 'Inter Tight', sans-serif;
 | Label / Caption | `12px` | `130%` | `1px` | 600 |
 | Nav label | `14px` | `130%` | `1px` | 600 |
 
+### Heading Tag Scale
+
+| Tag | Max Size | Font | Notes |
+|---|---|---|---|
+| `h1` | `72px` | Cal Sans | Hero only |
+| `h2` | `56px` | Cal Sans | Section headings |
+| `h3` | `24px` | Cal Sans | Card/block headings |
+| `h4` | `20px` | Cal Sans | Sub-headings |
+| `h5` | `18px` | Cal Sans | UI labels |
+| `h6` | `16px` | Cal Sans | Small labels |
+
 ---
 
 ## CSS Variables Setup

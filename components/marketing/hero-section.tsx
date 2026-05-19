@@ -10,10 +10,19 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
     return (
         <section
-            className="ow-hero-section w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center py-16 overflow-hidden">
+            className="ow-hero-section relative z-20 w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center overflow-hidden
+            rounded-[15px] pt-32 pb-16
+            ">
+
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1420 1097" fill="none"
+                 preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M0 16C0 7.16345 7.16344 0 16 0H1404C1412.84 0 1420 7.16344 1420 16V900.471C1420 907.747 1415.09 914.107 1408.05 915.949L724.486 1094.83C716.545 1096.91 708.203 1096.92 700.258 1094.85L11.9747 915.935C4.92281 914.102 0 907.736 0 900.45V16Z"
+                    fill="#F7F7F7"/>
+            </svg>
 
             {/* Heading */}
-            <h1 className="text-hero text-center mb-10 px-4">
+            <h1 className="text-hero text-center mb-10 px-4 relative z-20">
                 Tra cứu thẻ.<br/>So sánh thẻ.
             </h1>
 
@@ -58,7 +67,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
                 {/* ── CENTER: phone ── */}
                 <div
-                    className="w-full max-w-[320px] md:max-w-[480px] lg:max-w-[620px] aspect-square relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-[200px] before:bg-gradient-to-t before:from-white before:to-transparent before:z-10">
+                    className="w-full max-w-[320px] md:max-w-[480px] lg:max-w-[620px] aspect-square relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-[200px] before:bg-gradient-to-t before:from-[#F7F7F7] before:to-transparent before:z-10">
                     <Image
                         src="/hero-mockup.png"
                         alt="Open Wallet app on phone"

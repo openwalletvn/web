@@ -5,6 +5,7 @@ import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-secti
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {HeroSection} from '@/components/marketing/hero-section';
 import {FeaturedCardCategories} from '@/components/marketing/featured-card-categories';
+import {GradientShader} from "@/components/shared/gradient-shader";
 
 export default async function HomePage() {
     const [banks, cards] = await Promise.all([
@@ -39,17 +40,19 @@ export default async function HomePage() {
                 dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
             />
 
-            <HeroSection cardCount={cards.length} bankCount={banks.length} />
+            <div className="p-3 relative">
+                <GradientShader/>
+                <HeroSection cardCount={cards.length} bankCount={banks.length}/>
+                <FeaturedCardCategories/>
+            </div>
 
-            <FeaturedCardCategories />
-
-            <div className="border-t border-dashed border-border">
+            <div className="hidden">
                 <Suspense fallback={<BanksSectionSkeleton/>}>
                     <BanksSection limit={10} showViewAll/>
                 </Suspense>
             </div>
 
-            <div className="border-t border-dashed border-border">
+            <div className="hidden border-t border-dashed border-border">
                 <Suspense fallback={<CardsSectionSkeleton/>}>
                     <CardsSection limit={10} showViewAll/>
                 </Suspense>

@@ -64,7 +64,7 @@ export async function Header() {
     const totalBanks = banks.length;
 
     return (
-        <header className="ow-header xl:py-5 py-3">
+        <header className="ow-header xl:py-5 py-3 absolute top-0 left-0 w-full z-50">
             <div className="ow-container flex justify-between xl:grid xl:grid-cols-3 items-center">
 
                 {/* Left: logo */}
