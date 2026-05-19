@@ -57,7 +57,8 @@ export function buildCollectionPageMeta({
         metadata: {
             title,
             description,
-            openGraph: {title, description},
+            alternates: {canonical: fullUrl},
+            openGraph: {title, description, url: fullUrl},
             twitter: {title, description},
         },
         jsonLd,
