@@ -16,7 +16,7 @@ export function CardDetailHeader({ card, bank }: Props) {
         <div className="ow-card-detail-header flex flex-col gap-3">
             {bank && <BankDisplay bank={bank} asLink />}
 
-            <h1 className="text-3xl font-bold text-slate-900 leading-tight">{card.name}</h1>
+            <h1>{card.name}</h1>
 
             <div className="flex flex-wrap gap-1.5">
                 {card.status === 'discontinued' && (
@@ -30,11 +30,11 @@ export function CardDetailHeader({ card, bank }: Props) {
             </div>
 
             {card.co_brand && (
-                <div className="flex items-center gap-2 text-sm">
-                    <span className="text-slate-600">Co-brand:</span>
+                <div className="flex items-center gap-2 text-body-sm">
+                    <span className="text-text-muted">Co-brand:</span>
                     {card.co_brand_data
                         ? <CoBrandDisplay brand={card.co_brand_data} fallback={card.co_brand} />
-                        : <span className="font-medium text-slate-800">{card.co_brand}</span>
+                        : <span className="text-text-primary">{card.co_brand}</span>
                     }
                 </div>
             )}

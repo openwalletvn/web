@@ -44,7 +44,7 @@ export default async function BankPage({params}: Props) {
         return (
             <div className="flex items-center justify-center py-32 px-4">
                 <div className="text-center">
-                    <p className="text-2xl font-semibold text-slate-900 mb-4">{t('not_found')}</p>
+                    <p className="text-card-heading mb-4">{t('not_found')}</p>
                     <Link href="/ngan-hang" className="text-brand-red hover:underline">{t('back')}</Link>
                 </div>
             </div>
@@ -76,14 +76,14 @@ export default async function BankPage({params}: Props) {
                     </div>
 
                     <div className="flex-1">
-                        <h1 className="text-3xl font-bold text-zinc-900">{bank.name}</h1>
-                        <p className="text-zinc-600 mt-1">{bank.full_name}</p>
+                        <h1>{bank.name}</h1>
+                        <p className="text-text-muted mt-1">{bank.full_name}</p>
                         {bank.link && (
                             <a
                                 href={bank.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 mt-3 text-sm text-zinc-500 hover:text-zinc-800"
+                                className="inline-flex items-center gap-1 mt-3 text-body-sm text-text-subtle hover:text-text-primary"
                             >
                                 {new URL(bank.link).hostname} ↗
                             </a>
@@ -117,8 +117,8 @@ export default async function BankPage({params}: Props) {
                             <div className={`grid ${gridClass} gap-3`}>
                                 {statsItems.map(({label, value}) => (
                                     <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
-                                        <p className="text-2xl font-bold text-zinc-900">{value}</p>
-                                        <p className="text-xs text-zinc-500 mt-1">{label}</p>
+                                        <p className="text-card-heading">{value}</p>
+                                        <p className="text-body-sm text-text-muted mt-1">{label}</p>
                                     </div>
                                 ))}
                             </div>

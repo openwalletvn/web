@@ -15,7 +15,7 @@ export default async function ComparePage() {
     return (
         <div className="px-4 py-12">
             <div className="max-w-[980px] mx-auto">
-                <h1 className="text-3xl font-bold text-slate-900 mb-8">{t('title')}</h1>
+                <h1 className="mb-8">{t('title')}</h1>
                 <CompareSection intentMap={intentMap} />
             </div>
             <div className="max-w-container mx-auto">

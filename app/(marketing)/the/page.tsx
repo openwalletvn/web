@@ -43,7 +43,7 @@ export default async function CardsPage() {
                 <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
                 <Breadcrumbs items={breadcrumbItems}/>
 
-                <h1 className="text-4xl font-bold text-slate-900 mb-6">{t('title')}</h1>
+                <h1 className="mb-6">{t('title')}</h1>
 
                 <CardsGrid
                     cards={allCards}

@@ -74,15 +74,15 @@ export default async function BlogPostPage({params}: Props) {
                                 >
                                     {frontmatter.category}
                                 </Link>
-                                <span className="text-sm text-slate-500">{readingTime}</span>
+                                <span className="text-body-sm text-text-muted">{readingTime}</span>
                                 {frontmatter.ai_generated && <AiBadge size="md"/>}
                             </div>
 
-                            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight mb-4">
+                            <h1 className="mb-4">
                                 {frontmatter.title}
                             </h1>
 
-                            <p className="text-lg text-slate-500 leading-relaxed mb-5">
+                            <p className="text-body-lg text-text-muted mb-5">
                                 {frontmatter.description}
                             </p>
 
@@ -90,10 +90,10 @@ export default async function BlogPostPage({params}: Props) {
                                 className="flex items-center justify-between border-t border-dashed border-slate-200 pt-4">
                                 <div className="flex items-center gap-3">
                                     {frontmatter.author && (
-                                        <span className="text-sm text-slate-600 font-medium">{frontmatter.author}</span>
+                                        <span className="text-body-sm text-text-muted">{frontmatter.author}</span>
                                     )}
                                     <div className="flex flex-col gap-0.5">
-                                        <time className="text-sm text-slate-500" dateTime={frontmatter.date}>
+                                        <time className="text-body-sm text-text-muted" dateTime={frontmatter.date}>
                                             {new Date(frontmatter.date).toLocaleDateString('vi-VN', {
                                                 day: 'numeric',
                                                 month: 'long',
@@ -101,7 +101,7 @@ export default async function BlogPostPage({params}: Props) {
                                             })}
                                         </time>
                                         {frontmatter.updated && frontmatter.updated !== frontmatter.date && (
-                                            <time className="text-xs text-slate-400" dateTime={frontmatter.updated}>
+                                            <time className="text-body-sm text-text-subtle" dateTime={frontmatter.updated}>
                                                 Cập nhật:{' '}
                                                 {new Date(frontmatter.updated).toLocaleDateString('vi-VN', {
                                                     day: 'numeric',
@@ -131,7 +131,7 @@ export default async function BlogPostPage({params}: Props) {
 
                         {/* Content */}
                         <article
-                            className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline prose-strong:text-slate-900 prose-code:text-brand-red prose-code:before:content-none prose-code:after:content-none prose-li:text-slate-700 prose-hr:border-dashed prose-hr:border-slate-200 prose-table:text-sm prose-th:text-slate-700 prose-th:bg-slate-50 prose-td:text-slate-600">
+                            className="prose prose-slate max-w-none prose-headings:font-normal prose-headings:text-text-primary prose-p:text-text-muted prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline prose-strong:text-text-primary prose-code:text-primary prose-code:before:content-none prose-code:after:content-none prose-li:text-text-muted prose-hr:border-dashed prose-hr:border-border prose-table:text-sm prose-th:text-text-muted prose-th:bg-bg-light prose-td:text-text-muted">
                             <MDXRemote
                                 source={content}
                                 components={mdxComponents}

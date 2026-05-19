@@ -46,7 +46,7 @@ export default async function CardPage({ params }: Props) {
         return (
             <div className="flex items-center justify-center py-32 px-4">
                 <div className="text-center">
-                    <p className="text-2xl font-semibold text-slate-900 mb-4">Không tìm thấy thẻ này</p>
+                    <p className="text-card-heading mb-4">Không tìm thấy thẻ này</p>
                     <Link href="/the" className="text-brand-red hover:underline">Quay lại danh sách thẻ</Link>
                 </div>
             </div>
@@ -96,9 +96,9 @@ export default async function CardPage({ params }: Props) {
                         <CardDetailHeader card={card} bank={bank} />
                         {card.description && (
                             <section className="flex flex-col gap-4">
-                                <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Về thẻ này</h2>
+                                <h2 className="text-label text-text-muted">Về thẻ này</h2>
                                 {card.description.split('\n\n').map((para, i) => (
-                                    <p key={i} className="text-sm text-slate-800">{para}</p>
+                                    <p key={i} className="text-body-sm text-text-primary">{para}</p>
                                 ))}
                             </section>
                         )}

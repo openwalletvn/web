@@ -23,7 +23,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
             {/* Heading */}
             <h1 className="text-hero text-center mb-10 px-4 relative z-20">
-                Tra cứu thẻ.<br/>So sánh thẻ.
+                OpenWallet<br/>Tra cứu thẻ tại Việt Nam.
             </h1>
 
             {/*

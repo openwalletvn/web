@@ -12,7 +12,7 @@ export function CardDetailRelated({ cards, currentCardId }: Props) {
 
     return (
         <div className="ow-card-detail-related mt-16">
-            <h2 className="text-2xl font-bold text-slate-900 mb-8">Thẻ cùng ngân hàng</h2>
+            <h2 className="mb-8">Thẻ cùng ngân hàng</h2>
             <CardMasonry cards={related} />
         </div>
     );

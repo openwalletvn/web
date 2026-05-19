@@ -23,7 +23,7 @@ function BlogImage({ src, alt, title, ...props }: React.ComponentProps<'img'>) {
     <figure className="my-8">
       <img src={src} alt={alt} title={title} {...props} className="w-full rounded-sm" />
       {caption && (
-        <figcaption className="mt-2 text-center text-sm text-slate-400 italic">
+        <figcaption className="mt-2 text-center text-body-sm text-text-subtle italic">
           {caption}
         </figcaption>
       )}

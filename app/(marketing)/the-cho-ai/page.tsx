@@ -8,47 +8,47 @@ const TITLE = 'Thẻ Cho AI';
 const DESCRIPTION = 'Tổng hợp thẻ tín dụng và ghi nợ phù hợp để thanh toán các dịch vụ AI như ChatGPT, Claude, Gemini';
 const URL = '/the-cho-ai';
 const BREADCRUMB_ITEMS = [
-    {label: 'Trang chủ', href: '/'},
-    {label: 'Thẻ', href: '/the'},
-    {label: TITLE},
+ {label: 'Trang chủ', href: '/'},
+ {label: 'Thẻ', href: '/the'},
+ {label: TITLE},
 ];
 
 const CARD_IDS: string[] = [];
 
 export async function generateMetadata(): Promise<Metadata> {
-    const allCards = await getCards();
-    const cards = allCards.filter((c) => CARD_IDS.includes(c.id));
-    const {metadata} = buildCollectionPageMeta({
-        title: `${TITLE} | Open Wallet`,
-        description: DESCRIPTION,
-        url: URL,
-        items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
-        breadcrumbItems: BREADCRUMB_ITEMS,
-    });
-    return metadata;
+ const allCards = await getCards();
+ const cards = allCards.filter((c) => CARD_IDS.includes(c.id));
+ const {metadata} = buildCollectionPageMeta({
+ title: `${TITLE} | Open Wallet`,
+ description: DESCRIPTION,
+ url: URL,
+ items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
+ breadcrumbItems: BREADCRUMB_ITEMS,
+ });
+ return metadata;
 }
 
 export default async function AICardsPage() {
-    const [allCards, banks] = await Promise.all([getCards(), getBanks()]);
-    const cards = allCards.filter((c) => CARD_IDS.includes(c.id));
+ const [allCards, banks] = await Promise.all([getCards(), getBanks()]);
+ const cards = allCards.filter((c) => CARD_IDS.includes(c.id));
 
-    const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
-        title: `${TITLE} | Open Wallet`,
-        description: DESCRIPTION,
-        url: URL,
-        items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
-        breadcrumbItems: BREADCRUMB_ITEMS,
-    });
+ const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
+ title: `${TITLE} | Open Wallet`,
+ description: DESCRIPTION,
+ url: URL,
+ items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
+ breadcrumbItems: BREADCRUMB_ITEMS,
+ });
 
-    return (
-        <div className="px-4 py-12">
-            <div className="max-w-container mx-auto">
-                <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
-                <Breadcrumbs items={breadcrumbItems}/>
-                <h1 className="text-4xl font-bold text-slate-900 mb-2">{TITLE}</h1>
-                <p className="text-slate-500 mb-8">{DESCRIPTION}</p>
-                <CardsGrid cards={cards} banks={banks} noCardsLabel="Chưa có thẻ nào"/>
-            </div>
-        </div>
-    );
+ return (
+ <div className="px-4 py-12">
+ <div className="max-w-container mx-auto">
+ <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
+ <Breadcrumbs items={breadcrumbItems}/>
+ <h1 className="mb-2">{TITLE}</h1>
+ <p className="text-slate-500 mb-8">{DESCRIPTION}</p>
+ <CardsGrid cards={cards} banks={banks} noCardsLabel="Chưa có thẻ nào"/>
+ </div>
+ </div>
+ );
 }

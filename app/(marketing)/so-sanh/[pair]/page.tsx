@@ -69,7 +69,7 @@ export default async function ComparePairPage({ params }: Props) {
                 <RecordCompareVisit pair={pair} />
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
                 <Breadcrumbs items={breadcrumbItems} />
-                <h1 className="text-3xl font-bold text-slate-900 mt-6 mb-8">
+                <h1 className="mt-6 mb-8">
                     {mdx?.frontmatter.title ?? `So sánh ${cardA.name} vs ${cardB.name}`}
                 </h1>
                 <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap}>

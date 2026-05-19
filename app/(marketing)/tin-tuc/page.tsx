@@ -47,8 +47,8 @@ export default async function BlogPage() {
                 <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
                 <Breadcrumbs items={breadcrumbItems}/>
 
-                <h1 className="text-4xl font-bold text-slate-900 mb-1">{t('title')}</h1>
-                <p className="text-slate-500 mb-8">{t('subtitle')}</p>
+                <h1 className="mb-1">{t('title')}</h1>
+                <p className="text-text-muted mb-8">{t('subtitle')}</p>
 
                 {categories.length > 0 && (
                     <div className="mb-6">
@@ -60,7 +60,7 @@ export default async function BlogPage() {
 
                 {tags.length > 0 && (
                     <div className="mt-12">
-                        <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                        <h2 className="text-label text-text-muted mb-3">
                             {t('topics')}
                         </h2>
                         <TagList tags={tags}/>

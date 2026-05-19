@@ -42,8 +42,8 @@ export default async function BanksPage() {
                 <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
                 <Breadcrumbs items={breadcrumbItems}/>
 
-                <h1 className="text-4xl font-bold text-slate-900 mb-1">{t('title')}</h1>
-                <p className="text-slate-500 mb-8">{t('count', {count: banks.length})}</p>
+                <h1 className="mb-1">{t('title')}</h1>
+                <p className="text-text-muted mb-8">{t('count', {count: banks.length})}</p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-8">
                     {banks.map((bank) => (
