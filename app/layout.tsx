@@ -9,6 +9,7 @@ const calSans = Cal_Sans({
   subsets: ["latin", "vietnamese"],
   weight: "400",
   variable: "--font-display",
+  adjustFontFallback: false,
 });
 
 const interTight = Inter_Tight({
