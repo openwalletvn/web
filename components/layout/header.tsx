@@ -69,7 +69,7 @@ export async function Header() {
 
                 {/* Left: logo */}
                 <div className="flex items-center">
-                    <Logo className="xl:h-20 h-10" />
+                    <Logo className="xl:h-20 h-10 aspect-square"/>
                 </div>
 
                 {/* Center: nav */}

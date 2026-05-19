@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { IconError404 } from '@tabler/icons-react';
 import { SoSanh404Redirect } from '@/components/layout/so-sanh-404-redirect';
 import { Logo } from '@/components/layout/logo';
