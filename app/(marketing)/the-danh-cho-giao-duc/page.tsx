@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
-import {CardsGrid} from '@/components/cards/cards-grid';
+import {CardRankingTable} from '@/components/marketing/card-ranking-table';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 
@@ -45,7 +45,7 @@ export default async function GiaoDucCardsPage() {
  <Breadcrumbs items={breadcrumbItems}/>
  <h1 className="mb-2">{TITLE}</h1>
  <p className="text-slate-500 mb-8">{DESCRIPTION}</p>
- <CardsGrid cards={cards} banks={banks} noCardsLabel="Chưa có thẻ nào"/>
+ <CardRankingTable cards={cards} banks={banks} intentSlug="education" title="Xếp hạng thẻ theo cashback giáo dục"/>
  </div>
  </div>
  );
