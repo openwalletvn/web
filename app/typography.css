@@ -12,7 +12,7 @@
         font-size: clamp(1.75rem, 5vw, var(--text-section));
         font-weight: 400;
         line-height: var(--leading-snug);
-        letter-spacing: var(--tracking-section);
+        /*letter-spacing: var(--tracking-section);*/
     }
     h3 {
         font-size: clamp(1.125rem, 2vw, var(--text-card-heading));
@@ -50,7 +50,7 @@
         font-size: clamp(1.75rem, 5vw, var(--text-section));
         font-weight: 400;
         line-height: var(--leading-snug);
-        letter-spacing: var(--tracking-section);
+        /*letter-spacing: var(--tracking-section);*/
     }
 
     .text-display-md {
@@ -58,7 +58,7 @@
         font-size: clamp(1.5rem, 3.5vw, var(--text-display-md));
         font-weight: 400;
         line-height: var(--leading-tight);
-        letter-spacing: var(--tracking-display);
+        /*letter-spacing: var(--tracking-display);*/
     }
 
     .text-card-heading {
@@ -108,7 +108,7 @@
         font-size: var(--text-label);
         font-weight: 600;
         line-height: var(--leading-normal);
-        letter-spacing: var(--tracking-label);
+        /*letter-spacing: var(--tracking-label);*/
         text-transform: uppercase;
     }
 
@@ -117,7 +117,7 @@
         font-size: var(--text-body-sm);
         font-weight: 600;
         line-height: var(--leading-normal);
-        letter-spacing: var(--tracking-label);
+        /*letter-spacing: var(--tracking-label);*/
         text-transform: uppercase;
     }
 }
