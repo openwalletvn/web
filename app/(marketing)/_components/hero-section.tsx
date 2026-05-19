@@ -23,7 +23,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
                 Mobile: collapses to phone only + stat row below.
             */}
             <div
-                className="w-full h-[480px] md:h-[600px] lg:h-[700px] flex justify-center px-6">
+                className="w-full h-[340px] md:h-[600px] lg:h-[700px] flex justify-center px-6 relative">
 
                 {/* ── LEFT COLUMN ── */}
                 <div className="hidden md:block w-[240px] lg:w-[320px] h-[500px] relative">
@@ -58,15 +58,22 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
 
                 {/* ── CENTER: phone ── */}
                 <div
-                    className="w-full max-w-[320px] md:max-w-[480px] lg:max-w-[620px] aspect-[6/7] relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-[200px] before:bg-gradient-to-t before:from-white before:to-transparent before:z-10">
+                    className="w-full max-w-[320px] md:max-w-[480px] lg:max-w-[620px] aspect-square relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-[200px] before:bg-gradient-to-t before:from-white before:to-transparent before:z-10">
                     <Image
                         src="/hero-mockup.png"
                         alt="Open Wallet app on phone"
-                        width={320}
-                        height={570}
+                        width={1200}
+                        height={1200}
                         className="w-full h-full object-contain"
                         priority
                     />
+                </div>
+
+                <div
+                    className="ow-headline z-20 absolute left-1/2 -translate-x-1/2 md:top-1/2 max-md:bottom-0 w-full md:max-w-[500px] max-w-[320px] flex items-center justify-center md:p-6 p-4 bg-[rgba(124,124,124,0.4)] border border-[rgba(236,236,236,0.3)] backdrop-blur-[14px] rounded-full">
+                    <p className="font-body font-medium md:text-[22px] leading-[130%] text-white text-center">
+                        Tra cứu thẻ tín dụng. Quản lý thẻ. <br/>Theo dõi ngày sao kê và thanh toán.
+                    </p>
                 </div>
 
                 {/* ── RIGHT COLUMN ── */}
@@ -104,7 +111,7 @@ export async function HeroSection({cardCount, bankCount}: { cardCount: number; b
             </div>
 
             {/* Mobile stat row */}
-            <div className="flex md:hidden items-center gap-3 mt-4 mb-6">
+            <div className="flex md:hidden flex-wrap justify-center items-center gap-3 mt-4 mb-6">
                 <div className="flex items-center gap-1.5 bg-primary/10 rounded-full px-3 py-1.5">
                     <span className="text-sm font-bold text-primary">{cardCount}+</span>
                     <span className="text-xs text-text-muted">thẻ</span>
