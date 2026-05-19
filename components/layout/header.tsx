@@ -81,7 +81,7 @@ export async function Header() {
 
                 {/* Right: search + mobile trigger */}
                 <div className="flex items-center gap-2 justify-end">
-                    <div className="hidden xl:block w-56">
+                    <div className="hidden xl:block">
                         <SearchDialog/>
                     </div>
                     {/*<WalletNavButton />*/}
