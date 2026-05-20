@@ -5,7 +5,7 @@ import {Logo} from '@/components/layout/logo';
 const LINKS = {
     tools: [
         {label: 'So sánh thẻ', href: '/so-sanh'},
-        {label: 'Find your card', disabled: true, href: '/so-sanh'},
+        {label: 'Gợi ý thẻ', href: '/goi-y-the'},
         {label: 'Wallet App', disabled: true, href: '/tai-app'},
         {label: 'WalletAI', href: '#', disabled: true, suffix: 'coming soon'},
     ],
