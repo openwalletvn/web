@@ -1,18 +1,18 @@
 # OpenWallet
 
-Vietnamese-first web app: public card-comparison site (SEO, static export) + private wallet app (IndexedDB).
+Vietnamese-first web app: public card-comparison site (SEO, SSR/SSG on Vercel) + private wallet app (IndexedDB).
 
 **Base URL:** `https://openwallet.vn` | **API:** `https://api.openwallet.vn/api/v1/`
 
 ## Commands
 - Dev: `pnpm dev`
-- Build: `pnpm build` (static export)
+- Build: `pnpm build`
 - Lint: `pnpm lint`
 - Validate posts: `pnpm validate:posts`
 - Admin server: `pnpm admin`
 
 ## Core principles
-1. **Static export** — `output: 'export'`. No server runtime. All data fetched at build time.
+1. **Vercel deployment** — SSR/SSG via Vercel. Dynamic routes allowed. Data fetched at build time where possible.
 2. **Local-first** — wallet data in IndexedDB via Dexie.js. No server accounts.
 3. **Vietnamese-first** — UI/content targets Vietnamese users. Technical terms stay English.
 4. **SEO-first** — every public page has JSON-LD, OG metadata, sitemap entries.
