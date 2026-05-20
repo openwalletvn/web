@@ -1,2 +1,0 @@
-# Wrangler local dev secrets (copy to .dev.vars, do not commit)
-OPENWALLET_API_KEY=REMOVED
