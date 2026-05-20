@@ -148,7 +148,7 @@ export function CardTile({
                         <div className="flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-150 delay-[160ms] group-hover:opacity-100 group-hover:translate-y-0">
                             <button
                                 type="button"
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(card.id); }}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(card.id, {name: card.name, image_url: card.image?.url ?? null}); }}
                                 disabled={isFull && !inCompare}
                                 className={`flex items-center justify-center size-10 rounded-full bg-white border border-dashed shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
                                     inCompare

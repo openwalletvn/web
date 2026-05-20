@@ -14,6 +14,7 @@ import {CardDetailRelated} from '@/components/cards/detail/card-detail-related';
 import {CardDetailCompare} from '@/components/cards/detail/card-detail-compare';
 import {CardDetailCashback} from '@/components/cards/detail/card-detail-cashback';
 import {CardDetailIntents} from '@/components/cards/detail/card-detail-intents';
+import {CompareButton} from '@/components/compare/compare-button';
 
 export async function generateStaticParams() {
     const cards = await getCards();
@@ -77,6 +78,7 @@ export default async function CardPage({ params }: Props) {
                     <div className={`shrink-0 w-full ${isVertical ? 'lg:w-48' : 'lg:w-72'} lg:sticky lg:top-8`}>
                         <CardImage card={card} tilt />
                         <div className="mt-4 flex flex-col gap-2">
+                            <CompareButton card={{id: card.id, name: card.name, image_url: card.image?.url ?? null}} />
                             {/*<AddToWalletButton card={card} />*/}
                             {process.env.NODE_ENV === 'development' && (
                                 <a
