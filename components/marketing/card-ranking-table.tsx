@@ -7,15 +7,7 @@ import {rankCards, getTiebreakerReason, DEFAULT_MONTHLY_SPEND, type RankedCard} 
 import {CardImage} from '@/components/cards/card-image';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {IconChevronLeft, IconChevronRight, IconCaretUpFilled, IconCaretDownFilled, IconInfoCircle} from '@tabler/icons-react';
-
-const SPEND_OPTIONS = [
-    {value: 1_000_000,  label: '1 triệu/kỳ'},
-    {value: 2_000_000,  label: '2 triệu/kỳ'},
-    {value: 3_000_000,  label: '3 triệu/kỳ'},
-    {value: 5_000_000,  label: '5 triệu/kỳ'},
-    {value: 10_000_000, label: '10 triệu/kỳ'},
-    {value: 20_000_000, label: '20 triệu/kỳ'},
-];
+import {SPEND_OPTIONS} from '@/lib/spend-options';
 
 interface Props {
     cards: Card[];
