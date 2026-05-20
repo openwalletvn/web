@@ -1,16 +1,18 @@
 import {Suspense} from 'react';
-import {getBanks, getCards} from '@/lib/api';
+import {getBanks, getCards, getIntents} from '@/lib/api';
 import {BanksSection, BanksSectionSkeleton} from '@/components/marketing/banks-section';
 import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {HeroSection} from '@/components/marketing/hero-section';
 import {FeaturedCardCategories} from '@/components/marketing/featured-card-categories';
 import {GradientShader} from "@/components/shared/gradient-shader";
+import {RecommendationFinder} from '@/components/marketing/recommendation-finder';
 
 export default async function HomePage() {
-    const [banks, cards] = await Promise.all([
+    const [banks, cards, intents] = await Promise.all([
         getBanks().catch(() => []),
         getCards().catch(() => []),
+        getIntents().catch(() => []),
     ]);
 
     const jsonLd = {
@@ -47,6 +49,12 @@ export default async function HomePage() {
                 </div>
                 <FeaturedCardCategories/>
             </div>
+
+            <section className="border-t border-dashed border-border py-12">
+                <div className="ow-container">
+                    <RecommendationFinder cards={cards} banks={banks} intents={intents} compact limit={3}/>
+                </div>
+            </section>
 
             <div className="hidden">
                 <Suspense fallback={<BanksSectionSkeleton/>}>
