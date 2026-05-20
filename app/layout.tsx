@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cal_Sans, Inter_Tight } from "next/font/google";
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { BodyClass } from '@/components/layout/body-class';
 import "./globals.css";
 
@@ -60,6 +61,7 @@ export default function RootLayout({
       <body className="antialiased">
         <BodyClass />
         {children}
+        <GoogleAnalytics gaId="G-0PTTBZY0RM" />
       </body>
     </html>
   );

@@ -15,6 +15,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@next/third-parties": "^16.2.6",
     "@scalar/api-reference-react": "^0.8.57",
     "@scalar/nextjs-api-reference": "^0.9.19",
     "@tabler/icons-react": "^3.36.1",
