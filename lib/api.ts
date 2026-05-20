@@ -182,6 +182,7 @@ export interface Card {
     for_business?: boolean;
     description?: string;
     score?: number; // Computed data completeness score (0–100)
+    data_score?: number; // Combined data quality score: 60% card score + 40% cashback score (equals score if no cashback)
     intents?: string[];
     cashback?: CashbackBenefit;
 }
