@@ -10,6 +10,9 @@ import { RecordCompareVisit } from '@/components/compare/record-compare-visit';
 import { CompareSection } from '@/components/compare/compare-section';
 import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
 
+export const dynamicParams = true;
+export const revalidate = 3600;
+
 interface Props {
     params: Promise<{ pair: string }>;
 }
@@ -26,13 +29,11 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { pair } = await params;
-    const vsIndex = pair.indexOf('-vs-');
-    if (vsIndex === -1) return { title: 'So sánh thẻ | Open Wallet' };
-    const idA = pair.slice(0, vsIndex);
-    const idB = pair.slice(vsIndex + 4);
+    const ids = pair.split('-vs-');
+    if (ids.length < 2) return { title: 'So sánh thẻ | Open Wallet' };
     try {
-        const [cardA, cardB] = await Promise.all([getCard(idA), getCard(idB)]);
-        const mdx = lookupCompareMdx(pair);
+        const [cardA, cardB] = await Promise.all([getCard(ids[0]), getCard(ids[1])]);
+        const mdx = ids.length === 2 ? lookupCompareMdx(pair) : null;
         const { metadata } = buildComparePageMeta(cardA, cardB, mdx?.frontmatter);
         return metadata;
     } catch {
@@ -42,21 +43,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ComparePairPage({ params }: Props) {
     const { pair } = await params;
-    const vsIndex = pair.indexOf('-vs-');
-    if (vsIndex === -1) notFound();
+    const ids = pair.split('-vs-');
+    if (ids.length < 2 || ids.length > 3) notFound();
 
-    const idA = pair.slice(0, vsIndex);
-    const idB = pair.slice(vsIndex + 4);
+    const cards = await Promise.all(ids.map((id) => getCard(id).catch(() => null)));
+    if (cards.some((c) => c === null)) notFound();
 
-    const [cardA, cardB] = await Promise.all([
-        getCard(idA).catch(() => null),
-        getCard(idB).catch(() => null),
-    ]);
-    if (!cardA || !cardB) notFound();
+    const [cardA, cardB] = cards as NonNullable<(typeof cards)[number]>[];
+    const mdx = ids.length === 2 ? lookupCompareMdx(pair) : null;
 
-    const [mdx, suggestedCards, allIntents] = await Promise.all([
-        Promise.resolve(lookupCompareMdx(pair)),
-        getRelatedCardsForMany([idA, idB]).catch(() => []),
+    const [suggestedCards, allIntents] = await Promise.all([
+        getRelatedCardsForMany(ids).catch(() => []),
         getIntents().catch(() => []),
     ]);
     const intentMap = new Map(allIntents.map((i) => [i.slug, i]));
@@ -70,7 +67,7 @@ export default async function ComparePairPage({ params }: Props) {
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
                 <Breadcrumbs items={breadcrumbItems} />
                 <h1 className="mt-6 mb-8">
-                    {mdx?.frontmatter.title ?? `So sánh ${cardA.name} vs ${cardB.name}`}
+                    {mdx?.frontmatter.title ?? `So sánh ${cards.map((c) => c!.name).join(' vs ')}`}
                 </h1>
                 <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap}>
                     {hasContent && (
