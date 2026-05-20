@@ -1,5 +1,7 @@
 # OpenWallet Vietnam
 
+[![Vercel Deployment](https://img.shields.io/github/deployments/openwalletvn/web/Production?logo=vercel&label=vercel&color=black)](https://openwallet.vn)
+
 Open-source digital wallet card database for Vietnam. Public card comparison site + local-first wallet manager (IndexedDB, no accounts).
 
 **Site:** https://openwallet.vn | **API:** https://api.openwallet.vn
@@ -27,7 +29,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
 ## Deploy
 
-Vercel. Static export (`output: 'export'`). All data fetched at build time.
+Vercel. SSR/SSG with dynamic routes. Data fetched at build time where possible.
 
 ## Tech Stack
 
@@ -40,4 +42,4 @@ Vercel. Static export (`output: 'export'`). All data fetched at build time.
 
 ## License
 
-MIT
+PolyForm Noncommercial 1.0.0 — study and personal use only, no commercial forks.
