@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/:pair(.*-vs-.*)',
+        source: '/:pair([^/]*-vs-[^/]*)',
         destination: '/so-sanh/:pair',
         permanent: true,
       },
