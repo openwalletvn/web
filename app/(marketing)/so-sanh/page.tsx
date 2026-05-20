@@ -1,10 +1,23 @@
+import { redirect } from 'next/navigation';
 import { getRelatedCardsForMany, getIntents } from '@/lib/api';
 import { CompareSection } from '@/components/compare/compare-section';
 import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
 
 const DEFAULT_CARD_IDS = ['sacombank-uniq', 'msb-visa-online'];
 
-export default async function ComparePage() {
+export default async function ComparePage({
+    searchParams,
+}: {
+    searchParams: Promise<{ compare?: string }>;
+}) {
+    const { compare } = await searchParams;
+    if (compare) {
+        const ids = compare.split(',').filter(Boolean).slice(0, 3);
+        if (ids.length >= 2) {
+            redirect(`/so-sanh/${ids.join('-vs-')}`);
+        }
+    }
+
     const [suggestedCards, allIntents] = await Promise.all([
         getRelatedCardsForMany(DEFAULT_CARD_IDS).catch(() => []),
         getIntents().catch(() => []),
