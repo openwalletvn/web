@@ -1,22 +1,21 @@
 'use client';
 
-import {Suspense, useCallback, useEffect, useRef, useState} from 'react';
-import {useRouter, useSearchParams} from 'next/navigation';
-import Link from 'next/link';
+import {Suspense, useCallback, useEffect, useState} from 'react';
+import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import type {Bank, Card, Intent} from '@/lib/api';
-import {rankCards, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
+import {DEFAULT_MONTHLY_SPEND, getTiebreakerReason, rankCards} from '@/lib/card-ranker';
 import {SPEND_OPTIONS} from '@/lib/spend-options';
-import {CardImage} from '@/components/cards/card-image';
 import {Chip} from '@/components/ui/chip';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {IconArrowRight} from '@tabler/icons-react';
+import {IconChevronLeft, IconChevronRight} from '@tabler/icons-react';
+import {RankedRow} from '@/components/marketing/card-ranking-table';
 
 const STORAGE_KEY = 'ow-rec-prefs';
 const DEFAULT_TAB = 'ca-nhan';
 
 interface RecPrefs {
     tab: string;
-    intentSlug: string;
+    intentSlugs: string[];
     spend: number;
 }
 
@@ -39,212 +38,155 @@ export interface RecommendationFinderProps {
     cards: Card[];
     banks: Bank[];
     intents: Intent[];
-    compact?: boolean;
     limit?: number;
 }
 
-function ResultRow({ranked, rank}: {ranked: RankedCard; rank: number}) {
-    const {card, result} = ranked;
-    return (
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-white border border-slate-100 hover:border-slate-200 transition-colors">
-            <span className="text-label text-text-muted w-6 shrink-0 text-center">#{rank}</span>
-            <Link href={`/the/${card.id}`} className="shrink-0">
-                <CardImage card={card} className="w-16"/>
-            </Link>
-            <div className="flex-1 min-w-0">
-                <p className="text-body font-semibold truncate">{card.name}</p>
-                {card.bank_data && (
-                    <p className="text-body-sm text-text-muted truncate">{card.bank_data.name}</p>
-                )}
-                {result.cashback > 0 ? (
-                    <p className="text-body-sm text-primary font-medium">
-                        +{result.cashback.toLocaleString('vi-VN')}đ hoàn/kỳ
-                    </p>
-                ) : (
-                    <p className="text-body-sm text-text-muted">Chưa có ưu đãi</p>
-                )}
-            </div>
-            <Link
-                href={`/the/${card.id}`}
-                className="shrink-0 text-body-sm font-medium text-primary border border-primary/30 rounded px-3 py-1.5 hover:bg-primary/5 transition-colors whitespace-nowrap"
-            >
-                Xem Thẻ
-            </Link>
-        </div>
-    );
-}
 
-function CompactResultRow({ranked, rank}: {ranked: RankedCard; rank: number}) {
-    const {card, result} = ranked;
-    return (
-        <div className="flex items-center gap-3 py-2">
-            <span className="text-label text-text-muted w-5 shrink-0 text-center">#{rank}</span>
-            <Link href={`/the/${card.id}`} className="shrink-0">
-                <CardImage card={card} className="w-12"/>
-            </Link>
-            <div className="flex-1 min-w-0">
-                <p className="text-body-sm font-semibold truncate">{card.name}</p>
-                {result.cashback > 0 && (
-                    <p className="text-body-sm text-primary">+{result.cashback.toLocaleString('vi-VN')}đ/kỳ</p>
-                )}
-            </div>
-            <Link
-                href={`/the/${card.id}`}
-                className="shrink-0 text-body-sm text-primary hover:underline whitespace-nowrap"
-            >
-                Xem Thẻ
-            </Link>
-        </div>
-    );
-}
-
-function RecommendationFinderInner({cards, banks, intents, compact = false, limit}: RecommendationFinderProps) {
+function RecommendationFinderInner({cards, banks, intents, limit = 5}: RecommendationFinderProps) {
     const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
-
-    const resultLimit = limit ?? (compact ? 3 : 5);
+    const isFinderPage = pathname === '/goi-y-the';
 
     const [tab, setTab] = useState(DEFAULT_TAB);
-    const [intentSlug, setIntentSlug] = useState('');
+    const [intentSlugs, setIntentSlugs] = useState<string[]>([]);
     const [spend, setSpend] = useState(DEFAULT_MONTHLY_SPEND);
     const [initialized, setInitialized] = useState(false);
 
-    // Init: URL params > localStorage > defaults
+    // Init: URL params (finder page only) > localStorage > defaults
     useEffect(() => {
-        const urlIntent = !compact ? searchParams.get('intent') : null;
-        const urlSpend = !compact ? searchParams.get('spend') : null;
+        const urlIntent = isFinderPage ? searchParams.get('intent') : null;
+        const urlSpend = isFinderPage ? searchParams.get('spend') : null;
 
         if (urlIntent) {
-            setIntentSlug(urlIntent);
+            setIntentSlugs(urlIntent.split(',').filter(Boolean));
             if (urlSpend) setSpend(Number(urlSpend) || DEFAULT_MONTHLY_SPEND);
         } else {
             const prefs = readPrefs();
-            if (prefs?.intentSlug) {
+            if (prefs?.intentSlugs?.length) {
                 setTab(prefs.tab ?? DEFAULT_TAB);
-                setIntentSlug(prefs.intentSlug);
+                setIntentSlugs(prefs.intentSlugs);
                 setSpend(prefs.spend ?? DEFAULT_MONTHLY_SPEND);
             } else if (intents.length > 0) {
-                setIntentSlug(intents[0].slug);
+                setIntentSlugs([intents[0].slug]);
             }
         }
         setInitialized(true);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Sync URL + localStorage on state change
-    const syncRef = useRef(false);
+    // Sync URL (finder page only) + localStorage on state change
     useEffect(() => {
         if (!initialized) return;
-        writePrefs({tab, intentSlug, spend});
-        if (!compact && intentSlug) {
-            const params = new URLSearchParams({intent: intentSlug, spend: String(spend)});
+        writePrefs({tab, intentSlugs, spend});
+        if (isFinderPage && intentSlugs.length > 0) {
+            const params = new URLSearchParams({intent: intentSlugs.join(','), spend: String(spend)});
             router.replace(`/goi-y-the?${params.toString()}`, {scroll: false});
         }
-        syncRef.current = true;
-    }, [tab, intentSlug, spend, initialized, compact, router]);
+    }, [tab, intentSlugs, spend, initialized, isFinderPage, router]);
+
+    const spendIdx = SPEND_OPTIONS.findIndex(o => o.value === spend);
+    const canDec = spendIdx > 0;
+    const canInc = spendIdx < SPEND_OPTIONS.length - 1;
 
     const banksById = Object.fromEntries(banks.map(b => [b.id, b]));
     const personalCards = cards
         .filter(c => !c.for_business)
         .map(c => ({...c, bank_data: banksById[c.bank_id]}));
 
-    const ranked = intentSlug
-        ? rankCards(personalCards, {[intentSlug]: spend}).slice(0, resultLimit)
+    const ranked = intentSlugs.length > 0
+        ? rankCards(personalCards, Object.fromEntries(intentSlugs.map(s => [s, spend]))).slice(0, limit)
         : [];
+
+    const withCashback = ranked.filter(r => r.result.cashback > 0);
+    const tiebreakerReasons = new Map<string, string>();
+    const tiebreakerDelta = new Map<string, number>();
+    let gi = 0;
+    while (gi < withCashback.length) {
+        let gj = gi;
+        while (gj < withCashback.length && withCashback[gj].result.cashback === withCashback[gi].result.cashback) gj++;
+        if (gj - gi > 1) {
+            const naturalRank = withCashback[gi].rank;
+            for (let k = gi; k < gj - 1; k++) {
+                const reason = getTiebreakerReason(withCashback[k].card, withCashback[k + 1].card);
+                if (reason) tiebreakerReasons.set(withCashback[k].card.id, reason);
+            }
+            const groupSize = gj - gi;
+            tiebreakerDelta.set(withCashback[gi].card.id, groupSize - 1);
+            for (let k = gi + 1; k < gj; k++) {
+                tiebreakerDelta.set(withCashback[k].card.id, naturalRank - withCashback[k].rank);
+            }
+        }
+        gi = gj;
+    }
+
+    const toggleIntent = useCallback((slug: string) => {
+        setIntentSlugs(prev =>
+            prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
+        );
+    }, []);
 
     const handleTabChange = useCallback((newTab: string) => {
         setTab(newTab);
-        if (newTab === 'ca-nhan' && intents.length > 0 && !intentSlug) {
-            setIntentSlug(intents[0].slug);
+        if (newTab === 'ca-nhan' && intents.length > 0 && intentSlugs.length === 0) {
+            setIntentSlugs([intents[0].slug]);
         }
-    }, [intents, intentSlug]);
-
-    if (compact) {
-        return (
-            <div className="ow-recommendation-finder">
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {intents.slice(0, 8).map(intent => (
-                        <Chip
-                            key={intent.slug}
-                            active={intentSlug === intent.slug}
-                            onClick={() => setIntentSlug(intent.slug)}
-                        >
-                            {intent.icon} {intent.label}
-                        </Chip>
-                    ))}
-                </div>
-
-                <div className="flex flex-col divide-y divide-slate-100">
-                    {ranked.map((r, i) => (
-                        <CompactResultRow key={r.card.id} ranked={r} rank={i + 1}/>
-                    ))}
-                    {ranked.length === 0 && (
-                        <p className="text-body-sm text-text-muted py-2">Chọn danh mục để xem đề xuất.</p>
-                    )}
-                </div>
-
-                {intentSlug && (
-                    <div className="mt-4">
-                        <Link
-                            href={`/goi-y-the?intent=${intentSlug}&spend=${spend}`}
-                            className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline"
-                        >
-                            Xem đầy đủ <IconArrowRight size={14}/>
-                        </Link>
-                    </div>
-                )}
-            </div>
-        );
-    }
+    }, [intents, intentSlugs]);
 
     return (
-        <div className="ow-recommendation-finder">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
-                {/* Left: Hero + controls */}
-                <div>
-                    <h1 className="mb-3">Gợi ý thẻ phù hợp</h1>
-                    <p className="text-body text-text-muted mb-8">
-                        Chọn danh mục chi tiêu và mức chi tiêu để nhận đề xuất thẻ cá nhân hoá.
+        <div className="ow-recommendation-finder mb-16">
+            <h2 className="mb-6">Tìm thẻ tối ưu cho nhu cầu của bạn</h2>
+
+            {/* Tab toggle */}
+            <div className="flex gap-2 mb-8">
+                <Chip active={tab === 'ca-nhan'} onClick={() => handleTabChange('ca-nhan')}>
+                    Cá nhân
+                </Chip>
+                <Chip active={tab === 'doanh-nghiep'} onClick={() => handleTabChange('doanh-nghiep')}>
+                    Doanh nghiệp
+                </Chip>
+            </div>
+
+            {tab === 'doanh-nghiep' ? (
+                <div className="py-12 text-center border border-dashed border-border rounded-lg">
+                    <p className="text-body-lg font-medium mb-2">Sắp ra mắt</p>
+                    <p className="text-body-sm text-text-muted">
+                        Tính năng gợi ý thẻ doanh nghiệp đang được phát triển.
                     </p>
-
-                    <div className="flex gap-2 mb-8">
-                        <Chip active={tab === 'ca-nhan'} onClick={() => handleTabChange('ca-nhan')}>
-                            Cá nhân
-                        </Chip>
-                        <Chip active={tab === 'doanh-nghiep'} onClick={() => handleTabChange('doanh-nghiep')}>
-                            Doanh nghiệp
-                        </Chip>
-                    </div>
-
-                    {tab === 'doanh-nghiep' ? (
-                        <div className="py-12 text-center border border-dashed border-border rounded-lg">
-                            <p className="text-body-lg font-medium mb-2">Sắp ra mắt</p>
-                            <p className="text-body-sm text-text-muted">
-                                Tính năng gợi ý thẻ doanh nghiệp đang được phát triển.
-                            </p>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="mb-8">
-                                <p className="text-label text-text-muted mb-3">BƯỚC 1 · Bạn muốn ưu đãi gì?</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {intents.map(intent => (
-                                        <Chip
-                                            key={intent.slug}
-                                            active={intentSlug === intent.slug}
-                                            onClick={() => setIntentSlug(intent.slug)}
-                                        >
-                                            {intent.icon} {intent.label}
-                                        </Chip>
-                                    ))}
-                                </div>
+                </div>
+            ) : (
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
+                    {/* Left: controls */}
+                    <div>
+                        <div className="mb-8">
+                            <p className="text-label text-text-muted mb-3">BƯỚC 01 · Bạn muốn ưu đãi gì?</p>
+                            <div className="flex flex-wrap gap-2">
+                                {intents.map(intent => (
+                                    <Chip
+                                        key={intent.slug}
+                                        active={intentSlugs.includes(intent.slug)}
+                                        onClick={() => toggleIntent(intent.slug)}
+                                    >
+                                        {intent.icon} {intent.label}
+                                    </Chip>
+                                ))}
                             </div>
+                        </div>
 
-                            <div>
-                                <p className="text-label text-text-muted mb-3">
-                                    BƯỚC 2 · Chi tiêu hàng tháng (tuỳ chọn)
-                                </p>
+                        <div>
+                            <p className="text-label text-text-muted mb-3">
+                                BƯỚC 02 · Chi tiêu hàng tháng (tuỳ chọn)
+                            </p>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => canDec && setSpend(SPEND_OPTIONS[spendIdx - 1].value)}
+                                    disabled={!canDec}
+                                    className="p-1 rounded hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
+                                    aria-label="Giảm chi tiêu"
+                                >
+                                    <IconChevronLeft size={16}/>
+                                </button>
                                 <Select value={String(spend)} onValueChange={v => setSpend(Number(v))}>
-                                    <SelectTrigger className="w-48">
+                                    <SelectTrigger className="w-40">
                                         <SelectValue/>
                                     </SelectTrigger>
                                     <SelectContent>
@@ -255,26 +197,39 @@ function RecommendationFinderInner({cards, banks, intents, compact = false, limi
                                         ))}
                                     </SelectContent>
                                 </Select>
+                                <button
+                                    onClick={() => canInc && setSpend(SPEND_OPTIONS[spendIdx + 1].value)}
+                                    disabled={!canInc}
+                                    className="p-1 rounded hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
+                                    aria-label="Tăng chi tiêu"
+                                >
+                                    <IconChevronRight size={16}/>
+                                </button>
                             </div>
-                        </>
-                    )}
-                </div>
-
-                {/* Right: Results */}
-                <div>
-                    <p className="text-label text-text-muted mb-4">KẾT QUẢ ĐỀ XUẤT</p>
-
-                    {tab === 'doanh-nghiep' ? null : !intentSlug ? (
-                        <p className="text-body-sm text-text-muted">Chọn danh mục chi tiêu để xem đề xuất.</p>
-                    ) : (
-                        <div className="flex flex-col gap-3">
-                            {ranked.map((r, i) => (
-                                <ResultRow key={r.card.id} ranked={r} rank={i + 1}/>
-                            ))}
                         </div>
-                    )}
+                    </div>
+
+                    {/* Right: results */}
+                    <div>
+                        <p className="text-label text-text-muted mb-4">KẾT QUẢ ĐỀ XUẤT</p>
+
+                        {intentSlugs.length === 0 ? (
+                            <p className="text-body-sm text-text-muted">Chọn danh mục chi tiêu để xem đề xuất.</p>
+                        ) : (
+                            <div className="flex flex-col gap-3">
+                                {ranked.map(r => (
+                                    <RankedRow
+                                        key={r.card.id}
+                                        ranked={r}
+                                        tiebreakerReason={tiebreakerReasons.get(r.card.id)}
+                                        tiebreakerDelta={tiebreakerDelta.get(r.card.id)}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

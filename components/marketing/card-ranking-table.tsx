@@ -157,7 +157,7 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
     );
 }
 
-function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta}: {
+export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta}: {
     ranked: RankedCard;
     muted?: boolean;
     tiebreakerReason?: string;
