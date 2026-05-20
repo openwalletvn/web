@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { IconPlus, IconX } from '@tabler/icons-react';
 import type { SearchCard } from '@/lib/search-types';
 import type { Card, Intent } from '@/lib/api';
@@ -69,7 +69,7 @@ interface InnerProps {
 
 function CompareSectionInner({ defaultPair, children, excludePair, intentMap }: InnerProps) {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const pathname = usePathname();
 
     const [cards, setCards] = useState<(SearchCard | null)[]>(() => Array(MAX_CARDS).fill(null));
     const [numSlots, setNumSlots] = useState(2);
@@ -78,8 +78,6 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap }: 
 
     const { recentCompares, addCompare } = useRecentCompares();
     const { lookup, load, initialized } = useCardSearch();
-    const lastProcessedParam = useRef<string | undefined>(undefined);
-    const lastSynced = useRef(searchParams.get('compare') ?? '');
     // Ref so the prefill effect can read the latest value without it being a dependency
     const recentComparesRef = useRef(recentCompares);
     recentComparesRef.current = recentCompares;
@@ -88,56 +86,45 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap }: 
 
     useEffect(() => {
         if (!initialized) return;
-        const param = searchParams.get('compare') ?? '';
-        if (lastProcessedParam.current === param) return;
-        lastProcessedParam.current = param;
 
-        if (param) {
-            const ids = param.split(',').filter(Boolean).slice(0, MAX_CARDS);
-            const next = Array<SearchCard | null>(MAX_CARDS).fill(null);
-            ids.forEach((id, i) => { next[i] = lookup(id); });
-            setCards(next);
-            setNumSlots(Math.max(2, ids.length));
-            lastSynced.current = param;
-        } else {
-            // Only prefill from recent if there will still be visible entries after
-            // (prefilling from entry[0] excludes it from the list, so need > 1 to show something)
-            const recentEntry = !defaultPair && recentComparesRef.current.length > 1
-                ? recentComparesRef.current[0]
-                : undefined;
-            const ids = defaultPair
-                ? parseIds(defaultPair)
-                : recentEntry
-                    ? parseIds(recentEntry.pair)
-                    : DEFAULT_CARD_IDS;
-            const next = Array<SearchCard | null>(MAX_CARDS).fill(null);
-            ids.forEach((id, i) => { next[i] = lookup(id); });
-            lastSynced.current = ids.join(',');
-            setCards(next);
-            setNumSlots(Math.max(2, ids.length));
-        }
+        // Only prefill from recent if there will still be visible entries after
+        // (prefilling from entry[0] excludes it from the list, so need > 1 to show something)
+        const recentEntry = !defaultPair && recentComparesRef.current.length > 1
+            ? recentComparesRef.current[0]
+            : undefined;
+        const ids = defaultPair
+            ? parseIds(defaultPair)
+            : recentEntry
+                ? parseIds(recentEntry.pair)
+                : DEFAULT_CARD_IDS;
+        const next = Array<SearchCard | null>(MAX_CARDS).fill(null);
+        ids.forEach((id, i) => { next[i] = lookup(id); });
+        setCards(next);
+        setNumSlots(Math.max(2, ids.length));
 
         setPrefillDone(true);
-    }, [initialized, lookup, searchParams, defaultPair]);
+    }, [initialized, lookup, defaultPair]);
 
     const selectedKey = cards.filter((c): c is SearchCard => c !== null).map((c) => c.id).join(',');
     const selectedCount = cards.filter(Boolean).length;
 
+    // Navigate to pair URL when ≥2 cards selected
+    const lastNavigatedKey = useRef('');
     useEffect(() => {
-        if (!prefillDone) return;
-        if (selectedCount < 2) {
-            if (lastSynced.current !== '') {
-                lastSynced.current = '';
-                lastProcessedParam.current = '';
-                router.replace('/so-sanh', { scroll: false });
-            }
-            return;
+        if (!prefillDone || selectedCount < 2) return;
+        const pairPath = `/so-sanh/${cards
+            .filter((c): c is SearchCard => c !== null)
+            .map((c) => c.id)
+            .join('-vs-')}`;
+        if (pathname === pairPath || lastNavigatedKey.current === selectedKey) return;
+        lastNavigatedKey.current = selectedKey;
+        const onPairPage = pathname.startsWith('/so-sanh/');
+        if (onPairPage) {
+            router.replace(pairPath);
+        } else {
+            router.push(pairPath);
         }
-        if (!selectedKey || selectedKey === lastSynced.current) return;
-        lastSynced.current = selectedKey;
-        lastProcessedParam.current = selectedKey;
-        router.replace(`/so-sanh?compare=${selectedKey}`, { scroll: false });
-    }, [selectedKey, selectedCount, prefillDone, router]);
+    }, [selectedKey, selectedCount, prefillDone, pathname, router, cards]);
 
     // Per-ID card cache
     const [cardCache, setCardCache] = useState<Record<string, Card>>({});
