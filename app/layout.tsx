@@ -35,11 +35,13 @@ export function generateMetadata(): Metadata {
       siteName: 'Open Wallet',
       locale: 'vi_VN',
       type: 'website',
+      images: [{ url: '/og.png' }],
     },
     twitter: {
       card: 'summary_large_image',
       title: 'Open Wallet – Tra cứu thẻ. Quản lý thẻ.',
       description: 'Tra cứu thông tin thẻ tín dụng, thẻ ghi nợ Việt Nam. Theo dõi ngày sao kê, quản lý thẻ cá nhân.',
+      images: ['/og.png'],
     },
     icons: {
       icon: '/icon.png',
