@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import Link from 'next/link';
 import {getBank, getCard, getCards, getRelatedCards} from '@/lib/api';
+import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {CardImage} from '@/components/cards/card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCardPageMeta} from '@/lib/page-meta/card';
@@ -67,6 +68,7 @@ export default async function CardPage({ params }: Props) {
     );
 
     return (
+        <>
         <div className="px-4 py-12">
             <div className="ow-container">
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -119,5 +121,15 @@ export default async function CardPage({ params }: Props) {
                 <CardDetailRelated cards={sameTypeCards} currentCardId={card.id} />
             </div>
         </div>
+        <ChatContextSetter context={{
+            type: 'card',
+            cardId: card.id,
+            cardName: card.name,
+            bankId: card.bank_id,
+            cardNetwork: card.card_network,
+            cardType: card.card_type,
+            description: card.description,
+        }} />
+        </>
     );
 }

@@ -1,9 +1,9 @@
 import { createGroq } from '@ai-sdk/groq';
 import { streamText, tool, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
 import { z } from 'zod';
-import { SYSTEM_PROMPT } from '@/lib/chat/system-prompt';
+import { buildSystemPrompt } from '@/lib/chat/system-prompt';
+import type { PageContext } from '@/lib/chat/page-context';
 import { apiFetch, type CardFilters } from '@/lib/api';
-import { rankCards } from '@/lib/card-ranker';
 
 // In-memory rate limit store: ip -> { count, windowStart }
 const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
         );
     }
 
-    const body = await req.json() as { messages?: UIMessage[] };
+    const body = await req.json() as { messages?: UIMessage[]; pageContext?: PageContext };
     const uiMessages: UIMessage[] = body.messages ?? [];
     // Trim to last 12 messages, then convert UIMessage → ModelMessage
     const messages = await convertToModelMessages(uiMessages.slice(-12));
@@ -57,18 +57,18 @@ export async function POST(req: Request) {
 
     const result = streamText({
         model: groq(model),
-        system: SYSTEM_PROMPT,
+        system: buildSystemPrompt(body.pageContext),
         messages,
         stopWhen: stepCountIs(5),
         tools: {
             searchCards: tool({
-                description: 'Tìm kiếm thẻ theo bộ lọc: ngân hàng, loại thẻ, mạng lưới, mục đích sử dụng.',
+                description: 'Tìm kiếm thẻ theo bộ lọc. Dùng để tìm thẻ theo ngân hàng, loại hoặc mạng lưới. KHÔNG dùng để tư vấn thẻ tốt nhất cho chi tiêu — dùng rankCardsForSpend thay thế.',
                 inputSchema: z.object({
-                    bank_id: z.string().optional().describe('ID ngân hàng'),
+                    bank_id: z.string().optional().describe('ID ngân hàng (ví dụ: vietcombank, techcombank, vpbank)'),
                     type: z.enum(['credit', 'debit', 'prepaid', 'transit', 'atm', '2in1', 'co-branded']).optional(),
                     network: z.enum(['visa', 'mastercard', 'jcb', 'napas', 'amex', 'unionpay']).optional(),
-                    intent: z.string().optional().describe('Mục đích sử dụng thẻ (ví dụ: cashback, travel, shopping)'),
-                    limit: z.number().int().min(1).max(10).default(5),
+                    intent: z.string().optional().describe('Slug mục đích sử dụng. Các giá trị hợp lệ: shopee, lazada, tiktok-shop, tiki, ecommerce, grab, grab-food, be, transport, dining, vietnam-airlines, vietjet, bamboo-airways, agoda, booking, travel, groceries, bach-hoa-xanh, winmart, shopping, digital, netflix, spotify, insurance, education, health, utilities, fuel, entertainment'),
+                    limit: z.number().int().min(1).max(20).default(5),
                 }),
                 execute: async ({ bank_id, type, network, intent, limit }) => {
                     const params = new URLSearchParams();
@@ -97,26 +97,22 @@ export async function POST(req: Request) {
             }),
 
             rankCardsForSpend: tool({
-                description: 'Xếp hạng thẻ theo hồ sơ chi tiêu hàng tháng. Trả về top thẻ tốt nhất cho nhu cầu này.',
+                description: 'CÔNG CỤ CHÍNH để tư vấn thẻ tốt nhất cho chi tiêu. Dùng khi người dùng hỏi "thẻ nào hoàn tiền tốt", "thẻ nào tốt nhất cho chi tiêu X". Xếp hạng tất cả thẻ theo hồ sơ chi tiêu thực tế. Quan trọng: spend phải có ít nhất một key với giá trị > 0.',
                 inputSchema: z.object({
                     spend: z.record(z.string(), z.number()).describe(
-                        'Hồ sơ chi tiêu: key là tên danh mục (online, supermarket, travel, dining, fuel, v.v.), value là số tiền VND/tháng'
+                        'Hồ sơ chi tiêu: key là intent slug, value là VND/tháng. Mapping: mua sắm online/TMĐT→"ecommerce", siêu thị→"groceries", ăn uống→"dining", di chuyển→"transport", du lịch→"travel", xăng→"fuel", dịch vụ số→"digital", mua sắm chung→"shopping". Ví dụ: {"ecommerce":5000000,"dining":2000000}'
                     ),
                     limit: z.number().int().min(1).max(5).default(3),
                     type: z.enum(['credit', 'debit']).optional(),
                 }),
                 execute: async ({ spend, limit, type }) => {
-                    const params = new URLSearchParams();
-                    if (type) params.set('type', type);
-                    const res = await apiFetch(`/api/v1/cards?${params}`);
-                    const json = await res.json() as { success: boolean; data: Parameters<typeof rankCards>[0] };
-                    if (!json.success) throw new Error('Không thể lấy danh sách thẻ');
-                    const ranked = rankCards(json.data, spend);
-                    return ranked.slice(0, limit).map(({ card, rank, result }) => ({
-                        rank,
-                        card: stripCard(card as unknown as Record<string, unknown>),
-                        estimated_monthly_cashback: result.cashback,
-                    }));
+                    const res = await apiFetch('/api/v1/cards/rank', {
+                        method: 'POST',
+                        body: JSON.stringify({ spend, limit, type }),
+                    });
+                    const json = await res.json() as { success: boolean; data: unknown; error?: string };
+                    if (!json.success) throw new Error(json.error ?? 'Không thể xếp hạng thẻ');
+                    return json.data;
                 },
             }),
 

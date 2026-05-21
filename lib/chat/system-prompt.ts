@@ -26,5 +26,24 @@ Mẫu từ chối: "Xin lỗi, tôi chỉ có thể tư vấn về thẻ ngân h
 - Tóm tắt gợi ý ở cuối mỗi câu trả lời dài
 - Không dùng tiêu đề cấp 1 (#)`;
 
+import type { PageContext } from '@/lib/chat/page-context';
+
+export function buildSystemPrompt(pageContext?: PageContext): string {
+    if (!pageContext) return SYSTEM_PROMPT;
+    if (pageContext.type === 'card') {
+        return (
+            SYSTEM_PROMPT +
+            `\n\n## Ngữ cảnh trang hiện tại\nNgười dùng đang xem trang thẻ: **${pageContext.cardName}** (ngân hàng: ${pageContext.bankId}, mạng lưới: ${pageContext.cardNetwork}). Khi phù hợp, ưu tiên tư vấn về thẻ này. Dùng getCardDetail("${pageContext.cardId}") để lấy thông tin đầy đủ khi cần.`
+        );
+    }
+    if (pageContext.type === 'bank') {
+        return (
+            SYSTEM_PROMPT +
+            `\n\n## Ngữ cảnh trang hiện tại\nNgười dùng đang xem trang ngân hàng: **${pageContext.bankName}** (id: ${pageContext.bankId}). Khi phù hợp, ưu tiên tư vấn về thẻ của ngân hàng này. Dùng searchCards với bank_id="${pageContext.bankId}" để lấy danh sách thẻ.`
+        );
+    }
+    return SYSTEM_PROMPT;
+}
+
 export const REFUSAL_TEMPLATE =
     'Xin lỗi, tôi chỉ có thể tư vấn về thẻ ngân hàng tại Việt Nam. Bạn có muốn tôi giúp tìm thẻ phù hợp với nhu cầu của mình không?';

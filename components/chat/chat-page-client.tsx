@@ -1,11 +1,9 @@
 'use client';
 
-import { useCallback, useRef, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { AssistantRuntimeProvider } from '@assistant-ui/react';
-import { useChatRuntime, AssistantChatTransport } from '@assistant-ui/react-ai-sdk';
-import { Thread } from '@/components/assistant-ui/thread';
+import { ChatRuntime } from '@/components/chat/chat-runtime';
 import {
     SidebarProvider,
     Sidebar,
@@ -27,11 +25,9 @@ import { PlusIcon, Trash2Icon } from 'lucide-react';
 import {
     listConversations,
     createConversation,
-    saveConversation,
     deleteConversation,
     type Conversation,
 } from '@/lib/chat/conversation-store';
-import type { UIMessage } from 'ai';
 
 function groupConversations(convos: Conversation[]) {
     const todayStart = new Date().setHours(0, 0, 0, 0);
@@ -41,43 +37,6 @@ function groupConversations(convos: Conversation[]) {
         yesterday: convos.filter((c) => c.updatedAt >= yesterdayStart && c.updatedAt < todayStart),
         earlier: convos.filter((c) => c.updatedAt < yesterdayStart),
     };
-}
-
-function ChatRuntime({ convoId, onSaved }: { convoId: string; onSaved: () => void }) {
-    const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const [initialMessages] = useState<UIMessage[]>(
-        () => listConversations().find((c) => c.id === convoId)?.messages ?? [],
-    );
-
-    const debouncedSave = useCallback(
-        (messages: UIMessage[]) => {
-            if (saveTimer.current) clearTimeout(saveTimer.current);
-            saveTimer.current = setTimeout(() => {
-                saveConversation(convoId, messages);
-                onSaved();
-            }, 500);
-        },
-        [convoId, onSaved],
-    );
-
-    useEffect(
-        () => () => {
-            if (saveTimer.current) clearTimeout(saveTimer.current);
-        },
-        [],
-    );
-
-    const runtime = useChatRuntime({
-        transport: new AssistantChatTransport({ api: '/api/chat' }),
-        messages: initialMessages,
-        onFinish: ({ messages }) => debouncedSave(messages),
-    });
-
-    return (
-        <AssistantRuntimeProvider runtime={runtime}>
-            <Thread />
-        </AssistantRuntimeProvider>
-    );
 }
 
 export function ChatPageClient() {
