@@ -1,5 +1,5 @@
 import { createGroq } from '@ai-sdk/groq';
-import { streamText, tool, stepCountIs, type ModelMessage } from 'ai';
+import { streamText, tool, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
 import { z } from 'zod';
 import { SYSTEM_PROMPT } from '@/lib/chat/system-prompt';
 import { apiFetch, type CardFilters } from '@/lib/api';
@@ -48,10 +48,10 @@ export async function POST(req: Request) {
         );
     }
 
-    const body = await req.json() as { messages?: ModelMessage[] };
-    const allMessages: ModelMessage[] = body.messages ?? [];
-    // Trim to last 12 messages
-    const messages: ModelMessage[] = allMessages.slice(-12);
+    const body = await req.json() as { messages?: UIMessage[] };
+    const uiMessages: UIMessage[] = body.messages ?? [];
+    // Trim to last 12 messages, then convert UIMessage → ModelMessage
+    const messages = await convertToModelMessages(uiMessages.slice(-12));
 
     const model = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
 
