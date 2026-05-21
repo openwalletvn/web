@@ -1,3 +1,6 @@
+// UI-only: used by card-ranking-table.tsx for client-side interactive ranking.
+// Canonical ranking source of truth: api/lib/card-ranker.ts (POST /api/v1/cards/rank).
+// AI chat and external clients must use the API endpoint, not this file.
 import type {Card} from '@/lib/api';
 import {calcCashback, type CashbackResult} from '@/lib/cashback-calc';
 
