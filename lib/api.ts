@@ -234,11 +234,15 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
         const apiKey = process.env.OPENWALLET_API_KEY;
         if (apiKey) headers.set('X-OpenWallet-Key', apiKey);
     }
-    return fetch(`${apiUrl}${path}`, {
+    const res = await fetch(`${apiUrl}${path}`, {
         ...fetchOptions,
         ...init,
         headers,
     });
+    if (!res.ok) {
+        throw new Error(`API error ${res.status}: ${path}`);
+    }
+    return res;
 }
 
 function getImageUrl(relativePath: string): string {
