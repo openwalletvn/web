@@ -13,9 +13,5 @@ export const metadata: Metadata = {
 };
 
 export default function ChatPage() {
-    return (
-        <div className="ow-chat-page flex h-[calc(100vh-4rem)] flex-col">
-            <ChatPageClient />
-        </div>
-    );
+    return <ChatPageClient />;
 }
