@@ -99,9 +99,16 @@ export async function POST(req: Request) {
             rankCardsForSpend: tool({
                 description: 'CÔNG CỤ CHÍNH để tư vấn thẻ tốt nhất cho chi tiêu. Dùng khi người dùng hỏi "thẻ nào hoàn tiền tốt", "thẻ nào tốt nhất cho chi tiêu X". Xếp hạng tất cả thẻ theo hồ sơ chi tiêu thực tế. Quan trọng: spend phải có ít nhất một key với giá trị > 0.',
                 inputSchema: z.object({
-                    spend: z.record(z.string(), z.number()).describe(
-                        'Hồ sơ chi tiêu: key là intent slug, value là VND/tháng. Mapping: mua sắm online/TMĐT→"ecommerce", siêu thị→"groceries", ăn uống→"dining", di chuyển→"transport", du lịch→"travel", xăng→"fuel", dịch vụ số→"digital", mua sắm chung→"shopping". Ví dụ: {"ecommerce":5000000,"dining":2000000}'
-                    ),
+                    spend: z.object({
+                        ecommerce:  z.number().optional().describe('Mua sắm online / TMĐT (VND/tháng)'),
+                        groceries:  z.number().optional().describe('Siêu thị (VND/tháng)'),
+                        dining:     z.number().optional().describe('Ăn uống / nhà hàng (VND/tháng)'),
+                        transport:  z.number().optional().describe('Di chuyển / taxi / grab (VND/tháng)'),
+                        travel:     z.number().optional().describe('Du lịch (VND/tháng)'),
+                        fuel:       z.number().optional().describe('Xăng dầu (VND/tháng)'),
+                        digital:    z.number().optional().describe('Dịch vụ số / streaming (VND/tháng)'),
+                        shopping:   z.number().optional().describe('Mua sắm chung (VND/tháng)'),
+                    }).describe('Hồ sơ chi tiêu — điền danh mục phù hợp, ít nhất 1 danh mục > 0'),
                     limit: z.number().int().min(1).max(5).default(3),
                     type: z.enum(['credit', 'debit']).optional(),
                 }),

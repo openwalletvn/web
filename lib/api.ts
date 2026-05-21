@@ -240,7 +240,12 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
         headers,
     });
     if (!res.ok) {
-        throw new Error(`API error ${res.status}: ${path}`);
+        let msg = `API error ${res.status}: ${path}`;
+        try {
+            const errJson = await res.clone().json() as { error?: string; message?: string };
+            if (errJson.error ?? errJson.message) msg = (errJson.error ?? errJson.message)!;
+        } catch { /* non-JSON body */ }
+        throw new Error(msg);
     }
     return res;
 }
