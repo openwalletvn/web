@@ -24,7 +24,6 @@ import {
   ErrorPrimitive,
   getMcpAppFromToolPart,
   MessagePrimitive,
-  SuggestionPrimitive,
   ThreadPrimitive,
   useAuiState,
 } from "@assistant-ui/react";
@@ -123,28 +122,43 @@ const ThreadWelcome: FC = () => {
   );
 };
 
+const SUGGESTIONS = [
+  {
+    title: 'Mua sắm Shopee & TikTok ~3tr/tháng',
+    prompt: 'Tôi mua sắm trên Shopee và TikTok khoảng 3 triệu một tháng thì nên dùng thẻ nào?',
+  },
+  {
+    title: 'Đi siêu thị 5tr/tháng nên mở thẻ nào?',
+    prompt: 'Mỗi tháng đi siêu thị 5 triệu thì nên mở thẻ nào?',
+  },
+  {
+    title: 'Thẻ hoàn tiền tốt nhất cho sinh viên',
+    prompt: 'Sinh viên nên dùng thẻ tín dụng hoàn tiền nào? Tôi chi tiêu chủ yếu ăn uống và mua sắm online.',
+  },
+  {
+    title: 'So sánh thẻ Techcombank vs Vietcombank',
+    prompt: 'So sánh thẻ tín dụng Techcombank và Vietcombank cho người đi làm chi tiêu hàng ngày?',
+  },
+];
+
 const ThreadSuggestions: FC = () => {
   return (
     <div className="aui-thread-welcome-suggestions grid w-full @md:grid-cols-2 gap-2 pb-4">
-      <ThreadPrimitive.Suggestions>
-        {() => <ThreadSuggestionItem />}
-      </ThreadPrimitive.Suggestions>
-    </div>
-  );
-};
-
-const ThreadSuggestionItem: FC = () => {
-  return (
-    <div className="aui-thread-welcome-suggestion-display fade-in slide-in-from-bottom-2 @md:nth-[n+3]:block nth-[n+3]:hidden animate-in fill-mode-both duration-200">
-      <SuggestionPrimitive.Trigger send asChild>
-        <Button
-          variant="ghost"
-          className="aui-thread-welcome-suggestion h-auto w-full @md:flex-col flex-wrap items-start justify-start gap-1 rounded-3xl border bg-background px-4 py-3 text-start text-sm transition-colors hover:bg-muted"
+      {SUGGESTIONS.map((s) => (
+        <div
+          key={s.title}
+          className="aui-thread-welcome-suggestion-display fade-in slide-in-from-bottom-2 @md:nth-[n+3]:block nth-[n+3]:hidden animate-in fill-mode-both duration-200"
         >
-          <SuggestionPrimitive.Title className="aui-thread-welcome-suggestion-text-1 font-medium" />
-          <SuggestionPrimitive.Description className="aui-thread-welcome-suggestion-text-2 text-muted-foreground empty:hidden" />
-        </Button>
-      </SuggestionPrimitive.Trigger>
+          <ThreadPrimitive.Suggestion prompt={s.prompt} autoSend asChild>
+            <Button
+              variant="ghost"
+              className="aui-thread-welcome-suggestion h-auto w-full @md:flex-col flex-wrap items-start justify-start gap-1 rounded-3xl border bg-background px-4 py-3 text-start text-sm transition-colors hover:bg-muted whitespace-normal"
+            >
+              <span className="aui-thread-welcome-suggestion-text-1 font-medium">{s.title}</span>
+            </Button>
+          </ThreadPrimitive.Suggestion>
+        </div>
+      ))}
     </div>
   );
 };

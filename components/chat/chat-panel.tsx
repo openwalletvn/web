@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Maximize2Icon, PlusIcon, XIcon } from 'lucide-react';
+import { CheckIcon, ClipboardCopyIcon, Maximize2Icon, PlusIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +19,7 @@ import { useChatContext } from '@/components/chat/chat-provider';
 import { ChatRuntime } from '@/components/chat/chat-runtime';
 import {
     createConversation,
+    getConversation,
     listConversations,
     type Conversation,
 } from '@/lib/chat/conversation-store';
@@ -40,6 +41,7 @@ export function ChatPanel() {
     const [mounted, setMounted] = useState(false);
     const [convos, setConvos] = useState<Conversation[]>([]);
     const [activeId, setActiveId] = useState('');
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const list = listConversations();
@@ -66,6 +68,14 @@ export function ChatPanel() {
     }, [toggle]);
 
     const refresh = useCallback(() => setConvos(listConversations()), []);
+
+    const handleCopy = useCallback(() => {
+        const convo = getConversation(activeId);
+        if (!convo) return;
+        navigator.clipboard.writeText(JSON.stringify(convo.messages, null, 2));
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }, [activeId]);
 
     const handleNew = useCallback(() => {
         const convo = createConversation();
@@ -141,6 +151,9 @@ export function ChatPanel() {
                     </Select>
                 )}
 
+                <Button size="icon" variant="ghost" className="size-8 shrink-0" onClick={handleCopy} title="Copy messages (debug)">
+                    {copied ? <CheckIcon className="size-4 text-green-500" /> : <ClipboardCopyIcon className="size-4" />}
+                </Button>
                 <Button
                     size="icon"
                     variant="ghost"
