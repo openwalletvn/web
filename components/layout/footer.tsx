@@ -6,8 +6,8 @@ const LINKS = {
     tools: [
         {label: 'So sánh thẻ', href: '/so-sanh'},
         {label: 'Gợi ý thẻ', href: '/goi-y-the'},
-        {label: 'Wallet App', disabled: true, href: '/tai-app'},
-        {label: 'WalletAI', href: '#', disabled: true, suffix: 'coming soon'},
+        {label: 'WalletChat', href: '/chat'},
+        {label: 'WalletApp', disabled: true, href: '/app'},
     ],
     legal: [
         {label: 'Điều khoản', href: '/dieu-khoan'},

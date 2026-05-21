@@ -21,6 +21,7 @@ import {
     listConversations,
     type Conversation,
 } from '@/lib/chat/conversation-store';
+import {Logo} from "@/components/layout/logo";
 
 function groupConversations(convos: Conversation[]) {
     const todayStart = new Date().setHours(0, 0, 0, 0);
@@ -79,7 +80,7 @@ export function ChatPanel() {
                 // Mobile: full-screen bottom sheet
                 'bottom-0 right-0 w-full h-full',
                 // Desktop: floating bottom-right panel
-                'sm:bottom-4 sm:right-4 sm:w-[380px] sm:h-[560px] sm:rounded-xl',
+                'sm:bottom-4 sm:right-4 sm:w-[480px] sm:h-[80vh] sm:rounded-xl',
                 'flex flex-col border bg-background shadow-2xl',
                 isOpen
                     ? 'pointer-events-auto opacity-100 translate-y-0'
@@ -88,7 +89,10 @@ export function ChatPanel() {
         >
             {/* Header */}
             <div className="flex shrink-0 items-center gap-2 border-b px-4 py-3 sm:rounded-t-xl">
-                <span className="flex-1 font-semibold text-sm">Tư vấn AI</span>
+                <span className="flex-1 font-semibold text-sm flex gap-1 items-center">
+                    <Logo className="w-6" variant="full" color="red"/>
+                    Chat
+                </span>
 
                 {mounted && convos.length > 0 && (
                     <Select value={activeId} onValueChange={setActiveId}>

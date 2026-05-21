@@ -81,12 +81,12 @@ export async function Header() {
                 {/* Right: search + chat + mobile trigger */}
                 <div className="flex items-center gap-2 justify-end">
                     <div className="hidden xl:flex items-center gap-2">
-                        <SearchDialog/>
                         <ChatToggleButton/>
+                        <SearchDialog/>
                     </div>
                     <div className="xl:hidden flex items-center">
-                        <SearchDialog mobileOnly/>
                         <ChatToggleButton/>
+                        <SearchDialog mobileOnly/>
                         <MobileNav banks={banks}/>
                     </div>
                 </div>

@@ -3,12 +3,17 @@ import Link from 'next/link';
 
 type LogoProps = {
     variant?: 'icon' | 'full';
-    color?: 'black' | 'white';
+    color?: 'black' | 'white' | 'red';
     className?: string;
 };
 
-function getSrc(variant: 'icon' | 'full', color: 'black' | 'white') {
-    if (variant === 'full') return color === 'white' ? '/logo-white.svg' : '/logo.png';
+function getSrc(variant: 'icon' | 'full', color: 'black' | 'white' | 'red') {
+    if (variant === 'full') {
+        if (color === 'red') {
+            return '/logo-red.svg';
+        }
+        return color === 'white' ? '/logo-white.svg' : '/logo.png';
+    }
     return '/icon.svg';
 }
 
