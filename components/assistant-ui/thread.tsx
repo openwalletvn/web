@@ -229,7 +229,7 @@ const AssistantMessage: FC = () => {
     >
       <div
         data-slot="aui_assistant-message-content"
-        className="wrap-break-word px-2 text-foreground leading-relaxed"
+        className="wrap-break-word px-2 text-foreground leading-relaxed space-y-4"
       >
         <MessagePrimitive.GroupedParts
           groupBy={(part) => {
@@ -245,7 +245,7 @@ const AssistantMessage: FC = () => {
           {({ part, children }) => {
             switch (part.type) {
               case "group-chainOfThought":
-                return <div data-slot="aui_chain-of-thought">{children}</div>;
+                return <div data-slot="aui_chain-of-thought" className="space-y-4">{children}</div>;
               case "group-reasoning": {
                 const running = part.status.type === "running";
                 return (

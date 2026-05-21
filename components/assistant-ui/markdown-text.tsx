@@ -3,23 +3,23 @@
 import "@assistant-ui/react-markdown/styles/dot.css";
 
 import {
-  type CodeHeaderProps,
-  MarkdownTextPrimitive,
-  unstable_memoizeMarkdownComponents as memoizeMarkdownComponents,
-  useIsMarkdownCodeBlock,
+    type CodeHeaderProps,
+    MarkdownTextPrimitive,
+    unstable_memoizeMarkdownComponents as memoizeMarkdownComponents,
+    useIsMarkdownCodeBlock,
 } from "@assistant-ui/react-markdown";
 import remarkGfm from "remark-gfm";
-import { type FC, memo, useState } from "react";
-import { CheckIcon, CopyIcon } from "lucide-react";
+import {type FC, memo, useState} from "react";
+import {CheckIcon, CopyIcon} from "lucide-react";
 
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
-import { cn } from "@/lib/utils";
+import {TooltipIconButton} from "@/components/assistant-ui/tooltip-icon-button";
+import {cn} from "@/lib/utils";
 
 const MarkdownTextImpl = () => {
   return (
     <MarkdownTextPrimitive
       remarkPlugins={[remarkGfm]}
-      className="aui-md"
+      className="aui-md [&_strong]:font-normal"
       components={defaultComponents}
     />
   );
@@ -75,7 +75,7 @@ const defaultComponents = memoizeMarkdownComponents({
   h1: ({ className, ...props }) => (
     <h1
       className={cn(
-        "aui-md-h1 mb-2 scroll-m-20 font-semibold text-base first:mt-0 last:mb-0",
+          "aui-md-h1 mb-2 scroll-m-20 text-base first:mt-0 last:mb-0",
         className,
       )}
       {...props}
@@ -84,7 +84,7 @@ const defaultComponents = memoizeMarkdownComponents({
   h2: ({ className, ...props }) => (
     <h2
       className={cn(
-        "aui-md-h2 mt-3 mb-1.5 scroll-m-20 font-semibold text-sm first:mt-0 last:mb-0",
+          "aui-md-h2 mt-3 mb-1.5 scroll-m-20 text-2xl first:mt-0 last:mb-0",
         className,
       )}
       {...props}
@@ -93,7 +93,7 @@ const defaultComponents = memoizeMarkdownComponents({
   h3: ({ className, ...props }) => (
     <h3
       className={cn(
-        "aui-md-h3 mt-2.5 mb-1 scroll-m-20 font-semibold text-sm first:mt-0 last:mb-0",
+          "aui-md-h3 mt-2.5 mb-1 scroll-m-20 text-xl first:mt-0 last:mb-0",
         className,
       )}
       {...props}
@@ -102,7 +102,7 @@ const defaultComponents = memoizeMarkdownComponents({
   h4: ({ className, ...props }) => (
     <h4
       className={cn(
-        "aui-md-h4 mt-2 mb-1 scroll-m-20 font-medium text-sm first:mt-0 last:mb-0",
+          "aui-md-h4 mt-2 mb-1 scroll-m-20 text-lg first:mt-0 last:mb-0",
         className,
       )}
       {...props}
@@ -111,7 +111,7 @@ const defaultComponents = memoizeMarkdownComponents({
   h5: ({ className, ...props }) => (
     <h5
       className={cn(
-        "aui-md-h5 mt-2 mb-1 font-medium text-sm first:mt-0 last:mb-0",
+          "aui-md-h5 mt-2 mb-1 first:mt-0 last:mb-0",
         className,
       )}
       {...props}
@@ -120,7 +120,7 @@ const defaultComponents = memoizeMarkdownComponents({
   h6: ({ className, ...props }) => (
     <h6
       className={cn(
-        "aui-md-h6 mt-2 mb-1 font-medium text-sm first:mt-0 last:mb-0",
+          "aui-md-h6 mt-2 mb-1 first:mt-0 last:mb-0",
         className,
       )}
       {...props}
@@ -178,13 +178,15 @@ const defaultComponents = memoizeMarkdownComponents({
     />
   ),
   table: ({ className, ...props }) => (
-    <table
-      className={cn(
-        "aui-md-table my-2 w-full border-separate border-spacing-0 overflow-y-auto",
-        className,
-      )}
-      {...props}
-    />
+      <div className="aui-md-table-wrapper overflow-y-auto my-2 first:mt-0 last:mb-0">
+          <table
+              className={cn(
+                  "aui-md-table w-full border-separate border-spacing-0",
+                  className,
+              )}
+              {...props}
+          />
+      </div>
   ),
   th: ({ className, ...props }) => (
     <th
