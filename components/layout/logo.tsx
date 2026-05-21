@@ -5,6 +5,7 @@ type LogoProps = {
     variant?: 'icon' | 'full';
     color?: 'black' | 'white' | 'red';
     className?: string;
+    href?: string | null;
 };
 
 function getSrc(variant: 'icon' | 'full', color: 'black' | 'white' | 'red') {
@@ -17,13 +18,18 @@ function getSrc(variant: 'icon' | 'full', color: 'black' | 'white' | 'red') {
     return '/icon.svg';
 }
 
-export function Logo({ variant = 'icon', color = 'black', className = '' }: LogoProps) {
+export function Logo({ variant = 'icon', color = 'black', className = '', href = '/' }: LogoProps) {
     const src = getSrc(variant, color);
     const dims = variant === 'full' ? { width: 232, height: 186 } : { width: 80, height: 80 };
+    const img = <Image src={src} alt="OpenWallet" {...dims} className="h-auto w-full" />;
+
+    if (href === null) {
+        return <span className={`ow-logo flex items-center shrink-0 ${className}`}>{img}</span>;
+    }
 
     return (
-        <Link href="/" className={`ow-logo flex items-center shrink-0 ${className}`}>
-            <Image src={src} alt="OpenWallet" {...dims} className="h-auto w-full" />
+        <Link href={href} className={`ow-logo flex items-center shrink-0 ${className}`}>
+            {img}
         </Link>
     );
 }

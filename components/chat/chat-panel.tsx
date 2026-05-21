@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { PlusIcon, XIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Maximize2Icon, PlusIcon, XIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,6 +36,7 @@ function groupConversations(convos: Conversation[]) {
 
 export function ChatPanel() {
     const { isOpen, close, toggle, pageContext } = useChatContext();
+    const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [convos, setConvos] = useState<Conversation[]>([]);
     const [activeId, setActiveId] = useState('');
@@ -90,7 +92,7 @@ export function ChatPanel() {
             {/* Header */}
             <div className="flex shrink-0 items-center gap-2 border-b px-4 py-3 sm:rounded-t-xl">
                 <span className="flex-1 font-semibold text-sm flex gap-1 items-center">
-                    <Logo className="w-6" variant="full" color="red"/>
+                    <Logo className="w-6" variant="full" color="red" href="/chat" />
                     Chat
                 </span>
 
@@ -139,6 +141,15 @@ export function ChatPanel() {
                     </Select>
                 )}
 
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-8 shrink-0"
+                    onClick={() => { close(); router.push(`/chat?id=${activeId}`); }}
+                    title="Mở rộng"
+                >
+                    <Maximize2Icon className="size-4" />
+                </Button>
                 <Button size="icon" variant="ghost" className="size-8 shrink-0" onClick={handleNew} title="Cuộc trò chuyện mới">
                     <PlusIcon className="size-4" />
                 </Button>
