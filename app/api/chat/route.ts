@@ -1,6 +1,6 @@
 import { createGroq } from '@ai-sdk/groq';
 import { createMCPClient } from '@ai-sdk/mcp';
-import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
+import { streamText, stepCountIs, convertToModelMessages, type UIMessage, type ToolSet } from 'ai';
 import { buildSystemPrompt } from '@/lib/chat/system-prompt';
 import type { PageContext } from '@/lib/chat/page-context';
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     const model = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
 
     let mcpClient: Awaited<ReturnType<typeof createMCPClient>> | null = null;
-    let tools: Record<string, unknown> = {};
+    let tools: ToolSet | undefined;
 
     try {
         mcpClient = await createMCPClient({
