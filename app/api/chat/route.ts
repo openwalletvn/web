@@ -43,9 +43,9 @@ export async function POST(req: Request) {
     const mcpClient = await createMCPClient({
         transport: {
             type: 'http',
-            url: process.env.CHAT_MCP_URL ?? 'http://localhost:8787',
+            url: process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8787',
             headers: {
-                'x-mcp-key': process.env.CHAT_MCP_KEY ?? '',
+                'x-mcp-key': process.env.OPENWALLET_MCP_KEY ?? '',
             },
         },
     });

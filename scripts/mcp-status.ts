@@ -1,7 +1,7 @@
 import { createMCPClient } from '@ai-sdk/mcp';
 
-const MCP_URL = process.env.CHAT_MCP_URL ?? 'http://localhost:8787';
-const MCP_KEY = process.env.CHAT_MCP_KEY ?? 'owmcp_dev';
+const MCP_URL = process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8787';
+const MCP_KEY = process.env.OPENWALLET_MCP_KEY ?? 'owmcp_dev';
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8788';
 const API_KEY = process.env.OPENWALLET_API_KEY ?? '';
 
