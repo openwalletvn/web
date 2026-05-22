@@ -249,7 +249,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
             throw new Error(`API key invalid or expired (401): ${path}`);
         }
         if (res.status === 403) {
-            const keyNote = !process.env.OPENWALLET_API_KEY ? ' — OPENWALLET_API_KEY not set' : ` — key set (${process.env.OPENWALLET_API_KEY.slice(0, 4)}...), target=${apiUrl}`;
+            const keyNote = !process.env.OPENWALLET_API_KEY ? ' — OPENWALLET_API_KEY not set' : '';
             throw new Error(`API key missing or forbidden (403): ${path}${keyNote}`);
         }
         let msg = `API error ${res.status}: ${path}`;
