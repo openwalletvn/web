@@ -18,8 +18,12 @@ import {CardDetailIntents} from '@/components/cards/detail/card-detail-intents';
 import {CompareButton} from '@/components/compare/compare-button';
 
 export async function generateStaticParams() {
-    const cards = await getCards();
-    return cards.map((card) => ({ slug: card.id }));
+    try {
+        const cards = await getCards();
+        return cards.map((card) => ({ slug: card.id }));
+    } catch {
+        return [];
+    }
 }
 
 interface Props {

@@ -9,8 +9,12 @@ import {NetworkDistributionBar} from '@/components/shared/network-distribution-b
 import {buildBankPageMeta} from '@/lib/page-meta/bank';
 
 export async function generateStaticParams() {
-    const banks = await getBanks();
-    return banks.map((bank) => ({slug: bank.id}));
+    try {
+        const banks = await getBanks();
+        return banks.map((bank) => ({slug: bank.id}));
+    } catch {
+        return [];
+    }
 }
 
 interface Props {
@@ -49,8 +53,8 @@ export default async function BankPage({params}: Props) {
     }
 
     const [cards, banks] = await Promise.all([
-        getCards({bank_id: slug}),
-        getBanks(),
+        getCards({bank_id: slug}).catch(() => [] as Awaited<ReturnType<typeof getCards>>),
+        getBanks().catch(() => [] as Awaited<ReturnType<typeof getBanks>>),
     ]);
 
     const {jsonLd, breadcrumbItems} = buildBankPageMeta(bank, cards);

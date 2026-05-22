@@ -37,11 +37,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // 2. Banks - dynamic from API
-  const banksRes = await apiFetch('/api/v1/banks')
-  const banks = await banksRes.json()
+  let bankData: { id: string }[] = []
+  try {
+    const banksRes = await apiFetch('/api/v1/banks')
+    bankData = ((await banksRes.json()) as { data: { id: string }[] }).data ?? []
+  } catch (e) {
+    console.error('[sitemap] Failed to fetch banks:', e)
+  }
   const bankPages = [
     { url: `${BASE_URL}/ngan-hang`, changeFrequency: 'weekly' as const, priority: 0.9 },
-    ...banks.data.map((b: { id: string }) => ({
+    ...bankData.map((b) => ({
       url: `${BASE_URL}/ngan-hang/${b.id}`,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
@@ -49,11 +54,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // 3. Cards - dynamic from API
-  const cardsRes = await apiFetch('/api/v1/cards')
-  const cards = await cardsRes.json()
+  let cardData: { id: string }[] = []
+  try {
+    const cardsRes = await apiFetch('/api/v1/cards')
+    cardData = ((await cardsRes.json()) as { data: { id: string }[] }).data ?? []
+  } catch (e) {
+    console.error('[sitemap] Failed to fetch cards:', e)
+  }
   const cardPages = [
     { url: `${BASE_URL}/the`, changeFrequency: 'weekly' as const, priority: 0.9 },
-    ...cards.data.map((c: { id: string }) => ({
+    ...cardData.map((c) => ({
       url: `${BASE_URL}/the/${c.id}`,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
