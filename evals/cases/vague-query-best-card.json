@@ -1,0 +1,12 @@
+{
+  "id": "vague-query-best-card",
+  "name": "vague-query: best card",
+  "description": "Model should ask clarifying question or give substantive response to vague query",
+  "message": "Thẻ nào tốt nhất?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response length > 50 characters"
+  },
+  "tags": ["vague-query"]
+}

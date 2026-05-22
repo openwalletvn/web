@@ -1,0 +1,12 @@
+{
+  "id": "happy-path-recommend-cashback",
+  "name": "happy-path: recommend cashback card",
+  "description": "Model should respond with card recommendation using rankCardsForSpend tool",
+  "message": "Dùng rankCardsForSpend với spend={\"ecommerce\":5000000} để gợi ý thẻ tín dụng tốt nhất cho tôi.",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response length > 30 and contains 'thẻ', 'hoàn', 'rank', or 'card' (case-insensitive)"
+  },
+  "tags": ["happy-path"]
+}

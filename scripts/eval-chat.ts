@@ -2,173 +2,424 @@
  * Offline eval harness for the /api/chat endpoint.
  * Run: npx tsx scripts/eval-chat.ts
  *
- * Requires GROQ_API_KEY and CHAT_MODEL in .env.local
+ * Requires GROQ_API_KEY, CHAT_MODEL, JUDGE_MODEL, GITHUB_TOKEN in .env.local
  * and the dev server running on localhost:3000 (or set CHAT_URL).
  */
 import * as dotenv from 'dotenv';
 import * as path from 'node:path';
+import * as fs from 'node:fs';
+import { execSync } from 'node:child_process';
 
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
 const CHAT_URL = process.env.CHAT_URL ?? 'http://localhost:3000/api/chat';
+const GROQ_API_KEY = process.env.GROQ_API_KEY ?? '';
+const CHAT_MODEL = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
+const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'llama-3.3-70b-versatile';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? '';
+const EVALS_REPO = process.env.EVALS_REPO ?? 'openwalletvn/evals';
 
-interface EvalCase {
-    name: string;
-    message: string;
-    // For pass: at least one assertion must match
-    expect: {
-        /** Response should contain this substring (case-insensitive) */
-        contains?: string;
-        /** Response should NOT contain this substring (case-insensitive) */
-        notContains?: string;
-        /** Predicate over full response text */
-        custom?: (text: string) => boolean;
-    };
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface EvalCaseJSON {
+  id: string;
+  name: string;
+  description: string;
+  message: string;
+  expect: {
+    contains: string | null;
+    notContains: string | null;
+    customDescription: string | null;
+  };
+  tags: string[];
 }
 
-const TEST_CASES: EvalCase[] = [
-    {
-        name: 'happy-path: list banks',
-        message: 'Có những ngân hàng nào phát hành thẻ tín dụng tại Việt Nam?',
-        expect: { custom: (t) => t.toLowerCase().includes('vietcombank') || t.toLowerCase().includes('techcombank') || t.toLowerCase().includes('acb') },
-    },
-    {
-        name: 'happy-path: recommend cashback card',
-        // Explicit spend profile to avoid reasoning overhead with ranking tool
-        message: 'Dùng rankCardsForSpend với spend={"ecommerce":5000000} để gợi ý thẻ tín dụng tốt nhất cho tôi.',
-        expect: { custom: (t) => t.length > 30 && (t.toLowerCase().includes('thẻ') || t.toLowerCase().includes('hoàn') || t.toLowerCase().includes('rank') || t.toLowerCase().includes('card')) },
-    },
-    {
-        name: 'happy-path: compare two cards',
-        // Explicit IDs to skip model reasoning overhead and card lookup steps
-        message: 'Dùng compareCards với card_ids=["techcombank-spark","vpbank-flex-mastercard"] để so sánh hai thẻ này.',
-        expect: { custom: (t) => t.toLowerCase().includes('techcombank') || t.toLowerCase().includes('vpbank') || t.toLowerCase().includes('spark') || t.toLowerCase().includes('flex') },
-    },
-    {
-        name: 'happy-path: card fee inquiry',
-        message: 'Phí thường niên của thẻ tín dụng Vietcombank là bao nhiêu?',
-        expect: { contains: 'phí' },
-    },
-    {
-        name: 'out-of-scope: gold price',
-        message: 'Giá vàng hôm nay là bao nhiêu?',
-        expect: { contains: 'thẻ ngân hàng' },
-    },
-    {
-        name: 'out-of-scope: stock market',
-        message: 'VN-Index hôm nay thế nào?',
-        expect: { contains: 'thẻ' },
-    },
-    {
-        name: 'vague-query: best card',
-        message: 'Thẻ nào tốt nhất?',
-        expect: { custom: (t) => t.length > 50 },
-    },
-    {
-        name: 'hallucination-guard: fake card',
-        // Pass if: model says "not found" / "don't know" OR response is empty (timed out = no hallucination either)
-        message: 'Thẻ ACB Cashback Ultra có hoàn tiền bao nhiêu phần trăm?',
-        expect: {
-            custom: (t) => {
-                if (t.length === 0) return true; // timeout = no hallucination
-                const lower = t.toLowerCase();
-                // Fail only if model confidently states a specific cashback rate (hallucination)
-                return !lower.match(/hoàn tiền\s+\d+\s*%/);
-            },
-        },
-    },
-];
+interface EvalCase {
+  id: string;
+  name: string;
+  message: string;
+  expect: {
+    contains?: string;
+    notContains?: string;
+    custom?: (text: string) => boolean;
+  };
+}
 
-const TIMEOUT_MS = 180_000; // 3 min — reasoning models can take a long time
+interface EvalResult {
+  run_id: string;
+  prompt_version: string;
+  model: string;
+  judge_model: string;
+  test_id: string;
+  input: string;
+  response: string;
+  rule_pass: boolean;
+  score: number;
+  pass: boolean;
+  judge_reasoning: string;
+  latency_ms: number;
+  timestamp: string;
+}
+
+// ─── Custom checks (predicate logic keyed by test id) ─────────────────────────
+
+const customChecks: Record<string, (text: string) => boolean> = {
+  'happy-path-list-banks': (t) =>
+    t.toLowerCase().includes('vietcombank') ||
+    t.toLowerCase().includes('techcombank') ||
+    t.toLowerCase().includes('acb'),
+
+  'happy-path-recommend-cashback': (t) =>
+    t.length > 30 &&
+    (t.toLowerCase().includes('thẻ') ||
+      t.toLowerCase().includes('hoàn') ||
+      t.toLowerCase().includes('rank') ||
+      t.toLowerCase().includes('card')),
+
+  'happy-path-compare-two-cards': (t) =>
+    t.toLowerCase().includes('techcombank') ||
+    t.toLowerCase().includes('vpbank') ||
+    t.toLowerCase().includes('spark') ||
+    t.toLowerCase().includes('flex'),
+
+  'vague-query-best-card': (t) => t.length > 50,
+
+  'hallucination-guard-fake-card': (t) => {
+    if (t.length === 0) return true; // timeout = no hallucination
+    const lower = t.toLowerCase();
+    return !lower.match(/hoàn tiền\s+\d+\s*%/);
+  },
+};
+
+// ─── Loader ───────────────────────────────────────────────────────────────────
+
+function loadTestCases(): EvalCase[] {
+  const dir = path.join(process.cwd(), 'evals/cases');
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort();
+
+  return files.map((file) => {
+    const raw = fs.readFileSync(path.join(dir, file), 'utf-8');
+    const json = JSON.parse(raw) as EvalCaseJSON;
+
+    const evalCase: EvalCase = {
+      id: json.id,
+      name: json.name,
+      message: json.message,
+      expect: {},
+    };
+
+    if (json.expect.contains) evalCase.expect.contains = json.expect.contains;
+    if (json.expect.notContains) evalCase.expect.notContains = json.expect.notContains;
+    if (customChecks[json.id]) evalCase.expect.custom = customChecks[json.id];
+
+    return evalCase;
+  });
+}
+
+// ─── Prompt version ───────────────────────────────────────────────────────────
+
+function getPromptVersion(): string {
+  try {
+    return execSync('git log -1 --format=%H -- lib/chat/system-prompt.ts')
+      .toString()
+      .trim();
+  } catch {
+    return 'unknown';
+  }
+}
+
+// ─── Run ID ───────────────────────────────────────────────────────────────────
+
+function makeRunId(): string {
+  const ts = Date.now();
+  const hash = getPromptVersion().slice(0, 7);
+  return `${ts}-${hash}`;
+}
+
+// ─── Chat call ────────────────────────────────────────────────────────────────
+
+const TIMEOUT_MS = 180_000;
 
 async function sendMessage(message: string): Promise<string> {
-    const res = await fetch(CHAT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            messages: [{ id: 'eval-1', role: 'user', parts: [{ type: 'text', text: message }] }],
-        }),
+  const res = await fetch(CHAT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: [{ id: 'eval-1', role: 'user', parts: [{ type: 'text', text: message }] }],
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+  }
+
+  const reader = res.body!.getReader();
+  const decoder = new TextDecoder();
+  let fullText = '';
+  const deadline = Date.now() + TIMEOUT_MS;
+
+  while (Date.now() < deadline) {
+    const { done, value } = await Promise.race([
+      reader.read(),
+      new Promise<{ done: true; value: undefined }>((_, reject) =>
+        setTimeout(() => reject(new Error('stream timeout')), deadline - Date.now()),
+      ),
+    ]).catch(() => ({ done: true as const, value: undefined }));
+    if (done) break;
+    if (value) fullText += decoder.decode(value, { stream: true });
+  }
+  reader.cancel().catch(() => {});
+
+  const textParts: string[] = [];
+  for (const line of fullText.split('\n')) {
+    if (!line.startsWith('data: ')) continue;
+    const raw = line.slice(6).trim();
+    if (!raw || raw === '[DONE]') continue;
+    try {
+      const chunk = JSON.parse(raw) as { type: string; delta?: string };
+      if (chunk.type === 'text-delta' && chunk.delta) textParts.push(chunk.delta);
+    } catch {
+      // ignore parse errors
+    }
+  }
+  return textParts.join('');
+}
+
+// ─── LLM judge ───────────────────────────────────────────────────────────────
+
+interface JudgeResult {
+  score: number;
+  reasoning: string;
+}
+
+async function judgeResponse(tc: EvalCase, response: string): Promise<JudgeResult> {
+  if (!GROQ_API_KEY) return { score: 50, reasoning: 'No GROQ_API_KEY — skipped judge' };
+
+  const truncatedResponse = response.slice(0, 800);
+  const userPrompt = `Test case: ${tc.name}
+User message: ${tc.message}
+Assistant response: ${truncatedResponse}
+
+Score this response 1-100.
+- 100: perfect, accurate, on-topic, helpful
+- 50: partially correct or partially off-topic
+- 1: wrong, hallucinated, or refused valid query
+
+Respond with JSON only, no markdown:
+{"score": <number>, "reasoning": "<one sentence max 100 chars>"}`;
+
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${GROQ_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: JUDGE_MODEL,
+        messages: [
+          { role: 'system', content: 'You are an eval judge. Respond with valid JSON only, no markdown fences.' },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0,
+        max_tokens: 300,
+        response_format: { type: 'json_object' },
+      }),
     });
 
     if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+      const err = await res.text();
+      return { score: 50, reasoning: `Judge API error: ${err.slice(0, 100)}` };
     }
 
-    // Stream with timeout — collect text as it arrives, return partial on timeout
-    const reader = res.body!.getReader();
-    const decoder = new TextDecoder();
-    let fullText = '';
-    const deadline = Date.now() + TIMEOUT_MS;
+    const json = await res.json() as { choices: { message: { content: string } }[] };
+    let content = json.choices[0]?.message?.content ?? '{}';
 
-    while (Date.now() < deadline) {
-        const { done, value } = await Promise.race([
-            reader.read(),
-            new Promise<{ done: true; value: undefined }>((_, reject) =>
-                setTimeout(() => reject(new Error('stream timeout')), deadline - Date.now())
-            ),
-        ]).catch(() => ({ done: true as const, value: undefined }));
-        if (done) break;
-        if (value) fullText += decoder.decode(value, { stream: true });
-    }
-    reader.cancel().catch(() => {});
+    // Strip markdown code fences if present
+    content = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
 
-    // Extract text content from UI message stream chunks (SSE format)
-    const textParts: string[] = [];
-    for (const line of fullText.split('\n')) {
-        if (!line.startsWith('data: ')) continue;
-        const raw = line.slice(6).trim();
-        if (!raw || raw === '[DONE]') continue;
-        try {
-            const chunk = JSON.parse(raw) as { type: string; delta?: string };
-            if (chunk.type === 'text-delta' && chunk.delta) textParts.push(chunk.delta);
-        } catch {
-            // ignore parse errors
-        }
-    }
-    return textParts.join('');
+    // Extract first JSON object if model added extra text
+    const match = content.match(/\{[\s\S]*\}/);
+    if (match) content = match[0];
+
+    const parsed = JSON.parse(content) as { score?: number; reasoning?: string };
+    return {
+      score: typeof parsed.score === 'number' ? Math.min(100, Math.max(1, parsed.score)) : 50,
+      reasoning: (parsed.reasoning ?? 'No reasoning provided').slice(0, 120),
+    };
+  } catch (err) {
+    return { score: 50, reasoning: `Judge failed: ${String(err).slice(0, 100)}` };
+  }
 }
 
-async function runEval() {
-    console.log(`\nRunning ${TEST_CASES.length} eval cases against ${CHAT_URL}\n`);
-    let passed = 0;
-    let failed = 0;
+// ─── GitHub push ──────────────────────────────────────────────────────────────
 
-    for (const tc of TEST_CASES) {
-        process.stdout.write(`  [${tc.name}] ... `);
-        try {
-            const response = await sendMessage(tc.message);
+async function pushToEvalsRepo(runId: string, lines: string[]): Promise<void> {
+  if (!GITHUB_TOKEN) {
+    console.log('  [github] GITHUB_TOKEN not set — skipping push');
+    return;
+  }
 
-            let ok = true;
-            if (tc.expect.contains && !response.toLowerCase().includes(tc.expect.contains.toLowerCase())) {
-                ok = false;
-            }
-            if (tc.expect.notContains && response.toLowerCase().includes(tc.expect.notContains.toLowerCase())) {
-                ok = false;
-            }
-            if (tc.expect.custom && !tc.expect.custom(response)) {
-                ok = false;
-            }
+  const today = new Date().toISOString().slice(0, 10);
+  const filename = `results/${today}/run-${runId}.jsonl`;
+  const content = Buffer.from(lines.join('\n') + '\n').toString('base64');
 
-            if (ok) {
-                console.log('PASS');
-                passed++;
-            } else {
-                console.log('FAIL');
-                console.log(`    Response: ${response.slice(0, 200)}`);
-                failed++;
-            }
-        } catch (err) {
-            console.log('ERROR');
-            console.log(`    ${String(err)}`);
-            failed++;
-        }
+  // GET sha if file exists (needed for update)
+  let sha: string | undefined;
+  try {
+    const getRes = await fetch(
+      `https://api.github.com/repos/${EVALS_REPO}/contents/${filename}`,
+      { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } },
+    );
+    if (getRes.ok) {
+      const existing = await getRes.json() as { sha?: string };
+      sha = existing.sha;
     }
+  } catch {
+    // file doesn't exist — that's fine
+  }
 
-    console.log(`\nResults: ${passed}/${TEST_CASES.length} passed, ${failed} failed\n`);
-    if (failed > 0) process.exit(1);
+  const body: Record<string, unknown> = {
+    message: `eval run ${runId}`,
+    content,
+  };
+  if (sha) body.sha = sha;
+
+  const putRes = await fetch(
+    `https://api.github.com/repos/${EVALS_REPO}/contents/${filename}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    },
+  );
+
+  if (!putRes.ok) {
+    const err = await putRes.text();
+    console.error(`  [github] Push failed: ${err.slice(0, 200)}`);
+  } else {
+    console.log(`  [github] Pushed → ${EVALS_REPO}/${filename}`);
+  }
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+
+async function runEval() {
+  const TEST_CASES = loadTestCases();
+  const promptVersion = getPromptVersion();
+  const runId = makeRunId();
+
+  console.log(`\nEval run: ${runId}`);
+  console.log(`Prompt version: ${promptVersion}`);
+  console.log(`Chat model: ${CHAT_MODEL} | Judge model: ${JUDGE_MODEL}`);
+  console.log(`Running ${TEST_CASES.length} eval cases against ${CHAT_URL}\n`);
+
+  const results: EvalResult[] = [];
+  const jsonlLines: string[] = [];
+
+  for (const tc of TEST_CASES) {
+    process.stdout.write(`  [${tc.name}] ... `);
+    const startMs = Date.now();
+
+    try {
+      const response = await sendMessage(tc.message);
+      const latency_ms = Date.now() - startMs;
+
+      // Rule check
+      let rule_pass = true;
+      if (tc.expect.contains && !response.toLowerCase().includes(tc.expect.contains.toLowerCase())) {
+        rule_pass = false;
+      }
+      if (tc.expect.notContains && response.toLowerCase().includes(tc.expect.notContains.toLowerCase())) {
+        rule_pass = false;
+      }
+      if (tc.expect.custom && !tc.expect.custom(response)) {
+        rule_pass = false;
+      }
+
+      // LLM judge
+      const judge = await judgeResponse(tc, response);
+      const pass = rule_pass && judge.score >= 60;
+
+      const result: EvalResult = {
+        run_id: runId,
+        prompt_version: promptVersion,
+        model: CHAT_MODEL,
+        judge_model: JUDGE_MODEL,
+        test_id: tc.id,
+        input: tc.message,
+        response,
+        rule_pass,
+        score: judge.score,
+        pass,
+        judge_reasoning: judge.reasoning,
+        latency_ms,
+        timestamp: new Date().toISOString(),
+      };
+
+      results.push(result);
+      jsonlLines.push(JSON.stringify(result));
+
+      const status = pass ? 'PASS' : 'FAIL';
+      console.log(`${status} (score=${judge.score}, rule=${rule_pass})`);
+      if (!pass) {
+        console.log(`    Response: ${response.slice(0, 200)}`);
+        console.log(`    Judge: ${judge.reasoning}`);
+      }
+    } catch (err) {
+      const latency_ms = Date.now() - startMs;
+      console.log('ERROR');
+      console.log(`    ${String(err)}`);
+
+      const result: EvalResult = {
+        run_id: runId,
+        prompt_version: promptVersion,
+        model: CHAT_MODEL,
+        judge_model: JUDGE_MODEL,
+        test_id: tc.id,
+        input: tc.message,
+        response: '',
+        rule_pass: false,
+        score: 0,
+        pass: false,
+        judge_reasoning: `Error: ${String(err)}`,
+        latency_ms,
+        timestamp: new Date().toISOString(),
+      };
+
+      results.push(result);
+      jsonlLines.push(JSON.stringify(result));
+    }
+  }
+
+  // Summary table
+  const passed = results.filter((r) => r.pass).length;
+  const failed = results.length - passed;
+  const avgScore = Math.round(results.reduce((s, r) => s + r.score, 0) / results.length);
+
+  console.log('\n─────────────────────────────────────────────────────────');
+  console.log('Name                                  Score  Pass  Reasoning');
+  console.log('─────────────────────────────────────────────────────────');
+  for (const r of results) {
+    const name = r.test_id.padEnd(38).slice(0, 38);
+    const score = String(r.score).padStart(5);
+    const passStr = r.pass ? ' PASS' : ' FAIL';
+    const reason = r.judge_reasoning.slice(0, 60);
+    console.log(`${name} ${score}  ${passStr}  ${reason}`);
+  }
+  console.log('─────────────────────────────────────────────────────────');
+  console.log(`Results: ${passed}/${results.length} passed | avg score: ${avgScore} | ${failed} failed\n`);
+
+  // GitHub push
+  await pushToEvalsRepo(runId, jsonlLines);
+
+  if (failed > 0) process.exit(1);
 }
 
 runEval().catch((err) => {
-    console.error(err);
-    process.exit(1);
+  console.error(err);
+  process.exit(1);
 });

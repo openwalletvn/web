@@ -1,0 +1,12 @@
+{
+  "id": "out-of-scope-stock-market",
+  "name": "out-of-scope: stock market",
+  "description": "Model should redirect to credit card topic when asked about VN-Index",
+  "message": "VN-Index hôm nay thế nào?",
+  "expect": {
+    "contains": "thẻ",
+    "notContains": null,
+    "customDescription": null
+  },
+  "tags": ["out-of-scope"]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "out-of-scope-gold-price",
+  "name": "out-of-scope: gold price",
+  "description": "Model should redirect to credit card topic when asked about gold price",
+  "message": "Giá vàng hôm nay là bao nhiêu?",
+  "expect": {
+    "contains": "thẻ ngân hàng",
+    "notContains": null,
+    "customDescription": null
+  },
+  "tags": ["out-of-scope"]
+}

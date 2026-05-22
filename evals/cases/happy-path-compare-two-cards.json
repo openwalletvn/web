@@ -1,0 +1,12 @@
+{
+  "id": "happy-path-compare-two-cards",
+  "name": "happy-path: compare two cards",
+  "description": "Model should compare techcombank-spark and vpbank-flex-mastercard using compareCards tool",
+  "message": "Dùng compareCards với card_ids=[\"techcombank-spark\",\"vpbank-flex-mastercard\"] để so sánh hai thẻ này.",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response contains 'techcombank', 'vpbank', 'spark', or 'flex' (case-insensitive)"
+  },
+  "tags": ["happy-path"]
+}
