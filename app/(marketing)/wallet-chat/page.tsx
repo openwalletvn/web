@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buildBreadcrumbJsonLd } from '@/lib/page-meta/breadcrumb';
+import { getTool } from '@/lib/tools';
+
+const BASE_URL = 'https://openwallet.vn';
+const tool = getTool('Wallet Chat');
 
 export const metadata: Metadata = {
     title: 'Wallet Chat | Hỏi đáp thẻ ngân hàng bằng AI',
@@ -8,7 +12,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Wallet Chat',
         description: 'Trợ lý AI hỏi đáp thẻ ngân hàng Việt Nam. Không tài khoản, không lưu trữ server.',
-        url: 'https://openwallet.vn/wallet-chat',
+        url: `${BASE_URL}${tool.href}`,
     },
 };
 
@@ -34,7 +38,7 @@ export default function WalletChatPage() {
             {
                 '@type': 'SoftwareApplication',
                 name: 'Wallet Chat',
-                url: 'https://openwallet.vn/wallet-chat',
+                url: `${BASE_URL}${tool.href}`,
                 description: 'Trợ lý AI hỏi đáp và gợi ý thẻ ngân hàng Việt Nam. Dữ liệu lưu cục bộ, không cần tài khoản.',
                 applicationCategory: 'FinanceApplication',
                 operatingSystem: 'All',
@@ -46,7 +50,7 @@ export default function WalletChatPage() {
             },
             buildBreadcrumbJsonLd([
                 { label: 'Trang chủ', href: '/' },
-                { label: 'Wallet Chat', href: '/wallet-chat' },
+                { label: 'Wallet Chat', href: tool.href },
             ]),
         ],
     };

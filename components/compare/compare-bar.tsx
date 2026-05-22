@@ -4,8 +4,10 @@ import Image from 'next/image';
 import {useRouter} from 'next/navigation';
 import {IconScale, IconX} from '@tabler/icons-react';
 import {useCompareList} from '@/lib/use-compare-list';
+import {getTool} from '@/lib/tools';
 
 const SLOTS = 3;
+const cardBattleHref = getTool('Card Battle').href;
 
 export function CompareBar() {
     const router = useRouter();
@@ -16,7 +18,7 @@ export function CompareBar() {
 
     function handleCompare() {
         if (!canCompare) return;
-        router.push(`/so-sanh/${compareList.join('-vs-')}`);
+        router.push(`${cardBattleHref}/${compareList.join('-vs-')}`);
     }
 
     return (

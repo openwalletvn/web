@@ -7,9 +7,12 @@ import type { Card } from '@/lib/api';
 import type { SearchCard } from '@/lib/search-types';
 import { useRecentCompares, normalizePair } from '@/lib/use-recent-compares';
 import { useCardSearch } from '@/lib/use-card-search';
+import { getTool } from '@/lib/tools';
 import { CardImage } from '@/components/cards/card-image';
 
 // CardImage needs a full Card object; build a minimal one from SearchCard
+const cardBattleHref = getTool('Card Battle').href;
+
 function toCardShell(sc: SearchCard): Card {
  return {
  id: sc.id,
@@ -81,8 +84,8 @@ export function RecentCompares({ excludePair }: Props = {}) {
  const searchCards = ids.map((id) => lookup(id));
 
  const href = pair.includes('-vs-')
- ? `/so-sanh/${pair}`
- : `/so-sanh?compare=${ids.join(',')}`;
+ ? `${cardBattleHref}/${pair}`
+ : `${cardBattleHref}?compare=${ids.join(',')}`;
 
  return (
  <div key={pair} className="group flex items-center gap-3 py-3">

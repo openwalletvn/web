@@ -2,6 +2,7 @@
 
 import {Suspense, useCallback, useEffect, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import {getTool} from '@/lib/tools';
 import type {Bank, Card, Intent} from '@/lib/api';
 import {DEFAULT_MONTHLY_SPEND, getTiebreakerReason, rankCards} from '@/lib/card-ranker';
 import {SPEND_OPTIONS} from '@/lib/spend-options';
@@ -11,6 +12,7 @@ import {IconChevronLeft, IconChevronRight} from '@tabler/icons-react';
 import {RankedRow} from '@/components/marketing/card-ranking-table';
 
 const STORAGE_KEY = 'ow-rec-prefs';
+const cardMatchHref = getTool('Card Match').href;
 const DEFAULT_TAB = 'ca-nhan';
 
 interface RecPrefs {
@@ -46,7 +48,7 @@ function RecommendationFinderInner({cards, banks, intents, limit = 5}: Recommend
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const isFinderPage = pathname === '/goi-y-the';
+    const isFinderPage = pathname === cardMatchHref;
 
     const [tab, setTab] = useState(DEFAULT_TAB);
     const [intentSlugs, setIntentSlugs] = useState<string[]>([]);
@@ -80,7 +82,7 @@ function RecommendationFinderInner({cards, banks, intents, limit = 5}: Recommend
         writePrefs({tab, intentSlugs, spend});
         if (isFinderPage && intentSlugs.length > 0) {
             const params = new URLSearchParams({intent: intentSlugs.join(','), spend: String(spend)});
-            router.replace(`/goi-y-the?${params.toString()}`, {scroll: false});
+            router.replace(`${cardMatchHref}?${params.toString()}`, {scroll: false});
         }
     }, [tab, intentSlugs, spend, initialized, isFinderPage, router]);
 

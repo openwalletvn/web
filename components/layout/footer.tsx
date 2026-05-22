@@ -1,12 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {Logo} from '@/components/layout/logo';
+import {TOOLS} from '@/lib/tools';
 
 const LINKS = {
     tools: [
-        {label: 'So sánh thẻ', href: '/so-sanh'},
-        {label: 'Gợi ý thẻ', href: '/goi-y-the'},
-        {label: 'WalletChat', href: '/chat'},
+        ...TOOLS.map((t) => ({label: t.name, href: t.href})),
         {label: 'WalletApp', disabled: true, href: '/app'},
     ],
     legal: [

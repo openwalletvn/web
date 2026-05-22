@@ -11,8 +11,10 @@ import { CompareTemplate } from '@/components/compare/compare-template';
 import { RecentCompares } from '@/components/compare/recent-compares';
 import { useRecentCompares } from '@/lib/use-recent-compares';
 import { useCardSearch } from '@/lib/use-card-search';
+import { getTool } from '@/lib/tools';
 
 const MAX_CARDS = 3;
+const cardBattleHref = getTool('Card Battle').href;
 
 // Default cards shown when the user has no recent comparisons and no defaultPair
 const DEFAULT_CARD_IDS = ['sacombank-uniq', 'msb-visa-online'];
@@ -112,13 +114,13 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap }: 
     const lastNavigatedKey = useRef('');
     useEffect(() => {
         if (!prefillDone || selectedCount < 2) return;
-        const pairPath = `/so-sanh/${cards
+        const pairPath = `${cardBattleHref}/${cards
             .filter((c): c is SearchCard => c !== null)
             .map((c) => c.id)
             .join('-vs-')}`;
         if (pathname === pairPath || lastNavigatedKey.current === selectedKey) return;
         lastNavigatedKey.current = selectedKey;
-        const onPairPage = pathname.startsWith('/so-sanh/');
+        const onPairPage = pathname.startsWith(`${cardBattleHref}/`);
         if (onPairPage) {
             router.replace(pairPath);
         } else {

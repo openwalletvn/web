@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import type { Card } from '@/lib/api';
 import { buildBreadcrumbJsonLd, type BreadcrumbItem } from './breadcrumb';
 import type { CompareFrontmatter } from '@/lib/compare-mdx';
+import { getTool } from '@/lib/tools';
 
 const BASE_URL = 'https://openwallet.vn';
+const cardBattleHref = getTool('Card Battle').href;
 
 export interface ComparePageMeta {
     metadata: Metadata;
@@ -20,11 +22,11 @@ export function buildComparePageMeta(
     const description =
         frontmatter?.description ??
         `So sánh chi tiết ${cardA.name} và ${cardB.name}: phí thường niên, mạng thanh toán, ưu đãi và nhiều hơn nữa.`;
-    const url = `${BASE_URL}/so-sanh/${cardA.id}-vs-${cardB.id}`;
+    const url = `${BASE_URL}${cardBattleHref}/${cardA.id}-vs-${cardB.id}`;
 
     const breadcrumbItems: BreadcrumbItem[] = [
         { label: 'Trang chủ', href: '/' },
-        { label: 'So sánh thẻ', href: '/so-sanh' },
+        { label: 'Card Battle', href: cardBattleHref },
         { label: `${cardA.name} vs ${cardB.name}` },
     ];
 

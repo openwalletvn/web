@@ -1,3 +1,5 @@
+import { TOOLS, type Tool } from '@/lib/tools';
+
 export interface MenuItem {
     label: string;
     href: string;
@@ -18,6 +20,8 @@ export interface MenuItemWithDropdown {
     label: string;
     /** Optional href for the dropdown trigger itself */
     href?: string;
+    /** Simple flat list of items */
+    items?: Tool[];
     /** Row-based layout for cards mega menu */
     rows?: MenuRow[];
     /** Columns for mega menu layout */
@@ -31,7 +35,7 @@ export interface MenuItemWithDropdown {
 export type NavItem = MenuItem | MenuItemWithDropdown;
 
 function isDropdown(item: NavItem): item is MenuItemWithDropdown {
-    return 'columns' in item || 'rows' in item || 'type' in item;
+    return 'columns' in item || 'rows' in item || 'type' in item || 'items' in item;
 }
 
 export const MENU: NavItem[] = [
@@ -88,7 +92,12 @@ export const MENU: NavItem[] = [
     },
 
     {label: 'Tin tức', href: '/tin-tuc'},
-    {label: 'So sánh', href: '/so-sanh'},
+
+    {
+        label: 'Công cụ',
+        items: TOOLS,
+    },
+
     {label: 'Về chúng tôi', href: '/ve-openwallet'},
 ];
 

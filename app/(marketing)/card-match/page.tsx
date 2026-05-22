@@ -2,18 +2,22 @@ import type {Metadata} from 'next';
 import {getBanks, getCards, getIntents} from '@/lib/api';
 import {RecommendationFinder} from '@/components/marketing/recommendation-finder';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
+import {getTool} from '@/lib/tools';
+
+const BASE_URL = 'https://openwallet.vn';
+const tool = getTool('Card Match');
 
 export const metadata: Metadata = {
-    title: 'Gợi ý thẻ phù hợp | OpenWallet',
+    title: 'Card Match | OpenWallet',
     description: 'Tìm thẻ ngân hàng phù hợp nhất với thói quen chi tiêu của bạn. Chọn danh mục, nhập mức chi tiêu và nhận đề xuất cá nhân hoá ngay.',
     openGraph: {
-        title: 'Gợi ý thẻ phù hợp',
+        title: 'Card Match',
         description: 'Tìm thẻ ngân hàng phù hợp nhất với thói quen chi tiêu của bạn.',
-        url: 'https://openwallet.vn/goi-y-the',
+        url: `${BASE_URL}${tool.href}`,
     },
 };
 
-export default async function GoiYThePage() {
+export default async function CardMatchPage() {
     const [cards, banks, intents] = await Promise.all([
         getCards().catch(() => []),
         getBanks().catch(() => []),
@@ -25,13 +29,13 @@ export default async function GoiYThePage() {
         '@graph': [
             {
                 '@type': 'WebPage',
-                name: 'Gợi ý thẻ phù hợp',
-                url: 'https://openwallet.vn/goi-y-the',
+                name: 'Card Match',
+                url: `${BASE_URL}${tool.href}`,
                 description: 'Tìm thẻ ngân hàng phù hợp nhất với thói quen chi tiêu của bạn.',
             },
             buildBreadcrumbJsonLd([
                 {label: 'Trang chủ', href: '/'},
-                {label: 'Gợi ý thẻ', href: '/goi-y-the'},
+                {label: 'Card Match', href: tool.href},
             ]),
         ],
     };
