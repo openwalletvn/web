@@ -1,5 +1,6 @@
 import { createGroq } from '@ai-sdk/groq';
-import { streamText, convertToModelMessages, type UIMessage } from 'ai';
+import { createMCPClient } from '@ai-sdk/mcp';
+import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
 import { buildSystemPrompt } from '@/lib/chat/system-prompt';
 import type { PageContext } from '@/lib/chat/page-context';
 
@@ -39,19 +40,40 @@ export async function POST(req: Request) {
 
     const model = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
 
+    let mcpClient: Awaited<ReturnType<typeof createMCPClient>> | null = null;
+
     try {
+        mcpClient = await createMCPClient({
+            transport: {
+                type: 'http',
+                url: process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8787',
+                headers: {
+                    'x-mcp-key': process.env.OPENWALLET_MCP_KEY ?? '',
+                },
+            },
+        });
+
+        const tools = await mcpClient.tools();
+
         const result = streamText({
             model: groq(model),
             system: buildSystemPrompt(body.pageContext),
             messages,
+            stopWhen: stepCountIs(5),
+            tools,
+            onFinish: async () => {
+                await mcpClient?.close();
+            },
             onError: async ({ error }) => {
                 console.error('[chat] streamText error:', error);
+                await mcpClient?.close();
             },
         });
 
         return result.toUIMessageStreamResponse();
     } catch (err) {
         console.error('[chat] fatal error:', err);
+        await mcpClient?.close();
         return new Response(
             JSON.stringify({ error: String(err) }),
             { status: 500, headers: { 'Content-Type': 'application/json' } }
