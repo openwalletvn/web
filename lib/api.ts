@@ -237,6 +237,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
         } else {
             headers.set('X-OpenWallet-Key', apiKey);
         }
+        headers.set('Origin', 'https://openwallet.vn');
     }
     const res = await fetch(`${apiUrl}${path}`, {
         ...fetchOptions,
