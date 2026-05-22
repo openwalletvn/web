@@ -1,6 +1,8 @@
 # OpenWallet Vietnam
 
 [![Vercel Deployment](https://img.shields.io/github/deployments/openwalletvn/web/Production?logo=vercel&label=vercel&color=black)](https://openwallet.vn)
+[![MCP v0.1.0](https://img.shields.io/endpoint?url=https%3A%2F%2Fmcp.openwallet.vn%2Fbadge&cacheSeconds=60)](https://mcp.openwallet.vn/health)
+[![API v1.0.0](https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.openwallet.vn%2Fbadge&cacheSeconds=60)](https://api.openwallet.vn/health)
 
 Open-source digital wallet card database for Vietnam. Public card comparison site + local-first wallet manager (IndexedDB, no accounts).
 
