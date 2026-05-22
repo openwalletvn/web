@@ -1,12 +1,12 @@
 {
   "id": "happy-path-compare-two-cards",
-  "name": "happy-path: compare two cards",
-  "description": "Model should compare techcombank-spark and vpbank-flex-mastercard using compareCards tool",
-  "message": "Dùng compareCards với card_ids=[\"techcombank-spark\",\"vpbank-flex-mastercard\"] để so sánh hai thẻ này.",
+  "name": "happy-path: compare Techcombank Spark vs VPBank Flex",
+  "description": "Model should compare the two cards with pros/cons based on API data",
+  "message": "So sánh thẻ Techcombank Spark và VPBank Flex cho tôi. Thẻ nào tốt hơn cho chi tiêu hàng ngày?",
   "expect": {
     "contains": null,
     "notContains": null,
-    "customDescription": "Response contains 'techcombank', 'vpbank', 'spark', or 'flex' (case-insensitive)"
+    "customDescription": "Response mentions 'techcombank', 'vpbank', 'spark', or 'flex'"
   },
-  "tags": ["happy-path"]
+  "tags": ["happy-path", "compare"]
 }

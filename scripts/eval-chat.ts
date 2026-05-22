@@ -18,6 +18,7 @@ const CHAT_MODEL = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
 const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'llama-3.3-70b-versatile';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? '';
 const EVALS_REPO = process.env.EVALS_REPO ?? 'openwalletvn/evals';
+const TRIGGERED_BY = process.env.TRIGGERED_BY ?? (process.env.CI ? 'ci' : 'cli');
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -38,19 +39,25 @@ interface EvalCase {
   id: string;
   name: string;
   message: string;
+  tags: string[];
   expect: {
     contains?: string;
     notContains?: string;
     custom?: (text: string) => boolean;
+    customDescription?: string;
   };
 }
 
 interface EvalResult {
   run_id: string;
   prompt_version: string;
+  system_prompt: string;
+  triggered_by: string;
   model: string;
   judge_model: string;
   test_id: string;
+  test_name: string;
+  tags: string[];
   input: string;
   response: string;
   rule_pass: boolean;
@@ -67,14 +74,30 @@ const customChecks: Record<string, (text: string) => boolean> = {
   'happy-path-list-banks': (t) =>
     t.toLowerCase().includes('vietcombank') ||
     t.toLowerCase().includes('techcombank') ||
-    t.toLowerCase().includes('acb'),
+    t.toLowerCase().includes('acb') ||
+    t.toLowerCase().includes('vpbank') ||
+    t.toLowerCase().includes('mb'),
 
-  'happy-path-recommend-cashback': (t) =>
-    t.length > 30 &&
-    (t.toLowerCase().includes('thẻ') ||
-      t.toLowerCase().includes('hoàn') ||
-      t.toLowerCase().includes('rank') ||
-      t.toLowerCase().includes('card')),
+  'happy-path-shopee-cashback': (t) =>
+    t.length > 100 &&
+    (t.toLowerCase().includes('shopee') ||
+      t.toLowerCase().includes('hoàn tiền') ||
+      t.toLowerCase().includes('cashback') ||
+      t.toLowerCase().includes('thẻ')),
+
+  'happy-path-no-annual-fee': (t) =>
+    t.length > 80 &&
+    (t.toLowerCase().includes('miễn phí') ||
+      t.toLowerCase().includes('thường niên') ||
+      t.toLowerCase().includes('phí')),
+
+  'happy-path-travel-abroad': (t) =>
+    t.length > 100 &&
+    (t.toLowerCase().includes('ngoại tệ') ||
+      t.toLowerCase().includes('visa') ||
+      t.toLowerCase().includes('mastercard') ||
+      t.toLowerCase().includes('travel') ||
+      t.toLowerCase().includes('quốc tế')),
 
   'happy-path-compare-two-cards': (t) =>
     t.toLowerCase().includes('techcombank') ||
@@ -82,13 +105,29 @@ const customChecks: Record<string, (text: string) => boolean> = {
     t.toLowerCase().includes('spark') ||
     t.toLowerCase().includes('flex'),
 
-  'vague-query-best-card': (t) => t.length > 50,
+  'happy-path-installment': (t) =>
+    t.length > 80 &&
+    (t.toLowerCase().includes('trả góp') ||
+      t.toLowerCase().includes('0%') ||
+      t.toLowerCase().includes('phân kỳ')),
 
   'hallucination-guard-fake-card': (t) => {
-    if (t.length === 0) return true; // timeout = no hallucination
+    if (t.length === 0) return true;
     const lower = t.toLowerCase();
-    return !lower.match(/hoàn tiền\s+\d+\s*%/);
+    return !lower.match(/hoàn tiền\s+\d+\s*%/) && !lower.match(/\d+\s*%\s*hoàn/);
   },
+
+  'hallucination-guard-fabricated-rate': (t) => {
+    if (t.length === 0) return true;
+    const lower = t.toLowerCase();
+    return !lower.match(/5\s*%/) && !lower.match(/không giới hạn/);
+  },
+
+  'vague-query-best-card': (t) => t.length > 100,
+
+  'edge-case-multi-turn-context': (t) =>
+    t.length > 50 &&
+    (t.toLowerCase().includes('thẻ') || t.toLowerCase().includes('cashback')),
 };
 
 // ─── Loader ───────────────────────────────────────────────────────────────────
@@ -104,12 +143,14 @@ function loadTestCases(): EvalCase[] {
     const evalCase: EvalCase = {
       id: json.id,
       name: json.name,
+      tags: json.tags ?? [],
       message: json.message,
       expect: {},
     };
 
     if (json.expect.contains) evalCase.expect.contains = json.expect.contains;
     if (json.expect.notContains) evalCase.expect.notContains = json.expect.notContains;
+    if (json.expect.customDescription) evalCase.expect.customDescription = json.expect.customDescription;
     if (customChecks[json.id]) evalCase.expect.custom = customChecks[json.id];
 
     return evalCase;
@@ -123,6 +164,14 @@ function getPromptVersion(): string {
     return execSync('git log -1 --format=%H -- lib/chat/system-prompt.ts')
       .toString()
       .trim();
+  } catch {
+    return 'unknown';
+  }
+}
+
+function getSystemPrompt(): string {
+  try {
+    return fs.readFileSync(path.join(process.cwd(), 'lib/chat/system-prompt.ts'), 'utf-8');
   } catch {
     return 'unknown';
   }
@@ -235,10 +284,8 @@ Respond with JSON only, no markdown:
     const json = await res.json() as { choices: { message: { content: string } }[] };
     let content = json.choices[0]?.message?.content ?? '{}';
 
-    // Strip markdown code fences if present
     content = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
 
-    // Extract first JSON object if model added extra text
     const match = content.match(/\{[\s\S]*\}/);
     if (match) content = match[0];
 
@@ -264,7 +311,6 @@ async function pushToEvalsRepo(runId: string, lines: string[]): Promise<void> {
   const filename = `results/${today}/run-${runId}.jsonl`;
   const content = Buffer.from(lines.join('\n') + '\n').toString('base64');
 
-  // GET sha if file exists (needed for update)
   let sha: string | undefined;
   try {
     const getRes = await fetch(
@@ -279,10 +325,7 @@ async function pushToEvalsRepo(runId: string, lines: string[]): Promise<void> {
     // file doesn't exist — that's fine
   }
 
-  const body: Record<string, unknown> = {
-    message: `eval run ${runId}`,
-    content,
-  };
+  const body: Record<string, unknown> = { message: `eval run ${runId}`, content };
   if (sha) body.sha = sha;
 
   const putRes = await fetch(
@@ -310,10 +353,12 @@ async function pushToEvalsRepo(runId: string, lines: string[]): Promise<void> {
 async function runEval() {
   const TEST_CASES = loadTestCases();
   const promptVersion = getPromptVersion();
+  const systemPrompt = getSystemPrompt();
   const runId = makeRunId();
 
   console.log(`\nEval run: ${runId}`);
   console.log(`Prompt version: ${promptVersion}`);
+  console.log(`Triggered by: ${TRIGGERED_BY}`);
   console.log(`Chat model: ${CHAT_MODEL} | Judge model: ${JUDGE_MODEL}`);
   console.log(`Running ${TEST_CASES.length} eval cases against ${CHAT_URL}\n`);
 
@@ -328,7 +373,6 @@ async function runEval() {
       const response = await sendMessage(tc.message);
       const latency_ms = Date.now() - startMs;
 
-      // Rule check
       let rule_pass = true;
       if (tc.expect.contains && !response.toLowerCase().includes(tc.expect.contains.toLowerCase())) {
         rule_pass = false;
@@ -340,16 +384,19 @@ async function runEval() {
         rule_pass = false;
       }
 
-      // LLM judge
       const judge = await judgeResponse(tc, response);
       const pass = rule_pass && judge.score >= 60;
 
       const result: EvalResult = {
         run_id: runId,
         prompt_version: promptVersion,
+        system_prompt: systemPrompt,
+        triggered_by: TRIGGERED_BY,
         model: CHAT_MODEL,
         judge_model: JUDGE_MODEL,
         test_id: tc.id,
+        test_name: tc.name,
+        tags: tc.tags,
         input: tc.message,
         response,
         rule_pass,
@@ -377,9 +424,13 @@ async function runEval() {
       const result: EvalResult = {
         run_id: runId,
         prompt_version: promptVersion,
+        system_prompt: systemPrompt,
+        triggered_by: TRIGGERED_BY,
         model: CHAT_MODEL,
         judge_model: JUDGE_MODEL,
         test_id: tc.id,
+        test_name: tc.name,
+        tags: tc.tags,
         input: tc.message,
         response: '',
         rule_pass: false,
@@ -395,7 +446,6 @@ async function runEval() {
     }
   }
 
-  // Summary table
   const passed = results.filter((r) => r.pass).length;
   const failed = results.length - passed;
   const avgScore = Math.round(results.reduce((s, r) => s + r.score, 0) / results.length);
@@ -413,7 +463,6 @@ async function runEval() {
   console.log('─────────────────────────────────────────────────────────');
   console.log(`Results: ${passed}/${results.length} passed | avg score: ${avgScore} | ${failed} failed\n`);
 
-  // GitHub push
   await pushToEvalsRepo(runId, jsonlLines);
 
   if (failed > 0) process.exit(1);

@@ -2,55 +2,63 @@ import { useState } from 'react';
 import type { RunSummary } from '../types';
 import { RunList } from '../components/RunList';
 import { RunDetail } from '../components/RunDetail';
-import { PromptCompare } from '../components/PromptCompare';
 import { TriggerButton } from '../components/TriggerButton';
 
-type Tab = 'runs' | 'compare';
-
 export function EvalsPage() {
-  const [tab, setTab] = useState<Tab>('runs');
   const [selectedRun, setSelectedRun] = useState<RunSummary | null>(null);
-  const [allRuns, setAllRuns] = useState<RunSummary[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  function handleSelectRun(run: RunSummary) {
-    setSelectedRun(run);
-    if (!allRuns.find((r) => r.run_id === run.run_id)) {
-      setAllRuns((prev) => [...prev, run]);
-    }
-  }
-
-  const tabStyle = (active: boolean): React.CSSProperties => ({
-    padding: '0.5rem 1rem',
-    cursor: 'pointer',
-    border: 'none',
-    borderBottom: active ? '2px solid #0070f3' : '2px solid transparent',
-    background: 'none',
-    fontWeight: active ? 'bold' : 'normal',
-    color: active ? '#0070f3' : '#333',
-  });
-
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1 style={{ marginBottom: '0.5rem' }}>Eval Runs</h1>
-      <TriggerButton onTriggered={() => setRefreshKey((k) => k + 1)} />
-      <div style={{ borderBottom: '1px solid #eee', marginBottom: '1.5rem' }}>
-        <button style={tabStyle(tab === 'runs')} onClick={() => setTab('runs')}>Runs</button>
-        <button style={tabStyle(tab === 'compare')} onClick={() => setTab('compare')}>Compare</button>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      {/* Header */}
+      <div style={{
+        borderBottom: '1px solid var(--border)',
+        background: '#fff',
+        padding: '1rem 2rem',
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
+            <h1 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
+              Chat Eval Runs
+            </h1>
+            <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>
+              system prompt audit — openwalletvn/evals
+            </span>
+          </div>
+        </div>
       </div>
 
-      {tab === 'runs' && (
-        <div style={{ display: 'grid', gridTemplateColumns: selectedRun ? '1fr 1fr' : '1fr', gap: '2rem' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '1.5rem 2rem' }}>
+        {/* Trigger section (localhost only) */}
+        <TriggerButton onTriggered={() => setRefreshKey((k) => k + 1)} />
+
+        {/* Two-column layout */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: selectedRun ? '340px 1fr' : '340px',
+          gap: '1.5rem',
+          alignItems: 'start',
+        }}>
           <RunList
-            onSelectRun={handleSelectRun}
+            onSelectRun={setSelectedRun}
             selectedRunId={selectedRun?.run_id}
             refreshKey={refreshKey}
           />
           {selectedRun && <RunDetail run={selectedRun} />}
         </div>
-      )}
 
-      {tab === 'compare' && <PromptCompare runs={allRuns} />}
+        {!selectedRun && (
+          <div style={{
+            color: 'var(--muted)',
+            fontSize: '0.85rem',
+            marginTop: '2rem',
+            paddingLeft: '360px',
+            display: selectedRun ? 'none' : 'block',
+          }}>
+            Select a run to view system prompt and test results.
+          </div>
+        )}
+      </div>
     </div>
   );
 }

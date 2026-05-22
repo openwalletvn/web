@@ -1,0 +1,12 @@
+{
+  "id": "happy-path-travel-abroad",
+  "name": "happy-path: travel card for overseas spending",
+  "description": "Model should recommend cards with low forex fees or travel benefits",
+  "message": "Tôi hay đi công tác nước ngoài, muốn tìm thẻ tín dụng có phí ngoại tệ thấp hoặc hoàn tiền tốt khi thanh toán quốc tế. Thẻ nào phù hợp?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response length > 100 chars AND mentions 'ngoại tệ', 'visa', 'mastercard', 'travel', or 'quốc tế'"
+  },
+  "tags": ["happy-path", "travel", "international"]
+}

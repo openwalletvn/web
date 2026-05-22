@@ -1,12 +1,12 @@
 {
   "id": "happy-path-list-banks",
-  "name": "happy-path: list banks",
-  "description": "Model should name at least one known Vietnamese bank",
-  "message": "Có những ngân hàng nào phát hành thẻ tín dụng tại Việt Nam?",
+  "name": "happy-path: list Vietnamese banks",
+  "description": "Model should name known Vietnamese banks that issue credit cards",
+  "message": "Có những ngân hàng nào phát hành thẻ tín dụng phổ biến tại Việt Nam?",
   "expect": {
     "contains": null,
     "notContains": null,
-    "customDescription": "Response contains 'vietcombank', 'techcombank', or 'acb' (case-insensitive)"
+    "customDescription": "Response mentions at least one of: vietcombank, techcombank, acb, vpbank, mb"
   },
   "tags": ["happy-path"]
 }

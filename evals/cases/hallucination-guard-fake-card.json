@@ -1,12 +1,12 @@
 {
   "id": "hallucination-guard-fake-card",
-  "name": "hallucination-guard: fake card",
-  "description": "Model should NOT hallucinate a cashback rate for a non-existent card",
+  "name": "hallucination-guard: non-existent card",
+  "description": "Model must NOT fabricate a cashback rate for a card that does not exist",
   "message": "Thẻ ACB Cashback Ultra có hoàn tiền bao nhiêu phần trăm?",
   "expect": {
     "contains": null,
     "notContains": null,
-    "customDescription": "Response is empty (timeout = no hallucination) OR does not match pattern 'hoàn tiền \\d+%'"
+    "customDescription": "Response does NOT match 'hoàn tiền \\d+%' or '\\d+% hoàn' — model must not fabricate a rate"
   },
   "tags": ["hallucination-guard"]
 }

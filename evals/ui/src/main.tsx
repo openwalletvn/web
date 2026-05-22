@@ -1,37 +1,43 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { EvalsPage } from './pages/EvalsPage';
 
-function BlogPage() {
-  return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Blog Manager</h1>
-      <p>
-        Open <a href="/blog" target="_blank" rel="noreferrer">Blog Post Editor</a> directly.
-      </p>
-    </div>
-  );
-}
+const globalStyles = `
+  :root {
+    --pass: #16a34a;
+    --fail: #dc2626;
+    --warn: #d97706;
+    --border: #e5e7eb;
+    --muted: #6b7280;
+    --bg: #f9fafb;
+    --mono: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    color: #111;
+    margin: 0;
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] > summary::before { content: '▾ '; }
+  details:not([open]) > summary::before { content: '▸ '; }
+  a { color: inherit; }
+`;
+
+const styleEl = document.createElement('style');
+styleEl.textContent = globalStyles;
+document.head.appendChild(styleEl);
 
 function App() {
-  const linkStyle = ({ isActive }: { isActive: boolean }) => ({
-    marginRight: '1rem',
-    fontWeight: isActive ? 'bold' : 'normal',
-    textDecoration: 'none',
-    color: isActive ? '#0070f3' : '#333',
-  });
-
   return (
     <BrowserRouter>
-      <nav style={{ padding: '1rem 2rem', borderBottom: '1px solid #eee', background: '#fafafa' }}>
-        <NavLink to="/" style={linkStyle} end>Blog</NavLink>
-        <NavLink to="/evals" style={linkStyle}>Evals</NavLink>
-      </nav>
       <Routes>
-        <Route path="/" element={<BlogPage />} />
-        <Route path="/evals" element={<EvalsPage />} />
-        <Route path="/evals/:date/:runId" element={<EvalsPage />} />
+        <Route path="*" element={<EvalsPage />} />
       </Routes>
     </BrowserRouter>
   );

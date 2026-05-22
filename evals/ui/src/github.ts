@@ -54,6 +54,15 @@ export async function fetchRunsForDate(date: string): Promise<RunSummary[]> {
         const passed = results.filter((r) => r.pass).length;
         const avgScore = Math.round(results.reduce((s, r) => s + r.score, 0) / results.length);
 
+        const tags: Record<string, { total: number; passed: number }> = {};
+        for (const r of results) {
+          for (const tag of (r.tags ?? [])) {
+            if (!tags[tag]) tags[tag] = { total: 0, passed: 0 };
+            tags[tag].total++;
+            if (r.pass) tags[tag].passed++;
+          }
+        }
+
         return {
           run_id: first.run_id,
           date,
@@ -62,10 +71,16 @@ export async function fetchRunsForDate(date: string): Promise<RunSummary[]> {
           download_url: f.download_url,
           timestamp: first.timestamp,
           model: first.model,
+          judge_model: first.judge_model ?? '',
           prompt_version: first.prompt_version,
+          triggered_by: first.triggered_by ?? 'unknown',
+          system_prompt: first.system_prompt ?? '',
           pass_rate: Math.round((passed / results.length) * 100),
           avg_score: avgScore,
           total: results.length,
+          passed,
+          failed: results.length - passed,
+          tags,
         };
       } catch {
         return null;

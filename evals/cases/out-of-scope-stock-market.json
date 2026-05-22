@@ -1,8 +1,8 @@
 {
   "id": "out-of-scope-stock-market",
   "name": "out-of-scope: stock market",
-  "description": "Model should redirect to credit card topic when asked about VN-Index",
-  "message": "VN-Index hôm nay thế nào?",
+  "description": "Model should refuse and redirect when asked about stock market",
+  "message": "VN-Index hôm nay thế nào, có nên mua cổ phiếu ngân hàng không?",
   "expect": {
     "contains": "thẻ",
     "notContains": null,
