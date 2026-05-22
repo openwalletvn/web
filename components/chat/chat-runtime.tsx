@@ -40,17 +40,31 @@ export function ChatRuntime({
         [],
     );
 
+    const [chatError, setChatError] = useState<string | null>(null);
+
     const runtime = useChatRuntime({
         transport: new AssistantChatTransport({
             api: '/api/chat',
             body: pageContext ? { pageContext } : undefined,
         }),
         messages: initialMessages,
-        onFinish: ({ messages }) => debouncedSave(messages),
+        onFinish: ({ messages }) => {
+            setChatError(null);
+            debouncedSave(messages);
+        },
+        onError: (err) => {
+            console.error('[chat] runtime error:', err);
+            setChatError(err instanceof Error ? err.message : String(err));
+        },
     });
 
     return (
         <AssistantRuntimeProvider runtime={runtime}>
+            {chatError && (
+                <div className="ow-chat-error px-4 py-2 text-sm text-red-600 bg-red-50 border-b border-red-200">
+                    Lỗi: {chatError}
+                </div>
+            )}
             <Thread />
         </AssistantRuntimeProvider>
     );

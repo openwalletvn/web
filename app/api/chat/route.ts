@@ -40,31 +40,47 @@ export async function POST(req: Request) {
 
     const model = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
 
-    const mcpClient = await createMCPClient({
-        transport: {
-            type: 'http',
-            url: process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8787',
-            headers: {
-                'x-mcp-key': process.env.OPENWALLET_MCP_KEY ?? '',
+    let mcpClient: Awaited<ReturnType<typeof createMCPClient>> | null = null;
+    let tools: Record<string, unknown> = {};
+
+    try {
+        mcpClient = await createMCPClient({
+            transport: {
+                type: 'http',
+                url: process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8787',
+                headers: {
+                    'x-mcp-key': process.env.OPENWALLET_MCP_KEY ?? '',
+                },
             },
-        },
-    });
+        });
+        tools = await mcpClient.tools();
+    } catch (err) {
+        console.error('[chat] MCP init failed:', err);
+    }
 
-    const tools = await mcpClient.tools();
+    try {
+        const result = streamText({
+            model: groq(model),
+            system: buildSystemPrompt(body.pageContext),
+            messages,
+            stopWhen: stepCountIs(5),
+            tools,
+            onFinish: async () => {
+                await mcpClient?.close();
+            },
+            onError: async ({ error }) => {
+                console.error('[chat] streamText error:', error);
+                await mcpClient?.close();
+            },
+        });
 
-    const result = streamText({
-        model: groq(model),
-        system: buildSystemPrompt(body.pageContext),
-        messages,
-        stopWhen: stepCountIs(5),
-        tools,
-        onFinish: async () => {
-            await mcpClient.close();
-        },
-        onError: async () => {
-            await mcpClient.close();
-        },
-    });
-
-    return result.toUIMessageStreamResponse();
+        return result.toUIMessageStreamResponse();
+    } catch (err) {
+        console.error('[chat] fatal error:', err);
+        await mcpClient?.close();
+        return new Response(
+            JSON.stringify({ error: String(err) }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
+    }
 }
