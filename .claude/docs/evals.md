@@ -75,7 +75,10 @@ scripts/
 
 **Via CLI:**
 ```bash
-npx tsx scripts/eval-chat.ts
+npx tsx scripts/eval-chat.ts                          # all cases
+npx tsx scripts/eval-chat.ts --case happy-path-shopee-cashback  # one case
+EVAL_CASE_IDS=id1,id2 npx tsx scripts/eval-chat.ts   # multiple cases
+NO_GITHUB_PUSH=true npx tsx scripts/eval-chat.ts      # skip push
 ```
 
 **Via CI (GitHub Actions):** Set `CI=true` env — `triggered_by` field auto-detects as `'ci'`.
@@ -100,12 +103,17 @@ The evals UI proxies `/server/*` to `:3006` and `/api/*` to the Next.js dev serv
 
 ## UI features
 
-- **Live progress terminal** — SSE stream from server while eval runs
+- **Case selector** — dropdown grouped by tag; pick one case or run all
+- **Push to GitHub toggle** — checkbox before Run; uncheck to test locally without polluting results
+- **Re-run failures** — "↺ Re-run N failures" button appears after selecting a run with failures
+- **Delete run** — ✕ button per run card; proxies `DELETE` to GitHub Contents API via server
+- **Live progress terminal** — SSE stream: current case name + N/M counter while running
 - **Trigger badge** — shows `ui` / `cli` / `ci` per run
+- **Score trend** — ↑/↓ arrow vs previous run's avg score
 - **Tag summary** — per-tag pass rate (happy-path, hallucination-guard, etc.)
-- **System prompt** — full `system-prompt.ts` content captured at run time, expandable per run
-- **Test case cards** — FAIL cases shown first; full AI response expandable; judge/rule disagreement flagged
-- **Judge/rule disagreement** — highlighted when rule_pass and score disagree (signals bad rule or bad judge rubric)
+- **System prompt** — full `system-prompt.ts` content at run time, expandable; "view on GitHub ↗" links to that exact SHA
+- **Test case cards** — FAIL cases shown first; AI response expandable with copy button; inline re-run per case
+- **Judge/rule disagreement** — flagged when rule_pass and score disagree (signals bad rule or bad judge rubric)
 
 ## Adding a new test case
 
