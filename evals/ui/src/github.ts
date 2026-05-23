@@ -111,3 +111,12 @@ export async function fetchRunDetail(downloadUrl: string): Promise<EvalResult[]>
     .filter(Boolean)
     .map((l) => JSON.parse(l) as EvalResult);
 }
+
+export function clearCacheForDate(date: string) {
+  const key = `${BASE}/contents/results/${date}`;
+  cache.delete(key);
+  // Also clear any cached download URLs for files in that date's dir
+  for (const k of cache.keys()) {
+    if (typeof k === 'string' && k.includes(`/results/${date}/`)) cache.delete(k);
+  }
+}

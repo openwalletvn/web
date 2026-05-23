@@ -19,6 +19,15 @@ const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'llama-3.3-70b-versatile';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? '';
 const EVALS_REPO = process.env.EVALS_REPO ?? 'openwalletvn/evals';
 const TRIGGERED_BY = process.env.TRIGGERED_BY ?? (process.env.CI ? 'ci' : 'cli');
+const NO_GITHUB_PUSH = process.env.NO_GITHUB_PUSH === 'true';
+
+// Case filter: --case <id> CLI arg OR EVAL_CASE_IDS=id1,id2 env var
+const cliCaseIdx = process.argv.indexOf('--case');
+const cliCase = cliCaseIdx >= 0 ? process.argv[cliCaseIdx + 1] : undefined;
+const envCaseIds = process.env.EVAL_CASE_IDS;
+const FILTER_IDS: string[] | null = cliCase
+  ? [cliCase]
+  : envCaseIds ? envCaseIds.split(',').map((s) => s.trim()).filter(Boolean) : null;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -351,16 +360,29 @@ async function pushToEvalsRepo(runId: string, lines: string[]): Promise<void> {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function runEval() {
-  const TEST_CASES = loadTestCases();
+  let TEST_CASES = loadTestCases();
+
+  if (FILTER_IDS) {
+    TEST_CASES = TEST_CASES.filter((tc) => FILTER_IDS!.includes(tc.id));
+    if (TEST_CASES.length === 0) {
+      console.error(`No cases matched filter: ${FILTER_IDS.join(', ')}`);
+      console.error(`Available: ${loadTestCases().map((c) => c.id).join(', ')}`);
+      process.exit(1);
+    }
+  }
+
   const promptVersion = getPromptVersion();
   const systemPrompt = getSystemPrompt();
   const runId = makeRunId();
 
+  const filterNote = FILTER_IDS ? ` (filter: ${FILTER_IDS.join(', ')})` : '';
+  const pushNote = NO_GITHUB_PUSH ? ' [no push]' : '';
+
   console.log(`\nEval run: ${runId}`);
   console.log(`Prompt version: ${promptVersion}`);
-  console.log(`Triggered by: ${TRIGGERED_BY}`);
+  console.log(`Triggered by: ${TRIGGERED_BY}${pushNote}`);
   console.log(`Chat model: ${CHAT_MODEL} | Judge model: ${JUDGE_MODEL}`);
-  console.log(`Running ${TEST_CASES.length} eval cases against ${CHAT_URL}\n`);
+  console.log(`Running ${TEST_CASES.length} eval cases${filterNote} against ${CHAT_URL}\n`);
 
   const results: EvalResult[] = [];
   const jsonlLines: string[] = [];
@@ -463,7 +485,11 @@ async function runEval() {
   console.log('─────────────────────────────────────────────────────────');
   console.log(`Results: ${passed}/${results.length} passed | avg score: ${avgScore} | ${failed} failed\n`);
 
-  await pushToEvalsRepo(runId, jsonlLines);
+  if (NO_GITHUB_PUSH) {
+    console.log('  [github] Push skipped (NO_GITHUB_PUSH=true)');
+  } else {
+    await pushToEvalsRepo(runId, jsonlLines);
+  }
 
   if (failed > 0) process.exit(1);
 }
