@@ -315,13 +315,14 @@ async function pushToLangfuse(results: EvalResult[]): Promise<void> {
     return;
   }
 
-  const batch: unknown[] = [];
   const now = new Date().toISOString();
+  const traceIds: string[] = [];
 
-  for (const r of results) {
+  // Step 1: create traces via batch ingestion
+  const traceBatch = results.map((r) => {
     const traceId = crypto.randomUUID();
-
-    batch.push({
+    traceIds.push(traceId);
+    return {
       id: crypto.randomUUID(),
       type: 'trace-create',
       timestamp: now,
@@ -329,7 +330,7 @@ async function pushToLangfuse(results: EvalResult[]): Promise<void> {
         id: traceId,
         name: 'eval',
         input: r.input,
-        output: r.response,
+        output: r.response || null,
         metadata: {
           run_id: r.run_id,
           test_id: r.test_id,
@@ -343,48 +344,40 @@ async function pushToLangfuse(results: EvalResult[]): Promise<void> {
         },
         tags: ['eval', ...r.tags],
       },
-    });
+    };
+  });
 
-    batch.push({
-      id: crypto.randomUUID(),
-      type: 'score-create',
-      timestamp: now,
-      body: {
-        traceId,
-        name: 'judge-score',
-        value: r.score / 100,
-        comment: r.judge_reasoning,
-        dataType: 'NUMERIC',
-      },
-    });
+  const traceRes = await fetch(`${LANGFUSE_BASE_URL}/api/public/ingestion`, {
+    method: 'POST',
+    headers: { Authorization: langfuseAuth(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ batch: traceBatch }),
+  });
+  const traceBody = await traceRes.json() as { successes?: unknown[]; errors?: unknown[] };
+  console.log(`  [langfuse] traces: status=${traceRes.status} successes=${traceBody.successes?.length ?? 0} errors=${traceBody.errors?.length ?? 0}`);
 
-    if (!r.rule_pass) {
-      batch.push({
-        id: crypto.randomUUID(),
-        type: 'score-create',
-        timestamp: now,
-        body: {
-          traceId,
-          name: 'rule-pass',
-          value: 0,
-          dataType: 'NUMERIC',
-        },
+  // Step 2: create scores via dedicated endpoint
+  let scoreOk = 0, scoreErr = 0;
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    const traceId = traceIds[i];
+
+    const scorePayloads = [
+      { traceId, name: 'judge-score', value: r.score / 100, dataType: 'NUMERIC', comment: r.judge_reasoning.slice(0, 500) },
+      { traceId, name: 'rule-pass', value: r.rule_pass ? 1 : 0, dataType: 'NUMERIC' },
+    ];
+
+    for (const payload of scorePayloads) {
+      const res = await fetch(`${LANGFUSE_BASE_URL}/api/public/scores`, {
+        method: 'POST',
+        headers: { Authorization: langfuseAuth(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
+      if (res.ok) scoreOk++; else scoreErr++;
     }
   }
 
-  const res = await fetch(`${LANGFUSE_BASE_URL}/api/public/ingestion`, {
-    method: 'POST',
-    headers: { Authorization: langfuseAuth(), 'Content-Type': 'application/json' },
-    body: JSON.stringify({ batch }),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    console.error(`  [langfuse] Push failed: ${err.slice(0, 200)}`);
-  } else {
-    console.log(`  [langfuse] Pushed ${results.length} eval traces → ${LANGFUSE_BASE_URL}`);
-  }
+  console.log(`  [langfuse] scores: ok=${scoreOk} err=${scoreErr}`);
+  console.log(`  [langfuse] Pushed ${results.length} eval traces → ${LANGFUSE_BASE_URL}`);
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
