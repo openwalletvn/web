@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-05-24 | Observability cho AI chat với Langfuse
+
+- Mỗi cuộc hội thoại AI được trace đầy đủ: model, số token, latency, lý do kết thúc, số bước gọi tool
+- System prompt được quản lý trong Langfuse Prompt Management, phiên bản được ghi nhận theo từng trace để theo dõi tác động của thay đổi prompt đến chất lượng
+- LLM-as-judge tự động chấm điểm phản hồi AI trên traffic thực, phát hiện hallucination theo thời gian thực
+- Kết quả eval chuyển từ GitHub JSONL sang Langfuse Scores, liên kết trực tiếp với phiên bản prompt
+
 ## 2026-05-23 | Hệ thống Evals cho AI chat
 
 - Bộ test case đánh giá chất lượng AI chat
