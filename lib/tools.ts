@@ -7,9 +7,9 @@ export interface Tool {
 export const TOOLS: Tool[] = [
     {name: 'Card Battle', href: '/card-battle'},
     {name: 'Card Match', href: '/card-match'},
-    {name: 'Wallet Chat', href: '/wallet-chat'},
-    {name: 'Wallet MCP', href: '/mcp'},
-    {name: 'Wallet App', href: '/app', disabled: true},
+    {name: 'OpenWallet Chat', href: '/openwallet-chat'},
+    {name: 'OpenWallet MCP', href: '/openwallet-mcp'},
+    {name: 'OpenWallet App', href: '/openwallet-app', disabled: true},
 ];
 
 export function getTool(name: string): Tool {

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'OpenWallet MCP',
         description: 'MCP server mang dữ liệu thẻ ngân hàng Việt Nam đến mọi AI tool hỗ trợ Model Context Protocol.',
-        url: 'https://openwallet.vn/mcp',
+        url: 'https://openwallet.vn/openwallet-mcp',
     },
 };
 
@@ -74,7 +74,7 @@ export default function McpPage() {
             {
                 '@type': 'SoftwareApplication',
                 name: 'OpenWallet MCP',
-                url: 'https://openwallet.vn/mcp',
+                url: 'https://openwallet.vn/openwallet-mcp',
                 description: 'Model Context Protocol server cung cấp dữ liệu thẻ ngân hàng Việt Nam cho các AI assistant.',
                 applicationCategory: 'DeveloperApplication',
                 operatingSystem: 'All',
@@ -86,7 +86,7 @@ export default function McpPage() {
             },
             buildBreadcrumbJsonLd([
                 { label: 'Trang chủ', href: '/' },
-                { label: 'MCP', href: '/mcp' },
+                { label: 'OpenWallet MCP', href: '/openwallet-mcp' },
             ]),
         ],
     };
@@ -143,8 +143,8 @@ export default function McpPage() {
                     <Section title="Ứng dụng đầu tiên">
                         <p>
                             Consumer đầu tiên của OpenWallet MCP là{' '}
-                            <Link href="/wallet-chat" className="text-link">
-                                Wallet Chat
+                            <Link href="/openwallet-chat" className="text-link">
+                                OpenWallet Chat
                             </Link>
                             , tính năng chat AI được tích hợp trực tiếp vào OpenWallet. Đây là minh chứng thực tế cho thấy MCP có thể mang lại trải nghiệm tư vấn thẻ ngân hàng qua AI như thế nào.
                         </p>

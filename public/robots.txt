@@ -1,6 +1,7 @@
 # Allow all search engine crawlers
 User-agent: *
 Allow: /
+Disallow: /app
 
 # Block AI training crawlers
 User-agent: GPTBot

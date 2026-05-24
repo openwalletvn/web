@@ -14,9 +14,9 @@ const TOPICS = [
         desc: 'Yêu cầu key thử nghiệm để tích hợp dữ liệu thẻ vào Claude và các AI assistant.',
     },
     {
-        label: 'Yêu cầu truy cập beta (Wallet Chat)',
-        subject: 'Wallet Chat Beta Access',
-        desc: 'Đăng ký tham gia giai đoạn beta của Wallet Chat, trợ lý AI hỏi đáp thẻ ngân hàng.',
+        label: 'Yêu cầu truy cập beta (OpenWallet Chat)',
+        subject: 'OpenWallet Chat Beta Access',
+        desc: 'Đăng ký tham gia giai đoạn beta của OpenWallet Chat, trợ lý AI hỏi đáp thẻ ngân hàng.',
     },
     {
         label: 'Báo lỗi dữ liệu',

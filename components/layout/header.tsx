@@ -3,7 +3,6 @@ import {MobileNav} from './mobile-nav';
 import {SearchDialog} from '@/components/search/search-dialog';
 import {Nav2} from "@/components/layout/nav2";
 import {Logo} from "@/components/layout/logo";
-import {ChatToggleButton} from "@/components/chat/chat-toggle-button";
 
 const NETWORK_TIER_FILTER = 'visa:infinite,visa:signature,mastercard:world-elite,mastercard:world,amex:platinum,jcb:ultimate';
 
@@ -81,11 +80,9 @@ export async function Header() {
                 {/* Right: search + chat + mobile trigger */}
                 <div className="flex items-center gap-2 justify-end">
                     <div className="hidden xl:flex items-center gap-2">
-                        <ChatToggleButton/>
                         <SearchDialog/>
                     </div>
                     <div className="xl:hidden flex items-center">
-                        <ChatToggleButton/>
                         <SearchDialog mobileOnly/>
                         <MobileNav banks={banks}/>
                     </div>

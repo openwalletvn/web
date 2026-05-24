@@ -5,13 +5,13 @@ import { getTool } from '@/lib/tools';
 import { ProsePageShell } from '@/components/layout/prose-page-shell';
 
 const BASE_URL = 'https://openwallet.vn';
-const tool = getTool('Wallet Chat');
+const tool = getTool('OpenWallet Chat');
 
 export const metadata: Metadata = {
-    title: 'Wallet Chat | Trợ lý AI thẻ ngân hàng (Beta)',
-    description: 'Wallet Chat là trợ lý AI giúp bạn tìm và so sánh thẻ ngân hàng Việt Nam. Hiện đang trong giai đoạn beta, chưa mở rộng công khai.',
+    title: 'OpenWallet Chat | Trợ lý AI thẻ ngân hàng (Beta)',
+    description: 'OpenWallet Chat là trợ lý AI giúp bạn tìm và so sánh thẻ ngân hàng Việt Nam. Hiện đang trong giai đoạn beta, chưa mở rộng công khai.',
     openGraph: {
-        title: 'Wallet Chat',
+        title: 'OpenWallet Chat',
         description: 'Trợ lý AI hỏi đáp thẻ ngân hàng Việt Nam. Đang trong giai đoạn beta.',
         url: `${BASE_URL}${tool.href}`,
     },
@@ -24,7 +24,7 @@ const FEATURES = [
     },
     {
         title: 'Dữ liệu thẻ chính xác, cập nhật',
-        desc: 'Wallet Chat kết nối trực tiếp với cơ sở dữ liệu OpenWallet để trả lời câu hỏi dựa trên thông tin thực tế về phí, ưu đãi và điều kiện của từng thẻ.',
+        desc: 'OpenWallet Chat kết nối trực tiếp với cơ sở dữ liệu OpenWallet để trả lời câu hỏi dựa trên thông tin thực tế về phí, ưu đãi và điều kiện của từng thẻ.',
     },
     {
         title: 'Hỏi tự nhiên, nhận gợi ý cụ thể',
@@ -49,7 +49,7 @@ export default function WalletChatPage() {
         '@graph': [
             {
                 '@type': 'SoftwareApplication',
-                name: 'Wallet Chat',
+                name: 'OpenWallet Chat',
                 url: `${BASE_URL}${tool.href}`,
                 description: 'Trợ lý AI hỏi đáp và gợi ý thẻ ngân hàng Việt Nam. Dữ liệu lưu cục bộ, không cần tài khoản.',
                 applicationCategory: 'FinanceApplication',
@@ -62,7 +62,7 @@ export default function WalletChatPage() {
             },
             buildBreadcrumbJsonLd([
                 { label: 'Trang chủ', href: '/' },
-                { label: 'Wallet Chat', href: tool.href },
+                { label: 'OpenWallet Chat', href: tool.href },
             ]),
         ],
     };
@@ -74,7 +74,7 @@ export default function WalletChatPage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <ProsePageShell
-                title="Wallet Chat"
+                title="OpenWallet Chat"
                 subtitle="Trợ lý AI giúp bạn tìm và so sánh thẻ ngân hàng Việt Nam qua hội thoại tự nhiên. Hiện đang trong giai đoạn beta, chưa mở rộng công khai."
             >
                 <div className="flex flex-col gap-10">
@@ -87,7 +87,7 @@ export default function WalletChatPage() {
                         </Link>
                     </section>
 
-                    <Section title="Tại sao dùng Wallet Chat?">
+                    <Section title="Tại sao dùng OpenWallet Chat?">
                         <div className="flex flex-col gap-6">
                             {FEATURES.map(f => (
                                 <div key={f.title} className="flex flex-col gap-2">
@@ -116,7 +116,7 @@ export default function WalletChatPage() {
 
                     <Section title="Truy cập beta">
                         <p>
-                            Wallet Chat hiện đang trong giai đoạn beta với số lượng người dùng giới hạn.
+                            OpenWallet Chat hiện đang trong giai đoạn beta với số lượng người dùng giới hạn.
                         </p>
                         <Link
                             href="/lien-he"

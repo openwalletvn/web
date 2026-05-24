@@ -41,6 +41,11 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 - **No em dashes (—):** Never use em dashes in any page content or metadata. Replace with a comma, colon, parentheses, or restructure the sentence. Em dashes are a visible AI writing signal.
 - **Tone for public pages:** Professional and honest, not corporate or casual. Use "chúng tôi" consistently. Avoid overly informal phrasing.
 
+## Chat feature status
+
+- **Chat button hidden** — `ChatToggleButton` removed from `components/layout/header.tsx` (both desktop + mobile). Do not re-add unless explicitly requested.
+- **`/app` not indexed** — `public/robots.txt` has `Disallow: /app`. Keep this. The wallet app is local-first and should never be crawled.
+
 ## Card ranking
 
 **Single source of truth: `lib/card-ranker.ts`** — ranking factors and priority order documented in the JSDoc above `rankCards()`.
