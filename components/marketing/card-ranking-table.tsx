@@ -1,21 +1,21 @@
 'use client';
 
-import {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import Link from 'next/link';
 import type {Bank, Card} from '@/lib/api';
 import {rankCards, getTiebreakerReason, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
 import {CardImage} from '@/components/cards/card-image';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {IconChevronLeft, IconChevronRight, IconCaretUpFilled, IconCaretDownFilled, IconInfoCircle} from '@tabler/icons-react';
+import {IconChevronLeft, IconChevronRight, IconCaretUpFilled, IconCaretDownFilled, IconInfoCircle, IconBulb, IconLaurelWreath1Filled, IconLaurelWreath2Filled, IconLaurelWreath3Filled} from '@tabler/icons-react';
+import {SPEND_OPTIONS} from '@/lib/spend-options';
 
-const SPEND_OPTIONS = [
-    {value: 1_000_000,  label: '1 triệu/kỳ'},
-    {value: 2_000_000,  label: '2 triệu/kỳ'},
-    {value: 3_000_000,  label: '3 triệu/kỳ'},
-    {value: 5_000_000,  label: '5 triệu/kỳ'},
-    {value: 10_000_000, label: '10 triệu/kỳ'},
-    {value: 20_000_000, label: '20 triệu/kỳ'},
-];
+function withViewTransition(fn: () => void) {
+    if (typeof document !== 'undefined' && 'startViewTransition' in document) {
+        (document as Document & {startViewTransition: (cb: () => void) => void}).startViewTransition(fn);
+    } else {
+        fn();
+    }
+}
 
 interface Props {
     cards: Card[];
@@ -26,9 +26,9 @@ interface Props {
 }
 
 function RankBadge({rank}: {rank: number}) {
-    if (rank === 1) return <span className="text-label text-amber-500">TOP 1</span>;
-    if (rank === 2) return <span className="text-label text-slate-400">TOP 2</span>;
-    if (rank === 3) return <span className="text-label text-orange-400">TOP 3</span>;
+    if (rank === 1) return <IconLaurelWreath1Filled size={22} className="text-amber-500"/>;
+    if (rank === 2) return <IconLaurelWreath2Filled size={22} className="text-slate-400"/>;
+    if (rank === 3) return <IconLaurelWreath3Filled size={22} className="text-orange-400"/>;
     return <span className="text-label text-text-muted">#{rank}</span>;
 }
 
@@ -62,6 +62,7 @@ function CashbackDisplay({ranked}: {ranked: RankedCard}) {
 
 export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAULT_MONTHLY_SPEND, title}: Props) {
     const [spend, setSpend] = useState(monthlySpend);
+    const changeSpend = useCallback((v: number) => withViewTransition(() => setSpend(v)), []);
     const spendIdx = SPEND_OPTIONS.findIndex(o => o.value === spend);
     const canDec = spendIdx > 0;
     const canInc = spendIdx < SPEND_OPTIONS.length - 1;
@@ -108,14 +109,14 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
                     <span className="text-body-sm text-text-muted">Chi tiêu mỗi kỳ</span>
                     <div className="flex items-center gap-1">
                         <button
-                            onClick={() => canDec && setSpend(SPEND_OPTIONS[spendIdx - 1].value)}
+                            onClick={() => canDec && changeSpend(SPEND_OPTIONS[spendIdx - 1].value)}
                             disabled={!canDec}
                             className="p-1 rounded hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
                             aria-label="Giảm chi tiêu"
                         >
                             <IconChevronLeft size={16}/>
                         </button>
-                        <Select value={String(spend)} onValueChange={v => setSpend(Number(v))}>
+                        <Select value={String(spend)} onValueChange={v => changeSpend(Number(v))}>
                             <SelectTrigger className="w-32">
                                 <SelectValue/>
                             </SelectTrigger>
@@ -126,7 +127,7 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
                             </SelectContent>
                         </Select>
                         <button
-                            onClick={() => canInc && setSpend(SPEND_OPTIONS[spendIdx + 1].value)}
+                            onClick={() => canInc && changeSpend(SPEND_OPTIONS[spendIdx + 1].value)}
                             disabled={!canInc}
                             className="p-1 rounded hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
                             aria-label="Tăng chi tiêu"
@@ -144,6 +145,7 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
                         ranked={ranked}
                         tiebreakerReason={tiebreakerReasons.get(ranked.card.id)}
                         tiebreakerDelta={tiebreakerDelta.get(ranked.card.id)}
+                        viewTransitionName={`card-row-${ranked.card.id}`}
                     />
                 ))}
 
@@ -151,7 +153,12 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
                     <>
                         <p className="text-body-sm text-text-muted mt-2 mb-1">Các thẻ khác trong nhóm</p>
                         {noCashback.map(ranked => (
-                            <RankedRow key={ranked.card.id} ranked={ranked} muted/>
+                            <RankedRow
+                                key={ranked.card.id}
+                                ranked={ranked}
+                                muted
+                                viewTransitionName={`card-row-${ranked.card.id}`}
+                            />
                         ))}
                     </>
                 )}
@@ -165,21 +172,25 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
     );
 }
 
-function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta}: {
+export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta, viewTransitionName}: {
     ranked: RankedCard;
     muted?: boolean;
     tiebreakerReason?: string;
     tiebreakerDelta?: number;
+    viewTransitionName?: string;
 }) {
     const {card, rank} = ranked;
     const isTop3 = rank <= 3 && !muted;
 
     return (
-        <div className={`flex items-center gap-3 rounded-lg p-3 sm:p-4 ${
-            isTop3
-                ? 'bg-white border-2 border-primary shadow-sm'
-                : 'bg-white border border-slate-100'
-        }`}>
+        <div
+            className={`ow-ranked-row flex items-center gap-3 rounded-lg p-3 sm:p-4 ${
+                isTop3
+                    ? 'bg-white border-2 border-primary shadow-sm'
+                    : 'bg-white border border-slate-100'
+            }`}
+            style={viewTransitionName ? {viewTransitionName} as React.CSSProperties : undefined}
+        >
             {/* Rank + tiebreaker direction */}
             <div className="w-10 sm:w-12 shrink-0 flex flex-col items-center gap-0.5">
                 {muted ? (
@@ -221,7 +232,8 @@ function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta}: {
                         </p>
                     )}
                     {tiebreakerReason && (
-                        <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                        <span className="flex items-center gap-1 mt-1 text-xs text-text-muted">
+                            <IconBulb size={12} className="shrink-0 text-amber-400"/>
                             {tiebreakerReason}
                         </span>
                     )}

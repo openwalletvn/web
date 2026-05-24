@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { IconExternalLink, IconBuildingBank } from '@tabler/icons-react';
+import { IconExternalLink, IconBuildingBank, IconScale } from '@tabler/icons-react';
 import type { Card, Bank } from '@/lib/api';
 import { getBankImageUrl } from '@/lib/api';
 import { CardImage } from '@/components/cards/card-image';
 import { MetalBadge } from '@/components/cards/metal-badge';
 import { NetworkBadge } from '@/components/shared/network-badge';
 import { CardTypeBadges } from '@/components/shared/card-type-badge';
+import { useCompareList } from '@/lib/use-compare-list';
 
 interface BadgeConfig {
     network?: boolean;
@@ -36,6 +37,8 @@ export function CardTile({
 }: Props) {
     const bank = bankProp !== undefined ? bankProp : (card.bank_data ?? null);
     const isVertical = card.image?.orientation === 'vertical';
+    const { isInCompare, toggleCompare, isFull } = useCompareList();
+    const inCompare = isInCompare(card.id);
 
     const {
         network = true,
@@ -141,6 +144,23 @@ export function CardTile({
                                 <span className="text-[10px] text-slate-500 text-center leading-tight">Xem trang thẻ</span>
                             </div>
                         )}
+
+                        <div className="flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-150 delay-[160ms] group-hover:opacity-100 group-hover:translate-y-0">
+                            <button
+                                type="button"
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(card.id, {name: card.name, image_url: card.image?.url ?? null}); }}
+                                disabled={isFull && !inCompare}
+                                className={`flex items-center justify-center size-10 rounded-full bg-white border border-dashed shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+                                    inCompare
+                                        ? 'border-primary text-primary'
+                                        : 'border-slate-300 text-slate-600 hover:border-brand-blue hover:text-brand-blue'
+                                }`}
+                                title={inCompare ? 'Bỏ so sánh' : 'So sánh'}
+                            >
+                                <IconScale className="size-4" />
+                            </button>
+                            <span className="text-[10px] text-slate-500 text-center leading-tight">So sánh</span>
+                        </div>
                     </div>
                 )}
             </div>

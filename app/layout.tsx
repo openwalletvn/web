@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
-import { Cal_Sans, Inter_Tight } from "next/font/google";
+import localFont from "next/font/local";
+import { Inter_Tight } from "next/font/google";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { BodyClass } from '@/components/layout/body-class';
+import { PreviewBanner } from '@/components/layout/preview-banner';
 import "./globals.css";
 
-const calSans = Cal_Sans({
-  subsets: ["latin", "vietnamese"],
-  weight: "400",
+const calSans = localFont({
+  src: [
+    { path: "../public/fonts/cal-sans-latin.woff2" },
+    { path: "../public/fonts/cal-sans-latin-ext.woff2" },
+    { path: "../public/fonts/cal-sans-vietnamese.woff2" },
+  ],
   variable: "--font-display",
-  adjustFontFallback: false,
 });
 
 const interTight = Inter_Tight({
@@ -17,9 +21,12 @@ const interTight = Inter_Tight({
   variable: "--font-body",
 });
 
+const isPreview = process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview';
+
 export function generateMetadata(): Metadata {
   return {
     metadataBase: new URL('https://openwallet.vn'),
+    ...(isPreview && { robots: { index: false, follow: false } }),
     title: 'Open Wallet – Tra cứu thẻ. Quản lý thẻ.',
     description: 'Tra cứu thông tin thẻ ngân hàng Việt Nam và quản lý ngày sao kê, nhắc hạn thanh toán. Miễn phí, bảo mật, mã nguồn mở.',
     alternates: {
@@ -61,6 +68,7 @@ export default function RootLayout({
       <body className="antialiased">
         <BodyClass />
         {children}
+        <PreviewBanner />
         <GoogleAnalytics gaId="G-0PTTBZY0RM" />
       </body>
     </html>

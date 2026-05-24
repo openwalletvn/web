@@ -1,7 +1,9 @@
 import type { RelatedCard } from '@/lib/api';
 import { CardTile } from '@/components/cards/variants/card-tile';
+import { getTool } from '@/lib/tools';
 
 const MAX_CARDS = 12;
+const cardBattleHref = getTool('Card Battle').href;
 
 interface Props {
  currentCard: { id: string; name: string };
@@ -26,7 +28,7 @@ export function CardDetailCompare({ currentCard, compareCards }: Props) {
  <CardTile
  key={card.id}
  card={card}
- href={`/so-sanh${card.compare_path}`}
+ href={`${cardBattleHref}${card.compare_path}`}
  badge={`So sánh ${currentCard.name} với ${card.name}`}
  />
  ))}

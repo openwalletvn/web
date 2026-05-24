@@ -1,0 +1,12 @@
+{
+  "id": "happy-path-no-annual-fee",
+  "name": "happy-path: no annual fee cards",
+  "description": "Model should recommend credit cards with no or waivable annual fee",
+  "message": "Thẻ tín dụng miễn phí thường niên hoặc được miễn phí thường niên khi đạt điều kiện có những loại nào?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response length > 80 chars AND mentions 'miễn phí', 'thường niên', or 'phí'"
+  },
+  "tags": ["happy-path", "annual-fee"]
+}

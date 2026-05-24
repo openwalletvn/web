@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/evals/ui/node_modules
+/evals/ui/dist
 /.pnp
 .pnp.js
 .yarn/install-state.gz

@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import Link from 'next/link';
 import {getBank, getCard, getCards, getRelatedCards} from '@/lib/api';
+import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {CardImage} from '@/components/cards/card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCardPageMeta} from '@/lib/page-meta/card';
@@ -14,10 +15,15 @@ import {CardDetailRelated} from '@/components/cards/detail/card-detail-related';
 import {CardDetailCompare} from '@/components/cards/detail/card-detail-compare';
 import {CardDetailCashback} from '@/components/cards/detail/card-detail-cashback';
 import {CardDetailIntents} from '@/components/cards/detail/card-detail-intents';
+import {CompareButton} from '@/components/compare/compare-button';
 
 export async function generateStaticParams() {
-    const cards = await getCards();
-    return cards.map((card) => ({ slug: card.id }));
+    try {
+        const cards = await getCards();
+        return cards.map((card) => ({ slug: card.id }));
+    } catch {
+        return [];
+    }
 }
 
 interface Props {
@@ -67,6 +73,7 @@ export default async function CardPage({ params }: Props) {
     );
 
     return (
+        <>
         <div className="px-4 py-12">
             <div className="ow-container">
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -77,6 +84,7 @@ export default async function CardPage({ params }: Props) {
                     <div className={`shrink-0 w-full ${isVertical ? 'lg:w-48' : 'lg:w-72'} lg:sticky lg:top-8`}>
                         <CardImage card={card} tilt />
                         <div className="mt-4 flex flex-col gap-2">
+                            <CompareButton card={{id: card.id, name: card.name, image_url: card.image?.url ?? null}} />
                             {/*<AddToWalletButton card={card} />*/}
                             {process.env.NODE_ENV === 'development' && (
                                 <a
@@ -119,5 +127,15 @@ export default async function CardPage({ params }: Props) {
                 <CardDetailRelated cards={sameTypeCards} currentCardId={card.id} />
             </div>
         </div>
+        <ChatContextSetter context={{
+            type: 'card',
+            cardId: card.id,
+            cardName: card.name,
+            bankId: card.bank_id,
+            cardNetwork: card.card_network,
+            cardType: card.card_type,
+            description: card.description,
+        }} />
+        </>
     );
 }

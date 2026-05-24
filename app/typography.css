@@ -6,7 +6,7 @@
         font-size: clamp(2.5rem, 7vw, var(--text-hero));
         font-weight: 400;
         line-height: var(--leading-tight);
-        letter-spacing: var(--tracking-hero);
+        /*letter-spacing: var(--tracking-hero);*/
     }
     h2 {
         font-size: clamp(1.75rem, 5vw, var(--text-section));
@@ -119,5 +119,15 @@
         line-height: var(--leading-normal);
         /*letter-spacing: var(--tracking-label);*/
         text-transform: uppercase;
+    }
+
+    .text-link {
+        color: #EF3C23;
+        text-decoration: underline;
+        transition: opacity 0.15s ease;
+    }
+
+    .text-link:hover {
+        opacity: 0.7;
     }
 }

@@ -79,6 +79,34 @@ export function MobileNav({ banks }: Props) {
                     </CollapsibleContent>
                   </Collapsible>
                 );
+              } else if (item.items) {
+                // Simple items list (e.g. Công cụ)
+                const isActive = item.items.some((t) => pathname.startsWith(t.href));
+                return (
+                  <Collapsible key={index} defaultOpen={isActive}>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+                      <span className={cn(isActive && 'text-brand-red')}>{item.label}</span>
+                      <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="mt-1 ml-3 flex flex-col gap-1">
+                        {item.items.map((tool) => (
+                          <Link
+                            key={tool.href}
+                            href={tool.href}
+                            onClick={close}
+                            className={cn(
+                              'px-2 py-1 text-base transition-colors',
+                              pathname.startsWith(tool.href) ? 'text-brand-red' : 'text-slate-700 hover:text-brand-red',
+                            )}
+                          >
+                            {tool.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
               } else if (item.columns) {
                 // Cards or other mega menu
                 const pathPrefix = item.columns[0]?.items[0]?.href.split('/')[1];

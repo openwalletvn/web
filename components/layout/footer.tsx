@@ -1,14 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {Logo} from '@/components/layout/logo';
+import {TOOLS} from '@/lib/tools';
 
 const LINKS = {
     tools: [
-        {label: 'So sánh thẻ', href: '/so-sanh'},
-        {label: 'Find your card', disabled: true, href: '/so-sanh'},
-        {label: 'Wallet App', disabled: true, href: '/tai-app'},
-        {label: 'WalletAI', href: '#', disabled: true, suffix: 'coming soon'},
-    ],
+        ...TOOLS.map((t) => ({label: t.name, href: t.href, disabled: t.disabled}))],
     legal: [
         {label: 'Điều khoản', href: '/dieu-khoan'},
         {label: 'Chính sách bảo mật', href: '/chinh-sach-bao-mat'},
@@ -19,6 +16,7 @@ const LINKS = {
         {label: 'Thẻ', href: '/the'},
         {label: 'Tin tức', href: '/tin-tuc'},
         {label: 'Về OpenWallet', href: '/ve-openwallet'},
+        {label: 'Liên hệ', href: '/lien-he'},
         {label: 'Changelog', href: '/changelog'},
     ],
 };

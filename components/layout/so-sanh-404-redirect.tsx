@@ -2,9 +2,12 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getTool } from '@/lib/tools';
+
+const cardBattleHref = getTool('Card Battle').href;
 
 /**
- * Silently redirects /so-sanh/X-vs-Y 404s to /so-sanh?compare=X,Y
+ * Silently redirects /card-battle/X-vs-Y 404s to /card-battle?compare=X,Y
  * so the interactive compare section handles the pair instead of showing a blank 404.
  */
 export function SoSanh404Redirect() {
@@ -12,7 +15,7 @@ export function SoSanh404Redirect() {
 
     useEffect(() => {
         const path = window.location.pathname;
-        const match = path.match(/^\/so-sanh\/(.+)$/);
+        const match = path.match(new RegExp(`^${cardBattleHref}/(.+)$`));
         if (!match) return;
 
         const pair = match[1];
@@ -21,7 +24,7 @@ export function SoSanh404Redirect() {
 
         const idA = pair.slice(0, vsIndex);
         const idB = pair.slice(vsIndex + 4);
-        router.replace(`/so-sanh?compare=${idA},${idB}`);
+        router.replace(`${cardBattleHref}?compare=${idA},${idB}`);
     }, [router]);
 
     return null;

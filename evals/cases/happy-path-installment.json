@@ -1,0 +1,12 @@
+{
+  "id": "happy-path-installment",
+  "name": "happy-path: installment 0% interest cards",
+  "description": "Model should recommend cards with 0% installment programs",
+  "message": "Thẻ tín dụng nào có chương trình trả góp 0% lãi suất tốt, đặc biệt cho mua điện thoại và đồ điện tử?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response length > 80 chars AND mentions 'trả góp', '0%', or 'phân kỳ'"
+  },
+  "tags": ["happy-path", "installment"]
+}

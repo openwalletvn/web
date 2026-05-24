@@ -4,13 +4,15 @@ import { MetadataRoute } from 'next'
 import { getComparePairs } from '@/lib/api'
 import { apiFetch } from '@/lib/api'
 import { getCompareMdxPairs } from '@/lib/compare-mdx'
+import { getTool } from '@/lib/tools'
 
 export const dynamic = 'force-static'
 
 const BASE_URL = 'https://openwallet.vn'
+const cardBattleHref = getTool('Card Battle').href
 
 // Folders handled separately or not pages
-const EXCLUDED_DIRS = ['ngan-hang', 'the', 'tin-tuc', 'docs', 'so-sanh']
+const EXCLUDED_DIRS = ['ngan-hang', 'the', 'tin-tuc', 'docs', cardBattleHref.slice(1)]
 
 function getStaticPages(): string[] {
   const dir = path.join(process.cwd(), 'app/(marketing)')
@@ -35,11 +37,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // 2. Banks - dynamic from API
-  const banksRes = await apiFetch('/api/v1/banks')
-  const banks = await banksRes.json()
+  let bankData: { id: string }[] = []
+  try {
+    const banksRes = await apiFetch('/api/v1/banks')
+    bankData = ((await banksRes.json()) as { data: { id: string }[] }).data ?? []
+  } catch (e) {
+    console.error('[sitemap] Failed to fetch banks:', e)
+  }
   const bankPages = [
     { url: `${BASE_URL}/ngan-hang`, changeFrequency: 'weekly' as const, priority: 0.9 },
-    ...banks.data.map((b: { id: string }) => ({
+    ...bankData.map((b) => ({
       url: `${BASE_URL}/ngan-hang/${b.id}`,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
@@ -47,11 +54,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // 3. Cards - dynamic from API
-  const cardsRes = await apiFetch('/api/v1/cards')
-  const cards = await cardsRes.json()
+  let cardData: { id: string }[] = []
+  try {
+    const cardsRes = await apiFetch('/api/v1/cards')
+    cardData = ((await cardsRes.json()) as { data: { id: string }[] }).data ?? []
+  } catch (e) {
+    console.error('[sitemap] Failed to fetch cards:', e)
+  }
   const cardPages = [
     { url: `${BASE_URL}/the`, changeFrequency: 'weekly' as const, priority: 0.9 },
-    ...cards.data.map((c: { id: string }) => ({
+    ...cardData.map((c) => ({
       url: `${BASE_URL}/the/${c.id}`,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
@@ -72,9 +84,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ])
   const allPairs = [...new Set([...apiPairs.map((p) => p.compare_path), ...mdxPairs.map((p) => `/${p}`)])]
   const comparePages = [
-    { url: `${BASE_URL}/so-sanh`, changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}${cardBattleHref}`, changeFrequency: 'monthly' as const, priority: 0.8 },
     ...allPairs.map((pair) => ({
-      url: `${BASE_URL}/so-sanh${pair}`,
+      url: `${BASE_URL}${cardBattleHref}${pair}`,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     })),

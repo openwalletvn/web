@@ -2,14 +2,19 @@ import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import {getBank, getBankImageUrl, getBanks, getCards} from '@/lib/api';
+import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {NetworkDistributionBar} from '@/components/shared/network-distribution-bar';
 import {buildBankPageMeta} from '@/lib/page-meta/bank';
 
 export async function generateStaticParams() {
-    const banks = await getBanks();
-    return banks.map((bank) => ({slug: bank.id}));
+    try {
+        const banks = await getBanks();
+        return banks.map((bank) => ({slug: bank.id}));
+    } catch {
+        return [];
+    }
 }
 
 interface Props {
@@ -48,8 +53,8 @@ export default async function BankPage({params}: Props) {
     }
 
     const [cards, banks] = await Promise.all([
-        getCards({bank_id: slug}),
-        getBanks(),
+        getCards({bank_id: slug}).catch(() => [] as Awaited<ReturnType<typeof getCards>>),
+        getBanks().catch(() => [] as Awaited<ReturnType<typeof getBanks>>),
     ]);
 
     const {jsonLd, breadcrumbItems} = buildBankPageMeta(bank, cards);
@@ -60,6 +65,7 @@ export default async function BankPage({params}: Props) {
     const businessCards = cards.filter((c) => c.for_business === true);
 
     return (
+        <>
         <div className="px-4 py-12">
             <div className="ow-container space-y-16">
                 <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
@@ -142,5 +148,11 @@ export default async function BankPage({params}: Props) {
                 )}
             </div>
         </div>
+        <ChatContextSetter context={{
+            type: 'bank',
+            bankId: bank.id,
+            bankName: bank.name,
+        }} />
+        </>
     );
 }

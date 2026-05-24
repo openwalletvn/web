@@ -1,3 +1,6 @@
+// UI-only: used by card-ranking-table.tsx for client-side interactive ranking.
+// Canonical ranking source of truth: api/lib/card-ranker.ts (POST /api/v1/cards/rank).
+// AI chat and external clients must use the API endpoint, not this file.
 import type {Card} from '@/lib/api';
 import {calcCashback, type CashbackResult} from '@/lib/cashback-calc';
 
@@ -31,10 +34,9 @@ export function getTiebreakerReason(winner: Card, loser: Card): string | null {
     const feeW = winner.fees?.annual?.amount ?? 0;
     const feeL = loser.fees?.annual?.amount ?? 0;
     if (feeW < feeL) {
-        const loserFeeStr = feeL.toLocaleString('vi-VN');
         return feeW === 0
-            ? `Miễn phí thường niên · ${loser.name} tính ${loserFeeStr}đ/năm`
-            : `Phí ${feeW.toLocaleString('vi-VN')}đ/năm · ${loser.name} tính ${loserFeeStr}đ/năm`;
+            ? `Miễn phí thường niên · ${loser.name} tính phí`
+            : `Phí thường niên thấp hơn ${loser.name}`;
     }
     const netW = NETWORK_POPULARITY[winner.card_network] ?? 99;
     const netL = NETWORK_POPULARITY[loser.card_network] ?? 99;

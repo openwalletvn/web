@@ -1,0 +1,12 @@
+{
+  "id": "happy-path-shopee-cashback",
+  "name": "happy-path: recommend card for Shopee + supermarket",
+  "description": "Model should recommend cashback cards suited for Shopee 3M/month and supermarket 2M/month spending",
+  "message": "Thẻ tín dụng nào phù hợp cho tôi nếu tôi chi 3 triệu/tháng trên Shopee và 2 triệu/tháng đi siêu thị?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response length > 100 chars AND mentions 'shopee', 'hoàn tiền', 'cashback', or 'thẻ'"
+  },
+  "tags": ["happy-path", "cashback", "recommendation"]
+}
