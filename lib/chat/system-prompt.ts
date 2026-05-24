@@ -28,8 +28,9 @@ Mẫu từ chối: "Xin lỗi, tôi chỉ có thể tư vấn về thẻ ngân h
 
 import type { PageContext } from '@/lib/chat/page-context';
 
-export function buildSystemPrompt(pageContext?: PageContext): string {
-    if (!pageContext) return SYSTEM_PROMPT;
+export function buildSystemPrompt(pageContext?: PageContext, basePrompt?: string): string {
+    const base = basePrompt || SYSTEM_PROMPT;
+    if (!pageContext) return base;
     if (pageContext.type === 'card') {
         return (
             SYSTEM_PROMPT +
@@ -38,11 +39,11 @@ export function buildSystemPrompt(pageContext?: PageContext): string {
     }
     if (pageContext.type === 'bank') {
         return (
-            SYSTEM_PROMPT +
+            base +
             `\n\n## Ngữ cảnh trang hiện tại\nNgười dùng đang xem trang ngân hàng: **${pageContext.bankName}** (id: ${pageContext.bankId}). Khi phù hợp, ưu tiên tư vấn về thẻ của ngân hàng này. Dùng searchCards với bank_id="${pageContext.bankId}" để lấy danh sách thẻ.`
         );
     }
-    return SYSTEM_PROMPT;
+    return base;
 }
 
 export const REFUSAL_TEMPLATE =
