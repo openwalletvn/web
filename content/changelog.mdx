@@ -1,56 +1,69 @@
 # Changelog
 
-## 2026-05-19 | Hệ thống xếp hạng thẻ theo cashback
-- Xếp hạng thẻ dựa trên cashback ước tính theo mức chi tiêu thực tế
-- Bộ lọc chi tiêu tương tác để so sánh cashback giữa các thẻ
-- Lọc thẻ theo mục đích sử dụng thay vì danh sách ID thủ công
+## 2026-05-23 | Hệ thống Evals cho AI chat
+
+- Bộ test case đánh giá chất lượng AI chat
+- Kết quả được lưu lên GitHub để so sánh giữa các lần chạy theo thời gian
+- Nền tảng kiểm soát chất lượng độc lập với model cho tính năng AI đang trong giai đoạn beta
+
+## 2026-05-22 | AI Chat (beta)
+
+- Hỏi AI về thẻ tín dụng trực tiếp trên trang, được xây dựng với Vercel AI SDK v6, LLM và assistant-ui
+- AI gọi trực tiếp OpenWallet API qua MCP để trả lời dựa trên dữ liệu thực, không phỏng đoán
+- System prompt tiếng Việt, scope-locked: chỉ trả lời về thẻ tín dụng, từ chối các câu hỏi ngoài phạm vi
+
+## 2026-05-21 | MCP server (beta) + Nâng cấp hạ tầng API v2
+
+- MCP server với 8 tools: Claude và các AI agent có thể dùng OpenWallet làm nguồn dữ liệu thẻ tín dụng
+- Thử nghiệm tại [inspector.openwallet.vn](https://inspector.openwallet.vn)
+- API refactor từ Next.js sang Hono + Cloudflare Workers, tối ưu cho Edge Runtime với bundle size nghiêm ngặt
+- Bổ sung full test suite: unit, integration và contract tests để đảm bảo tính nhất quán của API
+
+## 2026-05-20 | Chuyển sang Vercel
+
+- Trang `/card-battle` cần `dynamicParams=true` kết hợp ISR để render mọi cặp thẻ tùy ý theo yêu cầu
+- Cloudflare static export không hỗ trợ dynamic params, các URL chưa được pre-render sẽ trả về 404
+- Chuyển sang Vercel SSR/ISR: cặp thẻ bất kỳ đều render được, cache tự động sau lần đầu
+
+## 2026-05-19 | Hệ thống xếp hạng cashback
+
+- Xếp hạng thẻ theo cashback ước tính dựa trên mức chi tiêu thực tế người dùng nhập vào
+- Bộ lọc chi tiêu tương tác: thay đổi số tiền, bảng xếp hạng cập nhật ngay lập tức
+- Single source of truth cho toàn bộ logic xếp hạng, có thể kiểm chứng và audit độc lập với UI
 
 ## 2026-03-22 | So sánh thẻ tín dụng
-- Trang so sánh thẻ tín dụng cạnh nhau
-- Chi tiết cashback và phân tích lợi ích theo từng thẻ
 
-## 2026-03-04 | Tối ưu hệ thống ảnh thẻ và thêm endpoint AI
-- Chuyển đổi ảnh thẻ sang WebP, tạo LQIP placeholder
-- Cấu trúc lại thư mục ảnh, thêm route API ảnh thẻ mới với cache headers
-- Thêm endpoint `/llms/cards.txt` và `/llms/banks.txt`
+- So sánh tối đa 3 thẻ cùng lúc tại `/card-battle` với bảng phân tích chi tiết
+- Phân tích cashback và lợi ích theo từng thẻ, OG image động cho từng cặp so sánh
 
-## 2026-03-03 | Cập nhật dữ liệu thanh toán không tiếp xúc
-- Cập nhật thông tin contactless methods cho các thẻ
+## 2026-03-20 | Ứng dụng ví cá nhân (WIP)
 
-## 2026-03-01 | Thêm dữ liệu thẻ MB Bank
-- Bổ sung danh mục thẻ MB Bank vào hệ thống
+Tính năng đang trong giai đoạn phát triển
 
-## 2026-02-28 | Mở rộng dữ liệu 5 ngân hàng và thêm bộ lọc mới
-- Thêm dữ liệu thẻ SeABank, OCB, LPBank, VietinBank, Sacombank
-- Thêm trường `is_metal` và bộ lọc thẻ kim loại
-- Thêm bộ lọc `network_tier`
+- Quản lý thẻ tín dụng cá nhân trực tiếp trên trình duyệt, không cần tạo tài khoản
+- Theo dõi hạn thanh toán, lịch sao kê, trạng thái từng thẻ
+- Local-first: dữ liệu lưu hoàn toàn trên thiết bị với IndexedDB, không đồng bộ lên server
 
-## 2026-02-27 | Nâng cấp bộ lọc và thêm dữ liệu BIDV
-- Hỗ trợ lọc nhiều giá trị cùng lúc
-- Thêm xếp hạng hạng thẻ (card tier rank)
-- Thêm dữ liệu thẻ BIDV
-- Đổi tên bộ lọc `wallet` thành `contactless`
-- Thêm dữ liệu ngân hàng mở rộng vào response
+## 2026-03-04 | Tối ưu ảnh thẻ + Pipeline dữ liệu tự động
 
-## 2026-02-23 | Tích hợp Axiom cho observability
-- Theo dõi request logs và analytics qua Axiom
+- Toàn bộ ảnh thẻ chuyển sang AVIF/WEBP với LQIP placeholder, API ảnh với cache headers chuẩn
+- Pipeline dữ liệu khép kín: Python scraper thu thập thông tin từ website ngân hàng, LLM trích xuất thành JSON có cấu trúc, Zod validation, admin dashboard để review và publish
+- Hệ thống pipeline này là nền tảng đằng sau 320+ thẻ hiện có trong hệ thống
 
-## 2026-02-21 | Thêm header Last-Modified
-- Hỗ trợ `Last-Modified` cho endpoint LLM và thẻ
+## 2026-02-27 | Mở rộng dữ liệu và bộ lọc nâng cao
 
-## 2026-02-20 | Thêm dữ liệu contactless và Admin UI
-- Thêm dữ liệu ví thanh toán (contactless)
-- Ra mắt giao diện quản trị nội bộ
+- Thêm dữ liệu 7 ngân hàng: BIDV, SeABank, OCB, LPBank, VietinBank, Sacombank, MB Bank
+- Bộ lọc đa giá trị cùng lúc, card tier rank, bộ lọc thẻ kim loại, network tier
+- Data quality scoring cho từng thẻ trong hệ thống
 
-## 2026-02-19 | Thêm dữ liệu mạng thanh toán và thương hiệu
-- Bổ sung networks và brands vào hệ thống
+## 2026-02-18 | Nền tảng dữ liệu thẻ
 
-## 2026-02-18 | Thêm bộ lọc loại thẻ đặc biệt
-- Hỗ trợ `?type=2in1`, `?type=co-branded` và `?co_brand`
-
-## 2026-02-17 | Ra mắt llms.txt và Edge Runtime
-- Tạo `llms.txt` — tài liệu API tối ưu cho AI/LLM
-- Chuyển sang Cloudflare Edge Runtime
+- Hệ thống dữ liệu đầy đủ: banks, cards, networks, brands, contactless methods
+- Bộ lọc thẻ
+- Admin UI nội bộ để quản lý và cập nhật dữ liệu
 
 ## 2026-02-16 | Ra mắt OpenWallet API v1
-- Phiên bản đầu tiên với OpenAPI 3.1 spec
+
+- Phiên bản đầu tiên với OpenAPI 3.1 spec đầy đủ
+- REST API chuẩn cho dữ liệu thẻ tín dụng Việt Nam
+- Nền tảng cho toàn bộ hệ sinh thái OpenWallet
