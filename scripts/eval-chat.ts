@@ -2,13 +2,13 @@
  * Offline eval harness for the /api/chat endpoint.
  * Run: npx tsx scripts/eval-chat.ts
  *
- * Requires GROQ_API_KEY, CHAT_MODEL, JUDGE_MODEL, GITHUB_TOKEN in .env.local
+ * Requires GROQ_API_KEY, CHAT_MODEL, JUDGE_MODEL,
+ * LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL in .env.local
  * and the dev server running on localhost:3000 (or set CHAT_URL).
  */
 import * as dotenv from 'dotenv';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { execSync } from 'node:child_process';
 
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
@@ -16,10 +16,11 @@ const CHAT_URL = process.env.CHAT_URL ?? 'http://localhost:3000/api/chat';
 const GROQ_API_KEY = process.env.GROQ_API_KEY ?? '';
 const CHAT_MODEL = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
 const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'llama-3.3-70b-versatile';
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? '';
-const EVALS_REPO = process.env.EVALS_REPO ?? 'openwalletvn/evals';
 const TRIGGERED_BY = process.env.TRIGGERED_BY ?? (process.env.CI ? 'ci' : 'cli');
-const NO_GITHUB_PUSH = process.env.NO_GITHUB_PUSH === 'true';
+
+const LANGFUSE_BASE_URL = process.env.LANGFUSE_BASE_URL ?? 'https://cloud.langfuse.com';
+const LANGFUSE_PUBLIC_KEY = process.env.LANGFUSE_PUBLIC_KEY ?? '';
+const LANGFUSE_SECRET_KEY = process.env.LANGFUSE_SECRET_KEY ?? '';
 
 // Case filter: --case <id> CLI arg OR EVAL_CASE_IDS=id1,id2 env var
 const cliCaseIdx = process.argv.indexOf('--case');
@@ -59,8 +60,7 @@ interface EvalCase {
 
 interface EvalResult {
   run_id: string;
-  prompt_version: string;
-  system_prompt: string;
+  prompt_version: number;
   triggered_by: string;
   model: string;
   judge_model: string;
@@ -166,32 +166,27 @@ function loadTestCases(): EvalCase[] {
   });
 }
 
-// ─── Prompt version ───────────────────────────────────────────────────────────
+// ─── Prompt version from Langfuse ────────────────────────────────────────────
 
-function getPromptVersion(): string {
+async function fetchPromptVersion(): Promise<number> {
+  if (!LANGFUSE_PUBLIC_KEY || !LANGFUSE_SECRET_KEY) return 0;
   try {
-    return execSync('git log -1 --format=%H -- lib/chat/system-prompt.ts')
-      .toString()
-      .trim();
+    const auth = 'Basic ' + Buffer.from(`${LANGFUSE_PUBLIC_KEY}:${LANGFUSE_SECRET_KEY}`).toString('base64');
+    const res = await fetch(`${LANGFUSE_BASE_URL}/api/public/v2/prompts/chat-system-prompt?label=production`, {
+      headers: { Authorization: auth },
+    });
+    if (!res.ok) return 0;
+    const data = await res.json() as { version: number };
+    return data.version ?? 0;
   } catch {
-    return 'unknown';
-  }
-}
-
-function getSystemPrompt(): string {
-  try {
-    return fs.readFileSync(path.join(process.cwd(), 'lib/chat/system-prompt.ts'), 'utf-8');
-  } catch {
-    return 'unknown';
+    return 0;
   }
 }
 
 // ─── Run ID ───────────────────────────────────────────────────────────────────
 
 function makeRunId(): string {
-  const ts = Date.now();
-  const hash = getPromptVersion().slice(0, 7);
-  return `${ts}-${hash}`;
+  return `eval-${Date.now()}`;
 }
 
 // ─── Chat call ────────────────────────────────────────────────────────────────
@@ -308,52 +303,87 @@ Respond with JSON only, no markdown:
   }
 }
 
-// ─── GitHub push ──────────────────────────────────────────────────────────────
+// ─── Langfuse push ────────────────────────────────────────────────────────────
 
-async function pushToEvalsRepo(runId: string, lines: string[]): Promise<void> {
-  if (!GITHUB_TOKEN) {
-    console.log('  [github] GITHUB_TOKEN not set — skipping push');
+function langfuseAuth(): string {
+  return 'Basic ' + Buffer.from(`${LANGFUSE_PUBLIC_KEY}:${LANGFUSE_SECRET_KEY}`).toString('base64');
+}
+
+async function pushToLangfuse(results: EvalResult[]): Promise<void> {
+  if (!LANGFUSE_PUBLIC_KEY || !LANGFUSE_SECRET_KEY) {
+    console.log('  [langfuse] LANGFUSE_PUBLIC_KEY/SECRET_KEY not set — skipping push');
     return;
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-  const filename = `results/${today}/run-${runId}.jsonl`;
-  const content = Buffer.from(lines.join('\n') + '\n').toString('base64');
+  const batch: unknown[] = [];
+  const now = new Date().toISOString();
 
-  let sha: string | undefined;
-  try {
-    const getRes = await fetch(
-      `https://api.github.com/repos/${EVALS_REPO}/contents/${filename}`,
-      { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } },
-    );
-    if (getRes.ok) {
-      const existing = await getRes.json() as { sha?: string };
-      sha = existing.sha;
+  for (const r of results) {
+    const traceId = crypto.randomUUID();
+
+    batch.push({
+      id: crypto.randomUUID(),
+      type: 'trace-create',
+      timestamp: now,
+      body: {
+        id: traceId,
+        name: 'eval',
+        input: r.input,
+        output: r.response,
+        metadata: {
+          run_id: r.run_id,
+          test_id: r.test_id,
+          test_name: r.test_name,
+          model: r.model,
+          judge_model: r.judge_model,
+          rule_pass: r.rule_pass,
+          latency_ms: r.latency_ms,
+          triggered_by: r.triggered_by,
+          prompt_version: r.prompt_version,
+        },
+        tags: ['eval', ...r.tags],
+      },
+    });
+
+    batch.push({
+      id: crypto.randomUUID(),
+      type: 'score-create',
+      timestamp: now,
+      body: {
+        traceId,
+        name: 'judge-score',
+        value: r.score / 100,
+        comment: r.judge_reasoning,
+        dataType: 'NUMERIC',
+      },
+    });
+
+    if (!r.rule_pass) {
+      batch.push({
+        id: crypto.randomUUID(),
+        type: 'score-create',
+        timestamp: now,
+        body: {
+          traceId,
+          name: 'rule-pass',
+          value: 0,
+          dataType: 'NUMERIC',
+        },
+      });
     }
-  } catch {
-    // file doesn't exist — that's fine
   }
 
-  const body: Record<string, unknown> = { message: `eval run ${runId}`, content };
-  if (sha) body.sha = sha;
+  const res = await fetch(`${LANGFUSE_BASE_URL}/api/public/ingestion`, {
+    method: 'POST',
+    headers: { Authorization: langfuseAuth(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ batch }),
+  });
 
-  const putRes = await fetch(
-    `https://api.github.com/repos/${EVALS_REPO}/contents/${filename}`,
-    {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    },
-  );
-
-  if (!putRes.ok) {
-    const err = await putRes.text();
-    console.error(`  [github] Push failed: ${err.slice(0, 200)}`);
+  if (!res.ok) {
+    const err = await res.text();
+    console.error(`  [langfuse] Push failed: ${err.slice(0, 200)}`);
   } else {
-    console.log(`  [github] Pushed → ${EVALS_REPO}/${filename}`);
+    console.log(`  [langfuse] Pushed ${results.length} eval traces → ${LANGFUSE_BASE_URL}`);
   }
 }
 
@@ -371,21 +401,18 @@ async function runEval() {
     }
   }
 
-  const promptVersion = getPromptVersion();
-  const systemPrompt = getSystemPrompt();
+  const promptVersion = await fetchPromptVersion();
   const runId = makeRunId();
 
   const filterNote = FILTER_IDS ? ` (filter: ${FILTER_IDS.join(', ')})` : '';
-  const pushNote = NO_GITHUB_PUSH ? ' [no push]' : '';
 
   console.log(`\nEval run: ${runId}`);
   console.log(`Prompt version: ${promptVersion}`);
-  console.log(`Triggered by: ${TRIGGERED_BY}${pushNote}`);
+  console.log(`Triggered by: ${TRIGGERED_BY}`);
   console.log(`Chat model: ${CHAT_MODEL} | Judge model: ${JUDGE_MODEL}`);
   console.log(`Running ${TEST_CASES.length} eval cases${filterNote} against ${CHAT_URL}\n`);
 
   const results: EvalResult[] = [];
-  const jsonlLines: string[] = [];
 
   for (const tc of TEST_CASES) {
     process.stdout.write(`  [${tc.name}] ... `);
@@ -412,7 +439,6 @@ async function runEval() {
       const result: EvalResult = {
         run_id: runId,
         prompt_version: promptVersion,
-        system_prompt: systemPrompt,
         triggered_by: TRIGGERED_BY,
         model: CHAT_MODEL,
         judge_model: JUDGE_MODEL,
@@ -430,7 +456,6 @@ async function runEval() {
       };
 
       results.push(result);
-      jsonlLines.push(JSON.stringify(result));
 
       const status = pass ? 'PASS' : 'FAIL';
       console.log(`${status} (score=${judge.score}, rule=${rule_pass})`);
@@ -443,10 +468,9 @@ async function runEval() {
       console.log('ERROR');
       console.log(`    ${String(err)}`);
 
-      const result: EvalResult = {
+      results.push({
         run_id: runId,
         prompt_version: promptVersion,
-        system_prompt: systemPrompt,
         triggered_by: TRIGGERED_BY,
         model: CHAT_MODEL,
         judge_model: JUDGE_MODEL,
@@ -461,10 +485,7 @@ async function runEval() {
         judge_reasoning: `Error: ${String(err)}`,
         latency_ms,
         timestamp: new Date().toISOString(),
-      };
-
-      results.push(result);
-      jsonlLines.push(JSON.stringify(result));
+      });
     }
   }
 
@@ -485,11 +506,7 @@ async function runEval() {
   console.log('─────────────────────────────────────────────────────────');
   console.log(`Results: ${passed}/${results.length} passed | avg score: ${avgScore} | ${failed} failed\n`);
 
-  if (NO_GITHUB_PUSH) {
-    console.log('  [github] Push skipped (NO_GITHUB_PUSH=true)');
-  } else {
-    await pushToEvalsRepo(runId, jsonlLines);
-  }
+  await pushToLangfuse(results);
 
   if (failed > 0) process.exit(1);
 }
