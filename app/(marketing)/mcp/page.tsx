@@ -166,7 +166,7 @@ export default function McpPage() {
                 <div className="ow-container max-w-3xl">
                     <h2 className="text-display-sm font-semibold mb-4">Cách lấy API key</h2>
                     <p className="text-body text-slate-600 mb-6">
-                        OpenWallet MCP hiện đang trong giai đoạn beta. Gửi email đến <a href="mailto:hello@openwallet.vn" className="text-[#EF3C23] hover:opacity-70 transition-opacity">hello@openwallet.vn</a> với tiêu đề &ldquo;OpenWallet MCP Key Request&rdquo; để được cấp key thử nghiệm. Key có thời hạn và được quản lý thủ công trong giai đoạn này.
+                        OpenWallet MCP hiện đang trong giai đoạn beta. Xem hướng dẫn yêu cầu key tại <a href="/lien-he" className="text-[#EF3C23] hover:opacity-70 transition-opacity">trang liên hệ</a>. Key có thời hạn và được quản lý thủ công trong giai đoạn này.
                     </p>
                     <a
                         href="mailto:hello@openwallet.vn?subject=OpenWallet MCP Key Request"

@@ -5,9 +5,7 @@ import {TOOLS} from '@/lib/tools';
 
 const LINKS = {
     tools: [
-        ...TOOLS.map((t) => ({label: t.name, href: t.href})),
-        {label: 'WalletApp', disabled: true, href: '/app'},
-    ],
+        ...TOOLS.map((t) => ({label: t.name, href: t.href, disabled: t.disabled}))],
     legal: [
         {label: 'Điều khoản', href: '/dieu-khoan'},
         {label: 'Chính sách bảo mật', href: '/chinh-sach-bao-mat'},
@@ -18,6 +16,7 @@ const LINKS = {
         {label: 'Thẻ', href: '/the'},
         {label: 'Tin tức', href: '/tin-tuc'},
         {label: 'Về OpenWallet', href: '/ve-openwallet'},
+        {label: 'Liên hệ', href: '/lien-he'},
         {label: 'Changelog', href: '/changelog'},
     ],
 };

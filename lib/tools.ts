@@ -1,6 +1,7 @@
 export interface Tool {
     name: string;
     href: string;
+    disabled?: boolean;
 }
 
 export const TOOLS: Tool[] = [
@@ -8,6 +9,7 @@ export const TOOLS: Tool[] = [
     {name: 'Card Match', href: '/card-match'},
     {name: 'Wallet Chat', href: '/wallet-chat'},
     {name: 'Wallet MCP', href: '/mcp'},
+    {name: 'Wallet App', href: '/app', disabled: true},
 ];
 
 export function getTool(name: string): Tool {
