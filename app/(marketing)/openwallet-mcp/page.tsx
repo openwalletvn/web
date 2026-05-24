@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buildBreadcrumbJsonLd } from '@/lib/page-meta/breadcrumb';
 import { ProsePageShell } from '@/components/layout/prose-page-shell';
+import { McpVersionBadge } from '@/components/mcp/mcp-version-badge';
 
 export const metadata: Metadata = {
     title: 'OpenWallet MCP | Dữ liệu thẻ ngân hàng cho AI',
@@ -101,6 +102,7 @@ export default function McpPage() {
                 title="OpenWallet MCP"
                 subtitle="MCP server mang dữ liệu thẻ ngân hàng Việt Nam đến mọi AI tool hỗ trợ Model Context Protocol."
             >
+                <McpVersionBadge />
                 <div className="flex flex-col gap-10">
                     <Section title="Tại sao chúng tôi xây dựng điều này?">
                         <p>
