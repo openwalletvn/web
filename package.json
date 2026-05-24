@@ -9,6 +9,8 @@
     "lint": "next lint",
     "validate:posts": "node scripts/validate-posts.js",
     "admin": "tsx admin/server.ts",
+    "evals": "concurrently -n ui,server -c blue,cyan \"evals/ui/node_modules/.bin/vite --config evals/ui/vite.config.ts\" \"tsx evals/server.ts\"",
+    "evals:build": "evals/ui/node_modules/.bin/vite build --config evals/ui/vite.config.ts",
     "clask": "clask"
   },
   "dependencies": {

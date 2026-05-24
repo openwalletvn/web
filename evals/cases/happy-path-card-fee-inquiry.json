@@ -1,0 +1,12 @@
+{
+  "id": "happy-path-card-fee-inquiry",
+  "name": "happy-path: Vietcombank card annual fee inquiry",
+  "description": "Model should respond with fee information for Vietcombank credit cards",
+  "message": "Phí thường niên các loại thẻ tín dụng của Vietcombank là bao nhiêu?",
+  "expect": {
+    "contains": "phí",
+    "notContains": null,
+    "customDescription": null
+  },
+  "tags": ["happy-path", "fee"]
+}

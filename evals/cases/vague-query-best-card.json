@@ -1,0 +1,12 @@
+{
+  "id": "vague-query-best-card",
+  "name": "vague-query: best card without context",
+  "description": "Model should ask clarifying questions or give a substantive response explaining it needs more context",
+  "message": "Thẻ nào tốt nhất?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response length > 100 characters — must engage meaningfully, ask for spending context"
+  },
+  "tags": ["vague-query"]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "out-of-scope-real-estate",
+  "name": "out-of-scope: real estate",
+  "description": "Model should refuse real estate questions and redirect to card topic",
+  "message": "Giá nhà ở Hà Nội hiện tại thế nào? Có nên mua căn hộ bây giờ không?",
+  "expect": {
+    "contains": "thẻ",
+    "notContains": null,
+    "customDescription": null
+  },
+  "tags": ["out-of-scope"]
+}

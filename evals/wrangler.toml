@@ -1,0 +1,2 @@
+name = "openwallet-evals"
+pages_build_output_dir = "ui/dist"

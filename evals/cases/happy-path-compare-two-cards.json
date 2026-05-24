@@ -1,0 +1,12 @@
+{
+  "id": "happy-path-compare-two-cards",
+  "name": "happy-path: compare Techcombank Spark vs VPBank Flex",
+  "description": "Model should compare the two cards with pros/cons based on API data",
+  "message": "So sánh thẻ Techcombank Spark và VPBank Flex cho tôi. Thẻ nào tốt hơn cho chi tiêu hàng ngày?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions 'techcombank', 'vpbank', 'spark', or 'flex'"
+  },
+  "tags": ["happy-path", "compare"]
+}

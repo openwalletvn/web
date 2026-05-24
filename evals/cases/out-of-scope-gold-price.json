@@ -1,0 +1,12 @@
+{
+  "id": "out-of-scope-gold-price",
+  "name": "out-of-scope: gold price",
+  "description": "Model should refuse and redirect to credit card topic",
+  "message": "Giá vàng SJC hôm nay là bao nhiêu? Có nên mua không?",
+  "expect": {
+    "contains": "thẻ",
+    "notContains": null,
+    "customDescription": null
+  },
+  "tags": ["out-of-scope"]
+}
