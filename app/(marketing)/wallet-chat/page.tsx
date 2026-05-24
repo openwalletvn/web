@@ -2,16 +2,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { buildBreadcrumbJsonLd } from '@/lib/page-meta/breadcrumb';
 import { getTool } from '@/lib/tools';
+import { ProsePageShell } from '@/components/layout/prose-page-shell';
 
 const BASE_URL = 'https://openwallet.vn';
 const tool = getTool('Wallet Chat');
 
 export const metadata: Metadata = {
-    title: 'Wallet Chat | Hỏi đáp thẻ ngân hàng bằng AI',
-    description: 'Wallet Chat là trợ lý AI giúp bạn tìm và so sánh thẻ ngân hàng Việt Nam. Không cần tài khoản, dữ liệu lưu trên thiết bị của bạn, hoàn toàn riêng tư.',
+    title: 'Wallet Chat | Trợ lý AI thẻ ngân hàng (Beta)',
+    description: 'Wallet Chat là trợ lý AI giúp bạn tìm và so sánh thẻ ngân hàng Việt Nam. Hiện đang trong giai đoạn beta, chưa mở rộng công khai.',
     openGraph: {
         title: 'Wallet Chat',
-        description: 'Trợ lý AI hỏi đáp thẻ ngân hàng Việt Nam. Không tài khoản, không lưu trữ server.',
+        description: 'Trợ lý AI hỏi đáp thẻ ngân hàng Việt Nam. Đang trong giai đoạn beta.',
         url: `${BASE_URL}${tool.href}`,
     },
 };
@@ -30,6 +31,17 @@ const FEATURES = [
         desc: 'Bạn không cần biết tên thẻ cụ thể. Chỉ cần mô tả thói quen chi tiêu: "Tôi hay mua sắm online và đi cafe, thẻ nào phù hợp?" và nhận câu trả lời có dẫn chứng.',
     },
 ];
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+    return (
+        <section className="flex flex-col gap-4">
+            <h2 className="text-display-md">{title}</h2>
+            <div className="flex flex-col gap-3 text-body text-slate-700">
+                {children}
+            </div>
+        </section>
+    );
+}
 
 export default function WalletChatPage() {
     const jsonLd = {
@@ -56,79 +68,65 @@ export default function WalletChatPage() {
     };
 
     return (
-        <div className="ow-wallet-chat-page">
+        <>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+            <ProsePageShell
+                title="Wallet Chat"
+                subtitle="Trợ lý AI giúp bạn tìm và so sánh thẻ ngân hàng Việt Nam qua hội thoại tự nhiên. Hiện đang trong giai đoạn beta, chưa mở rộng công khai."
+            >
+                <div className="flex flex-col gap-10">
+                    <section>
+                        <Link
+                            href="/lien-he"
+                            className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
+                        >
+                            Yêu cầu truy cập beta
+                        </Link>
+                    </section>
 
-            {/* Hero */}
-            <section className="border-b border-dashed border-border py-16">
-                <div className="ow-container max-w-3xl">
-                    <p className="text-sm font-mono text-muted-foreground mb-3">AI Assistant</p>
-                    <h1 className="text-display-lg font-bold mb-4">Wallet Chat</h1>
-                    <p className="text-body text-slate-600 mb-8">
-                        Trợ lý AI giúp bạn tìm và so sánh thẻ ngân hàng Việt Nam qua hội thoại tự nhiên. Không cần tài khoản, không lưu dữ liệu lên server, hoàn toàn riêng tư trên thiết bị của bạn.
-                    </p>
-                    <Link
-                        href="/chat"
-                        className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
-                    >
-                        Mở Wallet Chat
-                    </Link>
-                </div>
-            </section>
+                    <Section title="Tại sao dùng Wallet Chat?">
+                        <div className="flex flex-col gap-6">
+                            {FEATURES.map(f => (
+                                <div key={f.title} className="flex flex-col gap-2">
+                                    <p className="text-body font-semibold">{f.title}</p>
+                                    <p className="text-body text-slate-600">{f.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </Section>
 
-            {/* Features */}
-            <section className="border-b border-dashed border-border py-12">
-                <div className="ow-container max-w-3xl">
-                    <h2 className="text-display-sm font-semibold mb-6">Tại sao dùng Wallet Chat?</h2>
-                    <div className="flex flex-col gap-6">
-                        {FEATURES.map(f => (
-                            <div key={f.title} className="flex flex-col gap-2">
-                                <h3 className="text-sm font-semibold">{f.title}</h3>
-                                <p className="text-body text-slate-600">{f.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+                    <Section title="Bạn có thể hỏi những gì?">
+                        <div className="grid gap-3">
+                            {[
+                                'Thẻ nào hoàn tiền tốt nhất cho mua sắm tại siêu thị?',
+                                'So sánh Vietcombank Cashback với MB JCB Sakura.',
+                                'Tôi chi 5 triệu/tháng cho ăn uống và cafe, thẻ nào phù hợp?',
+                                'Techcombank có thẻ nào miễn phí thường niên không?',
+                                'Thẻ nào tốt nhất để dùng ở nước ngoài?',
+                            ].map(q => (
+                                <div key={q} className="px-4 py-3 bg-muted rounded-lg text-sm text-slate-600 font-mono">
+                                    &ldquo;{q}&rdquo;
+                                </div>
+                            ))}
+                        </div>
+                    </Section>
 
-            {/* Example prompts */}
-            <section className="border-b border-dashed border-border py-12">
-                <div className="ow-container max-w-3xl">
-                    <h2 className="text-display-sm font-semibold mb-6">Bạn có thể hỏi những gì?</h2>
-                    <div className="grid gap-3">
-                        {[
-                            'Thẻ nào hoàn tiền tốt nhất cho mua sắm tại siêu thị?',
-                            'So sánh Vietcombank Cashback với MB JCB Sakura.',
-                            'Tôi chi 5 triệu/tháng cho ăn uống và cafe, thẻ nào phù hợp?',
-                            'Techcombank có thẻ nào miễn phí thường niên không?',
-                            'Thẻ nào tốt nhất để dùng ở nước ngoài?',
-                        ].map(q => (
-                            <div key={q} className="px-4 py-3 bg-muted rounded-lg text-sm text-slate-600 font-mono">
-                                &ldquo;{q}&rdquo;
-                            </div>
-                        ))}
-                    </div>
+                    <Section title="Truy cập beta">
+                        <p>
+                            Wallet Chat hiện đang trong giai đoạn beta với số lượng người dùng giới hạn.
+                        </p>
+                        <Link
+                            href="/lien-he"
+                            className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity w-fit"
+                        >
+                            Yêu cầu truy cập beta
+                        </Link>
+                    </Section>
                 </div>
-            </section>
-
-            {/* CTA */}
-            <section className="py-12">
-                <div className="ow-container max-w-3xl">
-                    <h2 className="text-display-sm font-semibold mb-4">Thử ngay, không cần đăng ký</h2>
-                    <p className="text-body text-slate-600 mb-6">
-                        Wallet Chat hoạt động ngay trong trình duyệt. Không cần tạo tài khoản, không cần cài ứng dụng. Lịch sử trò chuyện được lưu trên thiết bị của bạn.
-                    </p>
-                    <Link
-                        href="/chat"
-                        className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
-                    >
-                        Mở Wallet Chat
-                    </Link>
-                </div>
-            </section>
-        </div>
+            </ProsePageShell>
+        </>
     );
 }

@@ -33,6 +33,7 @@ width: 100%
 ## CSS & typography rules
 - **Typography source of truth:** `app/typography.css` — all text styles live here (h1–h6 base + utility classes).
 - **No hardcoded styles:** Never write hardcoded `font-size`, `font-weight`, `line-height`, `letter-spacing` values in components or inline styles. Always use an existing class from `app/typography.css`. If no class fits, stop and ask for approval before adding one.
+- **No Tailwind typography overrides on heading elements:** Never put `text-sm`, `text-xs`, `text-lg`, `font-bold`, `font-semibold`, `font-medium`, or any other Tailwind text/font utility directly on `<h1>`–`<h6>` elements. These bypass the design system just as much as hardcoded values. Use the correct typography utility class (`text-section`, `text-display-md`, `text-body`, etc.) or change the element to a `<p>` / `<span>` if the semantic level doesn't match the visual intent.
 - **`globals.css` scope:** Variables and tokens only (`@theme`, `:root`, `@layer base` for non-typography resets). Typography belongs in `app/typography.css`.
 - **After any CSS/layout change:** Re-read these rules and confirm nothing violates them.
 - **Responsive layout:** Every component must be checked for mobile/tablet/desktop breakpoints. Never ship a layout change without verifying responsive behavior.
