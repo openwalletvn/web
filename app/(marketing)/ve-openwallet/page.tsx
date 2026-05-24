@@ -34,7 +34,7 @@ export default function Page() {
 
                         <Section title="Một lời muốn nói">
                             <p>OpenWallet không cạnh tranh với bất kỳ nền tảng nào đang tồn tại. Nhiều cá nhân và cộng đồng đã bỏ thời gian thực sự để tạo ra nội dung chất lượng mà không có lợi ích thương mại, và chúng tôi tôn trọng điều đó.</p>
-                            <p>Đây là dự án được xây dựng với sự thận trọng. Nếu bạn phát hiện thông tin không chính xác hoặc có góp ý, hãy liên hệ qua <a href="/lien-he" className="underline hover:opacity-70 transition-opacity">trang liên hệ</a>.</p>
+                            <p>Đây là dự án được xây dựng với sự thận trọng. Nếu bạn phát hiện thông tin không chính xác hoặc có góp ý, hãy liên hệ qua <a href="/lien-he" className="text-link">trang liên hệ</a>.</p>
                         </Section>
                     </div>
         </ProsePageShell>

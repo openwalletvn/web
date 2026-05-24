@@ -64,7 +64,7 @@ export default function Page() {
                         </Section>
 
                         <Section title="9. Liên hệ">
-                            <p>Mọi thắc mắc về chính sách bảo mật, vui lòng liên hệ qua <a href="/lien-he" className="underline hover:opacity-70 transition-opacity">trang liên hệ</a>.</p>
+                            <p>Mọi thắc mắc về chính sách bảo mật, vui lòng liên hệ qua <a href="/lien-he" className="text-link">trang liên hệ</a>.</p>
                         </Section>
                     </div>
         </ProsePageShell>
@@ -75,7 +75,7 @@ function Section({title, children}: {title: string; children: React.ReactNode}) 
     return (
         <section className="flex flex-col gap-4">
             <h2 className="text-display-md">{title}</h2>
-            <div className="flex flex-col gap-3 text-body text-slate-700 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2 [&_ul]:pl-5 [&_ul]:list-disc [&_strong]:font-semibold [&_a]:text-[#EF3C23]">
+            <div className="flex flex-col gap-3 text-body text-slate-700 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2 [&_ul]:pl-5 [&_ul]:list-disc [&_strong]:font-semibold">
                 {children}
             </div>
         </section>

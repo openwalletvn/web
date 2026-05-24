@@ -120,4 +120,14 @@
         /*letter-spacing: var(--tracking-label);*/
         text-transform: uppercase;
     }
+
+    .text-link {
+        color: #EF3C23;
+        text-decoration: underline;
+        transition: opacity 0.15s ease;
+    }
+
+    .text-link:hover {
+        opacity: 0.7;
+    }
 }

@@ -4,11 +4,11 @@ import { buildBreadcrumbJsonLd } from '@/lib/page-meta/breadcrumb';
 import { ProsePageShell } from '@/components/layout/prose-page-shell';
 
 export const metadata: Metadata = {
-    title: 'OpenWallet MCP | Tích hợp dữ liệu thẻ ngân hàng vào Claude',
-    description: 'OpenWallet MCP cho phép Claude và các AI assistant truy cập dữ liệu thẻ ngân hàng Việt Nam theo thời gian thực. So sánh thẻ, xếp hạng cashback, tra cứu điều kiện mà không cần rời khỏi cuộc trò chuyện.',
+    title: 'OpenWallet MCP | Dữ liệu thẻ ngân hàng cho AI',
+    description: 'OpenWallet MCP là MCP server cho phép các AI tools như Claude, ChatGPT truy cập dữ liệu thẻ ngân hàng Việt Nam. Không giới hạn trong ứng dụng OpenWallet, dữ liệu có thể được khai thác qua bất kỳ AI assistant nào hỗ trợ MCP.',
     openGraph: {
         title: 'OpenWallet MCP',
-        description: 'Tích hợp dữ liệu thẻ ngân hàng Việt Nam vào Claude qua Model Context Protocol.',
+        description: 'MCP server mang dữ liệu thẻ ngân hàng Việt Nam đến mọi AI tool hỗ trợ Model Context Protocol.',
         url: 'https://openwallet.vn/mcp',
     },
 };
@@ -56,18 +56,6 @@ const TOOLS = [
     },
 ];
 
-const CONFIG_EXAMPLE = `{
-  "mcpServers": {
-    "openwallet": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.openwallet.vn/"],
-      "headers": {
-        "x-mcp-key": "YOUR_API_KEY"
-      }
-    }
-  }
-}`;
-
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
     return (
         <section className="flex flex-col gap-4">
@@ -111,24 +99,15 @@ export default function McpPage() {
             />
             <ProsePageShell
                 title="OpenWallet MCP"
-                subtitle="Cho phép Claude và các AI assistant truy cập dữ liệu thẻ ngân hàng Việt Nam theo thời gian thực. So sánh thẻ, xếp hạng cashback, tra cứu điều kiện mà không cần rời khỏi cuộc trò chuyện."
+                subtitle="MCP server mang dữ liệu thẻ ngân hàng Việt Nam đến mọi AI tool hỗ trợ Model Context Protocol."
             >
                 <div className="flex flex-col gap-10">
-                    <section>
-                        <Link
-                            href="/lien-he"
-                            className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity"
-                        >
-                            Yêu cầu API key
-                        </Link>
-                    </section>
-
-                    <Section title="MCP là gì?">
+                    <Section title="Tại sao chúng tôi xây dựng điều này?">
                         <p>
-                            Model Context Protocol (MCP) là tiêu chuẩn mở do Anthropic phát triển, cho phép AI assistant kết nối trực tiếp với dữ liệu và công cụ bên ngoài. Thay vì phụ thuộc vào dữ liệu huấn luyện có thể lỗi thời, Claude có thể gọi API OpenWallet để lấy thông tin thẻ chính xác và cập nhật nhất.
+                            OpenWallet được xây dựng trước tiên như một thư mục dữ liệu thẻ ngân hàng Việt Nam, nơi tổng hợp và chuẩn hoá thông tin từ nhiều nguồn. Chúng tôi nhận ra rằng dữ liệu này có giá trị hơn nhiều khi nó có thể được khai thác qua AI, không bị giới hạn trong một ứng dụng cụ thể.
                         </p>
                         <p>
-                            Người dùng có thể hỏi trực tiếp trong Claude: &ldquo;Thẻ nào hoàn tiền tốt nhất cho mua sắm online?&rdquo; và nhận câu trả lời dựa trên dữ liệu thực từ OpenWallet.
+                            OpenWallet MCP được xây dựng trên nền API của OpenWallet, cho phép các AI tools như Claude hay ChatGPT truy cập và lý luận trực tiếp trên dữ liệu thẻ ngân hàng Việt Nam theo thời gian thực. Người dùng có thể hỏi AI về thẻ tín dụng ngay trong công cụ quen thuộc của mình, thay vì phải mở thêm một ứng dụng khác.
                         </p>
                     </Section>
 
@@ -146,28 +125,29 @@ export default function McpPage() {
                         </div>
                     </Section>
 
-                    <Section title="Cấu hình Claude Desktop">
+                    <Section title="Thử ngay">
                         <p>
-                            Thêm vào file <code className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">claude_desktop_config.json</code>:
-                        </p>
-                        <pre className="bg-muted rounded-lg p-4 text-sm font-mono overflow-x-auto text-slate-700">
-                            {CONFIG_EXAMPLE}
-                        </pre>
-                        <p className="text-sm text-slate-500">
-                            Thay <code className="font-mono bg-muted px-1 py-0.5 rounded text-xs">YOUR_API_KEY</code> bằng key được cấp sau khi đăng ký.
+                            Chúng tôi có public MCP inspector tại{' '}
+                            <a
+                                href="https://inspector.openwallet.vn"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-link"
+                            >
+                                inspector.openwallet.vn
+                            </a>
+                            , bạn có thể gọi trực tiếp các tool và xem kết quả ngay trong trình duyệt mà không cần cài đặt gì.
                         </p>
                     </Section>
 
-                    <Section title="Cách lấy API key">
+                    <Section title="Ứng dụng đầu tiên">
                         <p>
-                            OpenWallet MCP hiện đang trong giai đoạn beta. Key có thời hạn và được quản lý thủ công trong giai đoạn này.
+                            Consumer đầu tiên của OpenWallet MCP là{' '}
+                            <Link href="/wallet-chat" className="text-link">
+                                Wallet Chat
+                            </Link>
+                            , tính năng chat AI được tích hợp trực tiếp vào OpenWallet. Đây là minh chứng thực tế cho thấy MCP có thể mang lại trải nghiệm tư vấn thẻ ngân hàng qua AI như thế nào.
                         </p>
-                        <Link
-                            href="/lien-he"
-                            className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity w-fit"
-                        >
-                            Yêu cầu API key
-                        </Link>
                     </Section>
                 </div>
             </ProsePageShell>

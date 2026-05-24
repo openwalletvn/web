@@ -64,7 +64,7 @@ export default function Page() {
                         </Section>
 
                         <Section title="9. Liên hệ">
-                            <p>Nếu có thắc mắc về điều khoản sử dụng, vui lòng liên hệ qua <a href="/lien-he" className="underline hover:opacity-70 transition-opacity">trang liên hệ</a>.</p>
+                            <p>Nếu có thắc mắc về điều khoản sử dụng, vui lòng liên hệ qua <a href="/lien-he" className="text-link">trang liên hệ</a>.</p>
                         </Section>
                     </div>
         </ProsePageShell>
