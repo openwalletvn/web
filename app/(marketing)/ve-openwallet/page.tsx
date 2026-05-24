@@ -3,7 +3,7 @@ import {ProsePageShell} from '@/components/layout/prose-page-shell';
 
 export const metadata: Metadata = {
     title: 'Về OpenWallet | Ai đứng sau dự án này',
-    description: 'OpenWallet là dự án được xây dựng bởi một kỹ sư thuộc cộng đồng Review Thẻ Có Gì Vui, với mong muốn giúp người Việt so sánh thẻ ngân hàng một cách độc lập và minh bạch.',
+    description: 'OpenWallet là dự án với mong muốn giúp người Việt so sánh thẻ ngân hàng một cách độc lập và minh bạch, không bị ảnh hưởng bởi hoa hồng hay quan hệ đối tác với ngân hàng.',
 };
 
 export default function Page() {
@@ -11,8 +11,8 @@ export default function Page() {
         <ProsePageShell title="Về OpenWallet">
                     <div className="flex flex-col gap-10">
                         <Section title="Chúng tôi là ai">
-                            <p>OpenWallet được vận hành bởi <a href="https://perxel.com" target="_blank" rel="noopener noreferrer"><strong>PERXEL CO., LTD</strong></a>, một development studio nhỏ tại Sài Gòn.</p>
-                            <p>Người sáng lập là thành viên của cộng đồng <strong>Review Thẻ Có Gì Vui (RCGV)</strong>, kỹ sư phần mềm với sở thích làm việc với dữ liệu và đam mê đóng góp cho các dự án mã nguồn mở. OpenWallet là điểm giao thoa giữa hai mối quan tâm đó: dữ liệu tài chính thực và một sản phẩm có thể giúp ích cho cộng đồng người dùng Việt Nam.</p>
+                            <p>OpenWallet được vận hành bởi một development studio nhỏ tại Sài Gòn.</p>
+                            <p>Người sáng lập là kỹ sư phần mềm với sở thích làm việc với dữ liệu và đam mê đóng góp cho các dự án mã nguồn mở. OpenWallet là điểm giao thoa giữa hai mối quan tâm đó: dữ liệu tài chính thực và một sản phẩm có thể giúp ích cho người dùng Việt Nam.</p>
                         </Section>
 
                         <Section title="Tại sao xây dựng OpenWallet">
@@ -33,8 +33,8 @@ export default function Page() {
                         </Section>
 
                         <Section title="Một lời muốn nói">
-                            <p>OpenWallet không cạnh tranh với RCGV, sosanhthe.vn, hay bất kỳ nền tảng nào khác. Những gì cộng đồng đã xây dựng được là điều đáng trân trọng. Nhiều người bỏ thời gian thực sự để tạo ra nội dung chất lượng mà không có lợi ích thương mại, và chúng tôi tôn trọng điều đó.</p>
-                            <p>Đây là dự án cộng đồng, được làm với sự thận trọng, chia sẻ miễn phí. Nếu bạn phát hiện thông tin không chính xác hoặc có góp ý, hãy liên hệ qua <a href="mailto:hello@openwallet.vn" className="underline hover:opacity-70 transition-opacity">hello@openwallet.vn</a>.</p>
+                            <p>OpenWallet không cạnh tranh với bất kỳ nền tảng nào đang tồn tại. Nhiều cá nhân và cộng đồng đã bỏ thời gian thực sự để tạo ra nội dung chất lượng mà không có lợi ích thương mại, và chúng tôi tôn trọng điều đó.</p>
+                            <p>Đây là dự án được xây dựng với sự thận trọng. Nếu bạn phát hiện thông tin không chính xác hoặc có góp ý, hãy liên hệ qua <a href="/lien-he" className="underline hover:opacity-70 transition-opacity">trang liên hệ</a>.</p>
                         </Section>
                     </div>
         </ProsePageShell>

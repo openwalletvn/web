@@ -11,12 +11,12 @@ export default function Page() {
         <ProsePageShell title="Chính sách bảo mật" subtitle="Cập nhật lần cuối: 19 tháng 5, 2026">
                     <div className="flex flex-col gap-10">
                         <Section title="1. Cam kết bảo mật">
-                            <p>OpenWallet (<strong>openwallet.vn</strong>) được vận hành bởi <strong>Perxel</strong>. Chúng tôi coi trọng sự riêng tư của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng và bảo vệ thông tin khi bạn sử dụng dịch vụ.</p>
+                            <p>OpenWallet (<strong>openwallet.vn</strong>) coi trọng sự riêng tư của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng và bảo vệ thông tin khi bạn sử dụng dịch vụ.</p>
                         </Section>
 
                         <Section title="2. Thông tin chúng tôi thu thập">
                             <p><strong>Thông tin tự động:</strong> Khi truy cập website, hệ thống tự động ghi nhận địa chỉ IP, loại trình duyệt, hệ điều hành, trang bạn truy cập và thời gian truy cập. Dữ liệu này được dùng để phân tích lưu lượng và cải thiện dịch vụ.</p>
-                            <p><strong>Dữ liệu ví (Wallet App):</strong> Nếu bạn sử dụng tính năng Wallet App, toàn bộ dữ liệu thẻ và ví của bạn được lưu trữ cục bộ trên thiết bị (IndexedDB). Chúng tôi <strong>không</strong> có quyền truy cập vào dữ liệu này.</p>
+                            <p><strong>Dữ liệu cục bộ:</strong> Một số tính năng của OpenWallet cho phép lưu trữ dữ liệu trực tiếp trên thiết bị của bạn (IndexedDB). Chúng tôi <strong>không</strong> có quyền truy cập vào dữ liệu này.</p>
                             <p><strong>Cookie và công nghệ theo dõi:</strong> Chúng tôi sử dụng cookie cần thiết để website hoạt động bình thường, và cookie phân tích để hiểu cách người dùng tương tác với dịch vụ.</p>
                         </Section>
 
@@ -64,7 +64,7 @@ export default function Page() {
                         </Section>
 
                         <Section title="9. Liên hệ">
-                            <p>Mọi thắc mắc về chính sách bảo mật, vui lòng liên hệ: <a href="mailto:hello@openwallet.vn" className="underline hover:opacity-70 transition-opacity">hello@openwallet.vn</a></p>
+                            <p>Mọi thắc mắc về chính sách bảo mật, vui lòng liên hệ qua <a href="/lien-he" className="underline hover:opacity-70 transition-opacity">trang liên hệ</a>.</p>
                         </Section>
                     </div>
         </ProsePageShell>

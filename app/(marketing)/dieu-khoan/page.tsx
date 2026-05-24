@@ -42,7 +42,7 @@ export default function Page() {
                                 <li>Thiết kế giao diện, trải nghiệm người dùng và mã nguồn nền tảng</li>
                                 <li>Thuật toán xếp hạng và so sánh thẻ</li>
                                 <li>Tính năng gợi ý thẻ và so sánh thẻ cá nhân hóa</li>
-                                <li>Các tính năng hiện tại và tương lai của nền tảng, bao gồm Wallet App và WalletAI</li>
+                                <li>Các tính năng hiện tại và tương lai của nền tảng</li>
                             </ul>
                             <p>Bạn được phép chia sẻ liên kết đến website, nhưng không được sao chép, tái bản hoặc sử dụng thương mại các nội dung và tính năng thuộc sở hữu của OpenWallet mà không có sự đồng ý bằng văn bản.</p>
                         </Section>
@@ -64,7 +64,7 @@ export default function Page() {
                         </Section>
 
                         <Section title="9. Liên hệ">
-                            <p>Nếu có thắc mắc về điều khoản sử dụng, vui lòng liên hệ chúng tôi qua email: <a href="mailto:hello@openwallet.vn" className="underline hover:opacity-70 transition-opacity">hello@openwallet.vn</a></p>
+                            <p>Nếu có thắc mắc về điều khoản sử dụng, vui lòng liên hệ qua <a href="/lien-he" className="underline hover:opacity-70 transition-opacity">trang liên hệ</a>.</p>
                         </Section>
                     </div>
         </ProsePageShell>

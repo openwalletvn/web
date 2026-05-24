@@ -48,7 +48,7 @@ export default function Page() {
                         </Section>
 
                         <Section title="8. Liên hệ">
-                            <p>Nếu bạn phát hiện thông tin không chính xác hoặc cần làm rõ, vui lòng liên hệ: <a href="mailto:hello@openwallet.vn" className="underline hover:opacity-70 transition-opacity">hello@openwallet.vn</a></p>
+                            <p>Nếu bạn phát hiện thông tin không chính xác hoặc cần làm rõ, vui lòng liên hệ qua <a href="/lien-he" className="underline hover:opacity-70 transition-opacity">trang liên hệ</a>.</p>
                         </Section>
                     </div>
         </ProsePageShell>
