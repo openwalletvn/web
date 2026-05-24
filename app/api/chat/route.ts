@@ -1,7 +1,9 @@
 import { createGroq } from '@ai-sdk/groq';
 import { createMCPClient } from '@ai-sdk/mcp';
 import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
+import { after } from 'next/server';
 import { buildSystemPrompt } from '@/lib/chat/system-prompt';
+import { fetchSystemPrompt, sendChatTrace } from '@/lib/langfuse';
 import type { PageContext } from '@/lib/chat/page-context';
 
 // In-memory rate limit store: ip -> { count, windowStart }
@@ -39,6 +41,11 @@ export async function POST(req: Request) {
     const messages = await convertToModelMessages(uiMessages.slice(-12));
 
     const model = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
+    const startTime = Date.now();
+    const lastUserMessage = uiMessages.findLast((m) => m.role === 'user')?.parts
+        ?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? '';
+
+    const { text: promptText, version: promptVersion } = await fetchSystemPrompt();
 
     let mcpClient: Awaited<ReturnType<typeof createMCPClient>> | null = null;
 
@@ -57,12 +64,27 @@ export async function POST(req: Request) {
 
         const result = streamText({
             model: groq(model),
-            system: buildSystemPrompt(body.pageContext),
+            system: buildSystemPrompt(body.pageContext, promptText || undefined),
             messages,
             stopWhen: stepCountIs(5),
             tools,
-            onFinish: async () => {
+            onFinish: async ({ usage, text, finishReason, steps }) => {
                 await mcpClient?.close();
+                after(async () => {
+                    await sendChatTrace({
+                        input: lastUserMessage,
+                        output: text,
+                        model,
+                        tokens: {
+                            input: usage?.inputTokens ?? 0,
+                            output: usage?.outputTokens ?? 0,
+                        },
+                        latencyMs: Date.now() - startTime,
+                        finishReason: finishReason ?? 'unknown',
+                        steps: steps?.length ?? 0,
+                        promptVersion,
+                    });
+                });
             },
             onError: async ({ error }) => {
                 console.error('[chat] streamText error:', error);
