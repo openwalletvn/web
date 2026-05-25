@@ -14,9 +14,7 @@ const DEFAULT_TAB = 'ca-nhan';
 
 interface CardMatchPrefs {
     tab: string;
-    macro: string[];
-    micro: string[];
-    atomic: string[];
+    intent: string[];
     rankBy: 'cashback' | 'annual_fee';
 }
 
@@ -24,13 +22,7 @@ function readPrefs(): CardMatchPrefs | null {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return null;
-        const prefs = JSON.parse(raw) as CardMatchPrefs;
-        // backward compat: old format stored macro/micro as string | null
-        if (prefs.macro && !Array.isArray(prefs.macro)) prefs.macro = [prefs.macro as unknown as string];
-        if (!prefs.macro) prefs.macro = [];
-        if (prefs.micro && !Array.isArray(prefs.micro)) prefs.micro = [prefs.micro as unknown as string];
-        if (!prefs.micro) prefs.micro = [];
-        return prefs;
+        return JSON.parse(raw) as CardMatchPrefs;
     } catch {
         return null;
     }
@@ -40,6 +32,13 @@ function writePrefs(prefs: CardMatchPrefs): void {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
     } catch {}
+}
+
+function getAllIntents(node: IntentGroupNode): string[] {
+    return [
+        ...node.intents,
+        ...(node.children ?? []).flatMap(getAllIntents),
+    ];
 }
 
 function findNode(groups: IntentGroupNode[], slug: string): IntentGroupNode | undefined {
@@ -57,94 +56,75 @@ export interface CardMatchFinderProps {
     limit?: number;
 }
 
-function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinderProps) {
+function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: CardMatchFinderProps) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const isFinderPage = pathname === cardMatchHref;
 
     const [tab, setTab] = useState(DEFAULT_TAB);
-    const [macro, setMacro] = useState<string[]>([]);
-    const [micro, setMicro] = useState<string[]>([]);
-    const [atomic, setAtomic] = useState<string[]>([]);
+    const [activeIntents, setActiveIntents] = useState<string[]>([]);
     const [rankBy, setRankBy] = useState<'cashback' | 'annual_fee'>('cashback');
     const [initialized, setInitialized] = useState(false);
     const [ranked, setRanked] = useState<RankedCard[]>([]);
     const [rankingBasis, setRankingBasis] = useState<string | undefined>();
     const [loading, setLoading] = useState(false);
 
-    // Init: URL params (finder page only) > localStorage > defaults
+    // Init: URL params > localStorage > default (first group all intents)
     useEffect(() => {
-        const urlMacro = isFinderPage ? (searchParams.get('macro')?.split(',').filter(Boolean) ?? []) : [];
-        const urlMicro = isFinderPage ? (searchParams.get('micro')?.split(',').filter(Boolean) ?? []) : [];
-        const urlAtomic = isFinderPage ? searchParams.get('intent') : null;
+        const urlIntent = isFinderPage ? searchParams.get('intent') : null;
         const urlRankBy = isFinderPage ? searchParams.get('sort_by') : null;
 
-        if (urlMacro.length > 0) {
-            setMacro(urlMacro);
-            setMicro(urlMicro);
-            setAtomic(urlAtomic ? urlAtomic.split(',').filter(Boolean) : []);
+        if (urlIntent) {
+            setActiveIntents(urlIntent.split(',').filter(Boolean));
             if (urlRankBy === 'annual_fee') setRankBy('annual_fee');
         } else {
             const prefs = readPrefs();
-            if (prefs?.macro?.length) {
+            if (prefs?.intent?.length) {
                 setTab(prefs.tab ?? DEFAULT_TAB);
-                setMacro(prefs.macro);
-                setMicro(prefs.micro ?? []);
-                setAtomic(prefs.atomic ?? []);
+                setActiveIntents(prefs.intent);
                 setRankBy(prefs.rankBy ?? 'cashback');
             } else if (intentGroups.length > 0) {
-                setMacro([intentGroups[0].slug]);
+                setActiveIntents(getAllIntents(intentGroups[0]));
             }
         }
         setInitialized(true);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Sync URL (finder page only) + localStorage on state change
+    // Sync URL + localStorage
     useEffect(() => {
         if (!initialized) return;
-        writePrefs({tab, macro, micro, atomic, rankBy});
-        if (isFinderPage && macro.length > 0) {
-            const p: Record<string, string> = {macro: macro.join(',')};
-            if (micro.length > 0) p.micro = micro.join(',');
-            if (atomic.length > 0) p.intent = atomic.join(',');
+        writePrefs({tab, intent: activeIntents, rankBy});
+        if (isFinderPage && activeIntents.length > 0) {
+            const p: Record<string, string> = {intent: activeIntents.join(',')};
             if (rankBy !== 'cashback') p.sort_by = rankBy;
             router.replace(`${cardMatchHref}?${new URLSearchParams(p).toString()}`, {scroll: false});
         }
-    }, [tab, macro, micro, atomic, rankBy, initialized, isFinderPage, router]);
+    }, [tab, activeIntents, rankBy, initialized, isFinderPage, router]);
 
-    const macroNodes = useMemo(
-        () => macro.map(s => findNode(intentGroups, s)).filter((n): n is IntentGroupNode => !!n),
-        [intentGroups, macro],
-    );
-    const microNodes = useMemo(
-        () => micro.map(s => findNode(intentGroups, s)).filter((n): n is IntentGroupNode => !!n),
-        [intentGroups, micro],
-    );
+    const intentSet = useMemo(() => new Set(activeIntents), [activeIntents]);
 
-    const microChildren = useMemo(
-        () => macroNodes
-            .flatMap(n => n.children ?? [])
-            .filter((n, i, a) => a.findIndex(x => x.slug === n.slug) === i),
-        [macroNodes],
-    );
+    const toggleGroup = useCallback((group: IntentGroupNode) => {
+        const groupIntents = getAllIntents(group);
+        const allActive = groupIntents.every(i => intentSet.has(i));
+        if (allActive) {
+            setActiveIntents(prev => prev.filter(i => !groupIntents.includes(i)));
+        } else {
+            setActiveIntents(prev => [...new Set([...prev, ...groupIntents])]);
+        }
+    }, [intentSet]);
 
-    const atomicOptions = useMemo((): Intent[] => {
-        const targetNodes = microNodes.length > 0
-            ? microNodes
-            : (microChildren.length === 0 ? macroNodes : []);
-        if (targetNodes.length === 0) return [];
-        const allChildSlugs = targetNodes.flatMap(n => (n.children ?? []).flatMap(c => c.intents));
-        const slugSet = new Set([...targetNodes.flatMap(n => n.intents), ...allChildSlugs]);
-        return intents.filter(i => slugSet.has(i.slug));
-    }, [microNodes, macroNodes, microChildren, intents]);
+    const toggleChild = useCallback((child: IntentGroupNode) => {
+        const childIntents = getAllIntents(child);
+        const allActive = childIntents.every(i => intentSet.has(i));
+        if (allActive) {
+            setActiveIntents(prev => prev.filter(i => !childIntents.includes(i)));
+        } else {
+            setActiveIntents(prev => [...new Set([...prev, ...childIntents])]);
+        }
+    }, [intentSet]);
 
-    const activeIntentSlugs = useMemo((): string[] => {
-        if (atomic.length > 0) return atomic;
-        if (microNodes.length > 0) return microNodes.flatMap(n => n.intents);
-        if (macroNodes.length > 0) return macroNodes.flatMap(n => n.intents);
-        return [];
-    }, [atomic, microNodes, macroNodes]);
+    const activeIntentSlugs = activeIntents;
 
     useEffect(() => {
         if (!initialized) return;
@@ -189,23 +169,6 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
         gi = gj;
     }
 
-    const toggleMacro = useCallback((slug: string) => {
-        setMacro(prev => prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]);
-        setMicro([]);
-        setAtomic([]);
-    }, []);
-
-    const toggleMicro = useCallback((slug: string) => {
-        setMicro(prev => prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]);
-        setAtomic([]);
-    }, []);
-
-    const toggleAtomic = useCallback((slug: string) => {
-        setAtomic(prev =>
-            prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
-        );
-    }, []);
-
     return (
         <div className="ow-card-match-finder mb-16">
             <h2 className="mb-6">Tìm thẻ tối ưu cho nhu cầu của bạn</h2>
@@ -231,58 +194,35 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
                     {/* Left: controls */}
                     <div className={loading ? 'pointer-events-none opacity-60' : ''}>
-                        {/* Level 1: macro groups */}
-                        <div className="mb-6">
-                            <p className="text-label text-text-muted mb-3">BƯỚC 01 · Bạn muốn ưu đãi gì?</p>
-                            <div className="flex flex-wrap gap-2">
-                                {intentGroups.map(group => (
-                                    <Chip
-                                        key={group.slug}
-                                        active={macro.includes(group.slug)}
-                                        onClick={() => toggleMacro(group.slug)}
-                                    >
-                                        {group.icon} {group.label}
-                                    </Chip>
-                                ))}
-                            </div>
+                        <p className="text-label text-text-muted mb-4">Bạn hay chi tiêu ở đâu?</p>
+                        <div className="flex flex-col gap-5">
+                            {intentGroups.map(group => {
+                                const groupIntents = getAllIntents(group);
+                                const allActive = groupIntents.length > 0 && groupIntents.every(i => intentSet.has(i));
+                                const hasChildren = (group.children ?? []).length > 0;
+                                return (
+                                    <div key={group.slug}>
+                                        <p className="text-label text-text-muted mb-2">{group.icon} {group.label}</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            <Chip active={allActive} onClick={() => toggleGroup(group)}>
+                                                Tất cả
+                                            </Chip>
+                                            {hasChildren ? (
+                                                group.children!.map(child => {
+                                                    const childIntents = getAllIntents(child);
+                                                    const childActive = childIntents.every(i => intentSet.has(i));
+                                                    return (
+                                                        <Chip key={child.slug} active={childActive} onClick={() => toggleChild(child)}>
+                                                            {child.icon} {child.label}
+                                                        </Chip>
+                                                    );
+                                                })
+                                            ) : null}
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
-
-                        {/* Level 2: micro sub-groups */}
-                        {microChildren.length > 0 && (
-                            <div className="mb-6">
-                                <p className="text-label text-text-muted mb-2">Thu hẹp danh mục (tuỳ chọn)</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {microChildren.map(child => (
-                                        <Chip
-                                            key={child.slug}
-                                            active={micro.includes(child.slug)}
-                                            onClick={() => toggleMicro(child.slug)}
-                                        >
-                                            {child.icon} {child.label}
-                                        </Chip>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Level 3: atomic intents */}
-                        {atomicOptions.length > 0 && (
-                            <div className="mb-6">
-                                <p className="text-label text-text-muted mb-2">Chọn cụ thể (tuỳ chọn)</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {atomicOptions.map(intent => (
-                                        <Chip
-                                            key={intent.slug}
-                                            active={atomic.includes(intent.slug)}
-                                            onClick={() => toggleAtomic(intent.slug)}
-                                        >
-                                            {intent.icon} {intent.label}
-                                        </Chip>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
                     </div>
 
                     {/* Right: results */}
@@ -299,7 +239,7 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
                             </div>
                         </div>
 
-                        {!macro.length ? (
+                        {!activeIntents.length ? (
                             <p className="text-body-sm text-text-muted">Chọn nhóm chi tiêu để xem đề xuất.</p>
                         ) : loading && ranked.length === 0 ? (
                             <div className="flex flex-col gap-3">
@@ -324,7 +264,7 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
                                         ranked={r}
                                         tiebreakerReason={r.rank_reason_type === 'lower_annual_fee' || r.rank_reason_type === 'better_network' || r.rank_reason_type === 'no_min_spend' ? r.rank_reason : undefined}
                                         tiebreakerDelta={tiebreakerDelta.get(r.card.id)}
-                                        intentMap={new Map(intents.map(i => [i.slug, i]))}
+                                        intentMap={new Map(intentList.map(i => [i.slug, i]))}
                                         highlightedSlugs={activeIntentSlugs}
                                         intentSlug={activeIntentSlugs.length === 1 ? activeIntentSlugs[0] : undefined}
                                     />
