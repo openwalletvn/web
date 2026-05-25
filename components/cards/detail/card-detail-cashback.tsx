@@ -18,6 +18,8 @@ function formatCap(amount: number): string {
  return amount === -1 ? 'Hoàn không giới hạn' : formatVnd(amount);
 }
 
+const CATCHALL_SLUGS = new Set(['all', 'all-online', 'all-offline']);
+
 // ─── Redemption labels ───────────────────────────────────────────────────────
 
 const REDEMPTION_LABELS: Record<string, string> = {
@@ -53,7 +55,7 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
  ? `${formatRate(rule.rate)} – ${formatRate(rule.rate_max)}`
  : formatRate(rule.rate);
 
- const isCatchAll = !rule.categories?.length && !rule.merchants?.length;
+ const isCatchAll = rule.categories?.some(c => CATCHALL_SLUGS.has(c)) ?? false;
 
  return (
  <div className="flex gap-3 border-dashed border border-slate-300 p-4 w-full hover:bg-slate-50 transition-colors">
@@ -67,7 +69,7 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
  )}
  </p>
 
- {rule.categories && rule.categories.length > 0 && (
+ {!isCatchAll && rule.categories && rule.categories.length > 0 && (
  <div className="space-y-1.5">
  <div className="flex items-center gap-1.5 text-xs text-slate-600">
  <IconCircleCheck className="w-3.5 h-3.5 text-green-600" />

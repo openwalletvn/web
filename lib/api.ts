@@ -142,8 +142,9 @@ export interface CashbackRule {
     rate_max?: number;      // decimal, e.g. 0.10 = 10% — present when tiered/conditional
     cap?: CashbackCap;      // per-rule cap; absent = uncapped
     cap_max?: CashbackCap;  // upper bound of cap range — present when tiered/conditional
-    categories?: string[];  // category slugs, resolved via /api/v1/cashback-categories
-    merchants?: string[];   // merchant slugs, e.g. "grab", "shopee"
+    categories?: string[];   // category slugs; ["all"]/["all-online"]/["all-offline"] = catch-all
+    merchants?: string[];    // merchant slugs, e.g. "grab", "shopee"
+    max_categories?: number; // user picks at most N categories per cycle (e.g. MSB mDigi, VIB Family Link)
     note?: string;
 }
 
