@@ -2,6 +2,8 @@ import type { Card } from '@/lib/api';
 
 export type CashbackBreakdownItem = {
     cashback: number;
+    rate: number;
+    rate_max?: number;
     categories?: string[];
     merchants?: string[];
     is_catchall: boolean;

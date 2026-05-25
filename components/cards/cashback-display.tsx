@@ -19,6 +19,11 @@ export function getRateDisplay(card: Card, intentSlug?: string): string {
     return min === max ? `${fmt(min)}%` : `${fmt(min)}%–${fmt(max)}%`;
 }
 
+function fmtRate(rate: number, rateMax?: number): string {
+    const f = (n: number) => `${Math.round(n * 10000) / 100}%`;
+    return rateMax ? `${f(rate)}–${f(rateMax)}` : f(rate);
+}
+
 function breakdownLabel(item: CashbackBreakdownItem): string {
     if (item.is_catchall) return 'Chi tiêu khác';
     const parts = [...(item.categories ?? []), ...(item.merchants ?? [])];
@@ -47,7 +52,7 @@ export function CashbackDisplay({ranked, intentSlug}: {ranked: RankedCard; inten
             {showBreakdown ? (
                 breakdown.map((item, i) => (
                     <span key={i} className="text-[11px] text-text-muted">
-                        {breakdownLabel(item)}: {item.cashback.toLocaleString('vi-VN')}đ
+                        {breakdownLabel(item)} · {fmtRate(item.rate, item.rate_max)}: {item.cashback.toLocaleString('vi-VN')}đ
                     </span>
                 ))
             ) : rateDisplay ? (
