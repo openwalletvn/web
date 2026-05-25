@@ -21,6 +21,7 @@ interface RecPrefs {
     micro: string[];
     atomic: string[];
     spend: number;
+    rankBy: 'cashback' | 'annual_fee';
 }
 
 function readPrefs(): RecPrefs | null {
@@ -72,6 +73,7 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
     const [micro, setMicro] = useState<string[]>([]);
     const [atomic, setAtomic] = useState<string[]>([]);
     const [spend, setSpend] = useState(DEFAULT_MONTHLY_SPEND);
+    const [rankBy, setRankBy] = useState<'cashback' | 'annual_fee'>('cashback');
     const [initialized, setInitialized] = useState(false);
     const [ranked, setRanked] = useState<RankedCard[]>([]);
     const [loading, setLoading] = useState(false);
@@ -82,12 +84,14 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
         const urlMicro = isFinderPage ? (searchParams.get('micro')?.split(',').filter(Boolean) ?? []) : [];
         const urlAtomic = isFinderPage ? searchParams.get('intent') : null;
         const urlSpend = isFinderPage ? searchParams.get('spend') : null;
+        const urlRankBy = isFinderPage ? searchParams.get('sort_by') : null;
 
         if (urlMacro.length > 0) {
             setMacro(urlMacro);
             setMicro(urlMicro);
             setAtomic(urlAtomic ? urlAtomic.split(',').filter(Boolean) : []);
             if (urlSpend) setSpend(Number(urlSpend) || DEFAULT_MONTHLY_SPEND);
+            if (urlRankBy === 'annual_fee') setRankBy('annual_fee');
         } else {
             const prefs = readPrefs();
             if (prefs?.macro?.length) {
@@ -96,6 +100,7 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
                 setMicro(prefs.micro ?? []);
                 setAtomic(prefs.atomic ?? []);
                 setSpend(prefs.spend ?? DEFAULT_MONTHLY_SPEND);
+                setRankBy(prefs.rankBy ?? 'cashback');
             } else if (intentGroups.length > 0) {
                 setMacro([intentGroups[0].slug]);
             }
@@ -106,14 +111,15 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
     // Sync URL (finder page only) + localStorage on state change
     useEffect(() => {
         if (!initialized) return;
-        writePrefs({tab, macro, micro, atomic, spend});
+        writePrefs({tab, macro, micro, atomic, spend, rankBy});
         if (isFinderPage && macro.length > 0) {
             const p: Record<string, string> = {macro: macro.join(','), spend: String(spend)};
             if (micro.length > 0) p.micro = micro.join(',');
             if (atomic.length > 0) p.intent = atomic.join(',');
+            if (rankBy !== 'cashback') p.sort_by = rankBy;
             router.replace(`${cardMatchHref}?${new URLSearchParams(p).toString()}`, {scroll: false});
         }
-    }, [tab, macro, micro, atomic, spend, initialized, isFinderPage, router]);
+    }, [tab, macro, micro, atomic, spend, rankBy, initialized, isFinderPage, router]);
 
     const spendIdx = SPEND_OPTIONS.findIndex(o => o.value === spend);
     const canDec = spendIdx > 0;
@@ -180,6 +186,7 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
                         spend: Object.fromEntries([...spendKeys].map(k => [k, spend])),
                         limit,
                         for_business: false,
+                        sort_by: rankBy,
                     }),
                 });
                 const json = await res.json();
@@ -189,7 +196,7 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
             }
         }, 200);
         return () => clearTimeout(t);
-    }, [activeIntentSlugs, spend, initialized, limit]);
+    }, [activeIntentSlugs, spend, rankBy, initialized, limit]);
 
     const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
     const tiebreakerReasons = new Map<string, string>();
@@ -351,7 +358,17 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
 
                     {/* Right: results */}
                     <div>
-                        <p className="text-label text-text-muted mb-4">KẾT QUẢ ĐỀ XUẤT</p>
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-label text-text-muted">KẾT QUẢ ĐỀ XUẤT</p>
+                            <div className="flex gap-1">
+                                <Chip active={rankBy === 'cashback'} onClick={() => setRankBy('cashback')}>
+                                    Hoàn tiền cao nhất
+                                </Chip>
+                                <Chip active={rankBy === 'annual_fee'} onClick={() => setRankBy('annual_fee')}>
+                                    Phí thấp nhất
+                                </Chip>
+                            </div>
+                        </div>
 
                         {!macro.length ? (
                             <p className="text-body-sm text-text-muted">Chọn nhóm chi tiêu để xem đề xuất.</p>
