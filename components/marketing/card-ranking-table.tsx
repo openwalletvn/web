@@ -63,6 +63,8 @@ export function CardRankingTable({initialRanked, intentSlug, monthlySpend = DEFA
     const [spend, setSpend] = useState(monthlySpend);
     const [ranked, setRanked] = useState<RankedCard[]>(initialRanked);
     const [loading, setLoading] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
     const changeSpend = useCallback((v: number) => withViewTransition(() => setSpend(v)), []);
     const spendIdx = SPEND_OPTIONS.findIndex(o => o.value === spend);
     const canDec = spendIdx > 0;
@@ -120,7 +122,7 @@ export function CardRankingTable({initialRanked, intentSlug, monthlySpend = DEFA
         <section className="ow-card-ranking-table">
             <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
                 {title && <h2 className="mb-0 text-card-heading">{title}</h2>}
-                <div className="flex items-center gap-2 shrink-0">
+                {mounted && <div className="flex items-center gap-2 shrink-0">
                     <span className="text-body-sm text-text-muted">Chi tiêu mỗi kỳ</span>
                     <div className="flex items-center gap-1">
                         <button
@@ -150,7 +152,7 @@ export function CardRankingTable({initialRanked, intentSlug, monthlySpend = DEFA
                             <IconChevronRight size={16}/>
                         </button>
                     </div>
-                </div>
+                </div>}
             </div>
 
             <div className={`flex flex-col gap-3 transition-opacity ${loading ? 'opacity-60' : ''}`}>

@@ -322,6 +322,9 @@ function RecommendationFinderInner({intents, limit = 5}: RecommendationFinderPro
 }
 
 export function RecommendationFinder(props: RecommendationFinderProps) {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+    if (!mounted) return null;
     return (
         <Suspense>
             <RecommendationFinderInner {...props}/>
