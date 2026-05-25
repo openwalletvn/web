@@ -52,7 +52,7 @@ export function CashbackDisplay({ranked, intentSlug}: {ranked: RankedCard; inten
             {showBreakdown ? (
                 breakdown.map((item, i) => (
                     <span key={i} className="text-[11px] text-text-muted">
-                        {breakdownLabel(item)} · {fmtRate(item.rate, item.rate_max)}: {item.cashback.toLocaleString('vi-VN')}đ
+                        {breakdownLabel(item)} · {fmtRate(item.rate)}: {item.cashback.toLocaleString('vi-VN')}đ
                     </span>
                 ))
             ) : rateDisplay ? (
