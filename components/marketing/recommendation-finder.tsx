@@ -144,11 +144,23 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
         setLoading(true);
         const t = setTimeout(async () => {
             try {
+                const intentLookup = new Map(intents.map(i => [i.slug, i]));
+                const spendKeys = new Set<string>();
+                for (const slug of activeIntentSlugs) {
+                    const intent = intentLookup.get(slug);
+                    if (intent) {
+                        intent.categories.forEach(c => spendKeys.add(c));
+                        intent.merchants.forEach(m => spendKeys.add(m));
+                    } else {
+                        spendKeys.add(slug);
+                    }
+                }
                 const res = await fetch('/api/ranking', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        spend: Object.fromEntries(activeIntentSlugs.map(s => [s, spend])),
+                        intents: activeIntentSlugs,
+                        spend: Object.fromEntries([...spendKeys].map(k => [k, spend])),
                         limit,
                         for_business: false,
                     }),
@@ -326,6 +338,8 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
 
                         {!macro ? (
                             <p className="text-body-sm text-text-muted">Chọn nhóm chi tiêu để xem đề xuất.</p>
+                        ) : !loading && withCashback.length === 0 ? (
+                            <p className="text-body-sm text-text-muted">Không tìm thấy thẻ phù hợp.</p>
                         ) : (
                             <div className={`flex flex-col gap-3 transition-opacity ${loading ? 'opacity-60' : ''}`}>
                                 {ranked.map(r => (
