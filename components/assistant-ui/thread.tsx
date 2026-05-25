@@ -40,7 +40,28 @@ import {
   RefreshCwIcon,
   SquareIcon,
 } from "lucide-react";
-import type { FC } from "react";
+import { type FC, useEffect, useState } from "react";
+
+type HealthState = { ready: boolean; mcp: boolean; api: boolean } | null;
+
+function useApiReady(): HealthState {
+  const [health, setHealth] = useState<HealthState>(null);
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const res = await fetch('/api/health');
+        const data = await res.json() as { ready: boolean; mcp: boolean; api: boolean };
+        setHealth(data);
+      } catch {
+        setHealth({ ready: false, mcp: false, api: false });
+      }
+    };
+    check();
+    const id = setInterval(check, 30_000);
+    return () => clearInterval(id);
+  }, []);
+  return health;
+}
 
 export const Thread: FC = () => {
   return (
@@ -184,18 +205,25 @@ const Composer: FC = () => {
 };
 
 const ComposerAction: FC = () => {
+  const health = useApiReady();
+  const notReady = health !== null && !health.ready;
+  const unavailableLabel = health && !health.mcp ? "MCP unavailable" : "API unavailable";
   return (
-    <div className="aui-composer-action-wrapper relative flex items-center justify-end">
+    <div className="aui-composer-action-wrapper relative flex items-center justify-end gap-2">
+      {notReady && (
+        <span className="text-xs text-destructive">{unavailableLabel}</span>
+      )}
       <AuiIf condition={(s) => !s.thread.isRunning}>
-        <ComposerPrimitive.Send asChild>
+        <ComposerPrimitive.Send asChild disabled={notReady}>
           <TooltipIconButton
-            tooltip="Send message"
+            tooltip={notReady ? unavailableLabel : "Send message"}
             side="bottom"
             type="button"
             variant="default"
             size="icon"
             className="aui-composer-send size-8 rounded-full"
             aria-label="Send message"
+            disabled={notReady}
           >
             <ArrowUpIcon className="aui-composer-send-icon size-4" />
           </TooltipIconButton>

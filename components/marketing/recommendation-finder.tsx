@@ -17,8 +17,8 @@ const DEFAULT_TAB = 'ca-nhan';
 
 interface RecPrefs {
     tab: string;
-    macro: string | null;
-    micro: string | null;
+    macro: string[];
+    micro: string[];
     atomic: string[];
     spend: number;
 }
@@ -26,7 +26,14 @@ interface RecPrefs {
 function readPrefs(): RecPrefs | null {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? (JSON.parse(raw) as RecPrefs) : null;
+        if (!raw) return null;
+        const prefs = JSON.parse(raw) as RecPrefs;
+        // backward compat: old format stored macro/micro as string | null
+        if (prefs.macro && !Array.isArray(prefs.macro)) prefs.macro = [prefs.macro as unknown as string];
+        if (!prefs.macro) prefs.macro = [];
+        if (prefs.micro && !Array.isArray(prefs.micro)) prefs.micro = [prefs.micro as unknown as string];
+        if (!prefs.micro) prefs.micro = [];
+        return prefs;
     } catch {
         return null;
     }
@@ -61,8 +68,8 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
     const isFinderPage = pathname === cardMatchHref;
 
     const [tab, setTab] = useState(DEFAULT_TAB);
-    const [macro, setMacro] = useState<string | null>(null);
-    const [micro, setMicro] = useState<string | null>(null);
+    const [macro, setMacro] = useState<string[]>([]);
+    const [micro, setMicro] = useState<string[]>([]);
     const [atomic, setAtomic] = useState<string[]>([]);
     const [spend, setSpend] = useState(DEFAULT_MONTHLY_SPEND);
     const [initialized, setInitialized] = useState(false);
@@ -71,26 +78,26 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
 
     // Init: URL params (finder page only) > localStorage > defaults
     useEffect(() => {
-        const urlMacro = isFinderPage ? searchParams.get('macro') : null;
-        const urlMicro = isFinderPage ? searchParams.get('micro') : null;
+        const urlMacro = isFinderPage ? (searchParams.get('macro')?.split(',').filter(Boolean) ?? []) : [];
+        const urlMicro = isFinderPage ? (searchParams.get('micro')?.split(',').filter(Boolean) ?? []) : [];
         const urlAtomic = isFinderPage ? searchParams.get('intent') : null;
         const urlSpend = isFinderPage ? searchParams.get('spend') : null;
 
-        if (urlMacro) {
+        if (urlMacro.length > 0) {
             setMacro(urlMacro);
             setMicro(urlMicro);
             setAtomic(urlAtomic ? urlAtomic.split(',').filter(Boolean) : []);
             if (urlSpend) setSpend(Number(urlSpend) || DEFAULT_MONTHLY_SPEND);
         } else {
             const prefs = readPrefs();
-            if (prefs?.macro) {
+            if (prefs?.macro?.length) {
                 setTab(prefs.tab ?? DEFAULT_TAB);
                 setMacro(prefs.macro);
-                setMicro(prefs.micro ?? null);
+                setMicro(prefs.micro ?? []);
                 setAtomic(prefs.atomic ?? []);
                 setSpend(prefs.spend ?? DEFAULT_MONTHLY_SPEND);
             } else if (intentGroups.length > 0) {
-                setMacro(intentGroups[0].slug);
+                setMacro([intentGroups[0].slug]);
             }
         }
         setInitialized(true);
@@ -100,9 +107,9 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
     useEffect(() => {
         if (!initialized) return;
         writePrefs({tab, macro, micro, atomic, spend});
-        if (isFinderPage && macro) {
-            const p: Record<string, string> = {macro, spend: String(spend)};
-            if (micro) p.micro = micro;
+        if (isFinderPage && macro.length > 0) {
+            const p: Record<string, string> = {macro: macro.join(','), spend: String(spend)};
+            if (micro.length > 0) p.micro = micro.join(',');
             if (atomic.length > 0) p.intent = atomic.join(',');
             router.replace(`${cardMatchHref}?${new URLSearchParams(p).toString()}`, {scroll: false});
         }
@@ -112,31 +119,41 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
     const canDec = spendIdx > 0;
     const canInc = spendIdx < SPEND_OPTIONS.length - 1;
 
-    const macroNode = useMemo(() => macro ? findNode(intentGroups, macro) : null, [intentGroups, macro]);
-    const microNode = useMemo(() => micro ? findNode(intentGroups, micro) : null, [intentGroups, micro]);
+    const macroNodes = useMemo(
+        () => macro.map(s => findNode(intentGroups, s)).filter((n): n is IntentGroupNode => !!n),
+        [intentGroups, macro],
+    );
+    const microNodes = useMemo(
+        () => micro.map(s => findNode(intentGroups, s)).filter((n): n is IntentGroupNode => !!n),
+        [intentGroups, micro],
+    );
 
-    // Children of the selected macro (sub-groups shown at level 2)
-    const microChildren = useMemo(() => macroNode?.children ?? [], [macroNode]);
+    // Children of all selected macros (deduped)
+    const microChildren = useMemo(
+        () => macroNodes
+            .flatMap(n => n.children ?? [])
+            .filter((n, i, a) => a.findIndex(x => x.slug === n.slug) === i),
+        [macroNodes],
+    );
 
-    // Atomic intents available for level 3 selection
-    // If micro selected and has children → show micro's children
-    // If micro selected without children → show intents within micro (leaf)
-    // If no micro but macro has no children → show macro's direct intents as atoms
+    // Atomic intents: union from selected micros (if any), else from macros (if no micro level exists)
     const atomicOptions = useMemo((): Intent[] => {
-        const targetNode = microNode ?? (microChildren.length === 0 ? macroNode : null);
-        if (!targetNode) return [];
-        const allChildSlugs = (targetNode.children ?? []).flatMap(c => c.intents);
-        const slugSet = new Set([...targetNode.intents, ...allChildSlugs]);
+        const targetNodes = microNodes.length > 0
+            ? microNodes
+            : (microChildren.length === 0 ? macroNodes : []);
+        if (targetNodes.length === 0) return [];
+        const allChildSlugs = targetNodes.flatMap(n => (n.children ?? []).flatMap(c => c.intents));
+        const slugSet = new Set([...targetNodes.flatMap(n => n.intents), ...allChildSlugs]);
         return intents.filter(i => slugSet.has(i.slug));
-    }, [microNode, macroNode, microChildren, intents]);
+    }, [microNodes, macroNodes, microChildren, intents]);
 
     // Derive the active intent slugs sent to the ranking API
     const activeIntentSlugs = useMemo((): string[] => {
         if (atomic.length > 0) return atomic;
-        if (microNode) return microNode.intents;
-        if (macroNode) return macroNode.intents;
+        if (microNodes.length > 0) return microNodes.flatMap(n => n.intents);
+        if (macroNodes.length > 0) return macroNodes.flatMap(n => n.intents);
         return [];
-    }, [atomic, microNode, macroNode]);
+    }, [atomic, microNodes, macroNodes]);
 
     useEffect(() => {
         if (!initialized) return;
@@ -196,14 +213,14 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
         gi = gj;
     }
 
-    const handleMacroSelect = useCallback((slug: string) => {
-        setMacro(prev => prev === slug ? prev : slug);
-        setMicro(null);
+    const toggleMacro = useCallback((slug: string) => {
+        setMacro(prev => prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]);
+        setMicro([]);
         setAtomic([]);
     }, []);
 
-    const handleMicroSelect = useCallback((slug: string) => {
-        setMicro(prev => prev === slug ? null : slug);
+    const toggleMicro = useCallback((slug: string) => {
+        setMicro(prev => prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]);
         setAtomic([]);
     }, []);
 
@@ -241,7 +258,7 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
             ) : (
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
                     {/* Left: controls */}
-                    <div>
+                    <div className={loading ? 'pointer-events-none opacity-60' : ''}>
                         {/* Level 1: macro groups */}
                         <div className="mb-6">
                             <p className="text-label text-text-muted mb-3">BƯỚC 01 · Bạn muốn ưu đãi gì?</p>
@@ -249,8 +266,8 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
                                 {intentGroups.map(group => (
                                     <Chip
                                         key={group.slug}
-                                        active={macro === group.slug}
-                                        onClick={() => handleMacroSelect(group.slug)}
+                                        active={macro.includes(group.slug)}
+                                        onClick={() => toggleMacro(group.slug)}
                                     >
                                         {group.icon} {group.label}
                                     </Chip>
@@ -266,8 +283,8 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
                                     {microChildren.map(child => (
                                         <Chip
                                             key={child.slug}
-                                            active={micro === child.slug}
-                                            onClick={() => handleMicroSelect(child.slug)}
+                                            active={micro.includes(child.slug)}
+                                            onClick={() => toggleMicro(child.slug)}
                                         >
                                             {child.icon} {child.label}
                                         </Chip>
@@ -336,12 +353,25 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
                     <div>
                         <p className="text-label text-text-muted mb-4">KẾT QUẢ ĐỀ XUẤT</p>
 
-                        {!macro ? (
+                        {!macro.length ? (
                             <p className="text-body-sm text-text-muted">Chọn nhóm chi tiêu để xem đề xuất.</p>
+                        ) : loading && ranked.length === 0 ? (
+                            <div className="flex flex-col gap-3">
+                                {Array.from({length: limit}).map((_, i) => (
+                                    <div key={i} className="animate-pulse flex items-center gap-3 p-3 rounded-lg bg-bg-muted">
+                                        <div className="shrink-0 w-10 h-10 rounded bg-border"/>
+                                        <div className="flex-1 flex flex-col gap-2">
+                                            <div className="h-3 rounded bg-border w-2/3"/>
+                                            <div className="h-3 rounded bg-border w-1/3"/>
+                                        </div>
+                                        <div className="h-4 rounded bg-border w-16"/>
+                                    </div>
+                                ))}
+                            </div>
                         ) : !loading && withCashback.length === 0 ? (
                             <p className="text-body-sm text-text-muted">Không tìm thấy thẻ phù hợp.</p>
                         ) : (
-                            <div className={`flex flex-col gap-3 transition-opacity ${loading ? 'opacity-60' : ''}`}>
+                            <div className={`flex flex-col gap-3 transition-opacity duration-200 ${loading ? 'opacity-50' : ''}`}>
                                 {ranked.map(r => (
                                     <RankedRow
                                         key={r.card.id}
