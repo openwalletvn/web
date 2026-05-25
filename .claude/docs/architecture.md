@@ -48,8 +48,8 @@ app/
 | `lib/mdx.ts` | Post parsing, queries, TOC extraction |
 | `lib/db.ts` | Dexie schema |
 | `lib/card-dates.ts` | Statement/due date computation (`getStatementObject`) |
-| `lib/cashback-calc.ts` | `calcCashback(card, spendProfile)` — estimates monthly cashback for a spend profile; handles rule ordering (specific-first), per-rule caps, min_spend gate, global cap. `calcIntentCashback` is single-intent wrapper. |
-| `lib/card-ranker.ts` | `rankCards(cards, spendProfile)` — **ranking algorithm lives here** (factors + priority in JSDoc). `DEFAULT_MONTHLY_SPEND = 3_000_000`. Used by `CardRankingTable`. |
+| `lib/cashback-calc.ts` | `calcCashback(card, spendProfile)` — estimates monthly cashback; handles rule ordering (specific-first), per-rule caps, min_spend gate, global cap. Rules with empty `categories[]` AND `merchants[]` score 0 (no implicit universal). |
+| `lib/card-ranker.ts` | `rankCards(cards, spendProfile)` — sort logic only (cashback desc → annual_fee asc → network_popularity asc). `DEFAULT_MONTHLY_SPEND = 3_000_000`. Used by `CardRankingTable` and `RecommendationFinder`. |
 | `lib/use-search.ts` | Fuse.js search hook |
 | `content/posts/` | Blog MDX files (`<slug>.mdx`) |
 | `content/changelog/` | Changelog MDX (`YYYY-MM-DD-<slug>.mdx`) |
@@ -78,7 +78,8 @@ All public pages emit `<script type="application/ld+json">` via `lib/page-meta/`
 | `getRelatedCards(id)` | `/api/v1/cards/{id}/related` |
 | `getRelatedCardsForMany(ids[])` | parallel `getRelatedCards` with `.catch(() => [])` |
 | `getComparePairs()` | `/api/v1/compare-pairs` |
-| `getIntents()` | `/api/v1/intents` |
+| `getIntents()` | `/api/v1/intents` — flat intent list (slug, label, icon, categories[], merchants[]) |
+| `getIntentGroups()` | `/api/v1/intent-groups` — nested group tree for UI navigation (macro→micro→atomic) |
 | `getCashbackCategories()` | `/api/v1/cashback-categories` |
 | `getBanks()` / `getBank(id)` | `/api/v1/banks` |
 

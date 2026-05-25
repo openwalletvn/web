@@ -60,9 +60,13 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 
 ## Card ranking
 
-**Single source of truth: `lib/card-ranker.ts`** — ranking factors and priority order documented in the JSDoc above `rankCards()`.
+**Architecture SSOT: `../api/.claude/docs/card-recommendation-architecture.md`** — authoritative doc for intent model, intent groups, ranking rules, and data quality requirements. Read this before touching any ranking or recommendation code.
 
-Supporting files: `lib/cashback-calc.ts` (cashback estimation), `components/marketing/card-ranking-table.tsx` (UI with spend selector).
+**Ranking logic lives in the API repo.** The web repo only consumes results:
+- `lib/cashback-calc.ts` — cashback estimation (mirrors API logic for display)
+- `lib/card-ranker.ts` — sort order only (cashback desc → annual_fee asc → network_popularity asc)
+- `components/marketing/card-ranking-table.tsx` — UI with spend selector
+- `components/marketing/recommendation-finder.tsx` — macro→micro→atomic intent selector + `POST /api/ranking` proxy
 
 ## Meta-rules
 1. Before any task: check `.claude/commands/` for a relevant command file.
