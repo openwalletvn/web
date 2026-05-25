@@ -150,6 +150,7 @@ export interface CashbackRule {
 
 export interface CashbackBenefit {
     rules: CashbackRule[];
+    package_exclusive?: boolean; // true = rules are mutually exclusive packages; cardholder picks one at issuance
     global_cap?: CashbackCap;
     global_cap_max?: CashbackCap;
     min_spend_per_period?: number; // VND
