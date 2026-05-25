@@ -16,6 +16,7 @@ interface CardMatchPrefs {
     tab: string;
     intent: string[];
     rankBy: 'cashback' | 'annual_fee';
+    monthlySpend: number;
 }
 
 function readPrefs(): CardMatchPrefs | null {
@@ -65,6 +66,7 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
     const [tab, setTab] = useState(DEFAULT_TAB);
     const [activeIntents, setActiveIntents] = useState<string[]>([]);
     const [rankBy, setRankBy] = useState<'cashback' | 'annual_fee'>('cashback');
+    const [monthlySpend, setMonthlySpend] = useState(3);
     const [initialized, setInitialized] = useState(false);
     const [ranked, setRanked] = useState<RankedCard[]>([]);
     const [rankingBasis, setRankingBasis] = useState<string | undefined>();
@@ -74,16 +76,22 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
     useEffect(() => {
         const urlIntent = isFinderPage ? searchParams.get('intent') : null;
         const urlRankBy = isFinderPage ? searchParams.get('sort_by') : null;
+        const urlSpend = isFinderPage ? searchParams.get('spend') : null;
 
         if (urlIntent) {
             setActiveIntents(urlIntent.split(',').filter(Boolean));
             if (urlRankBy === 'annual_fee') setRankBy('annual_fee');
+            if (urlSpend) {
+                const s = parseInt(urlSpend, 10);
+                if (!isNaN(s) && s >= 1 && s <= 999) setMonthlySpend(s);
+            }
         } else {
             const prefs = readPrefs();
             if (prefs?.intent?.length) {
                 setTab(prefs.tab ?? DEFAULT_TAB);
                 setActiveIntents(prefs.intent);
                 setRankBy(prefs.rankBy ?? 'cashback');
+                if (prefs.monthlySpend) setMonthlySpend(prefs.monthlySpend);
             } else if (intentGroups.length > 0) {
                 setActiveIntents(getAllIntents(intentGroups[0]));
             }
@@ -94,13 +102,14 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
     // Sync URL + localStorage
     useEffect(() => {
         if (!initialized) return;
-        writePrefs({tab, intent: activeIntents, rankBy});
+        writePrefs({tab, intent: activeIntents, rankBy, monthlySpend});
         if (isFinderPage && activeIntents.length > 0) {
             const p: Record<string, string> = {intent: activeIntents.join(',')};
             if (rankBy !== 'cashback') p.sort_by = rankBy;
+            if (monthlySpend !== 3) p.spend = String(monthlySpend);
             router.replace(`${cardMatchHref}?${new URLSearchParams(p).toString()}`, {scroll: false});
         }
-    }, [tab, activeIntents, rankBy, initialized, isFinderPage, router]);
+    }, [tab, activeIntents, rankBy, monthlySpend, initialized, isFinderPage, router]);
 
     const intentSet = useMemo(() => new Set(activeIntents), [activeIntents]);
 
@@ -140,6 +149,7 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                         limit,
                         for_business: false,
                         sort_by: rankBy,
+                        monthly_spend: monthlySpend * 1_000_000,
                     }),
                 });
                 const json = await res.json();
@@ -150,7 +160,7 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
             }
         }, 200);
         return () => clearTimeout(t);
-    }, [activeIntentSlugs, rankBy, initialized, limit]);
+    }, [activeIntentSlugs, rankBy, monthlySpend, initialized, limit]);
 
     const withCashback = ranked.filter(r => r.cashback_result.max_cashback > 0);
     const tiebreakerDelta = new Map<string, number>();
@@ -227,6 +237,36 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                                     </div>
                                 );
                             })}
+                        </div>
+
+                        {/* Monthly spend input */}
+                        <div className="flex items-center gap-2 mt-6">
+                            <p className="text-label text-text-muted shrink-0">Tổng chi tiêu trung bình hàng tháng</p>
+                            <div className="flex items-center gap-1 ml-auto">
+                                <button
+                                    className="w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-foreground hover:bg-bg-muted transition-colors disabled:opacity-30"
+                                    onClick={() => setMonthlySpend(s => Math.max(1, s - 1))}
+                                    disabled={monthlySpend <= 1}
+                                >◀</button>
+                                <input
+                                    type="number"
+                                    min={1}
+                                    max={999}
+                                    step={1}
+                                    value={monthlySpend}
+                                    onChange={e => {
+                                        const v = parseInt(e.target.value, 10);
+                                        if (!isNaN(v)) setMonthlySpend(Math.min(999, Math.max(1, v)));
+                                    }}
+                                    className="w-12 text-center text-label bg-transparent border border-border rounded px-1 py-0.5 focus:outline-none focus:border-primary"
+                                />
+                                <button
+                                    className="w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-foreground hover:bg-bg-muted transition-colors disabled:opacity-30"
+                                    onClick={() => setMonthlySpend(s => Math.min(999, s + 1))}
+                                    disabled={monthlySpend >= 999}
+                                >▶</button>
+                                <span className="text-label text-text-muted">triệu đồng</span>
+                            </div>
                         </div>
                     </div>
 
