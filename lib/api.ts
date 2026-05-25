@@ -496,7 +496,7 @@ export interface RankingParams {
 interface RankingResponse {
     success: boolean;
     data: import('@/lib/card-ranker').RankedCard[];
-    meta: { total: number; ranked: number; returned: number };
+    meta: { total: number; ranked: number; returned: number; ranking_basis?: string };
 }
 
 export async function getRankedCards(params: RankingParams): Promise<import('@/lib/card-ranker').RankedCard[]> {

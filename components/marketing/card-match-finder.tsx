@@ -70,6 +70,7 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
     const [rankBy, setRankBy] = useState<'cashback' | 'annual_fee'>('cashback');
     const [initialized, setInitialized] = useState(false);
     const [ranked, setRanked] = useState<RankedCard[]>([]);
+    const [rankingBasis, setRankingBasis] = useState<string | undefined>();
     const [loading, setLoading] = useState(false);
 
     // Init: URL params (finder page only) > localStorage > defaults
@@ -163,6 +164,7 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
                 });
                 const json = await res.json();
                 if (json.data) setRanked(json.data);
+                if (json.meta?.ranking_basis) setRankingBasis(json.meta.ranking_basis);
             } finally {
                 setLoading(false);
             }
@@ -327,6 +329,9 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
                                         intentSlug={activeIntentSlugs.length === 1 ? activeIntentSlugs[0] : undefined}
                                     />
                                 ))}
+                                {rankingBasis && (
+                                    <p className="text-label text-text-muted mt-1">{rankingBasis}</p>
+                                )}
                             </div>
                         )}
                     </div>
