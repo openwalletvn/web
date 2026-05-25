@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {getIntents, getIntentGroups} from '@/lib/api';
-import {RecommendationFinder} from '@/components/marketing/recommendation-finder';
+import {CardMatchFinder} from '@/components/marketing/card-match-finder';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {getTool} from '@/lib/tools';
 
@@ -46,7 +46,7 @@ export default async function CardMatchPage() {
                 dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
             />
             <div className="ow-container py-12">
-                <RecommendationFinder intents={intents} intentGroups={intentGroups}/>
+                <CardMatchFinder intents={intents} intentGroups={intentGroups}/>
             </div>
         </div>
     );

@@ -6,7 +6,7 @@ import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {HeroSection} from '@/components/marketing/hero-section';
 import {FeaturedCardCategories} from '@/components/marketing/featured-card-categories';
 import {GradientShader} from "@/components/shared/gradient-shader";
-import {RecommendationFinder} from '@/components/marketing/recommendation-finder';
+import {CardMatchFinder} from '@/components/marketing/card-match-finder';
 
 export default async function HomePage() {
     const [banks, cards, intents, intentGroups] = await Promise.all([
@@ -53,7 +53,7 @@ export default async function HomePage() {
 
             <section className="border-t border-dashed border-border py-12">
                 <div className="ow-container">
-                    <RecommendationFinder intents={intents} intentGroups={intentGroups}/>
+                    <CardMatchFinder intents={intents} intentGroups={intentGroups}/>
                 </div>
             </section>
 

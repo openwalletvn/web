@@ -5,17 +5,15 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {getTool} from '@/lib/tools';
 import type {Intent, IntentGroupNode} from '@/lib/api';
 import {DEFAULT_MONTHLY_SPEND, getTiebreakerReason, type RankedCard} from '@/lib/card-ranker';
-import {SPEND_OPTIONS} from '@/lib/spend-options';
 import {Chip} from '@/components/ui/chip';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {IconChevronLeft, IconChevronRight} from '@tabler/icons-react';
-import {RankedRow} from '@/components/marketing/card-ranking-table';
+import {SpendSelector} from '@/components/cards/spend-selector';
+import {RankedRow} from '@/components/cards/ranked-row';
 
 const STORAGE_KEY = 'ow-rec-prefs';
 const cardMatchHref = getTool('Card Match').href;
 const DEFAULT_TAB = 'ca-nhan';
 
-interface RecPrefs {
+interface CardMatchPrefs {
     tab: string;
     macro: string[];
     micro: string[];
@@ -24,11 +22,11 @@ interface RecPrefs {
     rankBy: 'cashback' | 'annual_fee';
 }
 
-function readPrefs(): RecPrefs | null {
+function readPrefs(): CardMatchPrefs | null {
     try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return null;
-        const prefs = JSON.parse(raw) as RecPrefs;
+        const prefs = JSON.parse(raw) as CardMatchPrefs;
         // backward compat: old format stored macro/micro as string | null
         if (prefs.macro && !Array.isArray(prefs.macro)) prefs.macro = [prefs.macro as unknown as string];
         if (!prefs.macro) prefs.macro = [];
@@ -40,7 +38,7 @@ function readPrefs(): RecPrefs | null {
     }
 }
 
-function writePrefs(prefs: RecPrefs): void {
+function writePrefs(prefs: CardMatchPrefs): void {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
     } catch {}
@@ -55,14 +53,13 @@ function findNode(groups: IntentGroupNode[], slug: string): IntentGroupNode | un
     return undefined;
 }
 
-export interface RecommendationFinderProps {
+export interface CardMatchFinderProps {
     intents: Intent[];
     intentGroups: IntentGroupNode[];
     limit?: number;
 }
 
-
-function RecommendationFinderInner({intents, intentGroups, limit = 5}: RecommendationFinderProps) {
+function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinderProps) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -121,10 +118,6 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
         }
     }, [tab, macro, micro, atomic, spend, rankBy, initialized, isFinderPage, router]);
 
-    const spendIdx = SPEND_OPTIONS.findIndex(o => o.value === spend);
-    const canDec = spendIdx > 0;
-    const canInc = spendIdx < SPEND_OPTIONS.length - 1;
-
     const macroNodes = useMemo(
         () => macro.map(s => findNode(intentGroups, s)).filter((n): n is IntentGroupNode => !!n),
         [intentGroups, macro],
@@ -134,7 +127,6 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
         [intentGroups, micro],
     );
 
-    // Children of all selected macros (deduped)
     const microChildren = useMemo(
         () => macroNodes
             .flatMap(n => n.children ?? [])
@@ -142,7 +134,6 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
         [macroNodes],
     );
 
-    // Atomic intents: union from selected micros (if any), else from macros (if no micro level exists)
     const atomicOptions = useMemo((): Intent[] => {
         const targetNodes = microNodes.length > 0
             ? microNodes
@@ -153,7 +144,6 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
         return intents.filter(i => slugSet.has(i.slug));
     }, [microNodes, macroNodes, microChildren, intents]);
 
-    // Derive the active intent slugs sent to the ranking API
     const activeIntentSlugs = useMemo((): string[] => {
         if (atomic.length > 0) return atomic;
         if (microNodes.length > 0) return microNodes.flatMap(n => n.intents);
@@ -237,20 +227,16 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
         );
     }, []);
 
-    const handleTabChange = useCallback((newTab: string) => {
-        setTab(newTab);
-    }, []);
-
     return (
-        <div className="ow-recommendation-finder mb-16">
+        <div className="ow-card-match-finder mb-16">
             <h2 className="mb-6">Tìm thẻ tối ưu cho nhu cầu của bạn</h2>
 
             {/* Tab toggle */}
             <div className="flex gap-2 mb-8">
-                <Chip active={tab === 'ca-nhan'} onClick={() => handleTabChange('ca-nhan')}>
+                <Chip active={tab === 'ca-nhan'} onClick={() => setTab('ca-nhan')}>
                     Cá nhân
                 </Chip>
-                <Chip active={tab === 'doanh-nghiep'} onClick={() => handleTabChange('doanh-nghiep')}>
+                <Chip active={tab === 'doanh-nghiep'} onClick={() => setTab('doanh-nghiep')}>
                     Doanh nghiệp
                 </Chip>
             </div>
@@ -282,7 +268,7 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
                             </div>
                         </div>
 
-                        {/* Level 2: micro sub-groups (only if macro has children) */}
+                        {/* Level 2: micro sub-groups */}
                         {microChildren.length > 0 && (
                             <div className="mb-6">
                                 <p className="text-label text-text-muted mb-2">Thu hẹp danh mục (tuỳ chọn)</p>
@@ -323,36 +309,7 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
                             <p className="text-label text-text-muted mb-3">
                                 BƯỚC 02 · Chi tiêu hàng tháng (tuỳ chọn)
                             </p>
-                            <div className="flex items-center gap-1">
-                                <button
-                                    onClick={() => canDec && setSpend(SPEND_OPTIONS[spendIdx - 1].value)}
-                                    disabled={!canDec}
-                                    className="p-1 rounded hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
-                                    aria-label="Giảm chi tiêu"
-                                >
-                                    <IconChevronLeft size={16}/>
-                                </button>
-                                <Select value={String(spend)} onValueChange={v => setSpend(Number(v))}>
-                                    <SelectTrigger className="w-40">
-                                        <SelectValue/>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {SPEND_OPTIONS.map(o => (
-                                            <SelectItem key={o.value} value={String(o.value)}>
-                                                {o.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <button
-                                    onClick={() => canInc && setSpend(SPEND_OPTIONS[spendIdx + 1].value)}
-                                    disabled={!canInc}
-                                    className="p-1 rounded hover:bg-bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-opacity"
-                                    aria-label="Tăng chi tiêu"
-                                >
-                                    <IconChevronRight size={16}/>
-                                </button>
-                            </div>
+                            <SpendSelector spend={spend} onChange={setSpend}/>
                         </div>
                     </div>
 
@@ -409,13 +366,13 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
     );
 }
 
-export function RecommendationFinder(props: RecommendationFinderProps) {
+export function CardMatchFinder(props: CardMatchFinderProps) {
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted) return null;
     return (
         <Suspense>
-            <RecommendationFinderInner {...props}/>
+            <CardMatchFinderInner {...props}/>
         </Suspense>
     );
 }
