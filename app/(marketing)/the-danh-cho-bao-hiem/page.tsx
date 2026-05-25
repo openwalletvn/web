@@ -1,5 +1,5 @@
 import type {Metadata} from 'next';
-import {getBanks, getCards} from '@/lib/api';
+import {getCards, getRankedCards} from '@/lib/api';
 import {CardRankingTable} from '@/components/marketing/card-ranking-table';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
@@ -36,7 +36,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BaoHiemCardsPage() {
-    const [allCards, banks] = await Promise.all([getCards(), getBanks()]);
+    const [allCards, initialRanked] = await Promise.all([
+        getCards(),
+        getRankedCards({spend: {insurance: 3_000_000}, limit: 50}).catch(() => []),
+    ]);
     const cards = allCards.filter((c) => c.intents?.includes('insurance'));
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
@@ -50,7 +53,7 @@ export default async function BaoHiemCardsPage() {
     return (
         <MarketingPageShell title={TITLE} description={DESCRIPTION} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
             <CategoryIntro intro={INTRO}/>
-            <CardRankingTable cards={cards} banks={banks} intentSlug="insurance" title="Xếp hạng thẻ theo cashback bảo hiểm"/>
+            <CardRankingTable initialRanked={initialRanked} intentSlug="insurance" title="Xếp hạng thẻ theo cashback bảo hiểm"/>
             <CategoryFAQ faqs={FAQS}/>
             <BrowseCategories excludeHref={URL}/>
         </MarketingPageShell>

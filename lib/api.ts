@@ -466,6 +466,30 @@ export async function getRelatedCards(id: string): Promise<RelatedCard[]> {
  * Fetch related cards for multiple card IDs, merge in API order,
  * deduplicating and excluding the source card IDs themselves.
  */
+export interface RankingParams {
+    spend: Record<string, number>;
+    limit?: number;
+    type?: string;
+    for_business?: boolean;
+}
+
+interface RankingResponse {
+    success: boolean;
+    data: import('@/lib/card-ranker').RankedCard[];
+    meta: { total: number; ranked: number; returned: number };
+}
+
+export async function getRankedCards(params: RankingParams): Promise<import('@/lib/card-ranker').RankedCard[]> {
+    const res = await apiFetch('/api/v1/cards/rank', {
+        method: 'POST',
+        body: JSON.stringify(params),
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const json = (await res.json()) as RankingResponse;
+    if (!json.success) throw new Error('Failed to rank cards');
+    return json.data;
+}
+
 export async function getRelatedCardsForMany(cardIds: string[]): Promise<RelatedCard[]> {
     const allResults = await Promise.all(cardIds.map((id) => getRelatedCards(id).catch(() => [])));
     const excludeSet = new Set(cardIds);

@@ -52,7 +52,7 @@ export default async function HomePage() {
 
             <section className="border-t border-dashed border-border py-12">
                 <div className="ow-container">
-                    <RecommendationFinder cards={cards} banks={banks} intents={intents}/>
+                    <RecommendationFinder intents={intents}/>
                 </div>
             </section>
 

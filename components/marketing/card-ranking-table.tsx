@@ -1,9 +1,9 @@
 'use client';
 
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect, useRef} from 'react';
 import Link from 'next/link';
-import type {Bank, Card} from '@/lib/api';
-import {rankCards, getTiebreakerReason, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
+import type {Intent} from '@/lib/api';
+import {getTiebreakerReason, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
 import {CardImage} from '@/components/cards/card-image';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {IconChevronLeft, IconChevronRight, IconCaretUpFilled, IconCaretDownFilled, IconInfoCircle, IconBulb, IconLaurelWreath1Filled, IconLaurelWreath2Filled, IconLaurelWreath3Filled} from '@tabler/icons-react';
@@ -18,8 +18,7 @@ function withViewTransition(fn: () => void) {
 }
 
 interface Props {
-    cards: Card[];
-    banks: Bank[];
+    initialRanked: RankedCard[];
     intentSlug: string;
     monthlySpend?: number;
     title?: string;
@@ -33,7 +32,7 @@ function RankBadge({rank}: {rank: number}) {
 }
 
 function CashbackDisplay({ranked}: {ranked: RankedCard}) {
-    const {cashback, actualRate, optimalSpend} = ranked.result;
+    const {cashback, actual_rate, optimal_spend} = ranked.cashback_result;
 
     if (cashback === 0) {
         return (
@@ -49,49 +48,65 @@ function CashbackDisplay({ranked}: {ranked: RankedCard}) {
                 +{cashback.toLocaleString('vi-VN')}đ
             </span>
             <span className="text-body-sm text-text-muted">
-                Hoàn {actualRate}%/kỳ
+                Hoàn {actual_rate}%/kỳ
             </span>
-            {optimalSpend > 0 && (
+            {optimal_spend > 0 && (
                 <span className="text-body-sm text-text-muted">
-                    Tối đa từ {optimalSpend.toLocaleString('vi-VN')}đ
+                    Tối đa từ {optimal_spend.toLocaleString('vi-VN')}đ
                 </span>
             )}
         </div>
     );
 }
 
-export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAULT_MONTHLY_SPEND, title}: Props) {
+export function CardRankingTable({initialRanked, intentSlug, monthlySpend = DEFAULT_MONTHLY_SPEND, title}: Props) {
     const [spend, setSpend] = useState(monthlySpend);
+    const [ranked, setRanked] = useState<RankedCard[]>(initialRanked);
+    const [loading, setLoading] = useState(false);
     const changeSpend = useCallback((v: number) => withViewTransition(() => setSpend(v)), []);
     const spendIdx = SPEND_OPTIONS.findIndex(o => o.value === spend);
     const canDec = spendIdx > 0;
     const canInc = spendIdx < SPEND_OPTIONS.length - 1;
 
-    const banksById = Object.fromEntries(banks.map(b => [b.id, b]));
-    const rankedCards = rankCards(
-        cards.map(c => ({...c, bank_data: banksById[c.bank_id]})),
-        {[intentSlug]: spend}
-    );
+    const isInitial = useRef(true);
+    useEffect(() => {
+        if (isInitial.current) {
+            isInitial.current = false;
+            return;
+        }
+        setLoading(true);
+        const t = setTimeout(async () => {
+            try {
+                const res = await fetch('/api/ranking', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({spend: {[intentSlug]: spend}, limit: 50}),
+                });
+                const json = await res.json();
+                if (json.data) withViewTransition(() => setRanked(json.data));
+            } finally {
+                setLoading(false);
+            }
+        }, 200);
+        return () => clearTimeout(t);
+    }, [spend, intentSlug]);
 
-    const withCashback = rankedCards.filter(r => r.result.cashback > 0);
-    const noCashback = rankedCards.filter(r => r.result.cashback === 0);
+    const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
+    const noCashback = ranked.filter(r => r.cashback_result.cashback === 0);
 
     const tiebreakerReasons = new Map<string, string>();
     const tiebreakerDelta = new Map<string, number>();
 
-    // Group consecutive equal-cashback cards, compute absolute displacement from natural rank
     let gi = 0;
     while (gi < withCashback.length) {
         let gj = gi;
-        while (gj < withCashback.length && withCashback[gj].result.cashback === withCashback[gi].result.cashback) gj++;
+        while (gj < withCashback.length && withCashback[gj].cashback_result.cashback === withCashback[gi].cashback_result.cashback) gj++;
         if (gj - gi > 1) {
             const naturalRank = withCashback[gi].rank;
-            // Collect tiebreaker reasons for adjacent pairs within group
             for (let k = gi; k < gj - 1; k++) {
                 const reason = getTiebreakerReason(withCashback[k].card, withCashback[k + 1].card);
                 if (reason) tiebreakerReasons.set(withCashback[k].card.id, reason);
             }
-            // Top card gets +(groupSize-1), others get (naturalRank - actualRank)
             const groupSize = gj - gi;
             tiebreakerDelta.set(withCashback[gi].card.id, groupSize - 1);
             for (let k = gi + 1; k < gj; k++) {
@@ -138,7 +153,7 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
                 </div>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className={`flex flex-col gap-3 transition-opacity ${loading ? 'opacity-60' : ''}`}>
                 {withCashback.map(ranked => (
                     <RankedRow
                         key={ranked.card.id}
@@ -172,15 +187,25 @@ export function CardRankingTable({cards, banks, intentSlug, monthlySpend = DEFAU
     );
 }
 
-export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta, viewTransitionName}: {
+export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta, viewTransitionName, intentMap, highlightedSlugs}: {
     ranked: RankedCard;
     muted?: boolean;
     tiebreakerReason?: string;
     tiebreakerDelta?: number;
     viewTransitionName?: string;
+    intentMap?: Map<string, Pick<Intent, 'slug' | 'label' | 'icon' | 'group'>>;
+    highlightedSlugs?: string[];
 }) {
     const {card, rank} = ranked;
     const isTop3 = rank <= 3 && !muted;
+    const highlighted = new Set(highlightedSlugs ?? []);
+
+    const hasUniversalRule = card.cashback?.rules.some(r => !r.merchants?.length && !r.categories?.length) ?? false;
+    const cardIntents = intentMap
+        ? [...new Set(card.cashback?.rules.flatMap(r => [...(r.merchants ?? []), ...(r.categories ?? [])]) ?? [])]
+            .map(slug => intentMap.get(slug))
+            .filter((i): i is Pick<Intent, 'slug' | 'label' | 'icon' | 'group'> => !!i)
+        : [];
 
     return (
         <div
@@ -230,6 +255,29 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
                                 ? 'Miễn phí thường niên'
                                 : `Phí ${card.fees.annual.amount.toLocaleString('vi-VN')}đ/năm`}
                         </p>
+                    )}
+                    {intentMap && (cardIntents.length > 0 || hasUniversalRule) && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                            {hasUniversalRule && (
+                                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium ${
+                                    highlighted.size > 0 ? 'bg-primary/10 text-primary' : 'bg-bg-muted text-text-muted'
+                                }`}>
+                                    🌐 Tất cả chi tiêu
+                                </span>
+                            )}
+                            {cardIntents.map(intent => (
+                                <span
+                                    key={intent.slug}
+                                    className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium ${
+                                        highlighted.has(intent.slug)
+                                            ? 'bg-primary/10 text-primary'
+                                            : 'bg-bg-muted text-text-muted opacity-50'
+                                    }`}
+                                >
+                                    {intent.icon} {intent.label}
+                                </span>
+                            ))}
+                        </div>
                     )}
                     {tiebreakerReason && (
                         <span className="flex items-center gap-1 mt-1 text-xs text-text-muted">
