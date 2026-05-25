@@ -4,6 +4,18 @@ Vietnamese-first web app: public card-comparison site (SEO, SSR/SSG on Vercel) +
 
 **Base URL:** `https://openwallet.vn` | **API:** `https://api.openwallet.vn/api/v1/`
 
+## Local repo layout
+
+Three sibling repos share the same parent folder:
+
+| Repo | Relative path from this repo |
+|------|------------------------------|
+| web (this) | `.` |
+| api | `../api` |
+| mcp | `../mcp` |
+
+When asked to "edit local api repo" → work in `../api`. "edit local mcp repo" → work in `../mcp`.
+
 ## Commands
 - Dev: `pnpm dev`
 - Build: `pnpm build`
