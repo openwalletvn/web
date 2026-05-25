@@ -42,7 +42,7 @@ import {
 } from "lucide-react";
 import { type FC, useEffect, useState } from "react";
 
-type HealthState = { ready: boolean; mcp: boolean; api: boolean } | null;
+type HealthState = { ready: boolean; mcp: boolean; api: boolean; model?: string } | null;
 
 function useApiReady(): HealthState {
   const [health, setHealth] = useState<HealthState>(null);
@@ -185,6 +185,7 @@ const ThreadSuggestions: FC = () => {
 };
 
 const Composer: FC = () => {
+  const health = useApiReady();
   return (
     <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col">
       <div
@@ -198,14 +199,18 @@ const Composer: FC = () => {
             autoFocus
             aria-label="Message input"
           />
-          <ComposerAction />
+          <ComposerAction health={health} />
         </div>
+      {health?.model && (
+        <p className="aui-composer-model mt-1.5 text-center text-xs text-muted-foreground/50">
+          {health.model}
+        </p>
+      )}
     </ComposerPrimitive.Root>
   );
 };
 
-const ComposerAction: FC = () => {
-  const health = useApiReady();
+const ComposerAction: FC<{ health: HealthState }> = ({ health }) => {
   const notReady = health !== null && !health.ready;
   const unavailableLabel = health && !health.mcp ? "MCP unavailable" : "API unavailable";
   return (

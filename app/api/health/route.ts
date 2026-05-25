@@ -10,7 +10,8 @@ export async function GET() {
         const data = await res.json() as { name?: string; version?: string; api?: boolean };
         const mcp = res.ok;
         const api = data.api === true;
-        return Response.json({ ready: mcp && api, mcp, api, ...data });
+        const model = process.env.AI_MODEL;
+        return Response.json({ ready: mcp && api, mcp, api, ...(model && { model }), ...data });
     } catch {
         return Response.json({ ready: false, mcp: false, api: false });
     }
