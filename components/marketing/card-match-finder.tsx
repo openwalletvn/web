@@ -194,31 +194,36 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
                     {/* Left: controls */}
                     <div className={loading ? 'pointer-events-none opacity-60' : ''}>
-                        <p className="text-label text-text-muted mb-4">Bạn hay chi tiêu ở đâu?</p>
-                        <div className="flex flex-col gap-5">
+                        <div className="flex items-center justify-between mb-4">
+                            <p className="text-label text-text-muted">Bạn hay chi tiêu ở đâu?</p>
+                            {activeIntents.length > 0 && (
+                                <button
+                                    className="text-label text-text-muted hover:text-foreground transition-colors"
+                                    onClick={() => setActiveIntents([])}
+                                >
+                                    Xóa tất cả
+                                </button>
+                            )}
+                        </div>
+                        <div className="flex flex-col gap-3">
                             {intentGroups.map(group => {
                                 const groupIntents = getAllIntents(group);
                                 const allActive = groupIntents.length > 0 && groupIntents.every(i => intentSet.has(i));
-                                const hasChildren = (group.children ?? []).length > 0;
+                                const isSingle = groupIntents.length === 1;
                                 return (
-                                    <div key={group.slug}>
-                                        <p className="text-label text-text-muted mb-2">{group.icon} {group.label}</p>
-                                        <div className="flex flex-wrap gap-2">
-                                            <Chip active={allActive} onClick={() => toggleGroup(group)}>
-                                                Tất cả
-                                            </Chip>
-                                            {hasChildren ? (
-                                                group.children!.map(child => {
-                                                    const childIntents = getAllIntents(child);
-                                                    const childActive = childIntents.every(i => intentSet.has(i));
-                                                    return (
-                                                        <Chip key={child.slug} active={childActive} onClick={() => toggleChild(child)}>
-                                                            {child.icon} {child.label}
-                                                        </Chip>
-                                                    );
-                                                })
-                                            ) : null}
-                                        </div>
+                                    <div key={group.slug} className="flex flex-wrap gap-2">
+                                        <Chip active={allActive} onClick={() => toggleGroup(group)}>
+                                            {group.icon} {group.label}
+                                        </Chip>
+                                        {!isSingle && (group.children ?? []).map(child => {
+                                            const childIntents = getAllIntents(child);
+                                            const childActive = childIntents.every(i => intentSet.has(i));
+                                            return (
+                                                <Chip key={child.slug} active={childActive} onClick={() => toggleChild(child)}>
+                                                    {child.icon} {child.label}
+                                                </Chip>
+                                            );
+                                        })}
                                     </div>
                                 );
                             })}

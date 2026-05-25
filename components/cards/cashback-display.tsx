@@ -36,7 +36,7 @@ export function CashbackDisplay({ranked, intentSlug}: {ranked: RankedCard; inten
         );
     }
 
-    const showBreakdown = breakdown && breakdown.length > 1;
+    const showBreakdown = breakdown && breakdown.length >= 1;
     const rateDisplay = !showBreakdown ? getRateDisplay(ranked.card, intentSlug) : null;
 
     return (
