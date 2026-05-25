@@ -380,6 +380,7 @@ function RecommendationFinderInner({intents, intentGroups, limit = 5}: Recommend
                                         tiebreakerDelta={tiebreakerDelta.get(r.card.id)}
                                         intentMap={new Map(intents.map(i => [i.slug, i]))}
                                         highlightedSlugs={activeIntentSlugs}
+                                        intentSlug={activeIntentSlugs.length === 1 ? activeIntentSlugs[0] : undefined}
                                     />
                                 ))}
                             </div>

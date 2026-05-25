@@ -50,6 +50,7 @@ app/
 | `lib/card-dates.ts` | Statement/due date computation (`getStatementObject`) |
 | `lib/cashback-calc.ts` | `calcCashback(card, spendProfile)` — estimates monthly cashback; handles rule ordering (specific-first), per-rule caps, min_spend gate, global cap. Rules with empty `categories[]` AND `merchants[]` score 0 (no implicit universal). |
 | `lib/card-ranker.ts` | `rankCards(cards, spendProfile)` — sort logic only (cashback desc → annual_fee asc → network_popularity asc). `DEFAULT_MONTHLY_SPEND = 3_000_000`. Used by `CardRankingTable` and `RecommendationFinder`. |
+| `components/marketing/card-ranking-table.tsx` | `getRateDisplay(card, intentSlug?)` — resolves display rate from `card.cashback.rules` filtered by intent slug (merchant or category match). Returns exact rate (e.g. `"8%"`) or range (`"3%–5%"`) for tiered/multi-rule. Falls back to API `actual_rate` when no rules match. **Do not use `actual_rate` directly** — it is a blended value when the spend profile spans multiple rules. |
 | `lib/use-search.ts` | Fuse.js search hook |
 | `content/posts/` | Blog MDX files (`<slug>.mdx`) |
 | `content/changelog/` | Changelog MDX (`YYYY-MM-DD-<slug>.mdx`) |

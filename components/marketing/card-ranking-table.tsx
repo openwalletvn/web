@@ -2,7 +2,7 @@
 
 import React, {useState, useCallback, useEffect, useRef} from 'react';
 import Link from 'next/link';
-import type {Intent} from '@/lib/api';
+import type {Card, Intent} from '@/lib/api';
 import {getTiebreakerReason, DEFAULT_MONTHLY_SPEND, type RankedCard} from '@/lib/card-ranker';
 import {CardImage} from '@/components/cards/card-image';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
@@ -31,7 +31,23 @@ function RankBadge({rank}: {rank: number}) {
     return <span className="text-label text-text-muted">#{rank}</span>;
 }
 
-function CashbackDisplay({ranked}: {ranked: RankedCard}) {
+function getRateDisplay(card: Card, intentSlug?: string): string {
+    const rules = card.cashback?.rules ?? [];
+    const matched = intentSlug
+        ? rules.filter(r => r.categories?.includes(intentSlug) || r.merchants?.includes(intentSlug))
+        : [];
+    const relevant = matched.length > 0
+        ? matched
+        : rules.filter(r => !r.categories?.length && !r.merchants?.length);
+    if (!relevant.length) return '';
+    const rates = relevant.flatMap(r => [r.rate, ...(r.rate_max != null ? [r.rate_max] : [])]);
+    const min = Math.min(...rates) * 100;
+    const max = Math.max(...rates) * 100;
+    const fmt = (n: number) => Number.isInteger(n) ? String(n) : n.toFixed(1).replace(/\.?0+$/, '');
+    return min === max ? `${fmt(min)}%` : `${fmt(min)}%–${fmt(max)}%`;
+}
+
+function CashbackDisplay({ranked, intentSlug}: {ranked: RankedCard; intentSlug?: string}) {
     const {cashback, actual_rate, optimal_spend} = ranked.cashback_result;
 
     if (cashback === 0) {
@@ -42,13 +58,15 @@ function CashbackDisplay({ranked}: {ranked: RankedCard}) {
         );
     }
 
+    const rateDisplay = getRateDisplay(ranked.card, intentSlug) || `${actual_rate}%`;
+
     return (
         <div className="flex flex-col items-start sm:items-end gap-0.5">
             <span className="text-body-lg font-semibold text-primary">
                 +{cashback.toLocaleString('vi-VN')}đ
             </span>
             <span className="text-body-sm text-text-muted">
-                Hoàn {actual_rate}%/kỳ
+                Hoàn {rateDisplay}/kỳ
             </span>
             {optimal_spend > 0 && (
                 <span className="text-body-sm text-text-muted">
@@ -163,6 +181,7 @@ export function CardRankingTable({initialRanked, intentSlug, monthlySpend = DEFA
                         tiebreakerReason={tiebreakerReasons.get(ranked.card.id)}
                         tiebreakerDelta={tiebreakerDelta.get(ranked.card.id)}
                         viewTransitionName={`card-row-${ranked.card.id}`}
+                        intentSlug={intentSlug}
                     />
                 ))}
 
@@ -175,6 +194,7 @@ export function CardRankingTable({initialRanked, intentSlug, monthlySpend = DEFA
                                 ranked={ranked}
                                 muted
                                 viewTransitionName={`card-row-${ranked.card.id}`}
+                                intentSlug={intentSlug}
                             />
                         ))}
                     </>
@@ -189,7 +209,7 @@ export function CardRankingTable({initialRanked, intentSlug, monthlySpend = DEFA
     );
 }
 
-export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta, viewTransitionName, intentMap, highlightedSlugs}: {
+export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta, viewTransitionName, intentMap, highlightedSlugs, intentSlug}: {
     ranked: RankedCard;
     muted?: boolean;
     tiebreakerReason?: string;
@@ -197,6 +217,7 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
     viewTransitionName?: string;
     intentMap?: Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
     highlightedSlugs?: string[];
+    intentSlug?: string;
 }) {
     const {card, rank} = ranked;
     const isTop3 = rank <= 3 && !muted;
@@ -291,7 +312,7 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
 
                 {/* Cashback */}
                 <div className="shrink-0 sm:text-right">
-                    <CashbackDisplay ranked={ranked}/>
+                    <CashbackDisplay ranked={ranked} intentSlug={intentSlug}/>
                 </div>
             </div>
         </div>
