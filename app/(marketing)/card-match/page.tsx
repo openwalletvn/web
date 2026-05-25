@@ -1,5 +1,5 @@
 import type {Metadata} from 'next';
-import {getIntents} from '@/lib/api';
+import {getIntents, getIntentGroups} from '@/lib/api';
 import {RecommendationFinder} from '@/components/marketing/recommendation-finder';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {getTool} from '@/lib/tools';
@@ -18,7 +18,10 @@ export const metadata: Metadata = {
 };
 
 export default async function CardMatchPage() {
-    const intents = await getIntents().catch(() => []);
+    const [intents, intentGroups] = await Promise.all([
+        getIntents().catch(() => []),
+        getIntentGroups().catch(() => []),
+    ]);
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -43,7 +46,7 @@ export default async function CardMatchPage() {
                 dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
             />
             <div className="ow-container py-12">
-                <RecommendationFinder intents={intents}/>
+                <RecommendationFinder intents={intents} intentGroups={intentGroups}/>
             </div>
         </div>
     );

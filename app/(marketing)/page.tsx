@@ -1,5 +1,5 @@
 import {Suspense} from 'react';
-import {getBanks, getCards, getIntents} from '@/lib/api';
+import {getBanks, getCards, getIntents, getIntentGroups} from '@/lib/api';
 import {BanksSection, BanksSectionSkeleton} from '@/components/marketing/banks-section';
 import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
@@ -9,10 +9,11 @@ import {GradientShader} from "@/components/shared/gradient-shader";
 import {RecommendationFinder} from '@/components/marketing/recommendation-finder';
 
 export default async function HomePage() {
-    const [banks, cards, intents] = await Promise.all([
+    const [banks, cards, intents, intentGroups] = await Promise.all([
         getBanks().catch(() => []),
         getCards().catch(() => []),
         getIntents().catch(() => []),
+        getIntentGroups().catch(() => []),
     ]);
 
     const jsonLd = {
@@ -52,7 +53,7 @@ export default async function HomePage() {
 
             <section className="border-t border-dashed border-border py-12">
                 <div className="ow-container">
-                    <RecommendationFinder intents={intents}/>
+                    <RecommendationFinder intents={intents} intentGroups={intentGroups}/>
                 </div>
             </section>
 

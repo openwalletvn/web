@@ -3,7 +3,7 @@
 import {Suspense, useCallback, useEffect, useMemo, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {getTool} from '@/lib/tools';
-import type {Intent} from '@/lib/api';
+import type {Intent, IntentGroupNode} from '@/lib/api';
 import {DEFAULT_MONTHLY_SPEND, getTiebreakerReason, type RankedCard} from '@/lib/card-ranker';
 import {SPEND_OPTIONS} from '@/lib/spend-options';
 import {Chip} from '@/components/ui/chip';
@@ -17,8 +17,9 @@ const DEFAULT_TAB = 'ca-nhan';
 
 interface RecPrefs {
     tab: string;
-    groupSlugs: string[];
-    intentSlugs: string[];
+    macro: string | null;
+    micro: string | null;
+    atomic: string[];
     spend: number;
 }
 
@@ -37,68 +38,59 @@ function writePrefs(prefs: RecPrefs): void {
     } catch {}
 }
 
-interface IntentGroup {
-    slug: string;
-    label: string;
-    icon: string;
-    intentSlugs: string[];
+function findNode(groups: IntentGroupNode[], slug: string): IntentGroupNode | undefined {
+    for (const g of groups) {
+        if (g.slug === slug) return g;
+        const found = findNode(g.children ?? [], slug);
+        if (found) return found;
+    }
+    return undefined;
 }
 
 export interface RecommendationFinderProps {
     intents: Intent[];
+    intentGroups: IntentGroupNode[];
     limit?: number;
 }
 
 
-function RecommendationFinderInner({intents, limit = 5}: RecommendationFinderProps) {
+function RecommendationFinderInner({intents, intentGroups, limit = 5}: RecommendationFinderProps) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const isFinderPage = pathname === cardMatchHref;
 
     const [tab, setTab] = useState(DEFAULT_TAB);
-    const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
-    const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
+    const [macro, setMacro] = useState<string | null>(null);
+    const [micro, setMicro] = useState<string | null>(null);
+    const [atomic, setAtomic] = useState<string[]>([]);
     const [spend, setSpend] = useState(DEFAULT_MONTHLY_SPEND);
     const [initialized, setInitialized] = useState(false);
     const [ranked, setRanked] = useState<RankedCard[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const groups = useMemo<IntentGroup[]>(() => {
-        const map = new Map<string, IntentGroup>();
-        for (const intent of intents) {
-            if (!map.has(intent.group)) {
-                map.set(intent.group, {slug: intent.group, label: intent.group, icon: '📦', intentSlugs: []});
-            }
-            const g = map.get(intent.group)!;
-            g.intentSlugs.push(intent.slug);
-            if (intent.slug === intent.group) {
-                g.label = intent.label;
-                g.icon = intent.icon;
-            }
-        }
-        return Array.from(map.values());
-    }, [intents]);
-
     // Init: URL params (finder page only) > localStorage > defaults
     useEffect(() => {
-        const urlGroup = isFinderPage ? searchParams.get('group') : null;
-        const urlIntent = isFinderPage ? searchParams.get('intent') : null;
+        const urlMacro = isFinderPage ? searchParams.get('macro') : null;
+        const urlMicro = isFinderPage ? searchParams.get('micro') : null;
+        const urlAtomic = isFinderPage ? searchParams.get('intent') : null;
         const urlSpend = isFinderPage ? searchParams.get('spend') : null;
 
-        if (urlGroup) {
-            setSelectedGroups(urlGroup.split(',').filter(Boolean));
-            if (urlIntent) setSelectedIntents(urlIntent.split(',').filter(Boolean));
+        if (urlMacro) {
+            setMacro(urlMacro);
+            setMicro(urlMicro);
+            setAtomic(urlAtomic ? urlAtomic.split(',').filter(Boolean) : []);
             if (urlSpend) setSpend(Number(urlSpend) || DEFAULT_MONTHLY_SPEND);
         } else {
             const prefs = readPrefs();
-            if (prefs?.groupSlugs?.length) {
+            if (prefs?.macro) {
                 setTab(prefs.tab ?? DEFAULT_TAB);
-                setSelectedGroups(prefs.groupSlugs);
-                setSelectedIntents(prefs.intentSlugs ?? []);
+                setMacro(prefs.macro);
+                setMicro(prefs.micro ?? null);
+                setAtomic(prefs.atomic ?? []);
                 setSpend(prefs.spend ?? DEFAULT_MONTHLY_SPEND);
-            } else if (groups.length > 0) {
-                setSelectedGroups([groups[0].slug]);
+            } else if (intentGroups.length > 0) {
+                setMacro(intentGroups[0].slug);
             }
         }
         setInitialized(true);
@@ -107,28 +99,44 @@ function RecommendationFinderInner({intents, limit = 5}: RecommendationFinderPro
     // Sync URL (finder page only) + localStorage on state change
     useEffect(() => {
         if (!initialized) return;
-        writePrefs({tab, groupSlugs: selectedGroups, intentSlugs: selectedIntents, spend});
-        if (isFinderPage && selectedGroups.length > 0) {
-            const p: Record<string, string> = {group: selectedGroups.join(','), spend: String(spend)};
-            if (selectedIntents.length > 0) p.intent = selectedIntents.join(',');
+        writePrefs({tab, macro, micro, atomic, spend});
+        if (isFinderPage && macro) {
+            const p: Record<string, string> = {macro, spend: String(spend)};
+            if (micro) p.micro = micro;
+            if (atomic.length > 0) p.intent = atomic.join(',');
             router.replace(`${cardMatchHref}?${new URLSearchParams(p).toString()}`, {scroll: false});
         }
-    }, [tab, selectedGroups, selectedIntents, spend, initialized, isFinderPage, router]);
+    }, [tab, macro, micro, atomic, spend, initialized, isFinderPage, router]);
 
     const spendIdx = SPEND_OPTIONS.findIndex(o => o.value === spend);
     const canDec = spendIdx > 0;
     const canInc = spendIdx < SPEND_OPTIONS.length - 1;
 
-    const activeIntentSlugs = useMemo(() => {
-        if (selectedIntents.length > 0) return selectedIntents;
-        return intents.filter(i => selectedGroups.includes(i.group)).map(i => i.slug);
-    }, [intents, selectedGroups, selectedIntents]);
+    const macroNode = useMemo(() => macro ? findNode(intentGroups, macro) : null, [intentGroups, macro]);
+    const microNode = useMemo(() => micro ? findNode(intentGroups, micro) : null, [intentGroups, micro]);
 
-    // Non-catchall intents available for precise selection within chosen groups
-    const specificIntents = useMemo(
-        () => intents.filter(i => selectedGroups.includes(i.group) && i.slug !== i.group),
-        [intents, selectedGroups]
-    );
+    // Children of the selected macro (sub-groups shown at level 2)
+    const microChildren = useMemo(() => macroNode?.children ?? [], [macroNode]);
+
+    // Atomic intents available for level 3 selection
+    // If micro selected and has children → show micro's children
+    // If micro selected without children → show intents within micro (leaf)
+    // If no micro but macro has no children → show macro's direct intents as atoms
+    const atomicOptions = useMemo((): Intent[] => {
+        const targetNode = microNode ?? (microChildren.length === 0 ? macroNode : null);
+        if (!targetNode) return [];
+        const allChildSlugs = (targetNode.children ?? []).flatMap(c => c.intents);
+        const slugSet = new Set([...targetNode.intents, ...allChildSlugs]);
+        return intents.filter(i => slugSet.has(i.slug));
+    }, [microNode, macroNode, microChildren, intents]);
+
+    // Derive the active intent slugs sent to the ranking API
+    const activeIntentSlugs = useMemo((): string[] => {
+        if (atomic.length > 0) return atomic;
+        if (microNode) return microNode.intents;
+        if (macroNode) return macroNode.intents;
+        return [];
+    }, [atomic, microNode, macroNode]);
 
     useEffect(() => {
         if (!initialized) return;
@@ -176,30 +184,26 @@ function RecommendationFinderInner({intents, limit = 5}: RecommendationFinderPro
         gi = gj;
     }
 
-    const toggleGroup = useCallback((slug: string) => {
-        setSelectedGroups(prev => {
-            if (prev.includes(slug) && prev.length === 1) return prev; // enforce min 1
-            return prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug];
-        });
-        // prune specific intents that belonged to deselected group
-        setSelectedIntents(prev => {
-            const groupIntentSlugs = new Set(intents.filter(i => i.group === slug).map(i => i.slug));
-            return prev.filter(s => !groupIntentSlugs.has(s));
-        });
-    }, [intents]);
+    const handleMacroSelect = useCallback((slug: string) => {
+        setMacro(prev => prev === slug ? prev : slug);
+        setMicro(null);
+        setAtomic([]);
+    }, []);
 
-    const toggleIntent = useCallback((slug: string) => {
-        setSelectedIntents(prev =>
+    const handleMicroSelect = useCallback((slug: string) => {
+        setMicro(prev => prev === slug ? null : slug);
+        setAtomic([]);
+    }, []);
+
+    const toggleAtomic = useCallback((slug: string) => {
+        setAtomic(prev =>
             prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
         );
     }, []);
 
     const handleTabChange = useCallback((newTab: string) => {
         setTab(newTab);
-        if (newTab === 'ca-nhan' && groups.length > 0 && selectedGroups.length === 0) {
-            setSelectedGroups([groups[0].slug]);
-        }
-    }, [groups, selectedGroups]);
+    }, []);
 
     return (
         <div className="ow-recommendation-finder mb-16">
@@ -226,37 +230,59 @@ function RecommendationFinderInner({intents, limit = 5}: RecommendationFinderPro
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
                     {/* Left: controls */}
                     <div>
-                        <div className="mb-8">
+                        {/* Level 1: macro groups */}
+                        <div className="mb-6">
                             <p className="text-label text-text-muted mb-3">BƯỚC 01 · Bạn muốn ưu đãi gì?</p>
-                            <div className="flex flex-wrap gap-2 mb-4">
-                                {groups.map(group => (
+                            <div className="flex flex-wrap gap-2">
+                                {intentGroups.map(group => (
                                     <Chip
                                         key={group.slug}
-                                        active={selectedGroups.includes(group.slug)}
-                                        onClick={() => toggleGroup(group.slug)}
+                                        active={macro === group.slug}
+                                        onClick={() => handleMacroSelect(group.slug)}
                                     >
                                         {group.icon} {group.label}
                                     </Chip>
                                 ))}
                             </div>
-                            {specificIntents.length > 0 && (
-                                <div>
-                                    <p className="text-label text-text-muted mb-2">Thu hẹp kết quả (tuỳ chọn)</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {specificIntents.map(intent => (
-                                            <Chip
-                                                key={intent.slug}
-                                                active={selectedIntents.includes(intent.slug)}
-                                                onClick={() => toggleIntent(intent.slug)}
-                                            >
-                                                {intent.icon} {intent.label}
-                                            </Chip>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
+                        {/* Level 2: micro sub-groups (only if macro has children) */}
+                        {microChildren.length > 0 && (
+                            <div className="mb-6">
+                                <p className="text-label text-text-muted mb-2">Thu hẹp danh mục (tuỳ chọn)</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {microChildren.map(child => (
+                                        <Chip
+                                            key={child.slug}
+                                            active={micro === child.slug}
+                                            onClick={() => handleMicroSelect(child.slug)}
+                                        >
+                                            {child.icon} {child.label}
+                                        </Chip>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Level 3: atomic intents */}
+                        {atomicOptions.length > 0 && (
+                            <div className="mb-6">
+                                <p className="text-label text-text-muted mb-2">Chọn cụ thể (tuỳ chọn)</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {atomicOptions.map(intent => (
+                                        <Chip
+                                            key={intent.slug}
+                                            active={atomic.includes(intent.slug)}
+                                            onClick={() => toggleAtomic(intent.slug)}
+                                        >
+                                            {intent.icon} {intent.label}
+                                        </Chip>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Spend selector */}
                         <div>
                             <p className="text-label text-text-muted mb-3">
                                 BƯỚC 02 · Chi tiêu hàng tháng (tuỳ chọn)
@@ -298,7 +324,7 @@ function RecommendationFinderInner({intents, limit = 5}: RecommendationFinderPro
                     <div>
                         <p className="text-label text-text-muted mb-4">KẾT QUẢ ĐỀ XUẤT</p>
 
-                        {selectedGroups.length === 0 ? (
+                        {!macro ? (
                             <p className="text-body-sm text-text-muted">Chọn nhóm chi tiêu để xem đề xuất.</p>
                         ) : (
                             <div className={`flex flex-col gap-3 transition-opacity ${loading ? 'opacity-60' : ''}`}>

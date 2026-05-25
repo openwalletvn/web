@@ -195,7 +195,7 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
     tiebreakerReason?: string;
     tiebreakerDelta?: number;
     viewTransitionName?: string;
-    intentMap?: Map<string, Pick<Intent, 'slug' | 'label' | 'icon' | 'group'>>;
+    intentMap?: Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
     highlightedSlugs?: string[];
 }) {
     const {card, rank} = ranked;
@@ -206,7 +206,7 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
     const cardIntents = intentMap
         ? [...new Set(card.cashback?.rules.flatMap(r => [...(r.merchants ?? []), ...(r.categories ?? [])]) ?? [])]
             .map(slug => intentMap.get(slug))
-            .filter((i): i is Pick<Intent, 'slug' | 'label' | 'icon' | 'group'> => !!i)
+            .filter((i): i is Pick<Intent, 'slug' | 'label' | 'icon'> => !!i)
         : [];
 
     return (

@@ -117,11 +117,18 @@ export interface Merchant {
 export interface Intent {
     slug: string;
     label: string;
-    group: string;
     icon: string; // emoji
     merchants: string[];
     categories: string[];
     co_brands: string[];
+}
+
+export interface IntentGroupNode {
+    slug: string;
+    label: string;
+    icon: string;
+    intents: string[];
+    children?: IntentGroupNode[];
 }
 
 export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'points_pool';
@@ -382,6 +389,18 @@ export async function getIntents(): Promise<Intent[]> {
     const res = await apiFetch('/api/v1/intents');
     const json = (await res.json()) as IntentsResponse;
     if (!json.success) throw new Error('Failed to fetch intents');
+    return json.data;
+}
+
+interface IntentGroupsResponse {
+    success: boolean;
+    data: IntentGroupNode[];
+}
+
+export async function getIntentGroups(): Promise<IntentGroupNode[]> {
+    const res = await apiFetch('/api/v1/intent-groups');
+    const json = (await res.json()) as IntentGroupsResponse;
+    if (!json.success) throw new Error('Failed to fetch intent groups');
     return json.data;
 }
 
