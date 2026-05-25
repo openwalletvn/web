@@ -38,7 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SieuThiCardsPage() {
     const [allCards, initialRanked] = await Promise.all([
         getCards(),
-        getRankedCards({spend: {groceries: 3_000_000}, limit: 50}).catch(() => []),
+        getRankedCards({intents: ['groceries'], limit: 50}).catch(() => []),
     ]);
     const cards = allCards.filter((c) => c.intents?.includes('groceries'));
 

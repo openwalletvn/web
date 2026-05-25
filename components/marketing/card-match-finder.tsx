@@ -4,9 +4,8 @@ import {Suspense, useCallback, useEffect, useMemo, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {getTool} from '@/lib/tools';
 import type {Intent, IntentGroupNode} from '@/lib/api';
-import {DEFAULT_MONTHLY_SPEND, getTiebreakerReason, type RankedCard} from '@/lib/card-ranker';
+import type {RankedCard} from '@/lib/card-ranker';
 import {Chip} from '@/components/ui/chip';
-import {SpendSelector} from '@/components/cards/spend-selector';
 import {RankedRow} from '@/components/cards/ranked-row';
 
 const STORAGE_KEY = 'ow-rec-prefs';
@@ -18,7 +17,6 @@ interface CardMatchPrefs {
     macro: string[];
     micro: string[];
     atomic: string[];
-    spend: number;
     rankBy: 'cashback' | 'annual_fee';
 }
 
@@ -69,7 +67,6 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
     const [macro, setMacro] = useState<string[]>([]);
     const [micro, setMicro] = useState<string[]>([]);
     const [atomic, setAtomic] = useState<string[]>([]);
-    const [spend, setSpend] = useState(DEFAULT_MONTHLY_SPEND);
     const [rankBy, setRankBy] = useState<'cashback' | 'annual_fee'>('cashback');
     const [initialized, setInitialized] = useState(false);
     const [ranked, setRanked] = useState<RankedCard[]>([]);
@@ -80,14 +77,12 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
         const urlMacro = isFinderPage ? (searchParams.get('macro')?.split(',').filter(Boolean) ?? []) : [];
         const urlMicro = isFinderPage ? (searchParams.get('micro')?.split(',').filter(Boolean) ?? []) : [];
         const urlAtomic = isFinderPage ? searchParams.get('intent') : null;
-        const urlSpend = isFinderPage ? searchParams.get('spend') : null;
         const urlRankBy = isFinderPage ? searchParams.get('sort_by') : null;
 
         if (urlMacro.length > 0) {
             setMacro(urlMacro);
             setMicro(urlMicro);
             setAtomic(urlAtomic ? urlAtomic.split(',').filter(Boolean) : []);
-            if (urlSpend) setSpend(Number(urlSpend) || DEFAULT_MONTHLY_SPEND);
             if (urlRankBy === 'annual_fee') setRankBy('annual_fee');
         } else {
             const prefs = readPrefs();
@@ -96,7 +91,6 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
                 setMacro(prefs.macro);
                 setMicro(prefs.micro ?? []);
                 setAtomic(prefs.atomic ?? []);
-                setSpend(prefs.spend ?? DEFAULT_MONTHLY_SPEND);
                 setRankBy(prefs.rankBy ?? 'cashback');
             } else if (intentGroups.length > 0) {
                 setMacro([intentGroups[0].slug]);
@@ -108,15 +102,15 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
     // Sync URL (finder page only) + localStorage on state change
     useEffect(() => {
         if (!initialized) return;
-        writePrefs({tab, macro, micro, atomic, spend, rankBy});
+        writePrefs({tab, macro, micro, atomic, rankBy});
         if (isFinderPage && macro.length > 0) {
-            const p: Record<string, string> = {macro: macro.join(','), spend: String(spend)};
+            const p: Record<string, string> = {macro: macro.join(',')};
             if (micro.length > 0) p.micro = micro.join(',');
             if (atomic.length > 0) p.intent = atomic.join(',');
             if (rankBy !== 'cashback') p.sort_by = rankBy;
             router.replace(`${cardMatchHref}?${new URLSearchParams(p).toString()}`, {scroll: false});
         }
-    }, [tab, macro, micro, atomic, spend, rankBy, initialized, isFinderPage, router]);
+    }, [tab, macro, micro, atomic, rankBy, initialized, isFinderPage, router]);
 
     const macroNodes = useMemo(
         () => macro.map(s => findNode(intentGroups, s)).filter((n): n is IntentGroupNode => !!n),
@@ -157,23 +151,11 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
         setLoading(true);
         const t = setTimeout(async () => {
             try {
-                const intentLookup = new Map(intents.map(i => [i.slug, i]));
-                const spendKeys = new Set<string>();
-                for (const slug of activeIntentSlugs) {
-                    const intent = intentLookup.get(slug);
-                    if (intent) {
-                        intent.categories.forEach(c => spendKeys.add(c));
-                        intent.merchants.forEach(m => spendKeys.add(m));
-                    } else {
-                        spendKeys.add(slug);
-                    }
-                }
                 const res = await fetch('/api/ranking', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         intents: activeIntentSlugs,
-                        spend: Object.fromEntries([...spendKeys].map(k => [k, spend])),
                         limit,
                         for_business: false,
                         sort_by: rankBy,
@@ -186,21 +168,16 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
             }
         }, 200);
         return () => clearTimeout(t);
-    }, [activeIntentSlugs, spend, rankBy, initialized, limit]);
+    }, [activeIntentSlugs, rankBy, initialized, limit]);
 
-    const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
-    const tiebreakerReasons = new Map<string, string>();
+    const withCashback = ranked.filter(r => r.cashback_result.max_cashback > 0);
     const tiebreakerDelta = new Map<string, number>();
     let gi = 0;
     while (gi < withCashback.length) {
         let gj = gi;
-        while (gj < withCashback.length && withCashback[gj].cashback_result.cashback === withCashback[gi].cashback_result.cashback) gj++;
+        while (gj < withCashback.length && withCashback[gj].cashback_result.max_cashback === withCashback[gi].cashback_result.max_cashback) gj++;
         if (gj - gi > 1) {
             const naturalRank = withCashback[gi].rank;
-            for (let k = gi; k < gj - 1; k++) {
-                const reason = getTiebreakerReason(withCashback[k].card, withCashback[k + 1].card);
-                if (reason) tiebreakerReasons.set(withCashback[k].card.id, reason);
-            }
             const groupSize = gj - gi;
             tiebreakerDelta.set(withCashback[gi].card.id, groupSize - 1);
             for (let k = gi + 1; k < gj; k++) {
@@ -304,13 +281,6 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
                             </div>
                         )}
 
-                        {/* Spend selector */}
-                        <div>
-                            <p className="text-label text-text-muted mb-3">
-                                BƯỚC 02 · Chi tiêu hàng tháng (tuỳ chọn)
-                            </p>
-                            <SpendSelector spend={spend} onChange={setSpend}/>
-                        </div>
                     </div>
 
                     {/* Right: results */}
@@ -350,7 +320,7 @@ function CardMatchFinderInner({intents, intentGroups, limit = 5}: CardMatchFinde
                                     <RankedRow
                                         key={r.card.id}
                                         ranked={r}
-                                        tiebreakerReason={tiebreakerReasons.get(r.card.id)}
+                                        tiebreakerReason={r.rank_reason_type === 'lower_annual_fee' || r.rank_reason_type === 'better_network' || r.rank_reason_type === 'no_min_spend' ? r.rank_reason : undefined}
                                         tiebreakerDelta={tiebreakerDelta.get(r.card.id)}
                                         intentMap={new Map(intents.map(i => [i.slug, i]))}
                                         highlightedSlugs={activeIntentSlugs}

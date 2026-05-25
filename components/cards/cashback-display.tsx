@@ -18,9 +18,9 @@ export function getRateDisplay(card: Card, intentSlug?: string): string {
 }
 
 export function CashbackDisplay({ranked, intentSlug}: {ranked: RankedCard; intentSlug?: string}) {
-    const {cashback, actual_rate, optimal_spend} = ranked.cashback_result;
+    const {max_cashback} = ranked.cashback_result;
 
-    if (cashback === 0) {
+    if (max_cashback === 0) {
         return (
             <div className="ow-cashback-display flex flex-col items-start sm:items-end gap-0.5">
                 <span className="text-body-sm text-text-muted">Chưa có ưu đãi</span>
@@ -28,19 +28,16 @@ export function CashbackDisplay({ranked, intentSlug}: {ranked: RankedCard; inten
         );
     }
 
-    const rateDisplay = getRateDisplay(ranked.card, intentSlug) || `${actual_rate}%`;
+    const rateDisplay = getRateDisplay(ranked.card, intentSlug);
 
     return (
         <div className="ow-cashback-display flex flex-col items-start sm:items-end gap-0.5">
             <span className="text-body-lg font-semibold text-primary">
-                +{cashback.toLocaleString('vi-VN')}đ
+                +{max_cashback.toLocaleString('vi-VN')}đ
             </span>
-            <span className="text-body-sm text-text-muted">
-                Hoàn {rateDisplay}/kỳ
-            </span>
-            {optimal_spend > 0 && (
+            {rateDisplay && (
                 <span className="text-body-sm text-text-muted">
-                    Tối đa từ {optimal_spend.toLocaleString('vi-VN')}đ
+                    Hoàn {rateDisplay}/kỳ
                 </span>
             )}
         </div>

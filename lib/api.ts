@@ -486,10 +486,11 @@ export async function getRelatedCards(id: string): Promise<RelatedCard[]> {
  * deduplicating and excluding the source card IDs themselves.
  */
 export interface RankingParams {
-    spend: Record<string, number>;
+    intents: string[];
     limit?: number;
     type?: string;
     for_business?: boolean;
+    sort_by?: 'cashback' | 'annual_fee';
 }
 
 interface RankingResponse {
