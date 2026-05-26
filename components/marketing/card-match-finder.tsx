@@ -304,7 +304,7 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                             <p className="text-body-sm text-text-muted">Không tìm thấy thẻ phù hợp.</p>
                         ) : (
                             <div
-                                className={`flex flex-col gap-3 transition-opacity duration-200 ${loading ? 'opacity-50' : ''}`}>
+                                className={`flex flex-col gap-6 transition-opacity duration-200 ${loading ? 'opacity-50' : ''}`}>
                                 {ranked.map(r => (
                                     <RankedRow
                                         key={r.card.id}
