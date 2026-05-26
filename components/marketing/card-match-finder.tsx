@@ -112,6 +112,7 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
     }, [tab, activeIntents, rankBy, monthlySpend, initialized, isFinderPage, router]);
 
     const intentSet = useMemo(() => new Set(activeIntents), [activeIntents]);
+    const intentMap = useMemo(() => new Map(intentList.map(i => [i.slug, i])), [intentList]);
 
     const toggleGroup = useCallback((group: IntentGroupNode) => {
         const groupIntents = getAllIntents(group);
@@ -201,22 +202,50 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                             <h2 className="text-label text-text-muted">Bạn hay chi tiêu ở đâu?</h2>
                         </div>
                         <div className="flex flex-col gap-3">
-                            {intentGroups.map(group => {
-                                const groupIntents = getAllIntents(group);
-                                const allActive = groupIntents.length > 0 && groupIntents.every(i => intentSet.has(i));
-                                const isSingle = groupIntents.length === 1;
+                            {intentGroups.map(persona => {
+                                const childSlugs = new Set((persona.children ?? []).flatMap(getAllIntents));
+                                const allSlugs = [...new Set(getAllIntents(persona))];
+                                const nonChildSlugs = allSlugs.filter(s => !childSlugs.has(s));
+                                const allActive = allSlugs.length > 0 && allSlugs.every(i => intentSet.has(i));
+
+                                // single-intent persona (e.g. foodie → dining): just the intent chip
+                                if (allSlugs.length === 1) {
+                                    const intent = intentMap.get(allSlugs[0]);
+                                    if (!intent) return null;
+                                    return (
+                                        <div key={persona.slug} className="flex flex-wrap gap-2">
+                                            <Chip active={intentSet.has(intent.slug)} onClick={() => setActiveIntents(prev =>
+                                                intentSet.has(intent.slug)
+                                                    ? prev.filter(i => i !== intent.slug)
+                                                    : [...new Set([...prev, intent.slug])]
+                                            )}>
+                                                {intent.icon} {intent.label}
+                                            </Chip>
+                                        </div>
+                                    );
+                                }
+
+                                // has exactly one root catch-all intent + children → persona chip + children chips
+                                // otherwise (all peers) → persona chip + all intent chips
+                                const hasRootCatchAll = nonChildSlugs.length === 1 && childSlugs.size > 0;
+                                const individualSlugs = hasRootCatchAll ? [...childSlugs] : allSlugs;
+
                                 return (
-                                    <div key={group.slug} className="flex flex-wrap gap-2">
-                                        <Chip active={allActive} onClick={() => toggleGroup(group)}>
-                                            {group.icon} {group.label}
+                                    <div key={persona.slug} className="flex flex-wrap gap-2">
+                                        <Chip active={allActive} onClick={() => toggleGroup(persona)}>
+                                            {persona.icon} {persona.label}
                                         </Chip>
-                                        {!isSingle && (group.children ?? []).map(child => {
-                                            const childIntents = getAllIntents(child);
-                                            const childActive = childIntents.every(i => intentSet.has(i));
+                                        {individualSlugs.map(slug => {
+                                            const intent = intentMap.get(slug);
+                                            if (!intent) return null;
                                             return (
-                                                <Chip key={child.slug} active={childActive}
-                                                      onClick={() => toggleChild(child)}>
-                                                    {child.icon} {child.label}
+                                                <Chip key={slug} active={intentSet.has(slug)}
+                                                      onClick={() => setActiveIntents(prev =>
+                                                          intentSet.has(slug)
+                                                              ? prev.filter(i => i !== slug)
+                                                              : [...new Set([...prev, slug])]
+                                                      )}>
+                                                    {intent.icon} {intent.label}
                                                 </Chip>
                                             );
                                         })}
@@ -311,7 +340,7 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                                         ranked={r}
                                         tiebreakerReason={r.rank_reason_type === 'lower_annual_fee' || r.rank_reason_type === 'better_network' || r.rank_reason_type === 'no_min_spend' ? r.rank_reason : undefined}
                                         tiebreakerDelta={tiebreakerDelta.get(r.card.id)}
-                                        intentMap={new Map(intentList.map(i => [i.slug, i]))}
+                                        intentMap={intentMap}
                                         highlightedSlugs={activeIntentSlugs}
                                         intentSlug={activeIntentSlugs.length === 1 ? activeIntentSlugs[0] : undefined}
                                     />

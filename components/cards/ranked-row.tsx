@@ -108,7 +108,7 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
                     </div>
                 </div>
                 {/*right col*/}
-                <div className="col-span-6">
+                <div className="col-span-6 text-right">
                     <CashbackDisplay ranked={ranked} intentSlug={intentSlug} intentMap={intentMap}/>
                 </div>
             </div>
