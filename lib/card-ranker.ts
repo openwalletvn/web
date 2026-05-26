@@ -1,5 +1,11 @@
 import type { Card } from '@/lib/api';
 
+export type IntentBreakdownItem = {
+    intent: string;
+    cashback: number;
+    is_capped: boolean;
+};
+
 export type CashbackBreakdownItem = {
     cashback: number;
     rate: number;
@@ -7,6 +13,8 @@ export type CashbackBreakdownItem = {
     categories?: string[];
     merchants?: string[];
     is_catchall: boolean;
+    matched_intents?: string[];
+    intent_breakdown?: IntentBreakdownItem[];
 };
 
 export type RankedCard = {

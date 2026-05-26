@@ -5,7 +5,7 @@ import type {RankedCard} from '@/lib/card-ranker';
 import {CardImage} from '@/components/cards/card-image';
 import {RankBadge} from '@/components/cards/rank-badge';
 import {CashbackDisplay} from '@/components/cards/cashback-display';
-import {IconCaretUpFilled, IconCaretDownFilled, IconBulb} from '@tabler/icons-react';
+import {IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
 
 export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta, viewTransitionName, intentMap, highlightedSlugs, intentSlug}: {
     ranked: RankedCard;
@@ -34,14 +34,11 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
 
     return (
         <div
-            className={`ow-ranked-row flex items-center gap-3 rounded-lg p-3 sm:p-4 ${
-                isTop3
-                    ? 'bg-white border-2 border-primary shadow-sm'
-                    : 'bg-white border border-slate-100'
-            }`}
+            className={`ow-ranked-row flex flex-col`}
             style={viewTransitionName ? {viewTransitionName} as React.CSSProperties : undefined}
         >
-            <div className="w-10 sm:w-12 shrink-0 flex flex-col items-center gap-0.5">
+            {/*row 1*/}
+            <div className="shrink-0 flex gap-0.5 w-full mb-2">
                 {muted ? (
                     <span className="text-label text-text-muted">#{ranked.rank}</span>
                 ) : (
@@ -59,58 +56,60 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
                 )}
             </div>
 
-            <Link href={`/the/${card.id}`} className="shrink-0 w-16 sm:w-20">
-                <CardImage card={card} className="w-16 sm:w-20"/>
-            </Link>
-
-            <div className="flex flex-1 min-w-0 flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
-                <div className="flex-1 min-w-0">
-                    <Link href={`/the/${card.id}`} className={`text-body font-semibold truncate block hover:underline ${muted ? 'text-text-muted' : 'text-black'}`}>
-                        {card.name}
+            {/*row 2*/}
+            <div className="grid grid-cols-12 gap-3 flex-wrap">
+                {/*left col*/}
+                <div className="col-span-6 flex gap-3">
+                    <Link href={`/the/${card.id}`} className="shrink-0 w-16 sm:w-20">
+                        <CardImage card={card} className="w-16 sm:w-20"/>
                     </Link>
-                    {card.bank_data && (
-                        <p className="text-body-sm text-text-muted truncate">{card.bank_data.name}</p>
-                    )}
-                    {card.fees?.annual != null && (
-                        <p className="text-body-sm text-text-muted">
-                            {card.fees.annual.amount === 0
-                                ? 'Miễn phí thường niên'
-                                : `Phí ${card.fees.annual.amount.toLocaleString('vi-VN')}đ/năm`}
-                        </p>
-                    )}
-                    {intentMap && (cardIntents.length > 0 || hasUniversalRule) && (
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                            {hasUniversalRule && (
-                                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium ${
-                                    highlighted.size > 0 ? 'bg-primary/10 text-primary' : 'bg-bg-muted text-text-muted'
-                                }`}>
+                    <div className="flex-1 min-w-0">
+                        <Link href={`/the/${card.id}`}
+                              className={`text-body font-semibold truncate block hover:underline ${muted ? 'text-text-muted' : 'text-black'}`}>
+                            {card.name}
+                        </Link>
+                        {card.fees?.annual != null && (
+                            <p className="text-body-sm text-text-muted">
+                                {card.fees.annual.amount === 0
+                                    ? 'Miễn phí thường niên'
+                                    : `Phí ${card.fees.annual.amount.toLocaleString('vi-VN')}đ/năm`}
+                            </p>
+                        )}
+                        {intentMap && (cardIntents.length > 0 || hasUniversalRule) && (
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                                {hasUniversalRule && (
+                                    <span
+                                        className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium ${
+                                            highlighted.size > 0 ? 'bg-primary/10 text-primary' : 'bg-bg-muted text-text-muted'
+                                        }`}>
                                     🌐 Tất cả chi tiêu
                                 </span>
-                            )}
-                            {cardIntents.map(intent => (
-                                <span
-                                    key={intent.slug}
-                                    className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium ${
-                                        highlighted.has(intent.slug)
-                                            ? 'bg-primary/10 text-primary'
-                                            : 'bg-bg-muted text-text-muted opacity-50'
-                                    }`}
-                                >
+                                )}
+                                {cardIntents.map(intent => (
+                                    <span
+                                        key={intent.slug}
+                                        className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium ${
+                                            highlighted.has(intent.slug)
+                                                ? 'bg-primary/10 text-primary'
+                                                : 'bg-bg-muted text-text-muted opacity-50'
+                                        }`}
+                                    >
                                     {intent.icon} {intent.label}
                                 </span>
-                            ))}
-                        </div>
-                    )}
-                    {tiebreakerReason && (
-                        <span className="flex items-center gap-1 mt-1 text-xs text-text-muted">
+                                ))}
+                            </div>
+                        )}
+                        {tiebreakerReason && (
+                            <span className="flex items-center gap-1 mt-1 text-xs text-text-muted">
                             <IconBulb size={12} className="shrink-0 text-amber-400"/>
-                            {tiebreakerReason}
+                                {tiebreakerReason}
                         </span>
-                    )}
+                        )}
+                    </div>
                 </div>
-
-                <div className="shrink-0 sm:text-right">
-                    <CashbackDisplay ranked={ranked} intentSlug={intentSlug}/>
+                {/*right col*/}
+                <div className="col-span-6">
+                    <CashbackDisplay ranked={ranked} intentSlug={intentSlug} intentMap={intentMap}/>
                 </div>
             </div>
         </div>
