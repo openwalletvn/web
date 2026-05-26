@@ -183,37 +183,22 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
         <div className="ow-card-match-finder mb-16">
             <h2 className="mb-6">Tìm thẻ tối ưu cho nhu cầu của bạn</h2>
 
-            {/* Tab toggle */}
-            <div className="flex gap-2 mb-8">
+            {/* Tab toggle — Doanh nghiệp hidden temporarily */}
+            {/* <div className="flex gap-2 mb-8">
                 <Chip active={tab === 'ca-nhan'} onClick={() => setTab('ca-nhan')}>
                     Cá nhân
                 </Chip>
                 <Chip active={tab === 'doanh-nghiep'} onClick={() => setTab('doanh-nghiep')}>
                     Doanh nghiệp
                 </Chip>
-            </div>
+            </div> */}
 
-            {tab === 'doanh-nghiep' ? (
-                <div className="py-12 text-center border border-dashed border-border rounded-lg">
-                    <p className="text-body-lg font-medium mb-2">Sắp ra mắt</p>
-                    <p className="text-body-sm text-text-muted">
-                        Tính năng gợi ý thẻ doanh nghiệp đang được phát triển.
-                    </p>
-                </div>
-            ) : (
+            {(
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
                     {/* Left: controls */}
                     <div className={loading ? 'pointer-events-none opacity-60' : ''}>
                         <div className="flex items-center justify-between mb-4">
-                            <p className="text-label text-text-muted">Bạn hay chi tiêu ở đâu?</p>
-                            {activeIntents.length > 0 && (
-                                <button
-                                    className="text-label text-text-muted hover:text-foreground transition-colors"
-                                    onClick={() => setActiveIntents([])}
-                                >
-                                    Xóa tất cả
-                                </button>
-                            )}
+                            <h2 className="text-label text-text-muted">Bạn hay chi tiêu ở đâu?</h2>
                         </div>
                         <div className="flex flex-col gap-3">
                             {intentGroups.map(group => {
@@ -229,7 +214,8 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                                             const childIntents = getAllIntents(child);
                                             const childActive = childIntents.every(i => intentSet.has(i));
                                             return (
-                                                <Chip key={child.slug} active={childActive} onClick={() => toggleChild(child)}>
+                                                <Chip key={child.slug} active={childActive}
+                                                      onClick={() => toggleChild(child)}>
                                                     {child.icon} {child.label}
                                                 </Chip>
                                             );
@@ -241,13 +227,14 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
 
                         {/* Monthly spend input */}
                         <div className="flex items-center gap-2 mt-6">
-                            <p className="text-label text-text-muted shrink-0">Tổng chi tiêu trung bình hàng tháng</p>
+                            <h2 className="text-label text-text-muted shrink-0">Tổng chi tiêu trung bình hàng tháng</h2>
                             <div className="flex items-center gap-1 ml-auto">
                                 <button
                                     className="w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-foreground hover:bg-bg-muted transition-colors disabled:opacity-30"
                                     onClick={() => setMonthlySpend(s => Math.max(1, s - 1))}
                                     disabled={monthlySpend <= 1}
-                                >◀</button>
+                                >◀
+                                </button>
                                 <input
                                     type="number"
                                     min={1}
@@ -264,10 +251,23 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                                     className="w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-foreground hover:bg-bg-muted transition-colors disabled:opacity-30"
                                     onClick={() => setMonthlySpend(s => Math.min(999, s + 1))}
                                     disabled={monthlySpend >= 999}
-                                >▶</button>
+                                >▶
+                                </button>
                                 <span className="text-label text-text-muted">triệu đồng</span>
                             </div>
                         </div>
+
+                        {activeIntents.length > 0 && (
+                            <button
+                                className="mt-4 text-label text-text-muted hover:text-foreground transition-colors"
+                                onClick={() => {
+                                    setActiveIntents([]);
+                                    setMonthlySpend(3);
+                                }}
+                            >
+                                Reset bộ lọc
+                            </button>
+                        )}
                     </div>
 
                     {/* Right: results */}
@@ -289,7 +289,8 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                         ) : loading && ranked.length === 0 ? (
                             <div className="flex flex-col gap-3">
                                 {Array.from({length: limit}).map((_, i) => (
-                                    <div key={i} className="animate-pulse flex items-center gap-3 p-3 rounded-lg bg-bg-muted">
+                                    <div key={i}
+                                         className="animate-pulse flex items-center gap-3 p-3 rounded-lg bg-bg-muted">
                                         <div className="shrink-0 w-10 h-10 rounded bg-border"/>
                                         <div className="flex-1 flex flex-col gap-2">
                                             <div className="h-3 rounded bg-border w-2/3"/>
@@ -302,7 +303,8 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
                         ) : !loading && withCashback.length === 0 ? (
                             <p className="text-body-sm text-text-muted">Không tìm thấy thẻ phù hợp.</p>
                         ) : (
-                            <div className={`flex flex-col gap-3 transition-opacity duration-200 ${loading ? 'opacity-50' : ''}`}>
+                            <div
+                                className={`flex flex-col gap-3 transition-opacity duration-200 ${loading ? 'opacity-50' : ''}`}>
                                 {ranked.map(r => (
                                     <RankedRow
                                         key={r.card.id}
