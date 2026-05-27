@@ -36,10 +36,10 @@ function writePrefs(prefs: CardMatchPrefs): void {
 }
 
 function getAllIntents(node: IntentGroupNode): string[] {
-    return [
+    return [...new Set([
         ...node.intents,
         ...(node.children ?? []).flatMap(getAllIntents),
-    ];
+    ])];
 }
 
 function findNode(groups: IntentGroupNode[], slug: string): IntentGroupNode | undefined {

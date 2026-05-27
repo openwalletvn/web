@@ -55,7 +55,7 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
  ? `${formatRate(rule.rate)} – ${formatRate(rule.rate_max)}`
  : formatRate(rule.rate);
 
- const isCatchAll = rule.categories?.some(c => CATCHALL_SLUGS.has(c)) ?? false;
+ const isCatchAll = rule.intents?.some(c => CATCHALL_SLUGS.has(c)) ?? false;
 
  return (
  <div className="flex gap-3 border-dashed border border-slate-300 p-4 w-full hover:bg-slate-50 transition-colors">
@@ -69,14 +69,14 @@ function RuleCard({ rule, categoryMap, merchantMap }: { rule: CashbackRule; cate
  )}
  </p>
 
- {!isCatchAll && rule.categories && rule.categories.length > 0 && (
+ {!isCatchAll && rule.intents && rule.intents.length > 0 && (
  <div className="space-y-1.5">
  <div className="flex items-center gap-1.5 text-xs text-slate-600">
  <IconCircleCheck className="w-3.5 h-3.5 text-green-600" />
  Danh mục áp dụng
  </div>
  <div className="flex flex-wrap gap-1.5">
- {rule.categories.map((slug) => (
+ {rule.intents.map((slug) => (
  <CategoryBadge key={slug} slug={slug} categoryMap={categoryMap} />
  ))}
  </div>

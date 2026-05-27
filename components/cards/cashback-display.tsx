@@ -8,11 +8,11 @@ const CATCHALL_SLUGS = new Set(['all', 'all-online', 'all-offline']);
 export function getRateDisplay(card: Card, intentSlug?: string): string {
     const rules = card.cashback?.rules ?? [];
     const matched = intentSlug
-        ? rules.filter(r => r.categories?.includes(intentSlug) || r.merchants?.includes(intentSlug))
+        ? rules.filter(r => r.intents?.includes(intentSlug) || r.merchants?.includes(intentSlug))
         : [];
     const relevant = matched.length > 0
         ? matched
-        : rules.filter(r => r.categories?.some(c => CATCHALL_SLUGS.has(c)));
+        : rules.filter(r => r.intents?.some(c => CATCHALL_SLUGS.has(c)));
     if (!relevant.length) return '';
     const rates = relevant.flatMap(r => [r.rate, ...(r.rate_max != null ? [r.rate_max] : [])]);
     const min = Math.min(...rates) * 100;
@@ -32,7 +32,7 @@ function resolveLabel(slug: string, intentMap?: IntentMap): string {
 
 function breakdownLabel(item: CashbackBreakdownItem, intentMap?: IntentMap): string {
     if (item.is_catchall) return 'Chi tiêu khác';
-    const slugs = [...(item.matched_intents ?? item.categories ?? []), ...(item.merchants ?? [])];
+    const slugs = [...(item.matched_intents ?? item.intents ?? []), ...(item.merchants ?? [])];
     return slugs.map(s => resolveLabel(s, intentMap)).join(' · ') || 'Hoàn tiền';
 }
 

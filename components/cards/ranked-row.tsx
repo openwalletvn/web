@@ -22,11 +22,11 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
     const highlighted = new Set(highlightedSlugs ?? []);
 
     const CATCHALL_SLUGS = new Set(['all', 'all-online', 'all-offline']);
-    const hasUniversalRule = card.cashback?.rules.some(r => r.categories?.some(c => CATCHALL_SLUGS.has(c))) ?? false;
+    const hasUniversalRule = card.cashback?.rules.some(r => r.intents?.some(c => CATCHALL_SLUGS.has(c))) ?? false;
     const cardIntents = intentMap
         ? [...new Set(card.cashback?.rules.flatMap(r => [
               ...(r.merchants ?? []),
-              ...(r.categories ?? []).filter(c => !CATCHALL_SLUGS.has(c)),
+              ...(r.intents ?? []).filter(c => !CATCHALL_SLUGS.has(c)),
           ]) ?? [])]
             .map(slug => intentMap.get(slug))
             .filter((i): i is Pick<Intent, 'slug' | 'label' | 'icon'> => !!i)

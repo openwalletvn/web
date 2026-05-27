@@ -10,7 +10,7 @@ export type CashbackBreakdownItem = {
     cashback: number;
     rate: number;
     rate_max?: number;
-    categories?: string[];
+    intents?: string[];
     merchants?: string[];
     is_catchall: boolean;
     matched_intents?: string[];
