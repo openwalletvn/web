@@ -88,8 +88,6 @@ export interface FeeEntryWithWaiver extends FeeEntry {
     subsequent_years?: FeeWaiver;
 }
 
-/** @deprecated Use FeeEntry instead */
-export type CardFeeEntry = FeeEntry;
 
 export interface CardFees {
     annual?: FeeEntryWithWaiver;
@@ -117,11 +115,26 @@ export interface Merchant {
 export interface Intent {
     slug: string;
     label: string;
-    group: string;
     icon: string; // emoji
     merchants: string[];
-    categories: string[];
+    groups: string[];
     co_brands: string[];
+}
+
+export interface IntentGroupNode {
+    slug: string;
+    label: string;
+    icon: string;
+    intents: string[];
+    children?: IntentGroupNode[];
+}
+
+export interface Persona {
+    slug: string;
+    label: string;
+    note?: string;
+    labelVi?: string;
+    rank_intents?: string[];
 }
 
 export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'points_pool';
@@ -130,18 +143,26 @@ export interface CashbackCap {
     amount: number; // VND
 }
 
+export interface CashbackRuleScope {
+    channel?: 'online' | 'offline';
+    geography?: 'foreign' | 'domestic' | string;
+}
+
 export interface CashbackRule {
     rate: number;           // decimal, e.g. 0.05 = 5%
     rate_max?: number;      // decimal, e.g. 0.10 = 10% — present when tiered/conditional
     cap?: CashbackCap;      // per-rule cap; absent = uncapped
     cap_max?: CashbackCap;  // upper bound of cap range — present when tiered/conditional
-    categories?: string[];  // category slugs, resolved via /api/v1/cashback-categories
+    intents?: string[];     // intent slugs; ["all"]/["all-online"]/["all-offline"] = catch-all
     merchants?: string[];   // merchant slugs, e.g. "grab", "shopee"
+    max_intents?: number;   // user picks at most N intents per cycle (e.g. MSB mDigi, VIB Family Link)
+    scope?: CashbackRuleScope;
     note?: string;
 }
 
 export interface CashbackBenefit {
     rules: CashbackRule[];
+    package_exclusive?: boolean; // true = rules are mutually exclusive packages; cardholder picks one at issuance
     global_cap?: CashbackCap;
     global_cap_max?: CashbackCap;
     min_spend_per_period?: number; // VND
@@ -201,6 +222,10 @@ export interface CardFilters {
     metal?: boolean;
     network_tier?: string;
     for_business?: boolean;
+    persona?: string;
+    rule_channel?: string;
+    rule_geography?: string;
+    rule_intent?: string;
 }
 
 export const SEGMENT_FILTERS: Record<string, Pick<CardFilters, 'type'>> = {
@@ -379,9 +404,33 @@ interface IntentsResponse {
 }
 
 export async function getIntents(): Promise<Intent[]> {
-    const res = await apiFetch('/api/v1/intents');
+    const res = await apiFetch('/api/v1/meta/intents');
     const json = (await res.json()) as IntentsResponse;
     if (!json.success) throw new Error('Failed to fetch intents');
+    return json.data;
+}
+
+interface IntentGroupsResponse {
+    success: boolean;
+    data: IntentGroupNode[];
+}
+
+export async function getIntentGroups(): Promise<IntentGroupNode[]> {
+    const res = await apiFetch('/api/v1/intent-groups');
+    const json = (await res.json()) as IntentGroupsResponse;
+    if (!json.success) throw new Error('Failed to fetch intent groups');
+    return json.data;
+}
+
+interface PersonasResponse {
+    success: boolean;
+    data: Persona[];
+}
+
+export async function getPersonas(): Promise<Persona[]> {
+    const res = await apiFetch('/api/v1/personas');
+    const json = (await res.json()) as PersonasResponse;
+    if (!json.success) throw new Error('Failed to fetch personas');
     return json.data;
 }
 
@@ -466,6 +515,33 @@ export async function getRelatedCards(id: string): Promise<RelatedCard[]> {
  * Fetch related cards for multiple card IDs, merge in API order,
  * deduplicating and excluding the source card IDs themselves.
  */
+export interface RankingParams {
+    intents: string[];
+    limit?: number;
+    for_business?: boolean;
+    sort_by?: 'cashback' | 'annual_fee';
+    persona?: string;
+    cards?: string[];
+    monthly_spend?: number;
+}
+
+interface RankingResponse {
+    success: boolean;
+    data: import('@/lib/card-ranker').RankedCard[];
+    meta: { total: number; ranked: number; returned: number; ranking_basis?: string };
+}
+
+export async function getRankedCards(params: RankingParams): Promise<import('@/lib/card-ranker').RankedCard[]> {
+    const res = await apiFetch('/api/v1/cards/rank', {
+        method: 'POST',
+        body: JSON.stringify(params),
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const json = (await res.json()) as RankingResponse;
+    if (!json.success) throw new Error('Failed to rank cards');
+    return json.data;
+}
+
 export async function getRelatedCardsForMany(cardIds: string[]): Promise<RelatedCard[]> {
     const allResults = await Promise.all(cardIds.map((id) => getRelatedCards(id).catch(() => [])));
     const excludeSet = new Set(cardIds);

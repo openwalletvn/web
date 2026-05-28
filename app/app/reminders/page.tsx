@@ -1,10 +1,10 @@
 'use client';
 
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { IconBell, IconBellOff, IconSend } from '@tabler/icons-react';
-import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
+import { useWalletCatalog } from '@/hooks/use-wallet-catalog';
 import { appDb, type NotificationAdapter } from '@/lib/app-db';
 import { testAdapter } from '@/lib/notify-api';
 import { Button } from '@/components/ui/button';
@@ -12,32 +12,16 @@ import { PageContainer } from '@/components/ui/page-container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 import { ReminderCardRow } from './reminder-card-row';
+import { WalletCardListSkeleton } from '@/components/wallet/wallet-card-list-skeleton';
 
 // const MAX_REMINDERS = 5; // reserved for future enforcement
 
-function RemindersSkeleton() {
- return (
- <div className="animate-pulse border border-dashed border-slate-200 rounded-sm px-4">
- {[1, 2, 3].map((i) => (
- <div key={i} className="flex items-center gap-3 py-4 border-b border-dashed border-slate-100 last:border-0">
- <div className="shrink-0 w-20 aspect-[16/10] bg-slate-100 rounded-sm" />
- <div className="flex-1 space-y-2">
- <div className="h-4 w-32 bg-slate-100 rounded" />
- <div className="h-3 w-20 bg-slate-100 rounded" />
- </div>
- <div className="h-7 w-20 bg-slate-100 rounded" />
- </div>
- ))}
- </div>
- );
-}
 
 export default function RemindersPage() {
  const db = useWalletDb();
  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db]);
  const adapters = useLiveQuery(() => appDb.notificationAdapters.toArray(), [], []);
- const [banks, setBanks] = useState<Record<string, Bank>>({});
- const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
+ const { banks, catalogCards } = useWalletCatalog(walletCards);
  const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'ok' | 'failed'>('idle');
 
  const activeAdapter = useMemo(
@@ -61,23 +45,6 @@ export default function RemindersPage() {
  [activeCards],
  );
 
- useEffect(() => {
- getBanks().then((list) =>
- setBanks(Object.fromEntries(list.map((b) => [b.id, b]))),
- );
- }, []);
-
- useEffect(() => {
- const missing = activeCards.map((c) => c.cardId).filter((id) => !catalogCards[id]);
- if (!missing.length) return;
- const unique = [...new Set(missing)];
- Promise.all(
- unique.map((id) => getCard(id).then((card) => [id, card] as const).catch(() => null)),
- ).then((results) => {
- const entries = Object.fromEntries(results.filter((r): r is [string, Card] => r !== null));
- setCatalogCards((prev) => ({ ...prev, ...entries }));
- });
- }, [activeCards]);
 
  async function handleTestDiscord() {
  if (!activeAdapter) return;
@@ -118,7 +85,7 @@ export default function RemindersPage() {
 
  {/* Card list */}
  {walletCards === undefined ? (
- <RemindersSkeleton />
+ <WalletCardListSkeleton />
  ) : activeCards.length === 0 ? (
  <EmptyState
  icon={<IconBell size={26} className="text-slate-300" />}

@@ -1,4 +1,4 @@
-import { createGroq } from '@ai-sdk/groq';
+import { createOpenAI } from '@ai-sdk/openai';
 import { createMCPClient } from '@ai-sdk/mcp';
 import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
 import { after } from 'next/server';
@@ -23,7 +23,10 @@ function checkRateLimit(ip: string): boolean {
     return true;
 }
 
-const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
+const openrouter = createOpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.OPENROUTER_API_KEY,
+});
 
 export async function POST(req: Request) {
     const forwarded = req.headers.get('x-forwarded-for');
@@ -40,7 +43,7 @@ export async function POST(req: Request) {
     const uiMessages: UIMessage[] = body.messages ?? [];
     const messages = await convertToModelMessages(uiMessages.slice(-12));
 
-    const model = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
+    const model = process.env.AI_MODEL ?? 'google/gemini-flash-1.5';
     const startTime = Date.now();
     const lastUserMessage = uiMessages.findLast((m) => m.role === 'user')?.parts
         ?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? '';
@@ -63,7 +66,7 @@ export async function POST(req: Request) {
         const tools = await mcpClient.tools();
 
         const result = streamText({
-            model: groq(model),
+            model: openrouter(model),
             system: buildSystemPrompt(body.pageContext, promptText || undefined),
             messages,
             stopWhen: stepCountIs(5),

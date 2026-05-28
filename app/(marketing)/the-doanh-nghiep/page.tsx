@@ -22,28 +22,22 @@ const FAQS: FAQ[] = [
     {q: 'Chi tiêu bằng thẻ doanh nghiệp có được khấu trừ thuế không?', a: 'Có thể, nếu có hóa đơn VAT hợp lệ cho từng giao dịch. Tham khảo kế toán để đảm bảo đúng quy định.'},
 ];
 
+const PAGE_META_INPUT = (cards: Awaited<ReturnType<typeof getCards>>) => ({
+    title: `${TITLE} | Open Wallet`,
+    description: DESCRIPTION,
+    url: URL,
+    items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
+    breadcrumbItems: BREADCRUMB_ITEMS,
+});
+
 export async function generateMetadata(): Promise<Metadata> {
     const cards = await getCards({for_business: true});
-    const {metadata} = buildCollectionPageMeta({
-        title: `${TITLE} | Open Wallet`,
-        description: DESCRIPTION,
-        url: URL,
-        items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
-        breadcrumbItems: BREADCRUMB_ITEMS,
-    });
-    return metadata;
+    return buildCollectionPageMeta(PAGE_META_INPUT(cards)).metadata;
 }
 
 export default async function BusinessCardsPage() {
     const [cards, banks] = await Promise.all([getCards({for_business: true}), getBanks()]);
-
-    const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
-        title: `${TITLE} | Open Wallet`,
-        description: DESCRIPTION,
-        url: URL,
-        items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
-        breadcrumbItems: BREADCRUMB_ITEMS,
-    });
+    const {jsonLd, breadcrumbItems} = buildCollectionPageMeta(PAGE_META_INPUT(cards));
 
     return (
         <MarketingPageShell title={TITLE} description={DESCRIPTION} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>

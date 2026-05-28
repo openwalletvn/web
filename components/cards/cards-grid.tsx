@@ -113,8 +113,6 @@ function CardsGridInner({
  () => [...new Set(cards.flatMap((c) => c.card_type))] as CardType[],
  [cards]
  );
- const typeFilterUseful = availableTypes.length > 1;
-
  const availableNetworks = useMemo(() => {
  const map = new Map<string, { id: string; name: string; logo_url: string }>();
  cards.forEach((c) => {
@@ -126,14 +124,10 @@ function CardsGridInner({
  });
  return [...map.values()];
  }, [cards]);
- const networkFilterUseful = availableNetworks.length > 1;
-
  const availableBankIds = useMemo(
  () => [...new Set(cards.map((c) => c.bank_id))],
  [cards]
  );
- const bankFilterUseful = availableBankIds.length > 1;
-
  const availableBrands = useMemo(() => {
  const map = new Map<string, { id: string; name: string; logo_url: string }>();
  cards.forEach((c) => {
@@ -141,8 +135,6 @@ function CardsGridInner({
  });
  return [...map.values()];
  }, [cards]);
- const coBrandFilterUseful = availableBrands.length >= 1;
-
  const availableContactless = useMemo(() => {
  const map = new Map<string, { id: string; name: string; logo_url: string }>();
  cards.forEach((c) => {
@@ -150,8 +142,6 @@ function CardsGridInner({
  });
  return [...map.values()];
  }, [cards]);
- const contactlessFilterUseful = availableContactless.length > 1;
-
  const availableTiers = useMemo(() => {
  const map = new Map<string, { id: string; rank: number; logo_url: string }>();
  cards.forEach((c) => {
@@ -165,8 +155,6 @@ function CardsGridInner({
  });
  return [...map.values()].sort((a, b) => a.rank - b.rank);
  }, [cards]);
- const tierFilterUseful = availableTiers.length > 1;
-
  const feeFilterUseful = cards.some((c) => c.fees?.annual != null && c.fees.annual.amount > 0);
 
  const sortFilterUseful = useMemo(
@@ -255,18 +243,14 @@ function CardsGridInner({
  hideTierFilter={hideTierFilter}
  hideFeeFilter={hideFeeFilter}
  hideSortFilter={hideSortFilter}
- typeFilterUseful={typeFilterUseful}
- networkFilterUseful={networkFilterUseful}
- bankFilterUseful={bankFilterUseful}
- contactlessFilterUseful={contactlessFilterUseful}
- tierFilterUseful={tierFilterUseful}
- feeFilterUseful={feeFilterUseful}
- sortFilterUseful={sortFilterUseful}
- coBrandFilterUseful={coBrandFilterUseful}
  availableNetworks={availableNetworks}
  availableBrands={availableBrands}
  availableContactless={availableContactless}
  availableTiers={availableTiers}
+ availableTypes={availableTypes.length}
+ availableBanks={availableBankIds.length}
+ hasFeeCards={feeFilterUseful}
+ hasSortableCards={sortFilterUseful}
  filterValues={filterValues}
  onUpdate={handleUpdate}
  onClearAll={handleClearAll}

@@ -1,4 +1,4 @@
-const BASE_URL = 'https://openwallet.vn';
+import {BASE_URL} from './constants';
 
 export interface BreadcrumbItem {
     label: string;

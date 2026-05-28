@@ -1,8 +1,7 @@
 import type {Metadata} from 'next';
 import type {Post} from '@/lib/mdx';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
-
-const BASE_URL = 'https://openwallet.vn';
+import {BASE_URL} from './constants';
 
 export interface BlogPostPageMeta {
     metadata: Metadata;

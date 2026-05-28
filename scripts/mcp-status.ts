@@ -37,10 +37,16 @@ async function checkMCP() {
 
 async function checkAPI() {
     try {
-        const res = await fetch(`${API_URL}/health`);
-        if (!res.ok) return { online: false, version: '', endpoints: 0 };
-        const data = await res.json() as { version?: string; endpoints?: number };
-        return { online: true, version: data.version ?? '', endpoints: data.endpoints ?? 0 };
+        const healthRes = await fetch(`${API_URL}/health`);
+        if (healthRes.ok) {
+            const data = await healthRes.json() as { version?: string; endpoints?: number };
+            return { online: true, version: data.version ?? '', endpoints: data.endpoints ?? 0 };
+        }
+        // /health broken on remote — verify via cards endpoint
+        const fallback = await fetch(`${API_URL}/api/v1/cards?limit=0`, {
+            headers: { 'X-OpenWallet-Key': API_KEY, 'Origin': 'https://openwallet.vn' },
+        });
+        return { online: fallback.ok || fallback.status === 401, version: '', endpoints: 0 };
     } catch {
         return { online: false, version: '', endpoints: 0 };
     }
