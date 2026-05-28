@@ -4,6 +4,7 @@ import type { Bank } from '@/lib/api';
 import { getBankImageUrl, getBrandImageUrl, getNetworkImageUrl, getWalletImageUrl } from '@/lib/api';
 import { FEE_BUCKETS } from '@/lib/fee-buckets';
 import posthog from 'posthog-js';
+import { cn } from '@/lib/utils';
 import {
   TypeSelect,
   NetworkSelect,
@@ -115,7 +116,7 @@ export function CardsFilter({
   const contactlessChipData = contactless ? availableContactless.find((w) => w.id === contactless) : null;
 
   return (
-    <div className={`ow-cards-filter space-y-3 transition-opacity${isPending ? ' opacity-60 pointer-events-none' : ''}`}>
+    <div className={cn('ow-cards-filter space-y-3 transition-opacity', isPending ? 'opacity-60 pointer-events-none' : '')}>
       {/* Filter controls */}
       <div className="flex gap-2 flex-wrap items-center">
         {!hideTypeFilter && typeFilterUseful && (

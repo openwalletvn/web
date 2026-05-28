@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { IconDownload, IconUpload, IconDatabase, IconFileImport } from '@tabler/icons-react';
 import {
@@ -172,9 +173,7 @@ export default function DataSettingsPage() {
  onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
  onDragLeave={() => setIsDragOver(false)}
  onClick={() => fileRef.current?.click()}
- className={`border-2 border-dashed rounded-sm p-10 text-center cursor-pointer transition-colors ${
- isDragOver ? 'border-slate-500 bg-slate-50' : 'border-slate-200 hover:border-slate-400 hover:bg-slate-50/60'
- }`}
+ className={cn('border-2 border-dashed rounded-sm p-10 text-center cursor-pointer transition-colors', isDragOver ? 'border-slate-500 bg-slate-50' : 'border-slate-200 hover:border-slate-400 hover:bg-slate-50/60')}
  >
  <IconFileImport size={28} className="mx-auto text-slate-400 mb-3" />
  <p className="text-sm font-medium text-slate-700">Kéo thả file vào đây hoặc nhấn để chọn</p>

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import {cn} from '@/lib/utils';
 import {useRouter} from 'next/navigation';
 import {IconScale, IconX} from '@tabler/icons-react';
 import {useCompareList} from '@/lib/use-compare-list';
@@ -23,9 +24,7 @@ export function CompareBar() {
 
     return (
         <div
-            className={`ow-compare-bar fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${
-                visible ? 'translate-y-0' : 'translate-y-full'
-            }`}
+            className={cn('ow-compare-bar fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300', visible ? 'translate-y-0' : 'translate-y-full')}
             aria-hidden={!visible}
         >
             <div className="bg-white border-t border-border shadow-lg">

@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { ChevronDown } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface AccordionProps {
   type: 'single' | 'multiple'
@@ -57,7 +58,7 @@ export function Accordion({ type, collapsible = false, className = '', children 
 
   return (
     <AccordionContext.Provider value={{ openItems, toggleItem }}>
-      <div className={`ow-accordion ${className}`}>{children}</div>
+      <div className={cn('ow-accordion', className)}>{children}</div>
     </AccordionContext.Provider>
   )
 }
@@ -68,7 +69,7 @@ export function AccordionItem({ value, className = '', children }: AccordionItem
 
   return (
     <AccordionItemContext.Provider value={{ value, isOpen }}>
-      <div className={`ow-accordion-item ${className}`}>{children}</div>
+      <div className={cn('ow-accordion-item', className)}>{children}</div>
     </AccordionItemContext.Provider>
   )
 }
@@ -81,13 +82,11 @@ export function AccordionTrigger({ className = '', children }: AccordionTriggerP
     <button
       type="button"
       onClick={() => toggleItem(value)}
-      className={`ow-accordion-trigger flex w-full items-center justify-between ${className}`}
+      className={cn('ow-accordion-trigger flex w-full items-center justify-between', className)}
     >
       {children}
       <ChevronDown
-        className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
-          isOpen ? 'rotate-180' : ''
-        }`}
+        className={cn('h-4 w-4 shrink-0 transition-transform duration-200', isOpen ? 'rotate-180' : '')}
       />
     </button>
   )

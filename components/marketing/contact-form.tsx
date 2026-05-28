@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const TOPICS = [
     {
@@ -42,11 +43,7 @@ export function ContactForm() {
                     <button
                         key={t.subject}
                         onClick={() => setSelected(i)}
-                        className={`flex flex-col gap-0.5 text-left px-4 py-3 rounded-lg border transition-colors ${
-                            selected === i
-                                ? 'border-foreground bg-foreground/5'
-                                : 'border-border hover:border-foreground/40'
-                        }`}
+                        className={cn('flex flex-col gap-0.5 text-left px-4 py-3 rounded-lg border transition-colors', selected === i ? 'border-foreground bg-foreground/5' : 'border-border hover:border-foreground/40')}
                     >
                         <span className="text-sm font-medium">{t.label}</span>
                         <span className="text-xs text-slate-500">{t.desc}</span>

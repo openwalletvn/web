@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import {cn} from '@/lib/utils';
 import type {CashbackRule, Intent} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
 import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
@@ -56,7 +57,7 @@ export function RankedRow({ranked, muted = false, viewTransitionName, intentMap,
 
     return (
         <div
-            className={`ow-ranked-row flex flex-col`}
+            className="ow-ranked-row flex flex-col"
             style={viewTransitionName ? {viewTransitionName} as React.CSSProperties : undefined}
         >
             {/*row 1*/}
@@ -87,7 +88,7 @@ export function RankedRow({ranked, muted = false, viewTransitionName, intentMap,
                     </Link>
                     <div className="flex-1 min-w-0">
                         <Link href={`/the/${card.id}`}
-                              className={`text-body font-semibold truncate block hover:underline ${muted ? 'text-text-muted' : 'text-black'}`}>
+                              className={cn('text-body font-semibold truncate block hover:underline', muted ? 'text-text-muted' : 'text-black')}>
                             {card.name}
                         </Link>
                         {card.fees?.annual != null && (
@@ -101,20 +102,14 @@ export function RankedRow({ranked, muted = false, viewTransitionName, intentMap,
                             <div className="flex flex-wrap gap-1 mt-1.5">
                                 {catchallRules.map((rule, i) => (
                                     <span key={i}
-                                        className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium ${
-                                            highlighted.size > 0 ? 'bg-primary/10 text-primary' : 'bg-bg-muted text-text-muted'
-                                        }`}>
+                                        className={cn('inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium', highlighted.size > 0 ? 'bg-primary/10 text-primary' : 'bg-bg-muted text-text-muted')}>
                                         {catchallLabel(rule)}
                                     </span>
                                 ))}
                                 {cardIntents.map(intent => (
                                     <span
                                         key={intent.slug}
-                                        className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium ${
-                                            highlighted.has(intent.slug)
-                                                ? 'bg-primary/10 text-primary'
-                                                : 'bg-bg-muted text-text-muted opacity-50'
-                                        }`}
+                                        className={cn('inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium', highlighted.has(intent.slug) ? 'bg-primary/10 text-primary' : 'bg-bg-muted text-text-muted opacity-50')}
                                     >
                                     {intent.icon} {intent.label}{intent.rate !== undefined ? ` ${(intent.rate * 100).toFixed(intent.rate * 100 % 1 === 0 ? 0 : 1)}%` : ''}
                                 </span>

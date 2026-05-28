@@ -4,6 +4,7 @@ import { Inter_Tight } from "next/font/google";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { BodyClass } from '@/components/layout/body-class';
 import { PreviewBanner } from '@/components/layout/preview-banner';
+import { cn } from '@/lib/utils';
 import "./globals.css";
 
 const calSans = localFont({
@@ -64,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={`${calSans.variable} ${interTight.variable}`}>
+    <html lang="vi" className={cn(calSans.variable, interTight.variable)}>
       <body className="antialiased">
         <BodyClass />
         {children}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getCreditAccountsForBank, getCardsForCreditAccount } from '@/lib/credit-account';
 import { inputClass } from '@/lib/ui-constants';
+import { cn } from '@/lib/utils';
 import type { CreditAccount } from '@/lib/db';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 
@@ -75,11 +76,7 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
       <label className="block font-medium text-slate-600 mb-2">Hạn mức tín dụng</label>
       <div className="space-y-2">
         {/* Create new pool */}
-        <label className={`flex items-start gap-2.5 p-2.5 border border-dashed rounded-sm cursor-pointer transition-colors ${
-          value.poolChoice === 'new'
-            ? 'border-brand-blue bg-blue-50/40'
-            : 'border-slate-200 hover:border-slate-300'
-        }`}>
+        <label className={cn('flex items-start gap-2.5 p-2.5 border border-dashed rounded-sm cursor-pointer transition-colors', value.poolChoice === 'new' ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 hover:border-slate-300')}>
           <input
             type="radio"
             name={`pool-${bankId}`}
@@ -96,7 +93,7 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
                 onChange={(e) => onChange({ poolChoice: 'new', creditLimit: e.target.value, isSupplementary: false })}
                 placeholder="50.000.000"
                 onClick={(e) => e.stopPropagation()}
-                className={`mt-1.5 ${inputClass}`}
+                className={cn('mt-1.5', inputClass)}
               />
             )}
           </div>
@@ -107,9 +104,7 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
           const count = cardCounts[account.id] ?? 0;
           const isSelected = value.poolChoice === account.id;
           return (
-            <label key={account.id} className={`flex items-start gap-2.5 p-2.5 border border-dashed rounded-sm cursor-pointer transition-colors ${
-              isSelected ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 hover:border-slate-300'
-            }`}>
+            <label key={account.id} className={cn('flex items-start gap-2.5 p-2.5 border border-dashed rounded-sm cursor-pointer transition-colors', isSelected ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 hover:border-slate-300')}>
               <input
                 type="radio"
                 name={`pool-${bankId}`}

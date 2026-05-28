@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {Logo} from '@/components/layout/logo';
 import {TOOLS} from '@/lib/tools';
+import {cn} from '@/lib/utils';
 
 const LINKS = {
     tools: [
@@ -53,7 +54,7 @@ export function Footer() {
                 {/* Bottom bar */}
                 <div className="ow-container py-4 flex flex-col sm:flex-row justify-between gap-2 sm:gap-6">
                     <span className={metaCls}>© {new Date().getFullYear()} Openwallet. All rights reserved.</span>
-                    <span className={`${metaCls} sm:text-right`}>
+                    <span className={cn(metaCls, 'sm:text-right')}>
                         Thông tin chỉ mang tính chất tham khảo, không phải lời khuyên đầu tư chuyên nghiệp.
                     </span>
                 </div>
@@ -96,7 +97,7 @@ function LinkColumn({
                 {links.map(({label, href, disabled, suffix}) => (
                     <li key={label} className="flex flex-wrap items-baseline gap-2">
                         {disabled ? (
-                            <span className={`${linkCls} opacity-40 cursor-default`}>{label}</span>
+                            <span className={cn(linkCls, 'opacity-40 cursor-default')}>{label}</span>
                         ) : (
                             <Link href={href} className={linkCls}>{label}</Link>
                         )}

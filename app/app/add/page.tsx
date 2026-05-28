@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { getBanks, getCards, getCard, type Bank, type Card } from '@/lib/api';
@@ -115,7 +116,7 @@ export default function AddCardPage() {
  {([1, 2, 3] as const).map((s) => (
  <div
  key={s}
- className={`flex-1 h-0.5 transition-colors ${s <= step ? 'bg-brand-blue' : 'bg-slate-200'}`}
+ className={cn('flex-1 h-0.5 transition-colors', s <= step ? 'bg-brand-blue' : 'bg-slate-200')}
  />
  ))}
  </div>

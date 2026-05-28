@@ -1,5 +1,5 @@
 import type { CardFees, FeeEntry, FeeWaiver, CardSource } from '@/lib/api';
-import { formatFee } from '@/lib/utils';
+import { formatFee, cn } from '@/lib/utils';
 
 function FeeNote({ note }: { note: string }) {
     const lines = note.split('|').map((l) => l.trim()).filter(Boolean);
@@ -59,7 +59,7 @@ export function CardFeesBlock({ fees, sources }: Props) {
                 <div className="flex items-start justify-between gap-3">
                     <span className="text-sm font-semibold text-slate-700">Phí thường niên</span>
                     {annual ? (
-                        <span className={`text-lg font-bold ${annual.amount === 0 ? 'text-green-600' : 'text-slate-900'}`}>
+                        <span className={cn('text-lg font-bold', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
                             {formatFee(annual)}
                         </span>
                     ) : (
@@ -110,7 +110,7 @@ export function CardFeesBlock({ fees, sources }: Props) {
                             <div key={key} className="px-4 py-2.5 bg-white">
                                 <div className="flex items-baseline justify-between gap-3">
                                     <span className="text-xs text-slate-500">{label}</span>
-                                    <span className={`text-sm font-medium shrink-0 ${entry.amount === 0 && entry.type === 'currency' ? 'text-green-600' : 'text-slate-900'}`}>
+                                    <span className={cn('text-sm font-medium shrink-0', entry.amount === 0 && entry.type === 'currency' ? 'text-green-600' : 'text-slate-900')}>
                                         {formatFee(entry)}
                                     </span>
                                 </div>

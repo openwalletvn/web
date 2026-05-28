@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 import { type Bank, type Card } from '@/lib/api';
 import { getMyCardUrl } from '@/lib/routes';
 import { CardImage } from '@/components/cards/card-image';
@@ -44,7 +45,7 @@ export function WalletCardContent({
         className="flex items-center gap-3 flex-1 min-w-0 text-left"
       >
         {/* Card image */}
-          <div className={`shrink-0 w-20 ${isInactive ? 'opacity-50' : ''}`}>
+          <div className={cn('shrink-0 w-20', isInactive ? 'opacity-50' : '')}>
           {catalogCard ? (
               <>
                   {catalogCard.image?.orientation === "vertical" ? (
@@ -65,7 +66,7 @@ export function WalletCardContent({
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className={`font-medium leading-tight truncate text-sm ${isInactive ? 'text-slate-400' : 'text-slate-900'}`}>
+          <p className={cn('font-medium leading-tight truncate text-sm', isInactive ? 'text-slate-400' : 'text-slate-900')}>
             {walletCard.nickname ?? catalogCard?.name ?? (
               <span className="inline-block w-28 h-4 bg-slate-100 rounded animate-pulse" />
             )}

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 import { IconExternalLink, IconBuildingBank, IconScale } from '@tabler/icons-react';
 import type { Card, Bank } from '@/lib/api';
 import { getBankImageUrl } from '@/lib/api';
@@ -150,11 +151,7 @@ export function CardTile({
                                 type="button"
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(card.id, {name: card.name, image_url: card.image?.url ?? null}); }}
                                 disabled={isFull && !inCompare}
-                                className={`flex items-center justify-center size-10 rounded-full bg-white border border-dashed shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
-                                    inCompare
-                                        ? 'border-primary text-primary'
-                                        : 'border-slate-300 text-slate-600 hover:border-brand-blue hover:text-brand-blue'
-                                }`}
+                                className={cn('flex items-center justify-center size-10 rounded-full bg-white border border-dashed shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed', inCompare ? 'border-primary text-primary' : 'border-slate-300 text-slate-600 hover:border-brand-blue hover:text-brand-blue')}
                                 title={inCompare ? 'Bỏ so sánh' : 'So sánh'}
                             >
                                 <IconScale className="size-4" />

@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import Link from 'next/link';
+import {cn} from '@/lib/utils';
 import {getBank, getCard, getCards, getRelatedCards} from '@/lib/api';
 import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {CardImage} from '@/components/cards/card-image';
@@ -81,7 +82,7 @@ export default async function CardPage({ params }: Props) {
 
                 <div className="mt-8 flex flex-col lg:flex-row gap-10 items-start">
                     {/* Left column: sticky */}
-                    <div className={`shrink-0 w-full ${isVertical ? 'lg:w-48' : 'lg:w-72'} lg:sticky lg:top-8`}>
+                    <div className={cn('shrink-0 w-full', isVertical ? 'lg:w-48' : 'lg:w-72', 'lg:sticky lg:top-8')}>
                         <CardImage card={card} tilt />
                         <div className="mt-4 flex flex-col gap-2">
                             <CompareButton card={{id: card.id, name: card.name, image_url: card.image?.url ?? null}} />

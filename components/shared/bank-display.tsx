@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Bank } from '@/lib/api';
 import { getBankImageUrl } from '@/lib/api';
+import { cn } from '@/lib/utils';
 
 interface Props {
     bank: Bank;
@@ -20,7 +21,7 @@ export function BankDisplay({ bank, size = 'sm', asLink = false, showName = true
                 <Image src={getBankImageUrl(bank.logo_url)} alt="" fill className="object-contain" />
             </div>
             {showName && (
-                <span className={`${textClass} text-slate-700 transition-colors`}>{bank.name}</span>
+                <span className={cn(textClass, 'text-slate-700 transition-colors')}>{bank.name}</span>
             )}
         </>
     );

@@ -1,6 +1,7 @@
 'use client';
 
 import {useEffect, useRef, useState} from 'react';
+import {cn} from '@/lib/utils';
 import type {Card, Intent} from '@/lib/api';
 import Link from 'next/link';
 import {CardImage} from '@/components/cards/card-image';
@@ -38,9 +39,7 @@ export function CompareTemplate({ cards, children, onStickyChange, intentMap }: 
         <div className="ow-compare-template">
             {/* ── Sticky mini header ────────────────────────────────────────── */}
             <div
-                className={`fixed top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm transition-transform duration-200 ease-out ${
-                    showSticky ? 'translate-y-0' : '-translate-y-full'
-                }`}
+                className={cn('fixed top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm transition-transform duration-200 ease-out', showSticky ? 'translate-y-0' : '-translate-y-full')}
             >
                 <div className="min-h-[80px] max-w-[980px] mx-auto py-2 flex items-center">
                     <div className="grid w-full" style={colStyle}>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 import { IconSearch, IconX } from '@tabler/icons-react';
 import type { SearchCard } from '@/lib/search-types';
 import { useCardSearch } from '@/lib/use-card-search';
@@ -136,7 +137,7 @@ export function CardSearchInput({
                         onFocus={handleFocus}
                         onKeyDown={handleKeyDown}
                         placeholder={placeholder ?? 'Tìm thẻ...'}
-                        className={`flex-1 py-2 text-sm bg-transparent outline-none placeholder:text-slate-400 ${underline ? 'pr-6' : 'pl-9 pr-8'}`}
+                        className={cn('flex-1 py-2 text-sm bg-transparent outline-none placeholder:text-slate-400', underline ? 'pr-6' : 'pl-9 pr-8')}
                     />
                 ) : (
                     underline ? (

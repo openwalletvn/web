@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -76,7 +77,7 @@ function WalletSwitcher() {
         <span className="font-bold text-slate-900 truncate flex-1">{walletName}</span>
         <IconChevronDown
           size={14}
-          className={`text-slate-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={cn('text-slate-500 shrink-0 transition-transform', open ? 'rotate-180' : '')}
         />
       </SidebarMenuButton>
 
@@ -88,11 +89,7 @@ function WalletSwitcher() {
               <button
                 key={wallet.id}
                 onClick={() => { setOpen(false); if (wallet.id !== activeId) switchWallet(wallet.id); }}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
-                  wallet.id === activeId
-                    ? 'text-brand-blue bg-blue-50/60'
-                    : 'text-slate-700 hover:bg-slate-50'
-                }`}
+                className={cn('w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-colors', wallet.id === activeId ? 'text-brand-blue bg-blue-50/60' : 'text-slate-700 hover:bg-slate-50')}
               >
                 <span className="flex-1 truncate">{wallet.name}</span>
                 {wallet.id === activeId && <IconCheck size={13} className="shrink-0" />}

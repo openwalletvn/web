@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { IconCheck, IconTrash, IconX, IconPlus } from '@tabler/icons-react';
 import Dexie from 'dexie';
@@ -90,9 +91,7 @@ export default function WalletSettingsPage() {
  <div
  key={wallet.id}
  onClick={() => !isActive && !isEditing && switchWallet(wallet.id)}
- className={`flex items-center gap-3 p-3 border border-dashed rounded-sm transition-colors ${
- isActive ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 cursor-pointer hover:border-slate-400'
- }`}
+ className={cn('flex items-center gap-3 p-3 border border-dashed rounded-sm transition-colors', isActive ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 cursor-pointer hover:border-slate-400')}
  >
  {/* Name + active badge */}
  <div className="flex-1 flex items-center gap-2 min-w-0">
@@ -112,9 +111,7 @@ export default function WalletSettingsPage() {
  <>
  <button
  onClick={(e) => { e.stopPropagation(); startEdit(wallet.id, wallet.name); }}
- className={`text-left text-sm font-medium truncate cursor-text ${
- isActive ? 'text-brand-blue' : 'text-slate-700'
- }`}
+ className={cn('text-left text-sm font-medium truncate cursor-text', isActive ? 'text-brand-blue' : 'text-slate-700')}
  >
  {wallet.name}
  </button>

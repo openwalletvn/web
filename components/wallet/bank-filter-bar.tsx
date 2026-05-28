@@ -2,6 +2,7 @@
 
 import { getBankImageUrl, type Bank } from '@/lib/api';
 import type { WalletCard } from '@/lib/db';
+import { cn } from '@/lib/utils';
 
 interface Props {
   walletCards: WalletCard[];
@@ -34,11 +35,7 @@ export function BankFilterBar({ walletCards, banks, selectedBankId, onSelect }: 
           <button
             key={bankId}
             onClick={() => onSelect(isSelected ? null : bankId)}
-            className={`flex flex-col items-center gap-1 p-2.5 border border-dashed rounded-sm shrink-0 w-20 transition-colors ${
-              isSelected
-                ? 'border-brand-blue bg-blue-50/60'
-                : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/60'
-            }`}
+            className={cn('flex flex-col items-center gap-1 p-2.5 border border-dashed rounded-sm shrink-0 w-20 transition-colors', isSelected ? 'border-brand-blue bg-blue-50/60' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/60')}
           >
             <img
               src={getBankImageUrl(bank.logo_url)}

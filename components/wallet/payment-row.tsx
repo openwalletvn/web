@@ -1,5 +1,6 @@
 import {type Card} from '@/lib/api';
 import type {WalletCard} from '@/lib/db';
+import {cn} from '@/lib/utils';
 import {getTimelineForCard, resolveStatementDay} from '@/lib/card-dates';
 import {CardTimeline, CardTimelineSummary} from './card-timeline';
 import {CardImage} from "@/components/cards/card-image";
@@ -79,7 +80,7 @@ export function PaymentRow({walletCard, catalogCard, variant}: {
             </div>
 
             {/* Divider */}
-            <div className={`self-stretch w-px shrink-0 ${isToday ? 'bg-brand-blue' : 'bg-slate-100'}`}/>
+            <div className={cn('self-stretch w-px shrink-0', isToday ? 'bg-brand-blue' : 'bg-slate-100')}/>
 
             {/* Card image */}
             <div className="shrink-0 w-16 bg-slate-50">

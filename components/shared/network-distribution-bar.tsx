@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import type {Network} from '@/lib/api';
 import {getNetworkImageUrl} from '@/lib/api';
+import {cn} from '@/lib/utils';
 
 interface Props {
     networkCounts: Record<string, number>;
@@ -55,7 +56,7 @@ export function NetworkDistributionBar({networkCounts, networksData, totalCards}
                     <div
                         key={networkId}
                         style={{width: `${pct}%`}}
-                        className={`${color} relative`}
+                        className={cn(color, 'relative')}
                         title={`${networkData?.name ?? networkId}: ${count} thẻ (${Math.round(pct)}%)`}
                     >
                         {i < segments.length - 1 && (

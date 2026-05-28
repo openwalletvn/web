@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PageContainer } from '@/components/ui/page-container';
+import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
  { label: 'Ví', href: '/app/settings/wallet' },
@@ -28,11 +29,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
  <li key={item.href}>
  <Link
  href={item.href}
- className={`block px-3 py-2 text-sm font-medium rounded-sm transition-colors ${
- isActive
- ? 'text-brand-blue bg-blue-50/60'
- : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
- }`}
+ className={cn('block px-3 py-2 text-sm font-medium rounded-sm transition-colors', isActive ? 'text-brand-blue bg-blue-50/60' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50')}
  >
  {item.label}
  </Link>

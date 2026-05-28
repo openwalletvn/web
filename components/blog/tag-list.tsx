@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface Props {
   tags: Array<{ name: string; slug: string; count: number }>;
@@ -14,11 +15,7 @@ export function TagList({ tags, activeSlug }: Props) {
         <Link
           key={slug}
           href={`/tin-tuc/tag/${slug}`}
-          className={`inline-flex items-center gap-1 px-2.5 py-1 border border-dashed rounded-sm text-sm transition-colors ${
-            activeSlug === slug
-              ? 'border-brand-blue text-brand-blue bg-blue-50/60'
-              : 'border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-700'
-          }`}
+          className={cn('inline-flex items-center gap-1 px-2.5 py-1 border border-dashed rounded-sm text-sm transition-colors', activeSlug === slug ? 'border-brand-blue text-brand-blue bg-blue-50/60' : 'border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-700')}
         >
           <span className="text-slate-400">#</span>
           {name}

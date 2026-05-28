@@ -1,5 +1,5 @@
 import type { Card, Bank, FeeEntry, FeeEntryWithWaiver, FeeWaiver } from '@/lib/api';
-import { formatFee } from '@/lib/utils';
+import { formatFee, cn } from '@/lib/utils';
 
 function NoteLines({ note }: { note: string }) {
  const lines = note.split('|').map((l) => l.trim()).filter(Boolean);
@@ -73,7 +73,7 @@ export function CardDetailFees({ card }: Props) {
  <div className="grid grid-cols-3 gap-x-4">
  {/* Col 1: Phát hành */}
  <div className="flex flex-col items-start gap-1">
- <p className={`text-2xl font-bold leading-tight ${!fees.issuance || fees.issuance.amount === 0 ? 'text-green-600' : 'text-slate-900'}`}>
+ <p className={cn('text-2xl font-bold leading-tight', !fees.issuance || fees.issuance.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
  {fees.issuance ? formatFee(fees.issuance) : 'Miễn phí'}
  </p>
  {fees.issuance?.note && <NoteLines note={fees.issuance.note} />}
@@ -83,7 +83,7 @@ export function CardDetailFees({ card }: Props) {
  <div className="flex flex-col items-center text-center gap-1">
  {annual ? (
  <>
- <p className={`text-2xl font-bold leading-tight ${annual.amount === 0 ? 'text-green-600' : 'text-slate-900'}`}>
+ <p className={cn('text-2xl font-bold leading-tight', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
  {formatFee(annual)}
  </p>
  {annual.first_year && (
@@ -100,7 +100,7 @@ export function CardDetailFees({ card }: Props) {
  <div className="flex flex-col items-end text-right gap-1">
  {annual ? (
  <>
- <p className={`text-2xl font-bold leading-tight ${annual.amount === 0 ? 'text-green-600' : 'text-slate-900'}`}>
+ <p className={cn('text-2xl font-bold leading-tight', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
  {formatFee(annual)}
  </p>
  {annual.subsequent_years && (

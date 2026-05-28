@@ -120,7 +120,7 @@ export function CardDetailBillingCycle({ card }: Props) {
                             : '…'}
                     </p>
                     {info && (
-                        <p className={`text-base mt-0.5 ${info.dueDiff < 0 ? 'text-red-500' : 'text-green-600'}`}>
+                        <p className={cn('text-base mt-0.5', info.dueDiff < 0 ? 'text-red-500' : 'text-green-600')}>
                             {info.dueLabel}
                         </p>
                     )}

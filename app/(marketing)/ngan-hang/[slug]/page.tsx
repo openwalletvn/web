@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import {cn} from '@/lib/utils';
 import {getBank, getBankImageUrl, getBanks, getCards} from '@/lib/api';
 import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -116,7 +117,7 @@ export default async function BankPage({params}: Props) {
                         ];
                         const gridClass = statsItems.length === 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3';
                         return (
-                            <div className={`grid ${gridClass} gap-3`}>
+                            <div className={cn('grid', gridClass, 'gap-3')}>
                                 {statsItems.map(({label, value}) => (
                                     <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
                                         <p className="text-card-heading">{value}</p>

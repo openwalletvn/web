@@ -3,6 +3,7 @@
 import {useState} from 'react';
 import {IconChevronDown} from '@tabler/icons-react';
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/ui/collapsible';
+import {cn} from '@/lib/utils';
 
 interface ChangelogTocItem {
     id: string;
@@ -32,7 +33,7 @@ export function ChangelogToc({items}: Props) {
                     <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mục lục</span>
                     <IconChevronDown
                         size={13}
-                        className={`text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                        className={cn('text-slate-400 transition-transform duration-200', open ? 'rotate-180' : '')}
                     />
                 </CollapsibleTrigger>
                 <CollapsibleContent>

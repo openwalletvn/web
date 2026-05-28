@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 type LogoProps = {
     variant?: 'icon' | 'full';
@@ -24,11 +25,11 @@ export function Logo({ variant = 'icon', color = 'black', className = '', href =
     const img = <Image src={src} alt="OpenWallet" {...dims} className="h-auto w-full" />;
 
     if (href === null) {
-        return <span className={`ow-logo flex items-center shrink-0 ${className}`}>{img}</span>;
+        return <span className={cn('ow-logo flex items-center shrink-0', className)}>{img}</span>;
     }
 
     return (
-        <Link href={href} className={`ow-logo flex items-center shrink-0 ${className}`}>
+        <Link href={href} className={cn('ow-logo flex items-center shrink-0', className)}>
             {img}
         </Link>
     );

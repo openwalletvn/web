@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 import { getRelatedStatements } from '@/lib/card-dates';
 import type { Card } from '@/lib/api';
 
@@ -31,7 +32,7 @@ export function CompareDueDateRow({ cards }: Props) {
             <p className="text-xs text-slate-400 mb-1.5">Ngày đến hạn dự kiến</p>
             <div className="grid" style={{ gridTemplateColumns: `repeat(${cards.length}, 1fr)` }}>
                 {dues.map((due, i) => (
-                    <div key={i} className={`text-lg font-semibold min-w-[6ch] ${due === '—' ? 'text-slate-300' : 'text-slate-800'}`}>
+                    <div key={i} className={cn('text-lg font-semibold min-w-[6ch]', due === '—' ? 'text-slate-300' : 'text-slate-800')}>
                         {due ?? '…'}
                     </div>
                 ))}
