@@ -22,27 +22,9 @@ export type RankedCard = {
     rank: number;
     rank_reason: string;
     rank_reason_type: 'higher_cashback' | 'lower_annual_fee' | 'better_network' | 'no_min_spend' | 'tied' | 'baseline';
+    tiebreaker_delta?: number;
     cashback_result: {
         cashback: number;
         breakdown?: CashbackBreakdownItem[];
     };
 };
-
-export function computeTiebreakerDeltas(withCashback: RankedCard[]): Map<string, number> {
-    const delta = new Map<string, number>();
-    let gi = 0;
-    while (gi < withCashback.length) {
-        let gj = gi;
-        while (gj < withCashback.length && withCashback[gj].cashback_result.cashback === withCashback[gi].cashback_result.cashback) gj++;
-        if (gj - gi > 1) {
-            const naturalRank = withCashback[gi].rank;
-            const groupSize = gj - gi;
-            delta.set(withCashback[gi].card.id, groupSize - 1);
-            for (let k = gi + 1; k < gj; k++) {
-                delta.set(withCashback[k].card.id, naturalRank - withCashback[k].rank);
-            }
-        }
-        gi = gj;
-    }
-    return delta;
-}

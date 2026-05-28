@@ -1,8 +1,7 @@
 'use client';
 
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import type {RankedCard} from '@/lib/card-ranker';
-import {computeTiebreakerDeltas} from '@/lib/ranking-utils';
 import {RankedRow} from '@/components/cards/ranked-row';
 import {IconInfoCircle} from '@tabler/icons-react';
 
@@ -18,8 +17,6 @@ export function CardRankingTable({initialRanked, intentSlug, title}: Props) {
     const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
     const noCashback = ranked.filter(r => r.cashback_result.cashback === 0);
 
-    const tiebreakerDelta = computeTiebreakerDeltas(withCashback);
-
     return (
         <section className="ow-card-ranking-table">
             {title && (
@@ -34,7 +31,7 @@ export function CardRankingTable({initialRanked, intentSlug, title}: Props) {
                         key={r.card.id}
                         ranked={r}
                         tiebreakerReason={r.rank_reason_type === 'lower_annual_fee' || r.rank_reason_type === 'better_network' || r.rank_reason_type === 'no_min_spend' ? r.rank_reason : undefined}
-                        tiebreakerDelta={tiebreakerDelta.get(r.card.id)}
+                        tiebreakerDelta={r.tiebreaker_delta}
                         viewTransitionName={`card-row-${r.card.id}`}
                         intentSlug={intentSlug}
                     />

@@ -1,11 +1,10 @@
 'use client';
 
-import {Suspense, useEffect, useMemo, useState} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {getTool} from '@/lib/tools';
 import type {Persona} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
-import {computeTiebreakerDeltas} from '@/lib/ranking-utils';
 import {Chip} from '@/components/ui/chip';
 import {RankedRow} from '@/components/cards/ranked-row';
 
@@ -117,7 +116,6 @@ function CardMatchFinderInner({personas, limit = 5}: CardMatchFinderProps) {
     }, [activePersona, rankBy, monthlySpend, initialized, limit]);
 
     const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
-    const tiebreakerDelta = useMemo(() => computeTiebreakerDeltas(withCashback), [withCashback]);
 
     return (
         <div className="ow-card-match-finder mb-16">
@@ -194,7 +192,7 @@ function CardMatchFinderInner({personas, limit = 5}: CardMatchFinderProps) {
                                     key={r.card.id}
                                     ranked={r}
                                     tiebreakerReason={r.rank_reason_type === 'lower_annual_fee' || r.rank_reason_type === 'better_network' || r.rank_reason_type === 'no_min_spend' ? r.rank_reason : undefined}
-                                    tiebreakerDelta={tiebreakerDelta.get(r.card.id)}
+                                    tiebreakerDelta={r.tiebreaker_delta}
                                 />
                             ))}
                         </div>

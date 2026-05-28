@@ -19,6 +19,7 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
     intentSlug?: string;
 }) {
     const {card, rank} = ranked;
+    console.log(ranked)
     const isTop3 = rank <= 3 && !muted;
     const highlighted = new Set(highlightedSlugs ?? []);
 
