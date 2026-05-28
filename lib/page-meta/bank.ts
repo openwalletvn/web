@@ -1,9 +1,7 @@
 import type {Metadata} from 'next';
 import type {Bank, Card} from '@/lib/api';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
-
-const BASE_URL = 'https://openwallet.vn';
-const API_URL = 'https://api.openwallet.vn';
+import {BASE_URL, API_URL} from './constants';
 
 export interface BankPageMeta {
     metadata: Metadata;

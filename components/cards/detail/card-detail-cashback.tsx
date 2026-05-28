@@ -1,5 +1,6 @@
 import type { Card, CashbackBenefit, CashbackCategory, CashbackRule, Merchant } from '@/lib/api';
 import { getCashbackCategories, getMerchants } from '@/lib/api';
+import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
 import { IconCirclePercentage, IconCircleCheck, IconCurrencyDollar, IconInfoCircle, IconMessageExclamation } from '@tabler/icons-react';
 
 // ─── Formatters ─────────────────────────────────────────────────────────────
@@ -17,8 +18,6 @@ function formatVnd(amount: number): string {
 function formatCap(amount: number): string {
  return amount === -1 ? 'Hoàn không giới hạn' : formatVnd(amount);
 }
-
-const CATCHALL_SLUGS = new Set(['all', 'all-online', 'all-offline']);
 
 // ─── Redemption labels ───────────────────────────────────────────────────────
 

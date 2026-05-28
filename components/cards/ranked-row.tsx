@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import type {Intent} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
+import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
 import {CardImage} from '@/components/cards/card-image';
 import {RankBadge} from '@/components/cards/rank-badge';
 import {CashbackDisplay} from '@/components/cards/cashback-display';
@@ -21,7 +22,6 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
     const isTop3 = rank <= 3 && !muted;
     const highlighted = new Set(highlightedSlugs ?? []);
 
-    const CATCHALL_SLUGS = new Set(['all', 'all-online', 'all-offline']);
     const hasUniversalRule = card.cashback?.rules.some(r => r.intents?.some(c => CATCHALL_SLUGS.has(c))) ?? false;
     const cardIntents = intentMap
         ? [...new Set(card.cashback?.rules.flatMap(r => [

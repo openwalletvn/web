@@ -3,8 +3,7 @@ import type { Card } from '@/lib/api';
 import { buildBreadcrumbJsonLd, type BreadcrumbItem } from './breadcrumb';
 import type { CompareFrontmatter } from '@/lib/compare-mdx';
 import { getTool } from '@/lib/tools';
-
-const BASE_URL = 'https://openwallet.vn';
+import {BASE_URL} from './constants';
 const cardBattleHref = getTool('Card Battle').href;
 
 export interface ComparePageMeta {
