@@ -3,13 +3,13 @@
         font-family: var(--font-display), sans-serif;
     }
     h1 {
-        font-size: clamp(2.5rem, 7vw, var(--text-hero));
+        font-size: clamp(2.5rem, 3vw, var(--text-hero));
         font-weight: 400;
         line-height: var(--leading-tight);
         /*letter-spacing: var(--tracking-hero);*/
     }
     h2 {
-        font-size: clamp(1.75rem, 5vw, var(--text-section));
+        font-size: clamp(1.75rem, 2vw, var(--text-section));
         font-weight: 400;
         line-height: var(--leading-snug);
         /*letter-spacing: var(--tracking-section);*/

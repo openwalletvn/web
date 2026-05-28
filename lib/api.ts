@@ -141,6 +141,13 @@ export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'p
 
 export interface CashbackCap {
     amount: number; // VND
+    category_caps?: Record<string, number>; // per-category sub-caps within rule cap (VND)
+}
+
+export interface SpendTier {
+    min_spend: number; // VND
+    rate: number;      // decimal
+    cap?: number;      // VND cap for this tier, absent = uncapped
 }
 
 export interface CashbackRuleScope {
@@ -156,6 +163,7 @@ export interface CashbackRule {
     intents?: string[];     // intent slugs; ["all"]/["all-online"]/["all-offline"] = catch-all
     merchants?: string[];   // merchant slugs, e.g. "grab", "shopee"
     max_intents?: number;   // user picks at most N intents per cycle (e.g. MSB mDigi, VIB Family Link)
+    tiers?: SpendTier[];    // spend-tiered rates; when present, rate/cap are display-only summaries
     scope?: CashbackRuleScope;
     note?: string;
 }
