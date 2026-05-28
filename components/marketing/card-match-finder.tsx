@@ -121,6 +121,7 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
 
     const personaObj = personas.find(p => p.slug === activePersona);
     const personaIntents = intents.filter(i => personaObj?.rank_intents?.includes(i.slug));
+    const intentMap = new Map(intents.map(i => [i.slug, i]));
 
     const toggleIntent = (slug: string) => {
         setActiveIntents(prev =>
@@ -162,8 +163,8 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                                         {personaIntents.map(intent => (
                                             <Chip
                                                 key={intent.slug}
-                                                active={activeIntents.includes(intent.slug)}
-                                                onClick={() => toggleIntent(intent.slug)}
+                                                // active={activeIntents.includes(intent.slug)}
+                                                // onClick={() => toggleIntent(intent.slug)}
                                                 className="text-sm px-3 py-1"
                                             >
                                                 {intent.icon} {intent.label}
@@ -227,6 +228,8 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                                 <RankedRow
                                     key={r.card.id}
                                     ranked={r}
+                                    intentMap={intentMap}
+                                    highlightedSlugs={activeIntents.length > 0 ? activeIntents : personaObj?.rank_intents}
                                 />
                             ))}
                         </div>
