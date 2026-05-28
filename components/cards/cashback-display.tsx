@@ -37,9 +37,9 @@ function IntentBreakdown({item, intentMap}: {item: CashbackBreakdownItem; intent
 }
 
 export function CashbackDisplay({ranked, intentSlug, intentMap}: {ranked: RankedCard; intentSlug?: string; intentMap?: IntentMap}) {
-    const {max_cashback, breakdown} = ranked.cashback_result;
+    const {cashback, breakdown} = ranked.cashback_result;
 
-    if (max_cashback === 0) {
+    if (cashback === 0) {
         return (
             <div className="ow-cashback-display flex flex-col items-start sm:items-end gap-0.5">
                 <span className="text-body-sm text-text-muted">Chưa có ưu đãi</span>
@@ -53,7 +53,7 @@ export function CashbackDisplay({ranked, intentSlug, intentMap}: {ranked: Ranked
     return (
         <div className="ow-cashback-display flex flex-col items-start sm:items-end gap-0.5">
             <span className="text-body-lg font-semibold text-primary">
-                {max_cashback.toLocaleString('vi-VN')}đ
+                {cashback.toLocaleString('vi-VN')}đ
             </span>
             {showBreakdown ? (
                 breakdown.map((item, i) => (

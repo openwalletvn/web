@@ -15,8 +15,8 @@ interface Props {
 export function CardRankingTable({initialRanked, intentSlug, title}: Props) {
     const [ranked] = useState<RankedCard[]>(initialRanked);
 
-    const withCashback = ranked.filter(r => r.cashback_result.max_cashback > 0);
-    const noCashback = ranked.filter(r => r.cashback_result.max_cashback === 0);
+    const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
+    const noCashback = ranked.filter(r => r.cashback_result.cashback === 0);
 
     const tiebreakerDelta = computeTiebreakerDeltas(withCashback);
 

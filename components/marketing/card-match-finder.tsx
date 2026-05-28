@@ -164,7 +164,7 @@ function CardMatchFinderInner({intents: intentList, intentGroups, limit = 5}: Ca
         return () => clearTimeout(t);
     }, [activeIntentSlugs, rankBy, monthlySpend, initialized, limit]);
 
-    const withCashback = ranked.filter(r => r.cashback_result.max_cashback > 0);
+    const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
     const tiebreakerDelta = computeTiebreakerDeltas(withCashback);
 
     return (
