@@ -134,7 +134,7 @@ export interface Persona {
     label: string;
     note?: string;
     labelVi?: string;
-    rankIntents?: string[];
+    rank_intents?: string[];
 }
 
 export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'points_pool';
@@ -398,7 +398,7 @@ interface IntentsResponse {
 }
 
 export async function getIntents(): Promise<Intent[]> {
-    const res = await apiFetch('/api/v1/intents');
+    const res = await apiFetch('/api/v1/meta/intents');
     const json = (await res.json()) as IntentsResponse;
     if (!json.success) throw new Error('Failed to fetch intents');
     return json.data;

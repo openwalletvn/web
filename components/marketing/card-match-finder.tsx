@@ -3,7 +3,7 @@
 import {Suspense, useEffect, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {getTool} from '@/lib/tools';
-import type {Persona} from '@/lib/api';
+import type {Intent, Persona} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
 import {Chip} from '@/components/ui/chip';
 import {RankedRow} from '@/components/cards/ranked-row';
@@ -36,16 +36,18 @@ function writePrefs(prefs: CardMatchPrefs): void {
 
 export interface CardMatchFinderProps {
     personas: Persona[];
+    intents?: Intent[];
     limit?: number;
 }
 
-function CardMatchFinderInner({personas, limit = 5}: CardMatchFinderProps) {
+function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFinderProps) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const isFinderPage = pathname === cardMatchHref;
 
     const [activePersona, setActivePersona] = useState<string | null>(null);
+    const [activeIntents, setActiveIntents] = useState<string[]>([]);
     const [rankBy, setRankBy] = useState<'cashback' | 'annual_fee'>('cashback');
     const [monthlySpend, setMonthlySpend] = useState(5);
     const [initialized, setInitialized] = useState(false);
@@ -101,6 +103,7 @@ function CardMatchFinderInner({personas, limit = 5}: CardMatchFinderProps) {
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         persona: activePersona,
+                        intents: activeIntents.length > 0 ? activeIntents : undefined,
                         limit,
                         for_business: false,
                         sort_by: rankBy,
@@ -114,7 +117,16 @@ function CardMatchFinderInner({personas, limit = 5}: CardMatchFinderProps) {
             }
         }, 200);
         return () => clearTimeout(t);
-    }, [activePersona, rankBy, monthlySpend, initialized, limit]);
+    }, [activePersona, activeIntents, rankBy, monthlySpend, initialized, limit]);
+
+    const personaObj = personas.find(p => p.slug === activePersona);
+    const personaIntents = intents.filter(i => personaObj?.rank_intents?.includes(i.slug));
+
+    const toggleIntent = (slug: string) => {
+        setActiveIntents(prev =>
+            prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
+        );
+    };
 
     const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
 
@@ -137,12 +149,29 @@ function CardMatchFinderInner({personas, limit = 5}: CardMatchFinderProps) {
                                     <Chip
                                         key={p.slug}
                                         active={activePersona === p.slug}
-                                        onClick={() => setActivePersona(p.slug)}
+                                        onClick={() => { setActivePersona(p.slug); setActiveIntents([]); }}
                                     >
                                         {p.labelVi || p.label}
                                     </Chip>
                                 ))}
                             </div>
+
+                            {personaIntents.length > 0 && (
+                                <div className="flex mt-5">
+                                    <div className="flex flex-wrap gap-2">
+                                        {personaIntents.map(intent => (
+                                            <Chip
+                                                key={intent.slug}
+                                                active={activeIntents.includes(intent.slug)}
+                                                onClick={() => toggleIntent(intent.slug)}
+                                                className="text-sm px-3 py-1"
+                                            >
+                                                {intent.icon} {intent.label}
+                                            </Chip>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Step 2: Monthly spend */}
