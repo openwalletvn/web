@@ -1,14 +1,8 @@
 import { CommandGroup, CommandItem } from '@/components/ui/command';
 import { IconClock, IconX, IconArrowRight } from '@tabler/icons-react';
+import { CARD_CATEGORIES } from '@/lib/card-categories';
 
-const QUICK_LINKS = [
-  { label: 'Thẻ tín dụng', url: '/the-tin-dung' },
-  { label: 'Thẻ ghi nợ', url: '/the-ghi-no' },
-  { label: 'Thẻ đồng thương hiệu', url: '/the-dong-thuong-hieu' },
-  { label: 'Miễn phí thường niên', url: '/the?fee=free' },
-  { label: 'Visa', url: '/the?network=visa' },
-  { label: 'Mastercard', url: '/the?network=mastercard' },
-];
+const QUICK_LINKS = CARD_CATEGORIES.map((c) => ({ label: c.name, url: c.href }));
 
 interface SearchEmptyStateProps {
   recentSearches: string[];
