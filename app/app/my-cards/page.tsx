@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import {
  DndContext,
@@ -24,10 +24,12 @@ import type { WalletCard, CardStatus } from '@/lib/db';
 import type { AppWallet } from '@/lib/app-db';
 import { appDb } from '@/lib/app-db';
 import { reorderCards } from '@/lib/wallet';
-import { getBanks, getCard, type Card, type Bank } from '@/lib/api';
+import { type Card, type Bank } from '@/lib/api';
+import { useWalletCatalog } from '@/hooks/use-wallet-catalog';
 import { PageContainer } from '@/components/ui/page-container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { WalletCardContent, type CreditBadge } from '@/components/wallet/wallet-card-row';
+import { WalletCardListSkeleton } from '@/components/wallet/wallet-card-list-skeleton';
 import { MoveToWalletPicker } from '@/components/wallet/move-to-wallet-picker';
 import { useWalletDb, useActiveWallet } from '@/providers/wallet-db-provider';
 import posthog from 'posthog-js';
@@ -43,21 +45,6 @@ function BankSectionHeader({ label, count }: { label: string; count: number }) {
  );
 }
 
-function WalletLoadingSkeleton() {
- return (
- <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
- {[1, 2, 3].map((i) => (
- <div key={i} className="flex items-center gap-3 px-4 py-4 border-b border-dashed border-slate-100 last:border-0">
- <div className="shrink-0 w-20 aspect-[16/10] bg-slate-100 rounded-sm animate-pulse" />
- <div className="flex-1 space-y-2">
- <div className="h-4 w-32 bg-slate-100 rounded animate-pulse" />
- <div className="h-3 w-16 bg-slate-100 rounded animate-pulse" />
- </div>
- </div>
- ))}
- </div>
- );
-}
 
 function SortableCardRow({
  walletCard,
@@ -149,8 +136,7 @@ export default function WalletPage() {
  const walletCards = useLiveQuery(() => db.walletCards.orderBy('order').toArray(), [db]);
  const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [db], []);
  const allWallets = useLiveQuery(() => appDb.wallets.toArray(), [], []);
- const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
- const [banks, setBanks] = useState<Record<string, Bank>>({});
+ const { banks, catalogCards } = useWalletCatalog(walletCards);
 
  const otherWallets = useMemo(
  () => (allWallets ?? []).filter((w) => w.id !== activeWallet.id),
@@ -161,30 +147,6 @@ export default function WalletPage() {
  useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
  useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
  );
-
- useEffect(() => {
- getBanks().then((list) =>
- setBanks(Object.fromEntries(list.map((bank) => [bank.id, bank]))),
- );
- }, []);
-
- useEffect(() => {
- if (!walletCards?.length) return;
- const missing = walletCards.filter((walletCard) => !catalogCards[walletCard.cardId]);
- if (!missing.length) return;
- Promise.all(
- missing.map((walletCard) =>
- getCard(walletCard.cardId)
- .then((card) => [walletCard.cardId, card] as const)
- .catch(() => null),
- ),
- ).then((results) => {
- const entries = Object.fromEntries(
- results.filter((result): result is [string, Card] => result !== null),
- );
- setCatalogCards((previous) => ({ ...previous, ...entries }));
- });
- }, [walletCards]);
 
  const creditLimitMap = useMemo(() => {
  const map = new Map<string, number>();
@@ -273,7 +235,7 @@ export default function WalletPage() {
  </div>
  <div className="border-t border-dashed border-slate-200 mb-6" />
 
- {isLoading && <WalletLoadingSkeleton />}
+ {isLoading && <WalletCardListSkeleton />}
 
  {!isLoading && walletCards.length === 0 && (
  <EmptyState

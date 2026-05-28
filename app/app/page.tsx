@@ -1,10 +1,10 @@
 'use client';
 
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { IconCreditCard, IconArrowRight } from '@tabler/icons-react';
-import { getBanks, getCard, type Bank, type Card } from '@/lib/api';
+import { useWalletCatalog } from '@/hooks/use-wallet-catalog';
 import { PageContainer } from '@/components/ui/page-container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PaymentRow, getNextOccurrence } from '@/components/wallet/payment-row';
@@ -56,14 +56,7 @@ export default function DashboardPage() {
  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db]);
  const creditAccounts = useLiveQuery(() => db.creditAccounts.toArray(), [db], []);
 
- const [banks, setBanks] = useState<Record<string, Bank>>({});
- const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
-
- useEffect(() => {
- getBanks().then((list) =>
- setBanks(Object.fromEntries(list.map((b) => [b.id, b]))),
- );
- }, []);
+ const { banks, catalogCards } = useWalletCatalog(walletCards);
 
  const activeCards = useMemo(
  () => (walletCards ?? []).filter((c) => c.status !== 'expired' && c.status !== 'canceled'),
@@ -114,22 +107,6 @@ export default function DashboardPage() {
  return counts;
  }, [walletCards]);
 
- // Load catalog cards for all active cards — needed for calcDueDate
- useEffect(() => {
- const missing = activeCards.map((c) => c.cardId).filter((id) => !catalogCards[id]);
- if (!missing.length) return;
- const unique = [...new Set(missing)];
- Promise.all(
- unique.map((id) =>
- getCard(id).then((card) => [id, card] as const).catch(() => null),
- ),
- ).then((results) => {
- const entries = Object.fromEntries(
- results.filter((r): r is [string, Card] => r !== null),
- );
- setCatalogCards((prev) => ({ ...prev, ...entries }));
- });
- }, [activeCards]);
 
  const isLoading = walletCards === undefined;
  const isEmpty = !isLoading && walletCards.length === 0;

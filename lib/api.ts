@@ -88,8 +88,6 @@ export interface FeeEntryWithWaiver extends FeeEntry {
     subsequent_years?: FeeWaiver;
 }
 
-/** @deprecated Use FeeEntry instead */
-export type CardFeeEntry = FeeEntry;
 
 export interface CardFees {
     annual?: FeeEntryWithWaiver;

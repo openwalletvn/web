@@ -37,18 +37,14 @@ interface Props {
   hideTierFilter?: boolean;
   hideFeeFilter?: boolean;
   hideSortFilter?: boolean;
-  typeFilterUseful: boolean;
-  networkFilterUseful: boolean;
-  bankFilterUseful: boolean;
-  contactlessFilterUseful: boolean;
-  tierFilterUseful: boolean;
-  feeFilterUseful: boolean;
-  sortFilterUseful: boolean;
-  coBrandFilterUseful: boolean;
   availableNetworks: Array<{ id: string; name: string; logo_url: string }>;
   availableBrands: Array<{ id: string; name: string; logo_url: string }>;
   availableContactless: Array<{ id: string; name: string; logo_url: string }>;
   availableTiers: Array<{ id: string; rank: number; logo_url: string }>;
+  availableTypes: number;
+  availableBanks: number;
+  hasFeeCards: boolean;
+  hasSortableCards: boolean;
   filterValues: FilterValues;
   onUpdate: (key: string, value: string) => void;
   onClearAll: () => void;
@@ -65,23 +61,27 @@ export function CardsFilter({
   hideTierFilter,
   hideFeeFilter,
   hideSortFilter,
-  typeFilterUseful,
-  networkFilterUseful,
-  bankFilterUseful,
-  contactlessFilterUseful,
-  tierFilterUseful,
-  feeFilterUseful,
-  sortFilterUseful,
-  coBrandFilterUseful,
   availableNetworks,
   availableBrands,
   availableContactless,
   availableTiers,
+  availableTypes,
+  availableBanks,
+  hasFeeCards,
+  hasSortableCards,
   filterValues,
   onUpdate,
   onClearAll,
   isPending,
 }: Props) {
+  const typeFilterUseful = availableTypes > 1;
+  const networkFilterUseful = availableNetworks.length > 1;
+  const bankFilterUseful = availableBanks > 1;
+  const coBrandFilterUseful = availableBrands.length >= 1;
+  const contactlessFilterUseful = availableContactless.length > 1;
+  const tierFilterUseful = availableTiers.length > 1;
+  const feeFilterUseful = hasFeeCards;
+  const sortFilterUseful = hasSortableCards;
   function update(key: string, value: string) {
     onUpdate(key, value);
     posthog.capture('catalog_filter_applied', {

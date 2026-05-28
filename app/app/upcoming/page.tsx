@@ -1,12 +1,13 @@
 'use client';
 
-import {useEffect, useMemo, useState} from 'react';
+import {useMemo} from 'react';
 import {useLiveQuery} from 'dexie-react-hooks';
 import {IconAlertTriangle, IconCreditCard} from '@tabler/icons-react';
-import {type Bank, type Card, getBanks, getCard} from '@/lib/api';
+import {useWalletCatalog} from '@/hooks/use-wallet-catalog';
 import {PageContainer} from '@/components/ui/page-container';
 import {EmptyState} from '@/components/ui/empty-state';
 import {PaymentRow} from '@/components/wallet/payment-row';
+import {WalletCardListSkeleton} from '@/components/wallet/wallet-card-list-skeleton';
 import {useWalletDb} from '@/providers/wallet-db-provider';
 import type {Milestone} from '@/lib/card-dates';
 import {type CardWithMilestones, sortCardsByMilestones, toCardWithMilestones} from '@/lib/card-milestones';
@@ -46,34 +47,13 @@ function resolveDisplay(
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
-function UpcomingSkeleton() {
- return (
- <div className="animate-pulse border border-dashed border-slate-200 rounded-sm overflow-hidden">
- {[1, 2, 3].map((i) => (
- <div key={i} className="flex items-center gap-3 px-4 py-4 border-b border-dashed border-slate-100 last:border-0">
- <div className="shrink-0 w-20 aspect-[16/10] bg-slate-100 rounded-sm" />
- <div className="flex-1 space-y-2">
- <div className="h-4 w-32 bg-slate-100 rounded" />
- <div className="h-3 w-20 bg-slate-100 rounded" />
- </div>
- <div className="h-5 w-16 bg-slate-100 rounded" />
- </div>
- ))}
- </div>
- );
-}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function UpcomingPage() {
  const db = useWalletDb();
  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db]);
- const [banks, setBanks] = useState<Record<string, Bank>>({});
- const [catalogCards, setCatalogCards] = useState<Record<string, Card>>({});
-
- useEffect(() => {
- getBanks().then((list) => setBanks(Object.fromEntries(list.map((b) => [b.id, b]))));
- }, []);
+ const { banks, catalogCards } = useWalletCatalog(walletCards);
 
  const today = useMemo(() => {
  const d = new Date();
@@ -88,18 +68,6 @@ export default function UpcomingPage() {
  [walletCards],
  );
 
- // Eagerly load catalog cards for all credit cards
- useEffect(() => {
- const missing = creditCards.map((c) => c.cardId).filter((id) => !catalogCards[id]);
- if (!missing.length) return;
- const unique = [...new Set(missing)];
- Promise.all(
- unique.map((id) => getCard(id).then((card) => [id, card] as const).catch(() => null)),
- ).then((results) => {
- const entries = Object.fromEntries(results.filter((r): r is [string, Card] => r !== null));
- setCatalogCards((prev) => ({ ...prev, ...entries }));
- });
- }, [creditCards]);
 
  const { warningCards, mainCards } = useMemo(() => {
  const all = creditCards.map((c) => toCardWithMilestones(c, catalogCards[c.cardId], today));
@@ -132,7 +100,7 @@ export default function UpcomingPage() {
  </div>
  <div className="border-t border-dashed border-slate-200 mb-6" />
 
- {isLoading && <UpcomingSkeleton />}
+ {isLoading && <WalletCardListSkeleton />}
 
  {isEmpty && (
  <EmptyState
