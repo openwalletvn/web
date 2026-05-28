@@ -8,19 +8,15 @@ import {RankBadge} from '@/components/cards/rank-badge';
 import {CashbackDisplay} from '@/components/cards/cashback-display';
 import {IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
 
-export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDelta, viewTransitionName, intentMap, highlightedSlugs, intentSlug}: {
+export function RankedRow({ranked, muted = false, viewTransitionName, intentMap, highlightedSlugs, intentSlug}: {
     ranked: RankedCard;
     muted?: boolean;
-    tiebreakerReason?: string;
-    tiebreakerDelta?: number;
     viewTransitionName?: string;
     intentMap?: Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
     highlightedSlugs?: string[];
     intentSlug?: string;
 }) {
-    const {card, rank} = ranked;
-    console.log(ranked)
-    const isTop3 = rank <= 3 && !muted;
+    const {card, rank, rank_reason, rank_reason_type, tiebreaker_delta} = ranked;
     const highlighted = new Set(highlightedSlugs ?? []);
 
     const hasUniversalRule = card.cashback?.rules.some(r => r.intents?.some(c => CATCHALL_SLUGS.has(c))) ?? false;
@@ -32,6 +28,8 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
             .map(slug => intentMap.get(slug))
             .filter((i): i is Pick<Intent, 'slug' | 'label' | 'icon'> => !!i)
         : [];
+
+    const showReason = !muted && rank_reason && rank_reason_type !== 'higher_cashback';
 
     return (
         <div
@@ -45,14 +43,14 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
                 ) : (
                     <RankBadge rank={rank}/>
                 )}
-                {tiebreakerDelta !== undefined && tiebreakerDelta > 0 && (
+                {tiebreaker_delta !== undefined && tiebreaker_delta > 0 && (
                     <span className="flex items-center gap-0.5 text-emerald-500 text-[10px] font-semibold leading-none">
-                        <IconCaretUpFilled size={10}/>{tiebreakerDelta}
+                        <IconCaretUpFilled size={10}/>{tiebreaker_delta}
                     </span>
                 )}
-                {tiebreakerDelta !== undefined && tiebreakerDelta < 0 && (
+                {tiebreaker_delta !== undefined && tiebreaker_delta < 0 && (
                     <span className="flex items-center gap-0.5 text-orange-400 text-[10px] font-semibold leading-none">
-                        <IconCaretDownFilled size={10}/>{Math.abs(tiebreakerDelta)}
+                        <IconCaretDownFilled size={10}/>{Math.abs(tiebreaker_delta)}
                     </span>
                 )}
             </div>
@@ -100,11 +98,11 @@ export function RankedRow({ranked, muted = false, tiebreakerReason, tiebreakerDe
                                 ))}
                             </div>
                         )}
-                        {tiebreakerReason && (
+                        {showReason && (
                             <span className="flex items-center gap-1 mt-1 text-xs text-text-muted">
-                            <IconBulb size={12} className="shrink-0 text-amber-400"/>
-                                {tiebreakerReason}
-                        </span>
+                                <IconBulb size={12} className="shrink-0 text-amber-400"/>
+                                {rank_reason}
+                            </span>
                         )}
                     </div>
                 </div>

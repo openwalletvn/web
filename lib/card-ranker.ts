@@ -8,6 +8,7 @@ export type IntentBreakdownItem = {
 
 export type CashbackBreakdownItem = {
     cashback: number;
+    spend?: number;
     rate: number;
     rate_max?: number;
     intents?: string[];

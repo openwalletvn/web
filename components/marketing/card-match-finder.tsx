@@ -191,8 +191,6 @@ function CardMatchFinderInner({personas, limit = 5}: CardMatchFinderProps) {
                                 <RankedRow
                                     key={r.card.id}
                                     ranked={r}
-                                    tiebreakerReason={r.rank_reason_type === 'lower_annual_fee' || r.rank_reason_type === 'better_network' || r.rank_reason_type === 'no_min_spend' ? r.rank_reason : undefined}
-                                    tiebreakerDelta={r.tiebreaker_delta}
                                 />
                             ))}
                         </div>

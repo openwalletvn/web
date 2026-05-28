@@ -49,7 +49,6 @@ export function CashbackDisplay({ranked, intentSlug, intentMap}: {ranked: Ranked
 
     const showBreakdown = breakdown && breakdown.length >= 1;
     const rateDisplay = !showBreakdown ? getRateDisplay(ranked.card, intentSlug) : null;
-
     return (
         <div className="ow-cashback-display flex flex-col items-start sm:items-end gap-0.5">
             <span className="text-body-lg font-semibold text-primary">
@@ -59,7 +58,7 @@ export function CashbackDisplay({ranked, intentSlug, intentMap}: {ranked: Ranked
                 breakdown.map((item, i) => (
                     <div key={i} className="flex flex-col items-start sm:items-end">
                         <span className="text-[11px] text-text-muted max-w-[200px] leading-3">
-                            {breakdownLabel(item, intentMap)} · {fmtRate(item.rate)}: {item.cashback.toLocaleString('vi-VN')}đ
+                            {breakdownLabel(item, intentMap)} · {fmtRate(item.rate)}{item.spend ? ` · ${item.spend.toLocaleString('vi-VN')}đ` : ''}: {item.cashback.toLocaleString('vi-VN')}đ
                         </span>
                         <IntentBreakdown item={item} intentMap={intentMap} />
                     </div>
