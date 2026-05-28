@@ -26,6 +26,7 @@ interface Props {
     badge?: string;
     badges?: BadgeConfig;
     showActions?: boolean;
+    className?: string;
 }
 
 export function CardTile({
@@ -35,6 +36,7 @@ export function CardTile({
     badge,
     badges = {},
     showActions = true,
+    className,
 }: Props) {
     const bank = bankProp !== undefined ? bankProp : (card.bank_data ?? null);
     const isVertical = card.image?.orientation === 'vertical';
@@ -59,7 +61,7 @@ export function CardTile({
 
     return (
         <div
-            className="ow-card-tile flex flex-col gap-2 group relative cursor-pointer"
+            className={cn("ow-card-tile flex flex-col gap-2 group relative cursor-pointer", className)}
             style={{
                 // @ts-ignore
                 '--glow-color': bank?.brand_color ? hexToRgba(bank.brand_color, 0.45) : 'rgba(0,0,0,0.45)',

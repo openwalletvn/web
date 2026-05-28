@@ -1,9 +1,10 @@
-import type { RelatedCard } from '@/lib/api';
-import { CardTile } from '@/components/cards/variants/card-tile';
-import { getTool } from '@/lib/tools';
+import type {RelatedCard} from '@/lib/api';
+// import {getTool} from '@/lib/tools';
+import {CardMasonry} from "@/components/cards/card-masonry";
 
-const MAX_CARDS = 12;
-const cardBattleHref = getTool('Card Battle').href;
+const MAX_CARDS = 6;
+
+// const cardBattleHref = getTool('Card Battle').href;
 
 interface Props {
     currentCard: { id: string; name: string };
@@ -22,17 +23,7 @@ export function CardDetailCompare({ currentCard, compareCards }: Props) {
             <p className="text-slate-500 mb-8">
                 Được gợi ý bởi thuật toán OpenWallet dựa trên mức độ tương đồng về tính năng, loại thẻ và cashback.
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 sm:gap-6 gap-4">
-                {cards.map((card) => (
-                    <CardTile
-                        key={card.id}
-                        card={card}
-                        href={`/the/${card.id}`}
-                        // href={`${cardBattleHref}${card.compare_path}`}
-                        badge={`So sánh ${currentCard.name} với ${card.name}`}
-                    />
-                ))}
-            </div>
+            <CardMasonry cards={cards}/>
         </div>
     );
 }
