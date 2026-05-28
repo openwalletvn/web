@@ -1,0 +1,7 @@
+allowBuilds:
+  core-js: false
+  esbuild: false
+  msw: false
+  protobufjs: false
+  sharp: true
+  vue-demi: false
