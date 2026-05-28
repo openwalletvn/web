@@ -22,7 +22,7 @@ export function CardDetailCompare({ currentCard, compareCards }: Props) {
             <p className="text-slate-500 mb-8">
                 Được gợi ý bởi thuật toán OpenWallet dựa trên mức độ tương đồng về tính năng, loại thẻ và cashback.
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 sm:gap-6 gap-4">
                 {cards.map((card) => (
                     <CardTile
                         key={card.id}
