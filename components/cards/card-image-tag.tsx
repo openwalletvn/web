@@ -13,10 +13,11 @@ interface Props {
     height: number;
     lqip?: string;
     tilt?: boolean;
+    priority?: boolean;
     className?: string;
 }
 
-export function CardImageTag({src, alt, width, height, lqip, tilt = false, className}: Props) {
+export function CardImageTag({src, alt, width, height, lqip, tilt = false, priority = false, className}: Props) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [radius, setRadius] = useState(0);
     const [loaded, setLoaded] = useState(false);
@@ -74,6 +75,7 @@ export function CardImageTag({src, alt, width, height, lqip, tilt = false, class
                 alt={alt}
                 width={width}
                 height={height}
+                priority={priority}
                 className={cn(
                     'object-cover size-full transition-opacity duration-200',
                     !loaded && !lqip ? 'opacity-0' : 'opacity-100'

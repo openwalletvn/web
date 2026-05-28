@@ -75,8 +75,7 @@ export default async function CardPage({ params }: Props) {
 
     return (
         <>
-        <div className="py-12">
-            <div className="ow-container">
+            <div className="ow-marketing-page-shell ow-container md:pt-12 md:pb-24 pt-8 pb-12">
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
                 <Breadcrumbs items={breadcrumbItems} />
 
@@ -85,7 +84,7 @@ export default async function CardPage({ params }: Props) {
                     <div
                         className={cn(isVertical ? 'xl:col-span-2 md:col-span-3 col-span-12' : 'xl:col-span-3 md:col-span-4 col-span-12')}>
                         <div className={cn("lg:sticky lg:top-8", isVertical ? "sm:max-w-[300px] max-w-[240px] mx-auto" : "max-w-[360px]")}>
-                            <CardImage card={card} tilt/>
+                            <CardImage card={card} tilt priority/>
                             <div className="mt-4 flex flex-col gap-2">
                                 <CompareButton
                                     card={{id: card.id, name: card.name, image_url: card.image?.url ?? null}}/>
@@ -132,7 +131,6 @@ export default async function CardPage({ params }: Props) {
                 />
                 <CardDetailRelated cards={sameTypeCards} currentCardId={card.id} />
             </div>
-        </div>
         <ChatContextSetter context={{
             type: 'card',
             cardId: card.id,

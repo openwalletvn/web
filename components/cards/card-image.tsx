@@ -9,9 +9,10 @@ interface Props {
     className?: string;
     classNameVertical?: string;
     tilt?: boolean;
+    priority?: boolean;
 }
 
-export function CardImage({card, className, classNameVertical, tilt = false}: Props) {
+export function CardImage({card, className, classNameVertical, tilt = false, priority = false}: Props) {
     const isVertical = card.image?.orientation === 'vertical';
     const imageUrl = getCardImageUrl(card);
     const width = card.image?.width ?? (isVertical ? 2 : 16);
@@ -30,6 +31,7 @@ export function CardImage({card, className, classNameVertical, tilt = false}: Pr
             height={height}
             lqip={card.image?.lqip}
             tilt={tilt}
+            priority={priority}
             className={containerClass}
         />
     );
