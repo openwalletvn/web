@@ -129,6 +129,13 @@ export interface IntentGroupNode {
     children?: IntentGroupNode[];
 }
 
+export interface Persona {
+    slug: string;
+    label: string;
+    note?: string;
+    rankIntents?: string[];
+}
+
 export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'points_pool';
 
 export interface CashbackCap {
@@ -405,6 +412,18 @@ export async function getIntentGroups(): Promise<IntentGroupNode[]> {
     const res = await apiFetch('/api/v1/intent-groups');
     const json = (await res.json()) as IntentGroupsResponse;
     if (!json.success) throw new Error('Failed to fetch intent groups');
+    return json.data;
+}
+
+interface PersonasResponse {
+    success: boolean;
+    data: Persona[];
+}
+
+export async function getPersonas(): Promise<Persona[]> {
+    const res = await apiFetch('/api/v1/personas');
+    const json = (await res.json()) as PersonasResponse;
+    if (!json.success) throw new Error('Failed to fetch personas');
     return json.data;
 }
 
