@@ -208,6 +208,10 @@ export interface CardFilters {
     metal?: boolean;
     network_tier?: string;
     for_business?: boolean;
+    persona?: string;
+    rule_channel?: string;
+    rule_geography?: string;
+    rule_intent?: string;
 }
 
 export const SEGMENT_FILTERS: Record<string, Pick<CardFilters, 'type'>> = {
@@ -488,9 +492,11 @@ export async function getRelatedCards(id: string): Promise<RelatedCard[]> {
 export interface RankingParams {
     intents: string[];
     limit?: number;
-    type?: string;
     for_business?: boolean;
     sort_by?: 'cashback' | 'annual_fee';
+    persona?: string;
+    cards?: string[];
+    monthly_spend?: number;
 }
 
 interface RankingResponse {
