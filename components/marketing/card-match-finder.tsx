@@ -7,6 +7,7 @@ import type {Persona} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
 import {Chip} from '@/components/ui/chip';
 import {RankedRow} from '@/components/cards/ranked-row';
+import {cn} from "@/lib/utils";
 
 const STORAGE_KEY = 'ow-rec-prefs';
 const cardMatchHref = getTool('Card Match').href;
@@ -119,45 +120,51 @@ function CardMatchFinderInner({personas, limit = 5}: CardMatchFinderProps) {
 
     return (
         <div className="ow-card-match-finder mb-16">
-            <h2 className="mb-6">Tìm thẻ tối ưu cho nhu cầu của bạn</h2>
+            <h2 className="mb-12">Tìm thẻ tối ưu cho nhu cầu của bạn</h2>
 
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
+            <div className="grid lg:grid-cols-12 gap-8 lg:gap-16">
                 {/* Left: controls */}
-                <div className={loading ? 'pointer-events-none opacity-60' : ''}>
-                    {/* Step 1: Persona */}
-                    <div className="mb-6">
-                        <h2 className="text-label text-text-muted mb-4">Bạn hay chi tiêu ở đâu?</h2>
-                        <div className="flex flex-wrap gap-2">
-                            {personas.map(p => (
-                                <Chip
-                                    key={p.slug}
-                                    active={activePersona === p.slug}
-                                    onClick={() => setActivePersona(p.slug)}
-                                >
-                                    {p.label}
-                                </Chip>
-                            ))}
+                <div className={cn(
+                    "lg:col-span-5",
+                    loading ? 'pointer-events-none opacity-60' : ''
+                )}>
+                    <div className="sticky top-12">
+                        {/* Step 1: Persona */}
+                        <div className="mb-6">
+                            <h2 className="text-body-lg text-text-muted mb-4">Bạn hay chi tiêu ở đâu?</h2>
+                            <div className="flex flex-wrap gap-2">
+                                {personas.map(p => (
+                                    <Chip
+                                        key={p.slug}
+                                        active={activePersona === p.slug}
+                                        onClick={() => setActivePersona(p.slug)}
+                                    >
+                                        {p.labelVi || p.label}
+                                    </Chip>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Step 2: Monthly spend */}
-                    <div>
-                        <h2 className="text-label text-text-muted mb-4">Chi tiêu hàng tháng khoảng bao nhiêu?</h2>
-                        <div className="flex flex-wrap gap-2">
-                            {[1, 3, 5, 10, 20, 50, 100].map(v => (
-                                <Chip key={v} active={monthlySpend === v} onClick={() => setMonthlySpend(v)}>
-                                    {v}tr
-                                </Chip>
-                            ))}
+                        {/* Step 2: Monthly spend */}
+                        <div>
+                            <h2 className="text-body-lg text-text-muted mb-4">Chi tiêu hàng tháng khoảng bao
+                                nhiêu?</h2>
+                            <div className="flex flex-wrap gap-2">
+                                {[1, 3, 5, 10, 20, 50, 100].map(v => (
+                                    <Chip key={v} active={monthlySpend === v} onClick={() => setMonthlySpend(v)}>
+                                        {v}tr
+                                    </Chip>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Right: results */}
-                <div>
-                    <div className="flex items-center justify-between mb-4">
+                <div className="lg:col-span-7">
+                    <div className="flex items-center flex-wrap justify-between mb-4 gap-3">
                         <p className="text-label text-text-muted">KẾT QUẢ ĐỀ XUẤT</p>
-                        <div className="flex gap-1">
+                        <div className="flex flex-wrap gap-1">
                             <Chip active={rankBy === 'cashback'} onClick={() => setRankBy('cashback')}>
                                 Hoàn tiền cao nhất
                             </Chip>

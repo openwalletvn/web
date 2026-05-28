@@ -56,11 +56,11 @@ export function RankedRow({ranked, muted = false, viewTransitionName, intentMap,
             </div>
 
             {/*row 2*/}
-            <div className="grid grid-cols-12 gap-3 flex-wrap">
+            <div className="grid sm:grid-cols-12 gap-3 flex-wrap">
                 {/*left col*/}
                 <div className="col-span-6 flex gap-3">
-                    <Link href={`/the/${card.id}`} className="shrink-0 w-16 sm:w-20">
-                        <CardImage card={card} className="w-16 sm:w-20"/>
+                    <Link href={`/the/${card.id}`} className="shrink-0 w-24 sm:w-32">
+                        <CardImage card={card} className="w-24 sm:w-32"/>
                     </Link>
                     <div className="flex-1 min-w-0">
                         <Link href={`/the/${card.id}`}
@@ -104,10 +104,14 @@ export function RankedRow({ranked, muted = false, viewTransitionName, intentMap,
                                 {rank_reason}
                             </span>
                         )}
+
+                        <div className="sm:hidden">
+                            <CashbackDisplay ranked={ranked} intentSlug={intentSlug} intentMap={intentMap}/>
+                        </div>
                     </div>
                 </div>
                 {/*right col*/}
-                <div className="col-span-6 text-right">
+                <div className="col-span-6 sm:text-right hidden sm:block">
                     <CashbackDisplay ranked={ranked} intentSlug={intentSlug} intentMap={intentMap}/>
                 </div>
             </div>

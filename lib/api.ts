@@ -133,6 +133,7 @@ export interface Persona {
     slug: string;
     label: string;
     note?: string;
+    labelVi?: string;
     rankIntents?: string[];
 }
 
