@@ -53,10 +53,24 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 - **No em dashes (—):** Never use em dashes in any page content or metadata. Replace with a comma, colon, parentheses, or restructure the sentence. Em dashes are a visible AI writing signal.
 - **Tone for public pages:** Professional and honest, not corporate or casual. Use "chúng tôi" consistently. Avoid overly informal phrasing.
 
-## Chat feature status
+## Feature gate status
 
+### Wallet app (`/app/*`) — FROZEN
+- Routes return 404 unless `WALLET_ENABLED=true` env var is set.
+- Gate is in `app/app/layout.tsx` (server component) → calls `notFound()`.
+- Shell code lives in `app/app/app-shell.tsx` (client component, untouched).
+- `WalletNavButton` component exists but is not used anywhere — do not add it to nav.
+- Do not delete wallet code. May revive later. ROI currently too low vs competitors.
+- `public/robots.txt` has `Disallow: /app`. Keep this.
+
+### Chat (`/chat`, `openwallet-chat`)
 - **Chat button hidden** — `ChatToggleButton` removed from `components/layout/header.tsx` (both desktop + mobile). Do not re-add unless explicitly requested.
-- **`/app` not indexed** — `public/robots.txt` has `Disallow: /app`. Keep this. The wallet app is local-first and should never be crawled.
+- Not ready for public release. Needs evals + system prompt iteration first.
+- See `evals/` folder for eval harness.
+
+### `so-sanh-404-redirect`
+- Active. Handles legacy `/card-battle/X-vs-Y` URLs → redirects to `/card-battle?compare=X,Y`.
+- Lives in `components/layout/so-sanh-404-redirect.tsx`, used in `app/not-found.tsx`. Do not remove.
 
 ## Card ranking
 
