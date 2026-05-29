@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Card, CardFees, Intent } from '@/lib/api';
 import { getNetworkImageUrl } from '@/lib/api';
 import { CompareDueDateRow } from './compare-due-date-row';
-import { NetworkBadge } from '@/components/shared/network-badge';
+import { NetworkBadge } from '@/components/shared/badges/network-badge';
 
 const empty = <span className="text-slate-300">—</span>;
 

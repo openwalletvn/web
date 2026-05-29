@@ -1,5 +1,5 @@
 import type { Card } from '@/lib/api';
-import { CardTile } from '@/components/cards/variants/card-tile';
+import { CardDisplay } from '@/components/cards/variants/card-display';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -19,7 +19,7 @@ export function CompareSuggestedCards({
  <h2 className="text-card-heading mb-6">Có thể bạn muốn xem</h2>
  <div className={cn('grid', gridClassName, 'gap-6')}>
  {cards.map((card) => (
- <CardTile key={card.id} card={card} />
+ <CardDisplay variant="tile" key={card.id} card={card} />
  ))}
  </div>
  </div>

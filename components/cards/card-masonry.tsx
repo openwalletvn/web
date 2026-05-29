@@ -2,7 +2,7 @@
 
 import Masonry from 'react-masonry-css';
 import type { Card } from '@/lib/api';
-import { CardTile } from '@/components/cards/variants/card-tile';
+import { CardDisplay } from '@/components/cards/variants/card-display';
 
 const breakpointCols = { default: 5, 1023: 4, 767: 3, 639: 2 };
 
@@ -15,7 +15,7 @@ export function CardMasonry({ cards }: { cards: Card[] }) {
     >
       {cards.map((card) => (
         <div key={card.id} className="mb-8">
-          <CardTile card={card} />
+          <CardDisplay variant="tile" card={card} />
         </div>
       ))}
     </Masonry>

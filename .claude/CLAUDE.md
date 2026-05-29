@@ -100,3 +100,5 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 
 @.claude/docs/architecture.md
 @.claude/docs/layout.md
+@.claude/docs/DESIGN.md
+@.claude/docs/design-system.md

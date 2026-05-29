@@ -1,6 +1,6 @@
 import type { Card } from '@/lib/api';
 import { getCard } from '@/lib/api';
-import { CardSlim } from '@/components/cards/variants/card-slim';
+import { CardDisplay } from '@/components/cards/variants/card-display';
 
 interface Props {
   cardSlugs: string[];
@@ -27,7 +27,7 @@ export async function SidebarRelatedCards({ cardSlugs }: Props) {
       <div className="flex flex-col">
         {cards.map((card, i) => (
           <div key={card.id} className={i > 0 ? 'border-t border-dashed border-slate-100' : ''}>
-            <CardSlim card={card} showThumb badges={{ fee: true }} />
+            <CardDisplay variant="slim" card={card} showThumb badges={{ fee: true }} />
           </div>
         ))}
       </div>

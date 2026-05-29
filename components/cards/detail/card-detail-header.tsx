@@ -1,10 +1,10 @@
 import type { Card, Bank } from '@/lib/api';
-import { MetalBadge } from '@/components/cards/metal-badge';
+import { MetalBadge } from '@/components/shared/badges/metal-badge';
 import { CoBrandDisplay } from '@/components/cards/co-brand-display';
-import { BankDisplay } from '@/components/shared/bank-display';
-import { NetworkBadge } from '@/components/shared/network-badge';
-import { CardTypeBadges } from '@/components/shared/card-type-badge';
-import { ContactlessBadge } from '@/components/shared/contactless-badge';
+import { BankDisplay } from '@/components/shared/badges/bank-display';
+import { NetworkBadge } from '@/components/shared/badges/network-badge';
+import { CardTypeBadges } from '@/components/shared/badges/card-type-badge';
+import { ContactlessBadge } from '@/components/shared/badges/contactless-badge';
 
 interface Props {
     card: Card;

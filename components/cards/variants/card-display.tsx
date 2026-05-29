@@ -1,14 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { IconExternalLink, IconBuildingBank, IconScale } from '@tabler/icons-react';
 import type { Card, Bank } from '@/lib/api';
 import { getBankImageUrl } from '@/lib/api';
 import { CardImage } from '@/components/cards/card-image';
-import { MetalBadge } from '@/components/cards/metal-badge';
-import { NetworkBadge } from '@/components/shared/network-badge';
-import { CardTypeBadges } from '@/components/shared/card-type-badge';
+import { MetalBadge } from '@/components/shared/badges/metal-badge';
+import { NetworkBadge } from '@/components/shared/badges/network-badge';
+import { CardTypeBadges } from '@/components/shared/badges/card-type-badge';
 import { useCompareList } from '@/lib/use-compare-list';
 
 interface BadgeConfig {
@@ -19,25 +20,55 @@ interface BadgeConfig {
     fee?: boolean;
 }
 
-interface Props {
+interface BaseProps {
     card: Card;
     bank?: Bank | null;
-    href?: string;
-    badge?: string;
     badges?: BadgeConfig;
-    showActions?: boolean;
     className?: string;
 }
 
-export function CardTile({
-    card,
-    bank: bankProp,
-    href,
-    badge,
-    badges = {},
-    showActions = true,
-    className,
-}: Props) {
+interface TileProps extends BaseProps {
+    variant: 'tile';
+    href?: string;
+    badge?: string;
+    showActions?: boolean;
+}
+
+interface RowProps extends BaseProps {
+    variant: 'row';
+    slot?: ReactNode;
+}
+
+interface SlimProps extends BaseProps {
+    variant: 'slim';
+    showThumb?: boolean;
+    asLink?: boolean;
+}
+
+interface InlineProps extends BaseProps {
+    variant: 'inline';
+    showLogo?: boolean;
+    asLink?: boolean;
+}
+
+type Props = TileProps | RowProps | SlimProps | InlineProps;
+
+export function CardDisplay(props: Props) {
+    const { card, bank: bankProp, badges = {}, className } = props;
+
+    if (props.variant === 'tile') {
+        return <CardDisplayTile {...props} className={className} />;
+    }
+    if (props.variant === 'row') {
+        return <CardDisplayRow {...props} className={className} />;
+    }
+    if (props.variant === 'slim') {
+        return <CardDisplaySlim {...props} className={className} />;
+    }
+    return <CardDisplayInline {...props} className={className} />;
+}
+
+function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showActions = true, className }: Omit<TileProps, 'variant'>) {
     const bank = bankProp !== undefined ? bankProp : (card.bank_data ?? null);
     const isVertical = card.image?.orientation === 'vertical';
     const { isInCompare, toggleCompare, isFull } = useCompareList();
@@ -61,13 +92,12 @@ export function CardTile({
 
     return (
         <div
-            className={cn("ow-card-tile flex flex-col gap-2 group relative cursor-pointer", className)}
+            className={cn("ow-card-display flex flex-col gap-2 group relative cursor-pointer", className)}
             style={{
                 // @ts-ignore
                 '--glow-color': bank?.brand_color ? hexToRgba(bank.brand_color, 0.45) : 'rgba(0,0,0,0.45)',
             }}
         >
-            {/* Card image with tilt + glow */}
             <div className="relative">
                 {badge && (
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full z-10 flex flex-col items-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
@@ -95,7 +125,6 @@ export function CardTile({
             </div>
 
             <div className="relative min-h-[80px]">
-                {/* Text content - fades out on hover */}
                 <div className="transition-opacity duration-150 group-hover:opacity-0">
                     <p className="font-medium text-slate-800 leading-tight">{card.name}</p>
                     {fee && card.fees?.annual != null && (
@@ -117,7 +146,6 @@ export function CardTile({
                     </div>
                 </div>
 
-                {/* Circle buttons - fade in on hover */}
                 {showActions && (
                     <div className="absolute inset-0 flex items-center justify-start gap-3">
                         <div className="flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-y-0">
@@ -151,7 +179,7 @@ export function CardTile({
                         <div className="flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-150 delay-[160ms] group-hover:opacity-100 group-hover:translate-y-0">
                             <button
                                 type="button"
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(card.id, {name: card.name, image_url: card.image?.url ?? null}); }}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(card.id, { name: card.name, image_url: card.image?.url ?? null }); }}
                                 disabled={isFull && !inCompare}
                                 className={cn('flex items-center justify-center size-10 rounded-full bg-white border border-dashed shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed', inCompare ? 'border-primary text-primary' : 'border-slate-300 text-slate-600 hover:border-brand-blue hover:text-brand-blue')}
                                 title={inCompare ? 'Bỏ so sánh' : 'So sánh'}
@@ -165,4 +193,121 @@ export function CardTile({
             </div>
         </div>
     );
+}
+
+function CardDisplayRow({ card, bank, badges = {}, slot, className }: Omit<RowProps, 'variant'>) {
+    const { network = true, type = true, metal = false, status = false } = badges;
+    const isVertical = card.image?.orientation === 'vertical';
+
+    return (
+        <div className={cn("ow-card-display flex items-center gap-3", className)}>
+            <div className="shrink-0 w-20">
+                {isVertical ? (
+                    <div className="h-20 flex justify-center items-center">
+                        <CardImage card={card} className="h-full w-auto" />
+                    </div>
+                ) : (
+                    <div className="w-full flex justify-center items-center">
+                        <CardImage card={card} className="w-full" />
+                    </div>
+                )}
+            </div>
+
+            <div className="flex-1 min-w-0">
+                <p className="font-medium leading-tight truncate text-sm text-slate-900">{card.name}</p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                    {status && card.status === 'discontinued' && (
+                        <span className="px-1.5 py-0.5 border border-dashed border-amber-400 text-amber-600 bg-amber-50 text-[11px]">
+                            Dừng phát hành
+                        </span>
+                    )}
+                    {network && <NetworkBadge card={card} />}
+                    {type && <CardTypeBadges types={card.card_type} />}
+                    {metal && card.is_metal && <MetalBadge />}
+                </div>
+            </div>
+
+            {slot != null && <div className="shrink-0 flex items-center gap-2">{slot}</div>}
+        </div>
+    );
+}
+
+function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = true, className }: Omit<SlimProps, 'variant'>) {
+    const { network = true, type = false, fee = false } = badges;
+    const isVertical = card.image?.orientation === 'vertical';
+
+    const feeLabel = card.fees?.annual == null
+        ? null
+        : card.fees.annual.amount === 0
+            ? 'Miễn phí'
+            : `${card.fees.annual.amount.toLocaleString('vi-VN')} ${card.currency ?? 'VND'}`;
+
+    const content = (
+        <>
+            {showThumb && (
+                isVertical ? (
+                    <div className="w-24 h-20 shrink-0 flex items-center justify-center">
+                        <CardImage card={card} className="h-full w-auto" />
+                    </div>
+                ) : (
+                    <div className="w-24 shrink-0">
+                        <CardImage card={card} />
+                    </div>
+                )
+            )}
+
+            <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-slate-800 leading-tight line-clamp-2 group-hover:text-brand-blue transition-colors">
+                    {card.name}
+                </p>
+                {fee && feeLabel && (
+                    <p className="text-[11px] text-slate-400 mt-0.5">{feeLabel}</p>
+                )}
+                <div className="flex flex-wrap gap-1 mt-1">
+                    {card.status === 'discontinued' && (
+                        <span className="text-[10px] px-1.5 py-0.5 border border-dashed border-amber-300 text-amber-600 bg-amber-50 rounded-sm leading-none">
+                            Dừng phát hành
+                        </span>
+                    )}
+                    {network && <NetworkBadge card={card} />}
+                    {type && <CardTypeBadges types={card.card_type} />}
+                    {card.is_metal && <MetalBadge />}
+                </div>
+            </div>
+        </>
+    );
+
+    if (asLink) {
+        return (
+            <Link
+                href={`/the/${card.id}`}
+                className={cn("ow-card-display flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50/60 transition-colors group", className)}
+            >
+                {content}
+            </Link>
+        );
+    }
+
+    return <div className={cn("ow-card-display flex items-center gap-2.5", className)}>{content}</div>;
+}
+
+function CardDisplayInline({ card, badges = {}, showLogo = true, asLink = false, className }: Omit<InlineProps, 'variant'>) {
+    const { network = true } = badges;
+
+    const content = (
+        <span className="inline-flex items-center gap-2">
+            <span className="font-medium text-slate-800">{card.name}</span>
+            {network && <NetworkBadge card={card} variant={showLogo ? 'slim' : 'full'} />}
+        </span>
+    );
+
+    if (asLink) {
+        return (
+            <Link href={`/the/${card.id}`} className={cn("ow-card-display hover:text-brand-blue transition-colors", className)}>
+                {content}
+            </Link>
+        );
+    }
+
+    return <span className={cn("ow-card-display", className)}>{content}</span>;
 }

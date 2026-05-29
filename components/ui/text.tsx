@@ -1,0 +1,27 @@
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+
+type TextVariant = 'body-lg' | 'body-md' | 'body' | 'body-sm' | 'label' | 'nav';
+
+interface Props extends React.ComponentProps<'p'> {
+    variant?: TextVariant;
+    as?: 'p' | 'span' | 'div' | 'li';
+}
+
+const variantClass: Record<TextVariant, string> = {
+    'body-lg': 'text-body-lg',
+    'body-md': 'text-body-md',
+    'body':    'text-body',
+    'body-sm': 'text-body-sm',
+    'label':   'text-label',
+    'nav':     'text-nav',
+};
+
+export function Text({ variant = 'body', as: Tag = 'p', className, ...props }: Props) {
+    return (
+        <Tag
+            className={cn('ow-text', variantClass[variant], className)}
+            {...props}
+        />
+    );
+}
