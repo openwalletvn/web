@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 type TextVariant = 'body-lg' | 'body-md' | 'body' | 'body-sm' | 'label' | 'nav';
 
-interface Props extends React.ComponentProps<'p'> {
+interface Props extends React.HTMLAttributes<HTMLElement> {
     variant?: TextVariant;
     as?: 'p' | 'span' | 'div' | 'li';
 }
@@ -18,8 +18,9 @@ const variantClass: Record<TextVariant, string> = {
 };
 
 export function Text({ variant = 'body', as: Tag = 'p', className, ...props }: Props) {
+    const Component = Tag as 'p';
     return (
-        <Tag
+        <Component
             className={cn('ow-text', variantClass[variant], className)}
             {...props}
         />

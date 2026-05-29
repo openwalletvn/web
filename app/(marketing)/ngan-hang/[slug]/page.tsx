@@ -100,7 +100,7 @@ export default async function BankPage({params}: Props) {
                         <NetworkDistributionBar
                             networkCounts={bank.stats.network_counts}
                             networksData={bank.networks_data}
-                            totalCards={bank.stats.card_count}
+                            totalCards={bank.stats.card_count ?? 0}
                         />
                     )}
 

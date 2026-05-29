@@ -783,12 +783,39 @@ export interface components {
              */
             icon: string;
         };
+        /** @description A spend tier for tiered cashback rates. */
+        SpendTier: {
+            /**
+             * @description Minimum spend (VND) to unlock this tier rate.
+             * @example 5000000
+             */
+            min_spend: number;
+            /**
+             * @description Cashback rate as decimal for this tier.
+             * @example 0.1
+             */
+            rate: number;
+            /**
+             * @description VND cap for this tier. Absent = uncapped.
+             * @example 200000
+             */
+            cap?: number;
+        };
         CashbackCap: {
             /**
              * @description Cap amount in VND. Use -1 for explicitly unlimited. Positive integer for a hard ceiling.
              * @example 300000
              */
             amount: number;
+            /**
+             * @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher.
+             * @example {
+             *       "insurance": 400000
+             *     }
+             */
+            category_caps?: {
+                [key: string]: number;
+            };
         };
         /** @description A single cashback earning rule. Rules are ordered — first matching rule wins per intent. */
         CashbackRule: {
@@ -827,6 +854,8 @@ export interface components {
              * @example 1
              */
             max_intents?: number;
+            /** @description Spend-tiered rates. When present, rate/cap are display-only summaries of the best tier. */
+            tiers?: components["schemas"]["SpendTier"][];
             /**
              * @description Free-text for unlock conditions, user-selectable mechanics, exclusions, or tier details that do not fit structured fields. Always in Vietnamese.
              * @example Khách hàng chọn 1 danh mục mỗi kỳ sao kê
@@ -853,6 +882,8 @@ export interface components {
         CashbackBenefit: {
             /** @description Ordered list of cashback rules. Specific rules first (merchants/specific intents), catch-all last. */
             rules: components["schemas"]["CashbackRule"][];
+            /** @description True = rules are mutually exclusive packages; cardholder picks one at issuance. */
+            package_exclusive?: boolean;
             /** @description Total cashback ceiling across all rules per statement period. */
             global_cap?: components["schemas"]["CashbackCap"];
             /** @description Best achievable global cap when tiered. */
@@ -956,6 +987,11 @@ export interface components {
                  * @enum {string}
                  */
                 orientation?: "horizontal" | "vertical";
+                /**
+                 * @description Low quality image placeholder (base64 data URL or blurred preview URL).
+                 * @example data:image/webp;base64,...
+                 */
+                lqip?: string;
             } | null;
             /** @example bidv */
             bank_id: string;
@@ -1000,7 +1036,7 @@ export interface components {
              *       "credit"
              *     ]
              */
-            card_type: ("credit" | "debit")[];
+            card_type: ("credit" | "debit" | "prepaid" | "transit" | "atm" | "2in1" | "co-branded")[];
             /**
              * @description Default statement date (day of month)
              * @example 5
@@ -1174,7 +1210,7 @@ export interface operations {
                 /** @description Fuzzy text search across card name, id, and bank_id. Supports partial words, token reordering, and typos (e.g. "msb family", "vib plat", "msb card family"). Results are ranked by relevance. */
                 q?: string;
                 /** @description Filter by card type (comma-separated OR, e.g. "credit,debit"). "2in1" returns cards with both credit and debit types. "co-branded" returns cards that have a co-brand partner. */
-                type?: "credit" | "debit" | "2in1" | "co-branded";
+                type?: "credit" | "debit" | "prepaid" | "transit" | "atm" | "2in1" | "co-branded" | "2in1" | "co-branded";
                 /** @description Filter by card network (comma-separated OR, e.g. "visa,mastercard") */
                 network?: "visa" | "mastercard" | "jcb" | "napas" | "amex" | "unionpay";
                 /** @description Filter by bank ID (comma-separated OR, e.g. "bidv,techcombank") */
@@ -2046,3 +2082,4 @@ export type Intent = components['schemas']['Intent']
 export type IntentGroupNode = components['schemas']['IntentGroupNode']
 export type Persona = components['schemas']['Persona']
 export type RuleScope = components['schemas']['RuleScope']
+export type SpendTier = components['schemas']['SpendTier']

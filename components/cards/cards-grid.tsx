@@ -173,7 +173,7 @@ function CardsGridInner({
  if (tier) result = result.filter((c) => c.card_tier === tier);
  if (bankId) result = result.filter((c) => c.bank_id === bankId);
  if (coBrand) result = result.filter((c) => c.co_brand === coBrand);
- if (contactless) result = result.filter((c) => c.contactless_methods?.includes(contactless));
+ if (contactless) result = result.filter((c) => c.contactless_methods?.includes(contactless as never));
  if (fee === 'free') result = result.filter((c) => c.fees?.annual?.amount === 0);
  if (fee === 'unknown') result = result.filter((c) => c.fees?.annual == null);
  const bucket = FEE_BUCKETS.find((b) => b.value === fee);

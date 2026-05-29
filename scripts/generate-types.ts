@@ -29,11 +29,11 @@ async function main() {
   const url = new URL('/openapi.json', apiUrl)
   console.log(`Fetching schema from ${url}...`)
 
-  const ast = await openapiTS(url, {
-    fetchOptions: {
-      headers: { 'X-OpenWallet-Key': apiKey! },
-    },
-  })
+  const res = await fetch(url, { headers: { 'X-OpenWallet-Key': apiKey! } })
+  if (!res.ok) throw new Error(`Failed to fetch schema: ${res.status} ${res.statusText}`)
+  const schema = await res.json()
+
+  const ast = await openapiTS(schema as Parameters<typeof openapiTS>[0])
 
   const raw = astToString(ast)
 
@@ -61,6 +61,7 @@ export type Intent = components['schemas']['Intent']
 export type IntentGroupNode = components['schemas']['IntentGroupNode']
 export type Persona = components['schemas']['Persona']
 export type RuleScope = components['schemas']['RuleScope']
+export type SpendTier = components['schemas']['SpendTier']
 `
 
   const outPath = resolve(process.cwd(), 'lib/api-types.generated.ts')

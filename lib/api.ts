@@ -1,19 +1,3 @@
-import type {
-    Bank,
-    Brand,
-    Card,
-    CashbackCategory,
-    FeeEntry,
-    FeeEntryWithWaiver,
-    FeeWaiver,
-    Intent,
-    IntentGroupNode,
-    Merchant,
-    Network,
-    Persona,
-    RuleScope,
-} from './api-types.generated'
-
 export type {
     Card,
     Bank,
@@ -23,33 +7,31 @@ export type {
     FeeWaiver,
     FeeEntryWithWaiver,
     CashbackCategory,
+    CashbackCap,
+    CashbackRule,
+    CashbackBenefit,
+    SpendTier,
     Merchant,
     Intent,
     IntentGroupNode,
     Persona,
     RuleScope,
-}
+    Contactless,
+} from './api-types.generated'
 
-export type {Contactless} from './api-types.generated'
-
-// Types not in OpenAPI spec — kept here
-export interface CardTierData {
-    id: string;
-    rank: number | null;
-}
-
-export type CardTierOrder = Record<string, string[]>;
-
-export interface BankStats {
-    card_count: number;
-    credit_count: number;
-    debit_count: number;
-    hybrid_count: number;
-    co_branded_count: number;
-    free_annual_fee_count: number;
-    max_annual_fee?: number;
-    network_counts: Record<string, number>;
-}
+import type {
+    Card,
+    Bank,
+    Network,
+    Brand,
+    FeeEntry,
+    FeeEntryWithWaiver,
+    CashbackCategory,
+    Merchant,
+    Intent,
+    IntentGroupNode,
+    Persona,
+} from './api-types.generated'
 
 export type CardNetwork = 'visa' | 'mastercard' | 'jcb' | 'napas' | 'amex' | 'unionpay';
 export type CardType = 'credit' | 'debit' | 'prepaid' | 'transit' | 'atm' | '2in1' | 'co-branded';
@@ -63,12 +45,12 @@ export interface CardImage {
 }
 
 export interface CardFees {
-    annual?: import('./api-types.generated').FeeEntryWithWaiver;
-    annual_supplementary?: import('./api-types.generated').FeeEntry;
-    issuance?: import('./api-types.generated').FeeEntry;
-    cancellation?: import('./api-types.generated').FeeEntry;
-    foreign?: import('./api-types.generated').FeeEntry;
-    foreign_dcc?: import('./api-types.generated').FeeEntry;
+    annual?: FeeEntryWithWaiver;
+    annual_supplementary?: FeeEntry;
+    issuance?: FeeEntry;
+    cancellation?: FeeEntry;
+    foreign?: FeeEntry;
+    foreign_dcc?: FeeEntry;
 }
 
 export interface CardSource {
@@ -78,46 +60,6 @@ export interface CardSource {
 }
 
 export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'points_pool'
-
-export interface SpendTier {
-    min_spend: number;
-    rate: number;
-    cap?: number;
-}
-
-export interface CashbackRuleScope {
-    channel?: 'online' | 'offline';
-    geography?: 'foreign' | 'domestic' | string;
-}
-
-// Extended types: OpenAPI spec omits these fields; kept local until spec is updated
-export interface CashbackCap {
-    amount: number;
-    category_caps?: Record<string, number>;
-}
-
-export interface CashbackRule {
-    rate: number;
-    rate_max?: number;
-    cap?: CashbackCap;
-    cap_max?: CashbackCap;
-    intents?: string[];
-    merchants?: string[];
-    max_intents?: number;
-    tiers?: SpendTier[];
-    scope?: RuleScope;
-    note?: string;
-}
-
-export interface CashbackBenefit {
-    rules: CashbackRule[];
-    package_exclusive?: boolean;
-    global_cap?: CashbackCap;
-    global_cap_max?: CashbackCap;
-    min_spend_per_period?: number;
-    redemption?: CashbackRedemption;
-    note?: string;
-}
 
 export type CardSort = 'fee_asc' | 'fee_desc';
 
@@ -408,17 +350,6 @@ interface RelatedCardsResponse {
     meta: { total: number; card_id: string };
 }
 
-interface TierOrderResponse {
-    success: boolean;
-    data: CardTierOrder;
-}
-
-export async function getTiers(): Promise<CardTierOrder> {
-    const res = await apiFetch('/api/v1/tiers');
-    const json = (await res.json()) as TierOrderResponse;
-    if (!json.success) throw new Error('Failed to fetch tiers');
-    return json.data;
-}
 
 export async function getComparePairs(): Promise<ComparePair[]> {
     const res = await apiFetch('/api/v1/compare-pairs');
