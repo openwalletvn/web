@@ -84,7 +84,7 @@ export async function Header() {
                     </div>
                     <div className="xl:hidden flex items-center">
                         <SearchDialog mobileOnly/>
-                        <MobileNav banks={banks}/>
+                        <MobileNav/>
                     </div>
                 </div>
 

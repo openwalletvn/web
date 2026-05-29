@@ -1,171 +1,155 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { IconMenu2, IconChevronDown } from '@tabler/icons-react';
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
-import { getBankImageUrl, type Bank } from '@/lib/api';
-import { MENU, isDropdown } from '@/lib/menu';
-import { ROUTES } from '@/lib/routes';
+import {useState} from 'react';
+import {usePathname} from 'next/navigation';
+import {IconMenu2, IconChevronDown} from '@tabler/icons-react';
+import {Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle} from '@/components/ui/sheet';
+import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/ui/collapsible';
+import {cn} from '@/lib/utils';
+import {ROUTES} from '@/lib/routes';
+import {TOOLS} from '@/lib/tools';
+import {CARD_CATEGORIES} from '@/lib/card-categories';
 
-interface Props {
-  banks: Bank[];
-}
+const PERSONA_ITEMS = CARD_CATEGORIES.slice(0, 6);
 
-export function MobileNav({ banks }: Props) {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+const PLAIN_LINKS = [
+    {label: 'Ngân hàng', href: ROUTES.banks},
+    {label: 'Tin tức', href: ROUTES.blog},
+    {label: 'Về chúng tôi', href: '/ve-openwallet'},
+];
 
-  const close = () => setOpen(false);
+export function MobileNav() {
+    const pathname = usePathname();
+    const [open, setOpen] = useState(false);
+    const close = () => setOpen(false);
 
-  return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <button className="p-2 text-slate-600 hover:text-slate-900" aria-label="Open menu">
-          <IconMenu2 className="w-5 h-5" aria-hidden="true" />
-        </button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-72 overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="text-left">
-            <Link href="/" onClick={close} className="font-bold text-slate-900">Open Wallet</Link>
-          </SheetTitle>
-        </SheetHeader>
+    const cardsActive = pathname.startsWith(ROUTES.cards) || pathname.startsWith('/the-theo-nhu-cau');
+    const toolsActive = TOOLS.some((t) => pathname.startsWith(t.href));
 
-        <nav className="mt-6 flex flex-col gap-1">
-          {MENU.map((item, index) => {
-            if (isDropdown(item)) {
-              // Dropdown item
-              if (item.type === 'banks') {
-                // Banks dropdown with dynamic content
-                return (
-                  <Collapsible key={index} defaultOpen={pathname.startsWith(ROUTES.banks)}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                      <span className={cn(pathname.startsWith(ROUTES.banks) && 'text-brand-red')}>
-                        {item.label}
-                      </span>
-                      <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <div className="mt-1 ml-3 grid grid-cols-3 gap-1 max-h-64 overflow-y-auto pr-1">
-                        {banks.map((bank) => (
-                          <Link
-                            key={bank.id}
-                            href={ROUTES.bank(bank.id)}
-                            onClick={close}
-                            className="flex flex-col items-center gap-1 p-2 rounded-md hover:bg-slate-100 transition-colors"
-                          >
-                            <div className="relative w-8 h-8">
-                              <Image src={getBankImageUrl(bank.logo_url)} alt="" fill className="object-contain" />
+    return (
+        <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+                <button className="p-2 text-slate-600 hover:text-slate-900" aria-label="Open menu">
+                    <IconMenu2 className="w-5 h-5" aria-hidden="true"/>
+                </button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-72 overflow-y-auto">
+                <SheetHeader>
+                    <SheetTitle className="text-left">
+                        <Link href="/" onClick={close} className="font-bold text-slate-900">OpenWallet</Link>
+                    </SheetTitle>
+                </SheetHeader>
+
+                <nav className="mt-6 flex flex-col gap-1">
+
+                    {/* Ngân hàng */}
+                    <Link
+                        href={ROUTES.banks}
+                        onClick={close}
+                        className={cn(
+                            'px-3 py-2 rounded-md text-base font-medium transition-colors',
+                            pathname.startsWith(ROUTES.banks) ? 'text-brand-red' : 'text-slate-700 hover:bg-slate-100'
+                        )}
+                    >
+                        Ngân hàng
+                    </Link>
+
+                    {/* Thẻ — collapsible */}
+                    <Collapsible defaultOpen={cardsActive}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+                            <span className={cn(cardsActive && 'text-brand-red')}>Thẻ</span>
+                            <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true"/>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <div className="mt-1 ml-3 flex flex-col gap-1">
+                                <p className="px-2 pt-1 text-xs font-semibold text-slate-400 uppercase tracking-widest">
+                                    Thẻ theo nhu cầu
+                                </p>
+                                {PERSONA_ITEMS.map((item) => (
+                                    <Link
+                                        key={item.slug}
+                                        href={item.href}
+                                        onClick={close}
+                                        className={cn(
+                                            'px-2 py-1.5 rounded-md text-sm transition-colors',
+                                            pathname.startsWith(item.href)
+                                                ? 'text-brand-red'
+                                                : 'text-slate-700 hover:text-brand-red'
+                                        )}
+                                    >
+                                        {item.name}
+                                    </Link>
+                                ))}
+                                <Link
+                                    href="/the-theo-nhu-cau"
+                                    onClick={close}
+                                    className="px-2 py-1.5 text-sm font-semibold text-brand-red hover:underline"
+                                >
+                                    Xem tất cả nhu cầu →
+                                </Link>
+                                <div className="border-t border-slate-100 mt-1 pt-1">
+                                    <Link
+                                        href={ROUTES.cards}
+                                        onClick={close}
+                                        className={cn(
+                                            'block px-2 py-1.5 rounded-md text-sm transition-colors',
+                                            pathname === ROUTES.cards
+                                                ? 'text-brand-red'
+                                                : 'text-slate-700 hover:text-brand-red'
+                                        )}
+                                    >
+                                        Xem tất cả thẻ
+                                    </Link>
+                                </div>
                             </div>
-                            <span className="text-base text-slate-600 text-center leading-tight line-clamp-2">
-                              {bank.name}
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                      {item.footerLink && (
+                        </CollapsibleContent>
+                    </Collapsible>
+
+                    {/* Tin tức, Về chúng tôi */}
+                    {PLAIN_LINKS.slice(1).map((item) => (
                         <Link
-                          href={item.footerLink.href}
-                          onClick={close}
-                          className="block mt-2 ml-3 text-base text-brand-red hover:underline font-medium"
-                        >
-                          {item.footerLink.label}
-                        </Link>
-                      )}
-                    </CollapsibleContent>
-                  </Collapsible>
-                );
-              } else if (item.items) {
-                // Simple items list (e.g. Công cụ)
-                const isActive = item.items.some((t) => pathname.startsWith(t.href));
-                return (
-                  <Collapsible key={index} defaultOpen={isActive}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                      <span className={cn(isActive && 'text-brand-red')}>{item.label}</span>
-                      <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <div className="mt-1 ml-3 flex flex-col gap-1">
-                        {item.items.map((tool) => (
-                          <Link
-                            key={tool.href}
-                            href={tool.href}
+                            key={item.href}
+                            href={item.href}
                             onClick={close}
                             className={cn(
-                              'px-2 py-1 text-base transition-colors',
-                              pathname.startsWith(tool.href) ? 'text-brand-red' : 'text-slate-700 hover:text-brand-red',
+                                'px-3 py-2 rounded-md text-base font-medium transition-colors',
+                                pathname.startsWith(item.href) ? 'text-brand-red' : 'text-slate-700 hover:bg-slate-100'
                             )}
-                          >
-                            {tool.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                );
-              } else if (item.columns) {
-                // Cards or other mega menu
-                const pathPrefix = item.columns[0]?.items[0]?.href.split('/')[1];
-                const isActive = pathPrefix && pathname.startsWith(`/${pathPrefix}`);
+                        >
+                            {item.label}
+                        </Link>
+                    ))}
 
-                return (
-                  <Collapsible key={index} defaultOpen={!!isActive}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                      <span className={cn(isActive && 'text-brand-red')}>
-                        {item.label}
-                      </span>
-                      <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <div className="mt-1 ml-3 space-y-3">
-                        {item.columns.map((column, idx) => (
-                          <div key={idx}>
-                            <p className="text-base font-semibold text-slate-400 uppercase tracking-wide mb-1 px-2">
-                              {column.title}
-                            </p>
-                            {column.items.map((subItem) => (
-                              <Link
-                                key={subItem.href}
-                                href={subItem.href}
-                                onClick={close}
-                                className="block px-2 py-1 text-base text-slate-700 hover:text-brand-red transition-colors"
-                              >
-                                {subItem.label}
-                              </Link>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                );
-              }
-            } else {
-              // Simple link
-              return (
-                <Link
-                  key={index}
-                  href={item.href}
-                  onClick={close}
-                  className={cn(
-                    'px-3 py-2 rounded-md text-base font-medium transition-colors',
-                    pathname === item.href ? 'text-brand-red bg-red-50' : 'text-slate-700 hover:bg-slate-100',
-                  )}
-                >
-                  {item.label}
-                </Link>
-              );
-            }
+                    {/* Công cụ — collapsible */}
+                    <Collapsible defaultOpen={toolsActive}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+                            <span className={cn(toolsActive && 'text-brand-red')}>Công cụ</span>
+                            <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true"/>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <div className="mt-1 ml-3 flex flex-col gap-1">
+                                {TOOLS.map((tool) => (
+                                    <Link
+                                        key={tool.href}
+                                        href={tool.href}
+                                        onClick={close}
+                                        className={cn(
+                                            'px-2 py-1.5 rounded-md text-sm transition-colors',
+                                            pathname.startsWith(tool.href)
+                                                ? 'text-brand-red'
+                                                : 'text-slate-700 hover:text-brand-red'
+                                        )}
+                                    >
+                                        {tool.name}
+                                    </Link>
+                                ))}
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
 
-            return null;
-          })}
-        </nav>
-      </SheetContent>
-    </Sheet>
-  );
+                </nav>
+            </SheetContent>
+        </Sheet>
+    );
 }
