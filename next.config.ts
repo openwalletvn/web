@@ -37,6 +37,21 @@ const nextConfig: NextConfig = {
         destination: cardMatchHref,
         permanent: true,
       },
+      {
+        source: '/cards/:slug*',
+        destination: '/the/:slug*',
+        permanent: true,
+      },
+      {
+        source: '/banks/:slug*',
+        destination: '/ngan-hang/:slug*',
+        permanent: true,
+      },
+      {
+        source: '/blog/:slug*',
+        destination: '/tin-tuc/:slug*',
+        permanent: true,
+      },
     ];
   },
 };

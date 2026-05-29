@@ -2,6 +2,8 @@
 User-agent: *
 Allow: /
 Disallow: /app
+Disallow: /_next/static/
+Disallow: /*opengraph-image*
 
 # Block AI training crawlers
 User-agent: GPTBot

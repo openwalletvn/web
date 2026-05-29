@@ -69,6 +69,7 @@ export function buildCardPageMeta(card: Card, bank: Bank | null): CardPageMeta {
         metadata: {
             title,
             description,
+            alternates: {canonical: url},
             openGraph: {title, description},
             twitter: {title, description},
         },

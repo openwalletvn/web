@@ -47,6 +47,7 @@ export function buildComparePageMeta(
         metadata: {
             title,
             description,
+            alternates: {canonical: url},
             openGraph: { title, description },
             twitter: { title, description },
         },
