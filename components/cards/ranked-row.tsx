@@ -87,15 +87,35 @@ export function RankedRow({ranked, muted = false, viewTransitionName, intentMap,
                         <CardImage card={card} className="w-24 sm:w-32"/>
                     </Link>
                     <div className="flex-1 min-w-0">
-                        <Link href={`/the/${card.id}`}
-                              className={cn('text-body font-semibold truncate block hover:underline', muted ? 'text-text-muted' : 'text-black')}>
-                            {card.name}
-                        </Link>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                            <Link href={`/the/${card.id}`}
+                                  className={cn('text-body font-semibold truncate hover:underline', muted ? 'text-text-muted' : 'text-black')}>
+                                {card.name}
+                            </Link>
+                            {card.card_type && card.card_type.length > 0 && (
+                                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-bg-muted text-text-muted">
+                                    {card.card_type.includes('credit') && card.card_type.includes('debit')
+                                        ? 'Hybrid'
+                                        : card.card_type[0] === 'credit'
+                                        ? 'Tín dụng'
+                                        : card.card_type[0] === 'debit'
+                                        ? 'Ghi nợ'
+                                        : card.card_type[0] === 'prepaid'
+                                        ? 'Trả trước'
+                                        : card.card_type[0]}
+                                </span>
+                            )}
+                        </div>
                         {card.fees?.annual != null && (
                             <p className="text-body-sm text-text-muted">
                                 {card.fees.annual.amount === 0
                                     ? 'Miễn phí thường niên'
                                     : `Phí ${card.fees.annual.amount.toLocaleString('vi-VN')}đ/năm`}
+                            </p>
+                        )}
+                        {card.cashback?.min_spend_per_period != null && (
+                            <p className="text-body-sm text-text-muted">
+                                Chi tối thiểu {card.cashback.min_spend_per_period.toLocaleString('vi-VN')}đ/tháng
                             </p>
                         )}
                         {intentMap && (cardIntents.length > 0 || catchallRules.length > 0) && (

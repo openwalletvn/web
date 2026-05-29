@@ -25,7 +25,7 @@ export function CardRankingTable({initialRanked, personaSlug, title}: Props) {
                 </div>
             )}
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col sm:gap-8 gap-6">
                 {withCashback.map(r => (
                     <RankedRow
                         key={r.card.id}

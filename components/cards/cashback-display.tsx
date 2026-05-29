@@ -42,7 +42,7 @@ export function CashbackDisplay({ranked, intentSlug, intentMap}: {ranked: Ranked
     if (cashback === 0) {
         return (
             <div className="ow-cashback-display flex flex-col items-start sm:items-end gap-0.5">
-                <span className="text-body-sm text-text-muted">Chưa có ưu đãi</span>
+                <span className="text-body-sm text-text-muted">Đang cập nhật thông tin ưu đãi</span>
             </div>
         );
     }
