@@ -1,4 +1,4 @@
-import {ROUTES} from '@/lib/routes';
+import {ROUTES} from './routes';
 
 export interface Tool {
     name: string;
