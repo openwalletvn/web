@@ -16,7 +16,7 @@ export function CompareSuggestedCards({
 
  return (
  <div className="ow-compare-suggested-cards mt-16 pt-10 border-t border-slate-100">
- <h2 className="text-card-heading mb-6">Có thể bạn muốn xem</h2>
+ <h2 className="heading-3 mb-6">Có thể bạn muốn xem</h2>
  <div className={cn('grid', gridClassName, 'gap-6')}>
  {cards.map((card) => (
  <CardDisplay variant="tile" key={card.id} card={card} />

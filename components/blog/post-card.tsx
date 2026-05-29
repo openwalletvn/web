@@ -32,7 +32,7 @@ export function PostCard({ post }: Props) {
         {frontmatter.ai_generated && <AiBadge size="sm" />}
       </div>
 
-      <h2 className="text-card-heading line-clamp-2">
+      <h2 className="heading-3 line-clamp-2">
         {frontmatter.title}
       </h2>
 

@@ -75,7 +75,7 @@ export default function Page() {
 function Section({title, children}: {title: string; children: React.ReactNode}) {
     return (
         <section className="flex flex-col gap-4">
-            <h2 className="text-display-md">{title}</h2>
+            <h2 className="heading-3">{title}</h2>
             <div className="flex flex-col gap-3 text-body text-slate-700 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2 [&_ul]:pl-5 [&_ul]:list-disc [&_strong]:font-semibold">
                 {children}
             </div>

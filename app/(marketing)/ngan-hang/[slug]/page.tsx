@@ -47,7 +47,7 @@ export default async function BankPage({params}: Props) {
         return (
             <div className="flex items-center justify-center py-32 px-4">
                 <div className="text-center">
-                    <p className="text-card-heading mb-4">Không tìm thấy ngân hàng</p>
+                    <p className="heading-3 mb-4">Không tìm thấy ngân hàng</p>
                     <Link href="/ngan-hang" className="text-brand-red hover:underline">← Quay lại Ngân hàng</Link>
                 </div>
             </div>
@@ -121,7 +121,7 @@ export default async function BankPage({params}: Props) {
                             <div className={cn('grid', gridClass, 'gap-3')}>
                                 {statsItems.map(({label, value}) => (
                                     <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
-                                        <p className="text-card-heading">{value}</p>
+                                        <p className="heading-3">{value}</p>
                                         <p className="text-body-sm text-text-muted mt-1">{label}</p>
                                     </div>
                                 ))}

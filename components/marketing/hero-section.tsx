@@ -20,7 +20,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
             </svg>
 
             {/* Heading */}
-            <h1 className="text-hero text-center mb-10 px-4 relative z-20">
+            <h1 className="heading-1 text-center mb-10 px-4 relative z-20">
                 OpenWallet<br/>Tra cứu thẻ tại Việt Nam.
             </h1>
 

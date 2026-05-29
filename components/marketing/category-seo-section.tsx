@@ -22,7 +22,7 @@ export function PersonaFAQ({faqs}: {faqs: FAQ[]}) {
     return (
         <div className="ow-category-faq mt-12">
             <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
-            <h2 className="mb-3 text-card-heading">Câu hỏi thường gặp</h2>
+            <h2 className="mb-3 heading-3">Câu hỏi thường gặp</h2>
             <div className="divide-y divide-border">
                 {faqs.map(({q, a}, i) => (
                     <details key={i} className="group py-4" open>

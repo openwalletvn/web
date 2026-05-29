@@ -75,7 +75,7 @@ export function RecentCompares({ excludePair }: Props = {}) {
 
  return (
  <div className="ow-recent-compares mt-16 pt-10 border-t border-slate-100 animate-in fade-in duration-500">
- <h2 className="text-card-heading mb-4">
+ <h2 className="heading-3 mb-4">
  Đã xem gần đây
  </h2>
  <div className="divide-y divide-slate-100">

@@ -42,6 +42,8 @@
 
 ## Typography
 
+> **Implementation SSOT: `app/typography.css`** — all font sizes, weights, line heights, and breakpoints live there. This section covers intent and font families only.
+
 ### Font Families
 
 ```css
@@ -52,40 +54,28 @@ font-family: 'Cal Sans', sans-serif;
 font-family: 'Inter Tight', sans-serif;
 ```
 
-### Type Scale
+### Heading Scale
 
-#### Cal Sans (Display)
+| Tag / Class | Font | Notes |
+|---|---|---|
+| `h1`, `.heading-1` | Cal Sans | Hero heading |
+| `h2`, `.heading-2` | Cal Sans | Section heading |
+| `h3`, `.heading-3` | Cal Sans | Sub-heading |
+| `h4`, `.heading-4` | Cal Sans | Card/block heading |
+| `h5`, `.heading-5` | Cal Sans | UI label heading |
+| `h6`, `.heading-6` | Cal Sans | Small label heading |
 
-| Role | Size | Line Height | Letter Spacing | Weight |
-|---|---|---|---|---|
-| Hero | `72px` | `100%` | `-1.5px` | 400 |
-| Section heading | `56px` | `120%` | `-1px` | 400 |
-| Sub-heading | `40px` | `100%` | `-1.05517px` | 400 |
-| Card heading | `24px` | `130%` | — | 400 |
-| UI label / CTA | `18px` | `130%` | — | 400 |
-| Small display | `24px` | `100%` | `-1px` | 400 |
+Headings are responsive — all scale at the same breakpoints. See `app/typography.css`.
 
-#### Inter Tight (Body / UI)
+### Body Scale
 
-| Role | Size | Line Height | Letter Spacing | Weight |
-|---|---|---|---|---|
-| Body large | `22px` | `130%` | — | 500 |
-| Body medium | `18px` | `130%` | — | 500 |
-| Body default | `16px` | `130%` | — | 500 |
-| Body small | `14px` | `130%` | — | 500 |
-| Label / Caption | `12px` | `130%` | `1px` | 600 |
-| Nav label | `14px` | `130%` | `1px` | 600 |
-
-### Heading Tag Scale
-
-| Tag | Max Size | Font | Notes |
-|---|---|---|---|
-| `h1` | `72px` | Cal Sans | Hero only |
-| `h2` | `56px` | Cal Sans | Section headings |
-| `h3` | `24px` | Cal Sans | Card/block headings |
-| `h4` | `20px` | Cal Sans | Sub-headings |
-| `h5` | `18px` | Cal Sans | UI labels |
-| `h6` | `16px` | Cal Sans | Small labels |
+| Class | Font | Notes |
+|---|---|---|
+| `.text-body-lg` | Inter Tight | Large body |
+| `.text-body-md` | Inter Tight | Medium body / UI text |
+| `.text-body` | Inter Tight | Default body |
+| `.text-body-sm` | Inter Tight | Small body |
+| `.text-label` | Inter Tight | Uppercase caption, 600 weight |
 
 ---
 

@@ -21,7 +21,7 @@ export function CardRankingTable({initialRanked, personaSlug, title}: Props) {
         <section className="ow-card-ranking-table">
             {title && (
                 <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
-                    <h2 className="mb-0 text-card-heading">{title}</h2>
+                    <h2 className="mb-0 heading-3">{title}</h2>
                 </div>
             )}
 

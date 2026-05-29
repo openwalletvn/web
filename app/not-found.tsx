@@ -12,7 +12,7 @@ export default function NotFound() {
         <IconError404 className="size-12 text-[var(--color-text-muted)]" stroke={1.5} />
       </div>
 
-      <h2 className="text-display-md mb-3">
+      <h2 className="heading-3 mb-3">
         Trang không tồn tại
       </h2>
       <p className="text-body-sm mb-10 max-w-sm text-[var(--color-text-muted)]">
@@ -21,7 +21,7 @@ export default function NotFound() {
 
       <Link
         href="/"
-        className="text-ui inline-flex items-center rounded-[48px] bg-black px-6 py-4 text-white transition-opacity hover:opacity-80"
+        className="text-body-md inline-flex items-center rounded-[48px] bg-black px-6 py-4 text-white transition-opacity hover:opacity-80"
       >
         Về trang chủ
       </Link>

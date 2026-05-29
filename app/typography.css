@@ -1,123 +1,88 @@
 @layer base {
-    h1, h2, h3, h4, h5, h6 {
+    h1, .heading-1,
+    h2, .heading-2,
+    h3, .heading-3,
+    h4, .heading-4,
+    h5, .heading-5,
+    h6, .heading-6 {
         font-family: var(--font-display), sans-serif;
-    }
-    h1 {
-        font-size: clamp(2.5rem, 3vw, var(--text-hero));
         font-weight: 400;
-        line-height: var(--leading-tight);
-        /*letter-spacing: var(--tracking-hero);*/
     }
-    h2 {
-        font-size: clamp(1.75rem, 2vw, var(--text-section));
-        font-weight: 400;
-        line-height: var(--leading-snug);
-        /*letter-spacing: var(--tracking-section);*/
+
+    h1, .heading-1 {
+        font-size: 40px;
+        line-height: 100%;
+        letter-spacing: -1.5px;
+        @apply sm:text-[48px] lg:text-[56px] xl:text-[72px];
     }
-    h3 {
-        font-size: clamp(1.125rem, 2vw, var(--text-card-heading));
-        font-weight: 400;
-        line-height: var(--leading-normal);
+
+    h2, .heading-2 {
+        font-size: 31px;
+        line-height: 120%;
+        letter-spacing: -1px;
+        @apply sm:text-[37px] lg:text-[44px] xl:text-[56px];
     }
-    h4 {
-        font-size: clamp(1rem, 1.5vw, 1.25rem);
-        font-weight: 400;
-        line-height: var(--leading-normal);
+
+    h3, .heading-3 {
+        font-size: 23px;
+        line-height: 120%;
+        @apply sm:text-[28px] lg:text-[33px] xl:text-[42px];
     }
-    h5 {
-        font-size: clamp(1rem, 1.2vw, var(--text-ui));
-        font-weight: 400;
-        line-height: var(--leading-normal);
+
+    h4, .heading-4 {
+        font-size: 20px;
+        line-height: 130%;
+        @apply sm:text-[24px] lg:text-[28px] xl:text-[36px];
     }
-    h6 {
-        font-size: var(--text-body);
-        font-weight: 400;
-        line-height: var(--leading-normal);
+
+    h5, .heading-5 {
+        font-size: 17px;
+        line-height: 130%;
+        @apply sm:text-[20px] lg:text-[23px] xl:text-[30px];
+    }
+
+    h6, .heading-6 {
+        font-size: 14px;
+        line-height: 130%;
+        @apply sm:text-[17px] lg:text-[20px] xl:text-[26px];
     }
 }
 
 @layer utilities {
-    .text-hero {
-        font-family: var(--font-display), sans-serif;
-        font-size: clamp(2.5rem, 7vw, var(--text-hero));
-        font-weight: 400;
-        line-height: var(--leading-tight);
-        letter-spacing: var(--tracking-hero);
-    }
-
-    .text-section {
-        font-family: var(--font-display), sans-serif;
-        font-size: clamp(1.75rem, 5vw, var(--text-section));
-        font-weight: 400;
-        line-height: var(--leading-snug);
-        /*letter-spacing: var(--tracking-section);*/
-    }
-
-    .text-display-md {
-        font-family: var(--font-display), sans-serif;
-        font-size: clamp(1.5rem, 3.5vw, var(--text-display-md));
-        font-weight: 400;
-        line-height: var(--leading-tight);
-        /*letter-spacing: var(--tracking-display);*/
-    }
-
-    .text-card-heading {
-        font-family: var(--font-display), sans-serif;
-        font-size: clamp(1.125rem, 2.2vw, var(--text-card-heading));
-        font-weight: 400;
-        line-height: var(--leading-normal);
-    }
-
-    .text-ui {
-        font-family: var(--font-display), sans-serif;
-        font-size: clamp(1rem, 1.5vw, var(--text-ui));
-        font-weight: 400;
-        line-height: var(--leading-normal);
-    }
-
     .text-body-lg {
         font-family: var(--font-body), sans-serif;
-        font-size: var(--text-body-lg);
+        font-size: 22px;
         font-weight: 500;
-        line-height: var(--leading-normal);
+        line-height: 130%;
     }
 
     .text-body-md {
         font-family: var(--font-body), sans-serif;
-        font-size: var(--text-body-md);
+        font-size: 18px;
         font-weight: 500;
-        line-height: var(--leading-normal);
+        line-height: 130%;
     }
 
     .text-body {
         font-family: var(--font-body), sans-serif;
-        font-size: var(--text-body);
+        font-size: 16px;
         font-weight: 500;
-        line-height: var(--leading-normal);
+        line-height: 130%;
     }
 
     .text-body-sm {
         font-family: var(--font-body), sans-serif;
-        font-size: var(--text-body-sm);
+        font-size: 14px;
         font-weight: 500;
-        line-height: var(--leading-normal);
+        line-height: 130%;
     }
 
     .text-label {
         font-family: var(--font-body), sans-serif;
-        font-size: var(--text-label);
+        font-size: 12px;
         font-weight: 600;
-        line-height: var(--leading-normal);
-        /*letter-spacing: var(--tracking-label);*/
-        text-transform: uppercase;
-    }
-
-    .text-nav {
-        font-family: var(--font-body), sans-serif;
-        font-size: var(--text-body-sm);
-        font-weight: 600;
-        line-height: var(--leading-normal);
-        /*letter-spacing: var(--tracking-label);*/
+        line-height: 130%;
+        letter-spacing: 1px;
         text-transform: uppercase;
     }
 

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
-type TextVariant = 'body-lg' | 'body-md' | 'body' | 'body-sm' | 'label' | 'nav';
+type TextVariant = 'body-lg' | 'body-md' | 'body' | 'body-sm' | 'label';
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
     variant?: TextVariant;
@@ -14,7 +14,6 @@ const variantClass: Record<TextVariant, string> = {
     'body':    'text-body',
     'body-sm': 'text-body-sm',
     'label':   'text-label',
-    'nav':     'text-nav',
 };
 
 export function Text({ variant = 'body', as: Tag = 'p', className, ...props }: Props) {

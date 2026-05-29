@@ -17,7 +17,7 @@ export default function ErrorPage({
         <IconAlertTriangle className="size-12 text-[var(--color-text-muted)]" stroke={1.5} />
       </div>
 
-      <h2 className="text-display-md mb-3">
+      <h2 className="heading-3 mb-3">
         Đã xảy ra lỗi
       </h2>
       <p className="text-body-sm mb-10 max-w-sm text-[var(--color-text-muted)]">
@@ -27,7 +27,7 @@ export default function ErrorPage({
       <div className="flex items-center gap-4">
         <button
           onClick={reset}
-          className="text-ui inline-flex items-center rounded-[48px] bg-black px-6 py-4 text-white transition-opacity hover:opacity-80"
+          className="text-body-md inline-flex items-center rounded-[48px] bg-black px-6 py-4 text-white transition-opacity hover:opacity-80"
         >
           Thử lại
         </button>

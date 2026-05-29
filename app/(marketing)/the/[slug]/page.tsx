@@ -54,7 +54,7 @@ export default async function CardPage({ params }: Props) {
         return (
             <div className="flex items-center justify-center py-32 px-4">
                 <div className="text-center">
-                    <p className="text-card-heading mb-4">Không tìm thấy thẻ này</p>
+                    <p className="heading-3 mb-4">Không tìm thấy thẻ này</p>
                     <Link href="/the" className="text-brand-red hover:underline">Quay lại danh sách thẻ</Link>
                 </div>
             </div>
