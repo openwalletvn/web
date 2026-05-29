@@ -1,6 +1,6 @@
 import {CARD_CATEGORIES} from '@/lib/card-categories';
 
-export function BrowseCategories({excludeHref}: { excludeHref?: string }) {
+export function BrowsePersonas({excludeHref}: { excludeHref?: string }) {
     const categories = CARD_CATEGORIES.filter((c) => c.href !== excludeHref);
 
     return (

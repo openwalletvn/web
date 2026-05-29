@@ -1,4 +1,4 @@
-export function CategoryIntro({intro}: {intro: string}) {
+export function PersonaIntro({intro}: {intro: string}) {
     return (
         <p className="ow-category-intro text-text-muted mb-8 max-w-2xl">{intro}</p>
     );
@@ -6,7 +6,7 @@ export function CategoryIntro({intro}: {intro: string}) {
 
 export type FAQ = {q: string; a: string};
 
-export function CategoryFAQ({faqs}: {faqs: FAQ[]}) {
+export function PersonaFAQ({faqs}: {faqs: FAQ[]}) {
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'FAQPage',

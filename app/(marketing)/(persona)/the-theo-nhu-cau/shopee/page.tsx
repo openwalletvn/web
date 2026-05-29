@@ -1,11 +1,7 @@
 import type {Metadata} from 'next';
-import {getCards, getRankedCards} from '@/lib/api';
-import {buildIntentCategoryMeta, generateIntentCategoryMetadata, type IntentCategoryConfig} from '@/lib/page-meta/intent-category';
-import {CardRankingTable} from '@/components/marketing/card-ranking-table';
-import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
-import {BrowseCategories} from '@/components/marketing/browse-categories';
-import {PersonaPoolCards} from '@/components/marketing/persona-pool-cards';
-import {CategoryIntro, CategoryFAQ} from '@/components/marketing/category-seo-section';
+import {getCards} from '@/lib/api';
+import {generateIntentCategoryMetadata, type IntentCategoryConfig} from '@/lib/page-meta/intent-category';
+import {PersonaPage} from '../persona-page';
 
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Shopee',
@@ -31,21 +27,6 @@ export async function generateMetadata(): Promise<Metadata> {
     return generateIntentCategoryMetadata(CONFIG, () => getCards({persona: CONFIG.personaSlug}));
 }
 
-export default async function ShopeeCardsPage() {
-    const [poolCards, initialRanked] = await Promise.all([
-        getCards({persona: CONFIG.personaSlug}),
-        getRankedCards({persona: CONFIG.personaSlug, intents: [], limit: 10}).catch(() => []),
-    ]);
-    const {jsonLd, breadcrumbItems} = buildIntentCategoryMeta(CONFIG, poolCards);
-    const rankedIds = new Set(initialRanked.map((r) => r.card.id));
-
-    return (
-        <MarketingPageShell title={CONFIG.title} description={CONFIG.description} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
-            <CategoryIntro intro={CONFIG.intro}/>
-            <CardRankingTable initialRanked={initialRanked} personaSlug={CONFIG.personaSlug} title={CONFIG.rankingTitle}/>
-            <CategoryFAQ faqs={CONFIG.faqs}/>
-            <BrowseCategories excludeHref={CONFIG.url}/>
-            <PersonaPoolCards poolCards={poolCards} excludeIds={rankedIds} excludeRanked={true}/>
-        </MarketingPageShell>
-    );
+export default function ShopeeCardsPage() {
+    return <PersonaPage config={CONFIG}/>;
 }
