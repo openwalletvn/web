@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import type {Post} from '@/lib/mdx';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
 import {BASE_URL} from './constants';
+import {ROUTES} from '@/lib/routes';
 
 export interface BlogPostPageMeta {
     metadata: Metadata;
@@ -16,8 +17,8 @@ export function buildBlogPostPageMeta(post: Post): BlogPostPageMeta {
 
     const breadcrumbItems: BreadcrumbItem[] = [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Tin tức', href: '/tin-tuc'},
-        {label: frontmatter.category, href: `/tin-tuc/category/${categorySlug}`},
+        {label: 'Tin tức', href: ROUTES.blog},
+        {label: frontmatter.category, href: ROUTES.blogCategory(categorySlug)},
         {label: frontmatter.title},
     ];
 

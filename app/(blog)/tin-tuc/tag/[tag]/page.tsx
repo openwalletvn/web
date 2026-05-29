@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import {getAllTags, getPostsByTag} from '@/lib/mdx';
+import {ROUTES} from '@/lib/routes';
 import {PostList} from '@/components/blog/post-list';
 import {TagList} from '@/components/blog/tag-list';
 import {BlogPageShell} from '@/components/layout/blog-page-shell';
@@ -23,11 +24,11 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
  const {metadata} = buildCollectionPageMeta({
  title: `#${displayName} - Blog | OpenWallet`,
  description: `Bài viết được gắn thẻ"${displayName}" trên OpenWallet Blog.`,
- url: `/tin-tuc/tag/${slug}`,
- items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),
+ url: ROUTES.blogTag(slug),
+ items: posts.map((p) => ({name: p.frontmatter.title, url: ROUTES.blogPost(p.slug)})),
  breadcrumbItems: [
  {label: 'Trang chủ', href: '/'},
- {label: 'Tin tức', href: '/tin-tuc'},
+ {label: 'Tin tức', href: ROUTES.blog},
  {label: `#${displayName}`},
  ],
  });
@@ -45,11 +46,11 @@ export default async function TagPage({params}: Props) {
  const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
  title: `#${displayName} - Blog | OpenWallet`,
  description: `Bài viết được gắn thẻ"${displayName}" trên OpenWallet Blog.`,
- url: `/tin-tuc/tag/${slug}`,
- items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),
+ url: ROUTES.blogTag(slug),
+ items: posts.map((p) => ({name: p.frontmatter.title, url: ROUTES.blogPost(p.slug)})),
  breadcrumbItems: [
  {label: 'Trang chủ', href: '/'},
- {label: 'Tin tức', href: '/tin-tuc'},
+ {label: 'Tin tức', href: ROUTES.blog},
  {label: `#${displayName}`},
  ],
  });

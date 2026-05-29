@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import {MDXRemote} from 'next-mdx-remote/rsc';
+import {ROUTES} from '@/lib/routes';
 import remarkGfm from 'remark-gfm';
 import {getAllChangelogs} from '@/lib/changelog';
 import {slugify} from '@/lib/mdx';
@@ -12,7 +13,7 @@ import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 export const metadata: Metadata = {
     title: 'Changelog | OpenWallet',
     description: 'Những cập nhật mới nhất về tính năng, dữ liệu và cải tiến kỹ thuật của OpenWallet.',
-    alternates: {canonical: '/changelog'},
+    alternates: {canonical: ROUTES.changelog},
     openGraph: {
         title: 'Changelog',
         description: 'Những cập nhật mới nhất về tính năng, dữ liệu và cải tiến kỹ thuật của OpenWallet.',

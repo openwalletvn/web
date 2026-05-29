@@ -3,6 +3,7 @@ import {getBanks, getCards} from '@/lib/api';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
+import {ROUTES} from '@/lib/routes';
 
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
@@ -14,8 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
     const {metadata} = buildCollectionPageMeta({
         title: 'Thẻ ngân hàng | Open Wallet',
         description: 'Danh sách tất cả các thẻ ngân hàng Việt Nam trên Open Wallet.',
-        url: '/the',
-        items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
+        url: ROUTES.cards,
+        items: cards.map((c) => ({name: c.name, url: ROUTES.card(c.id)})),
         breadcrumbItems: BREADCRUMB_ITEMS,
     });
     return metadata;

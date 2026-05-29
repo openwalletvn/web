@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getCards, type CardFilters } from '@/lib/api';
 import { CardMasonry } from './card-masonry';
 import { cn } from '@/lib/utils';
+import { ROUTES } from '@/lib/routes';
 
 interface Props {
  filters?: CardFilters;
@@ -53,7 +54,7 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
  {showViewAll && (
  <div className="mt-8">
  <Link
- href="/the"
+ href={ROUTES.cards}
  className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
  >
  {`Xem tất cả ${cards.length} thẻ →`}

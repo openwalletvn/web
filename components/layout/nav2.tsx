@@ -4,11 +4,12 @@ import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {cn} from '@/lib/utils';
 import {TOOLS} from '@/lib/tools';
+import {ROUTES} from '@/lib/routes';
 
 const NAV2_ITEMS = [
-    {label: 'Ngân hàng', href: '/ngan-hang'},
-    {label: 'Thẻ', href: '/the'},
-    {label: 'Tin tức', href: '/tin-tuc'},
+    {label: 'Ngân hàng', href: ROUTES.banks},
+    {label: 'Thẻ', href: ROUTES.cards},
+    {label: 'Tin tức', href: ROUTES.blog},
     {label: 'Về chúng tôi', href: '/ve-openwallet'},
 ];
 

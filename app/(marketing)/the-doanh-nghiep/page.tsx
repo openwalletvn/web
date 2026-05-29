@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards} from '@/lib/api';
+import {ROUTES} from '@/lib/routes';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
@@ -11,7 +12,7 @@ const DESCRIPTION = 'So sánh thẻ tín dụng và ghi nợ dành cho doanh ngh
 const URL = '/the-doanh-nghiep';
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
-    {label: 'Thẻ', href: '/the'},
+    {label: 'Thẻ', href: ROUTES.cards},
     {label: TITLE},
 ];
 const INTRO = 'Thẻ ngân hàng dành riêng cho doanh nghiệp khác thẻ cá nhân ở hạn mức, điều kiện mở thẻ và khả năng quản lý chi tiêu nhóm. Doanh nghiệp vừa và nhỏ có thể mở từ 1 thẻ, trong khi công ty lớn thường phát hành thẻ phụ cho từng bộ phận. Open Wallet tổng hợp thẻ doanh nghiệp từ các ngân hàng Việt Nam, bao gồm hạn mức, phí thường niên và điều kiện mở thẻ cho hộ kinh doanh và công ty TNHH/cổ phần.';
@@ -26,7 +27,7 @@ const PAGE_META_INPUT = (cards: Awaited<ReturnType<typeof getCards>>) => ({
     title: `${TITLE} | Open Wallet`,
     description: DESCRIPTION,
     url: URL,
-    items: cards.map((c) => ({name: c.name, url: `/the/${c.id}`})),
+    items: cards.map((c) => ({name: c.name, url: ROUTES.card(c.id)})),
     breadcrumbItems: BREADCRUMB_ITEMS,
 });
 

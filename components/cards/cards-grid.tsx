@@ -4,6 +4,7 @@ import {useSearchParams, useRouter, usePathname} from 'next/navigation';
 import {Suspense, useMemo, useState, useTransition} from 'react';
 import Link from 'next/link';
 import type {Bank, Card, CardSort, CardType} from '@/lib/api';
+import {ROUTES} from '@/lib/routes';
 import {FEE_BUCKETS} from '@/lib/fee-buckets';
 import {CardsFilter} from './cards-filter';
 import {CardMasonry} from './card-masonry';
@@ -280,7 +281,7 @@ function CardsGridInner({
  {showViewAll && displayed.length > 0 && (
  <div className="pt-8">
  <Link
- href="/the"
+ href={ROUTES.cards}
  className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
  >
  {`Xem tất cả ${filteredCards.length} thẻ →`}

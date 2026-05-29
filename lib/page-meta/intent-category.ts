@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { Card } from '@/lib/api';
 import { buildCollectionPageMeta, type CollectionPageMeta } from './collection';
+import { ROUTES } from '@/lib/routes';
 
 export type IntentCategoryConfig = {
     title: string;
@@ -15,7 +16,7 @@ export type IntentCategoryConfig = {
 
 const BREADCRUMB_BASE = [
     { label: 'Trang chủ', href: '/' },
-    { label: 'Thẻ', href: '/the' },
+    { label: 'Thẻ', href: ROUTES.cards },
 ];
 
 export function buildIntentCategoryMeta(

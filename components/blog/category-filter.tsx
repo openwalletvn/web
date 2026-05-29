@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { ROUTES } from '@/lib/routes';
 
 interface Props {
   categories: Array<{ name: string; slug: string; count: number }>;
@@ -12,7 +13,7 @@ export function CategoryFilter({ categories, activeSlug }: Props) {
   return (
     <div className="ow-category-filter flex flex-wrap gap-2">
       <Link
-        href="/tin-tuc"
+        href={ROUTES.blog}
         className={cn('inline-flex items-center gap-1.5 px-3 py-1.5 border border-dashed rounded-sm text-sm transition-colors', !activeSlug ? 'border-brand-blue text-brand-blue bg-blue-50/60' : 'border-slate-300 text-slate-600 hover:border-slate-500 hover:text-slate-900')}
       >
         Tất cả
@@ -20,7 +21,7 @@ export function CategoryFilter({ categories, activeSlug }: Props) {
       {categories.map(({ name, slug, count }) => (
         <Link
           key={slug}
-          href={`/tin-tuc/category/${slug}`}
+          href={ROUTES.blogCategory(slug)}
           className={cn('inline-flex items-center gap-1.5 px-3 py-1.5 border border-dashed rounded-sm text-sm transition-colors', activeSlug === slug ? 'border-brand-blue text-brand-blue bg-blue-50/60' : 'border-slate-300 text-slate-600 hover:border-slate-500 hover:text-slate-900')}
         >
           {name}

@@ -3,22 +3,23 @@ import Link from 'next/link';
 import {Logo} from '@/components/layout/logo';
 import {TOOLS} from '@/lib/tools';
 import {cn} from '@/lib/utils';
+import {ROUTES} from '@/lib/routes';
 
 const LINKS = {
     tools: [
         ...TOOLS.map((t) => ({label: t.name, href: t.href, disabled: t.disabled}))],
     legal: [
-        {label: 'Điều khoản', href: '/dieu-khoan'},
-        {label: 'Chính sách bảo mật', href: '/chinh-sach-bao-mat'},
-        {label: 'Miễn trừ trách nhiệm', href: '/mien-tru-trach-nhiem'},
+        {label: 'Điều khoản', href: ROUTES.terms},
+        {label: 'Chính sách bảo mật', href: ROUTES.privacy},
+        {label: 'Miễn trừ trách nhiệm', href: ROUTES.disclaimer},
     ],
     categories: [
-        {label: 'Ngân hàng', href: '/ngan-hang'},
-        {label: 'Thẻ', href: '/the'},
-        {label: 'Tin tức', href: '/tin-tuc'},
+        {label: 'Ngân hàng', href: ROUTES.banks},
+        {label: 'Thẻ', href: ROUTES.cards},
+        {label: 'Tin tức', href: ROUTES.blog},
         {label: 'Về OpenWallet', href: '/ve-openwallet'},
-        {label: 'Liên hệ', href: '/lien-he'},
-        {label: 'Changelog', href: '/changelog'},
+        {label: 'Liên hệ', href: ROUTES.contact},
+        {label: 'Changelog', href: ROUTES.changelog},
     ],
 };
 

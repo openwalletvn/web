@@ -1,3 +1,5 @@
+import {ROUTES} from '@/lib/routes';
+
 export interface Tool {
     name: string;
     href: string;
@@ -5,11 +7,11 @@ export interface Tool {
 }
 
 export const TOOLS: Tool[] = [
-    {name: 'Card Battle', href: '/card-battle'},
-    {name: 'Card Match', href: '/card-match'},
-    {name: 'OpenWallet Chat', href: '/openwallet-chat'},
-    {name: 'OpenWallet MCP', href: '/openwallet-mcp'},
-    {name: 'OpenWallet App', href: '/openwallet-app', disabled: true},
+    {name: 'Card Battle', href: ROUTES.cardBattle},
+    {name: 'Card Match', href: ROUTES.cardMatch},
+    {name: 'OpenWallet Chat', href: ROUTES.openwalletChat},
+    {name: 'OpenWallet MCP', href: ROUTES.openwalletMcp},
+    {name: 'OpenWallet App', href: ROUTES.openwalletApp, disabled: true},
 ];
 
 export function getTool(name: string): Tool {

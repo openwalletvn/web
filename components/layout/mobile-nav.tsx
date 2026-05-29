@@ -10,6 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { cn } from '@/lib/utils';
 import { getBankImageUrl, type Bank } from '@/lib/api';
 import { MENU, isDropdown } from '@/lib/menu';
+import { ROUTES } from '@/lib/routes';
 
 interface Props {
   banks: Bank[];
@@ -42,9 +43,9 @@ export function MobileNav({ banks }: Props) {
               if (item.type === 'banks') {
                 // Banks dropdown with dynamic content
                 return (
-                  <Collapsible key={index} defaultOpen={pathname.startsWith('/ngan-hang')}>
+                  <Collapsible key={index} defaultOpen={pathname.startsWith(ROUTES.banks)}>
                     <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                      <span className={cn(pathname.startsWith('/ngan-hang') && 'text-brand-red')}>
+                      <span className={cn(pathname.startsWith(ROUTES.banks) && 'text-brand-red')}>
                         {item.label}
                       </span>
                       <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true" />
@@ -54,7 +55,7 @@ export function MobileNav({ banks }: Props) {
                         {banks.map((bank) => (
                           <Link
                             key={bank.id}
-                            href={`/ngan-hang/${bank.id}`}
+                            href={ROUTES.bank(bank.id)}
                             onClick={close}
                             className="flex flex-col items-center gap-1 p-2 rounded-md hover:bg-slate-100 transition-colors"
                           >

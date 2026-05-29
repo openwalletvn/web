@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import type {Bank, Card} from '@/lib/api';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
 import {BASE_URL, API_URL} from './constants';
+import {ROUTES} from '@/lib/routes';
 
 export interface BankPageMeta {
     metadata: Metadata;
@@ -15,7 +16,7 @@ export function buildBankPageMeta(bank: Bank, cards: Card[]): BankPageMeta {
 
     const breadcrumbItems: BreadcrumbItem[] = [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Ngân hàng', href: '/ngan-hang'},
+        {label: 'Ngân hàng', href: ROUTES.banks},
         {label: bank.name},
     ];
 

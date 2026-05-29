@@ -1,4 +1,5 @@
 import { TOOLS, type Tool } from '@/lib/tools';
+import { ROUTES } from '@/lib/routes';
 
 export interface MenuItem {
     label: string;
@@ -44,7 +45,7 @@ export const MENU: NavItem[] = [
     {
         label: 'Ngân hàng',
         type: 'banks',
-        footerLink: {label: 'Xem tất cả ngân hàng →', href: '/ngan-hang'},
+        footerLink: {label: 'Xem tất cả ngân hàng →', href: ROUTES.banks},
     },
 
     {
@@ -88,10 +89,10 @@ export const MENU: NavItem[] = [
                 ],
             },
         ],
-        footerLink: {label: 'Xem tất cả thẻ →', href: '/the'},
+        footerLink: {label: 'Xem tất cả thẻ →', href: ROUTES.cards},
     },
 
-    {label: 'Tin tức', href: '/tin-tuc'},
+    {label: 'Tin tức', href: ROUTES.blog},
 
     {
         label: 'Công cụ',

@@ -1,5 +1,6 @@
 import type {Metadata} from 'next';
 import {getAllPosts, getAllCategories, getAllTags} from '@/lib/mdx';
+import {ROUTES} from '@/lib/routes';
 import {PostList} from '@/components/blog/post-list';
 import {CategoryFilter} from '@/components/blog/category-filter';
 import {TagList} from '@/components/blog/tag-list';
@@ -16,8 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
     const {metadata} = buildCollectionPageMeta({
         title: 'Blog - Kiến thức tài chính cá nhân | OpenWallet',
         description: 'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.',
-        url: '/tin-tuc',
-        items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),
+        url: ROUTES.blog,
+        items: posts.map((p) => ({name: p.frontmatter.title, url: ROUTES.blogPost(p.slug)})),
         breadcrumbItems: BREADCRUMB_ITEMS,
     });
     return metadata;
@@ -31,8 +32,8 @@ export default async function BlogPage() {
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
         title: 'Blog - Kiến thức tài chính cá nhân | OpenWallet',
         description: 'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.',
-        url: '/tin-tuc',
-        items: posts.map((p) => ({name: p.frontmatter.title, url: `/tin-tuc/${p.slug}`})),
+        url: ROUTES.blog,
+        items: posts.map((p) => ({name: p.frontmatter.title, url: ROUTES.blogPost(p.slug)})),
         breadcrumbItems: BREADCRUMB_ITEMS,
     });
 

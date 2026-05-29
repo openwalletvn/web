@@ -3,6 +3,7 @@ import type {Card, Bank} from '@/lib/api';
 import {getCardImageUrl, getBankImageUrl} from '@/lib/api';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
 import {BASE_URL} from './constants';
+import {ROUTES} from '@/lib/routes';
 
 export interface CardPageMeta {
     metadata: Metadata;
@@ -19,7 +20,7 @@ export function buildCardPageMeta(card: Card, bank: Bank | null): CardPageMeta {
 
     const breadcrumbItems: BreadcrumbItem[] = [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ', href: '/the'},
+        {label: 'Thẻ', href: ROUTES.cards},
         {label: card.name},
     ];
 

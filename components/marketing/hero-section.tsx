@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {IconCircleCheck, IconCreditCard, IconSettings} from '@tabler/icons-react';
+import {ROUTES} from '@/lib/routes';
 import {BadgeNumberIcon} from '@/components/shared/badge-number-icon';
 import {CardImageTag} from '@/components/cards/card-image-tag';
 
@@ -135,13 +136,13 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
             {/* CTA */}
             <div className="hidden flex-col sm:flex-row gap-3 items-center mt-2">
                 <Link
-                    href="/app"
+                    href={ROUTES.app}
                     className="inline-flex items-center gap-2 bg-black text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-primary transition-colors"
                 >
                     Tìm hiểu Thẻ Phú App
                 </Link>
                 <Link
-                    href="/the"
+                    href={ROUTES.cards}
                     className="text-sm font-medium text-text-muted hover:text-black transition-colors px-2 py-3"
                 >
                     Khám phá thẻ →
