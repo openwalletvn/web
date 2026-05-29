@@ -6,7 +6,6 @@ import { lookupCompareMdx, getCompareMdxPairs } from '@/lib/compare-mdx';
 import { buildComparePageMeta } from '@/lib/page-meta/compare';
 import { CompareTable } from '@/components/compare/compare-table';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
-import { RecordCompareVisit } from '@/components/compare/record-compare-visit';
 import { CompareSection } from '@/components/compare/compare-section';
 import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
 
@@ -63,13 +62,12 @@ export default async function ComparePairPage({ params }: Props) {
     return (
         <div className="px-4 py-12">
             <div className="max-w-[980px] mx-auto">
-                <RecordCompareVisit pair={pair} />
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
                 <Breadcrumbs items={breadcrumbItems} />
                 <h1 className="mt-6 mb-8">
                     {mdx?.frontmatter.title ?? `So sánh ${cards.map((c) => c!.name).join(' vs ')}`}
                 </h1>
-                <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap}>
+                <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap} recordOnMount={pair}>
                     {hasContent && (
                         <MDXRemote
                             source={mdx.content}

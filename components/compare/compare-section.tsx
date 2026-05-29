@@ -2,12 +2,15 @@
 
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { IconPlus, IconX } from '@tabler/icons-react';
+import { cn } from '@/lib/utils';
 import type { SearchCard } from '@/lib/search-types';
 import type { Card, Intent } from '@/lib/api';
 import { getCard } from '@/lib/api';
+import { CardImage } from '@/components/cards/card-image';
 import { CardSearchInput } from '@/components/compare/card-search-input';
-import { CompareTemplate } from '@/components/compare/compare-template';
+import { CompareTable } from '@/components/compare/compare-table';
 import { RecentCompares } from '@/components/compare/recent-compares';
 import { useRecentCompares } from '@/lib/use-recent-compares';
 import { useCardSearch } from '@/lib/use-card-search';
@@ -60,6 +63,103 @@ function CompareTemplateSkeleton({ numSlots }: { numSlots: number }) {
     );
 }
 
+// ─── Compare display (card header + sticky + table) ──────────────────────────
+
+interface CompareDisplayProps {
+    cards: (Card | null)[];
+    children?: React.ReactNode;
+    onStickyChange?: (visible: boolean) => void;
+    intentMap?: Map<string, Intent>;
+}
+
+function CompareDisplay({ cards, children, onStickyChange, intentMap }: CompareDisplayProps) {
+    const cardHeaderRef = useRef<HTMLDivElement>(null);
+    const [showSticky, setShowSticky] = useState(false);
+
+    useEffect(() => {
+        const el = cardHeaderRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                const visible = !entry.isIntersecting;
+                setShowSticky(visible);
+                onStickyChange?.(visible);
+            },
+            { threshold: 0 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [onStickyChange]);
+
+    const colStyle = { gridTemplateColumns: `repeat(${cards.length}, 1fr)` };
+
+    return (
+        <div className="ow-compare-display">
+            <div className={cn('fixed top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm transition-transform duration-200 ease-out', showSticky ? 'translate-y-0' : '-translate-y-full')}>
+                <div className="min-h-[80px] max-w-[980px] mx-auto py-2 flex items-center">
+                    <div className="grid w-full" style={colStyle}>
+                        {cards.map((card, i) => (
+                            <div key={card?.id ?? i} className="flex items-center gap-2">
+                                {card ? (
+                                    <>
+                                        <Link href={`/the/${card.id}`} className="block shrink-0">
+                                            <CardImage card={card} tilt className="h-[60px] w-auto" />
+                                        </Link>
+                                        <Link href={`/the/${card.id}`} className="text-sm font-semibold text-slate-900 hover:text-brand-red transition-colors line-clamp-2">
+                                            {card.name}
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <div className="h-[60px] w-[96px] bg-slate-100 rounded-sm shrink-0" />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div ref={cardHeaderRef} className="grid mb-8" style={colStyle}>
+                {cards.map((card, i) => (
+                    <div key={card?.id ?? i} className="flex flex-col gap-3">
+                        {card ? (
+                            <>
+                                <div className="flex items-end h-[200px]">
+                                    <Link href={`/the/${card.id}`}>
+                                        {card.image?.orientation === 'vertical' ? (
+                                            <div className="h-[200px] flex items-center">
+                                                <CardImage card={card} tilt className="h-full w-auto" />
+                                            </div>
+                                        ) : (
+                                            <div className="w-full max-w-[200px]">
+                                                <CardImage card={card} tilt className="w-full" />
+                                            </div>
+                                        )}
+                                    </Link>
+                                </div>
+                                <Link href={`/the/${card.id}`} className="text-base font-semibold text-slate-900 hover:text-brand-red transition-colors">
+                                    {card.name}
+                                </Link>
+                            </>
+                        ) : (
+                            <div className="flex items-end h-[200px]">
+                                <div className="w-full max-w-[200px] aspect-[16/10] bg-slate-100 rounded-lg" />
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+
+            <CompareTable cards={cards} intentMap={intentMap} />
+
+            {children && (
+                <div className="mt-12 prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline">
+                    {children}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ─── Inner (needs Suspense for useSearchParams) ───────────────────────────────
 
 interface InnerProps {
@@ -67,9 +167,10 @@ interface InnerProps {
     children?: React.ReactNode;
     excludePair?: string;
     intentMap?: Map<string, Intent>;
+    recordOnMount?: string;
 }
 
-function CompareSectionInner({ defaultPair, children, excludePair, intentMap }: InnerProps) {
+function CompareSectionInner({ defaultPair, children, excludePair, intentMap, recordOnMount }: InnerProps) {
     const router = useRouter();
     const pathname = usePathname();
 
@@ -85,6 +186,12 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap }: 
     recentComparesRef.current = recentCompares;
 
     useEffect(() => { load(); }, [load]);
+
+    // Record pair visit on mount (replaces RecordCompareVisit component)
+    useEffect(() => {
+        if (recordOnMount) addCompare(recordOnMount);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [recordOnMount]);
 
     useEffect(() => {
         if (!initialized) return;
@@ -230,9 +337,9 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap }: 
                     {isLoading ? (
                         <CompareTemplateSkeleton numSlots={numSlots} />
                     ) : (
-                        <CompareTemplate cards={slotCards} onStickyChange={setStickyVisible} intentMap={intentMap}>
+                        <CompareDisplay cards={slotCards} onStickyChange={setStickyVisible} intentMap={intentMap}>
                             {children}
-                        </CompareTemplate>
+                        </CompareDisplay>
                     )}
                 </div>
             ) : null}
@@ -249,12 +356,13 @@ interface Props {
     children?: React.ReactNode;
     excludePair?: string;
     intentMap?: Map<string, Intent>;
+    recordOnMount?: string;
 }
 
-export function CompareSection({ defaultPair, children, excludePair, intentMap }: Props) {
+export function CompareSection({ defaultPair, children, excludePair, intentMap, recordOnMount }: Props) {
     return (
         <Suspense>
-            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair} intentMap={intentMap}>
+            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair} intentMap={intentMap} recordOnMount={recordOnMount}>
                 {children}
             </CompareSectionInner>
         </Suspense>

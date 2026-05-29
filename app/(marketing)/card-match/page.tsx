@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {getIntents, getPersonas} from '@/lib/api';
-import {CardMatchFinder} from '@/components/marketing/card-match-finder';
+import {CardMatchFinder} from '@/components/match/card-match-finder';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {getTool} from '@/lib/tools';
 

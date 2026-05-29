@@ -6,7 +6,7 @@ import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {HeroSection} from '@/components/marketing/hero-section';
 import {FeaturedCardCategories} from '@/components/marketing/featured-card-categories';
 import {GradientShader} from "@/components/shared/gradient-shader";
-import {CardMatchFinder} from '@/components/marketing/card-match-finder';
+import {CardMatchFinder} from '@/components/match/card-match-finder';
 
 export default async function HomePage() {
     const [banks, cards, personas, intents] = await Promise.all([
