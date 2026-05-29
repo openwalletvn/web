@@ -12,7 +12,7 @@ Build a public MCP server at `mcp.openwallet.vn` on Cloudflare Workers so all AI
 - [ ] API OpenAPI spec + `.claude/docs/` updated to reflect new endpoints
 - [ ] MCP CF Worker created at `/Users/bmp/PHUC-LOCAL/openwalletvn/mcp` with all 8 tools
 - [ ] MCP auth: `X-MCP-Key` header required, 401 on missing/invalid
-- [ ] MCP works locally via `wrangler dev` (port 8787) connecting to `localhost:3002`
+- [ ] MCP works locally via `wrangler dev` (port 8001) connecting to `localhost:3002`
 - [ ] MCP deployed to `mcp.openwallet.vn`
 - [ ] Web `app/api/chat/route.ts` removes local `rankCards()` — calls `POST /api/v1/cards/rank` instead
 - [ ] Web `components/marketing/card-ranking-table.tsx` updated to call API rank endpoint
@@ -42,7 +42,7 @@ Build a public MCP server at `mcp.openwallet.vn` on Cloudflare Workers so all AI
 ## Notes
 
 - API dev port: 3002 (from web `.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:3002`)
-- MCP dev port: 8787 (wrangler default)
+- MCP dev port: 8001 (wrangler default)
 - Do Phase 1 (API) before Phase 2 (MCP) before Phase 3 (web cleanup) — dependencies in that order
 - `card-ranking-table.tsx` imports `rankCards` client-side — switch to API call (server action or fetch) before deleting web ranker files
 - MCP secrets: `MCP_API_KEY` + `OPENWALLET_API_KEY` via `wrangler secret put`

@@ -1,7 +1,7 @@
 export async function GET() {
     try {
         const res = await fetch(
-            `${process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8787'}/health`,
+            `${process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8001'}/health`,
             {
                 headers: { 'x-mcp-key': process.env.OPENWALLET_MCP_KEY ?? '' },
                 signal: AbortSignal.timeout(5000),

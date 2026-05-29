@@ -6,6 +6,11 @@ const cardMatchHref = getTool('Card Match').href;
 
 const nextConfig: NextConfig = {
   turbopack: {},
+  reactStrictMode: false,
+
+  experimental: {
+    preloadEntriesOnStart: false,
+  },
 
   images: {
     unoptimized: true,
