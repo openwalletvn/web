@@ -4,6 +4,7 @@ import {CardsGrid} from '@/components/cards/cards-grid';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {ROUTES} from '@/lib/routes';
+import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
@@ -13,7 +14,7 @@ const BREADCRUMB_ITEMS = [
 export async function generateMetadata(): Promise<Metadata> {
     const cards = await getCards();
     const {metadata} = buildCollectionPageMeta({
-        title: 'Thẻ ngân hàng | OpenWallet',
+        title: buildTitle(SECTION_TITLES.cards),
         description: 'Danh sách tất cả các thẻ ngân hàng Việt Nam trên OpenWallet.',
         url: ROUTES.cards,
         items: cards.map((c) => ({name: c.name, url: ROUTES.card(c.id)})),
@@ -29,7 +30,7 @@ export default async function CardsPage() {
     ]);
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
-        title: 'Thẻ ngân hàng | OpenWallet',
+        title: buildTitle(SECTION_TITLES.cards),
         description: 'Danh sách tất cả các thẻ ngân hàng Việt Nam trên OpenWallet.',
         url: '/the',
         items: allCards.map((c) => ({name: c.name, url: `/the/${c.id}`})),

@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { buildBreadcrumbJsonLd } from '@/lib/page-meta/breadcrumb';
 import { ProsePageShell } from '@/components/layout/prose-page-shell';
 import { McpVersionBadge } from '@/components/mcp/mcp-version-badge';
+import {buildTitle} from '@/lib/page-meta/title';
 
 export const metadata: Metadata = {
-    title: 'OpenWallet MCP | Dữ liệu thẻ ngân hàng cho AI',
+    title: buildTitle('OpenWallet MCP'),
     description: 'OpenWallet MCP là MCP server cho phép các AI tools như Claude, ChatGPT truy cập dữ liệu thẻ ngân hàng Việt Nam. Không giới hạn trong ứng dụng OpenWallet, dữ liệu có thể được khai thác qua bất kỳ AI assistant nào hỗ trợ MCP.',
     openGraph: {
         title: 'OpenWallet MCP',

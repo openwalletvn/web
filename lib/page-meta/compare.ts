@@ -4,6 +4,7 @@ import { buildBreadcrumbJsonLd, type BreadcrumbItem } from './breadcrumb';
 import type { CompareFrontmatter } from '@/lib/compare-mdx';
 import { getTool } from '@/lib/tools';
 import {BASE_URL} from './constants';
+import {buildTitle, SECTION_TITLES} from './title';
 const cardBattleHref = getTool('Card Battle').href;
 
 export interface ComparePageMeta {
@@ -17,7 +18,7 @@ export function buildComparePageMeta(
     cardB: Card,
     frontmatter?: CompareFrontmatter,
 ): ComparePageMeta {
-    const title = frontmatter?.title ?? `So sánh ${cardA.name} vs ${cardB.name} | OpenWallet`;
+    const title = frontmatter?.title ?? buildTitle(`So sánh ${cardA.name} vs ${cardB.name}`, SECTION_TITLES.compare);
     const description =
         frontmatter?.description ??
         `So sánh chi tiết ${cardA.name} và ${cardB.name}: phí thường niên, mạng thanh toán, ưu đãi và nhiều hơn nữa.`;

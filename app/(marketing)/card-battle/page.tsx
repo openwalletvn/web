@@ -1,5 +1,11 @@
+import type {Metadata} from 'next';
 import { redirect } from 'next/navigation';
 import { getRelatedCardsForMany, getIntents } from '@/lib/api';
+import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
+
+export const metadata: Metadata = {
+    title: buildTitle(SECTION_TITLES.compare),
+};
 import { CompareSection } from '@/components/compare/compare-section';
 import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
 import { getTool } from '@/lib/tools';

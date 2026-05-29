@@ -9,9 +9,10 @@ import {ChangelogToc} from './changelog-toc';
 import {mdxComponents} from '@/components/blog/mdx-components';
 import {remarkAutoLink} from '@/lib/remark-auto-link';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
+import {buildTitle} from '@/lib/page-meta/title';
 
 export const metadata: Metadata = {
-    title: 'Changelog | OpenWallet',
+    title: buildTitle('Changelog'),
     description: 'Những cập nhật mới nhất về tính năng, dữ liệu và cải tiến kỹ thuật của OpenWallet.',
     alternates: {canonical: ROUTES.changelog},
     openGraph: {

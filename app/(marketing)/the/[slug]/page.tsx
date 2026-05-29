@@ -6,6 +6,7 @@ import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {CardImage} from '@/components/cards/card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCardPageMeta} from '@/lib/page-meta/card';
+import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import {CardDetailHeader} from '@/components/cards/detail/card-detail-header';
 import {CardDetailBillingCycle} from '@/components/cards/detail/card-detail-billing-cycle';
 import {CardDetailFees} from '@/components/cards/detail/card-detail-fees';
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         const { metadata } = buildCardPageMeta(card, bank);
         return metadata;
     } catch {
-        return { title: 'Không tìm thấy | OpenWallet' };
+        return { title: buildTitle('Không Tìm Thấy', SECTION_TITLES.cards) };
     }
 }
 

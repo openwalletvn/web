@@ -3,12 +3,13 @@ import Link from 'next/link';
 import { buildBreadcrumbJsonLd } from '@/lib/page-meta/breadcrumb';
 import { getTool } from '@/lib/tools';
 import { ProsePageShell } from '@/components/layout/prose-page-shell';
+import {buildTitle} from '@/lib/page-meta/title';
 
 const BASE_URL = 'https://openwallet.vn';
 const tool = getTool('OpenWallet Chat');
 
 export const metadata: Metadata = {
-    title: 'OpenWallet Chat | Trợ lý AI thẻ ngân hàng (Beta)',
+    title: buildTitle('OpenWallet Chat'),
     description: 'OpenWallet Chat là trợ lý AI giúp bạn tìm và so sánh thẻ ngân hàng Việt Nam. Hiện đang trong giai đoạn beta, chưa mở rộng công khai.',
     openGraph: {
         title: 'OpenWallet Chat',

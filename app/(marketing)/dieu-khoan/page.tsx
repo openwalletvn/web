@@ -1,8 +1,9 @@
 import type {Metadata} from 'next';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
+import {buildTitle} from '@/lib/page-meta/title';
 
 export const metadata: Metadata = {
-    title: 'Điều khoản sử dụng | OpenWallet',
+    title: buildTitle('Điều Khoản Sử Dụng'),
     description: 'Điều khoản và điều kiện sử dụng dịch vụ OpenWallet, nền tảng so sánh thẻ ngân hàng tại Việt Nam.',
 };
 

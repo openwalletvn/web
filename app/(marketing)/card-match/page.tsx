@@ -3,12 +3,13 @@ import {getIntents, getPersonas} from '@/lib/api';
 import {CardMatchFinder} from '@/components/match/card-match-finder';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {getTool} from '@/lib/tools';
+import {buildTitle} from '@/lib/page-meta/title';
 
 const BASE_URL = 'https://openwallet.vn';
 const tool = getTool('Card Match');
 
 export const metadata: Metadata = {
-    title: 'Card Match | OpenWallet',
+    title: buildTitle('Card Match'),
     description: 'Tìm thẻ ngân hàng phù hợp nhất với thói quen chi tiêu của bạn. Chọn danh mục, nhập mức chi tiêu và nhận đề xuất cá nhân hoá ngay.',
     openGraph: {
         title: 'Card Match',

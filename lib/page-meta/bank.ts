@@ -3,6 +3,7 @@ import type {Bank, Card} from '@/lib/api';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
 import {BASE_URL, API_URL} from './constants';
 import {ROUTES} from '@/lib/routes';
+import {buildTitle, SECTION_TITLES} from './title';
 
 export interface BankPageMeta {
     metadata: Metadata;
@@ -12,7 +13,7 @@ export interface BankPageMeta {
 
 export function buildBankPageMeta(bank: Bank, cards: Card[]): BankPageMeta {
     const description = `${bank.full_name} - thẻ và thông tin chi tiết trên OpenWallet.`;
-    const title = `${bank.name} | OpenWallet`;
+    const title = buildTitle(bank.name, SECTION_TITLES.banks);
 
     const breadcrumbItems: BreadcrumbItem[] = [
         {label: 'Trang chủ', href: '/'},

@@ -1,8 +1,9 @@
 import type {Metadata} from 'next';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
+import {buildTitle} from '@/lib/page-meta/title';
 
 export const metadata: Metadata = {
-    title: 'Chính sách bảo mật | OpenWallet',
+    title: buildTitle('Chính Sách Bảo Mật'),
     description: 'Chính sách bảo mật của OpenWallet: cách chúng tôi thu thập, sử dụng và bảo vệ thông tin của bạn.',
 };
 

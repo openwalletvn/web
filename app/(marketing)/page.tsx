@@ -1,5 +1,11 @@
+import type {Metadata} from 'next';
 import {Suspense} from 'react';
 import {getBanks, getCards, getIntents, getPersonas} from '@/lib/api';
+import {SITE_NAME} from '@/lib/page-meta/title';
+
+export const metadata: Metadata = {
+    title: SITE_NAME,
+};
 import {BanksSection, BanksSectionSkeleton} from '@/components/marketing/banks-section';
 import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';

@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getCard, getComparePairs, getRelatedCardsForMany, getIntents } from '@/lib/api';
 import { lookupCompareMdx, getCompareMdxPairs } from '@/lib/compare-mdx';
 import { buildComparePageMeta } from '@/lib/page-meta/compare';
+import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import { CompareTable } from '@/components/compare/compare-table';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { CompareSection } from '@/components/compare/compare-section';
@@ -29,14 +30,14 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { pair } = await params;
     const ids = pair.split('-vs-');
-    if (ids.length < 2) return { title: 'So sánh thẻ | OpenWallet' };
+    if (ids.length < 2) return { title: buildTitle(SECTION_TITLES.compare) };
     try {
         const [cardA, cardB] = await Promise.all([getCard(ids[0]), getCard(ids[1])]);
         const mdx = ids.length === 2 ? lookupCompareMdx(pair) : null;
         const { metadata } = buildComparePageMeta(cardA, cardB, mdx?.frontmatter);
         return metadata;
     } catch {
-        return { title: 'So sánh thẻ | OpenWallet' };
+        return { title: buildTitle(SECTION_TITLES.compare) };
     }
 }
 

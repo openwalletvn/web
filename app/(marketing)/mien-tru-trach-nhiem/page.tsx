@@ -1,8 +1,9 @@
 import type {Metadata} from 'next';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
+import {buildTitle} from '@/lib/page-meta/title';
 
 export const metadata: Metadata = {
-    title: 'Miễn trừ trách nhiệm | OpenWallet',
+    title: buildTitle('Miễn Trừ Trách Nhiệm'),
     description: 'Tuyên bố miễn trừ trách nhiệm của OpenWallet về tính chính xác của thông tin và quyết định tài chính cá nhân.',
 };
 

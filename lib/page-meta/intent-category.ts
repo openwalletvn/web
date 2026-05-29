@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { Card } from '@/lib/api';
 import { buildCollectionPageMeta, type CollectionPageMeta } from './collection';
 import { ROUTES } from '@/lib/routes';
+import { buildTitle, SECTION_TITLES } from './title';
 
 export type BreadcrumbItem = { label: string; href?: string };
 
@@ -28,7 +29,7 @@ export function buildIntentCategoryMeta(
 ): CollectionPageMeta {
     const breadcrumbItems = config.breadcrumbItems ?? [...BREADCRUMB_BASE, { label: config.title }];
     return buildCollectionPageMeta({
-        title: `${config.title} | OpenWallet`,
+        title: buildTitle(config.title, SECTION_TITLES.persona),
         description: config.description,
         url: config.url,
         items: poolCards.map((c) => ({ name: c.name, url: `/the/${c.id}` })),

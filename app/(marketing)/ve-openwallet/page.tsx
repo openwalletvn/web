@@ -1,8 +1,9 @@
 import type {Metadata} from 'next';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
+import {buildTitle} from '@/lib/page-meta/title';
 
 export const metadata: Metadata = {
-    title: 'Về OpenWallet | Ai đứng sau dự án này',
+    title: buildTitle('Về OpenWallet'),
     description: 'OpenWallet là dự án với mong muốn giúp người Việt so sánh thẻ ngân hàng một cách độc lập và minh bạch, không bị ảnh hưởng bởi hoa hồng hay quan hệ đối tác với ngân hàng.',
 };
 

@@ -8,6 +8,7 @@ import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {NetworkDistributionBar} from '@/components/shared/network-distribution-bar';
 import {buildBankPageMeta} from '@/lib/page-meta/bank';
+import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 
 export async function generateStaticParams() {
     try {
@@ -32,7 +33,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
         const {metadata} = buildBankPageMeta(bank, cards);
         return metadata;
     } catch {
-        return {title: 'Không tìm thấy | OpenWallet'};
+        return {title: buildTitle('Không Tìm Thấy', SECTION_TITLES.banks)};
     }
 }
 

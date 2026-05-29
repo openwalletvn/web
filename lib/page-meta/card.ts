@@ -4,6 +4,7 @@ import {getCardImageUrl, getBankImageUrl} from '@/lib/api';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
 import {BASE_URL} from './constants';
 import {ROUTES} from '@/lib/routes';
+import {buildTitle, SECTION_TITLES} from './title';
 
 export interface CardPageMeta {
     metadata: Metadata;
@@ -15,7 +16,7 @@ export function buildCardPageMeta(card: Card, bank: Bank | null): CardPageMeta {
     const bankName = bank?.name ?? '';
     const fallbackDescription = `${card.name} - thẻ ${card.card_network} ${card.card_type.join('/')} ${bankName ? `của ${bankName}` : 'trên OpenWallet'}.`;
     const description = card.description ? card.description.slice(0, 160) : fallbackDescription;
-    const title = `${card.name} | OpenWallet`;
+    const title = buildTitle(card.name, SECTION_TITLES.cards);
     const url = `${BASE_URL}/the/${card.id}`;
 
     const breadcrumbItems: BreadcrumbItem[] = [

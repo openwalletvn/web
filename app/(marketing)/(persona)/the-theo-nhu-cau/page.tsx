@@ -3,6 +3,7 @@ import {getPersonas} from '@/lib/api';
 import {CARD_CATEGORIES} from '@/lib/card-categories';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import Link from 'next/link';
 import {Button} from '@/components/ui/button';
 
@@ -12,7 +13,7 @@ const BREADCRUMB_ITEMS = [
 ];
 
 const META = {
-    title: 'Thẻ ngân hàng theo nhu cầu | OpenWallet',
+    title: buildTitle(SECTION_TITLES.persona),
     description: 'Danh sách thẻ ngân hàng phân loại theo nhu cầu sử dụng: Shopee, siêu thị, du lịch, di chuyển, dịch vụ số, gia đình, doanh nghiệp. Xếp hạng tự động bằng thuật toán.',
     url: '/the-theo-nhu-cau',
 };
