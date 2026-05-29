@@ -90,6 +90,32 @@ Web codebase has old features, mixed components, duplicated UI across features.
 - [ ] Update `featured-card-categories.tsx` → pull from personas API, not hardcoded
 - [ ] Define firm SEO page list in `CLAUDE.md` — which personas get dedicated pages + sitemap
 
+### Deprecated SEO collection pages (404 — restore when Phase 3 done)
+These old URLs were indexed by Google, now 404. Need canonical redirects or page revival:
+
+| Old URL | Was | Redirect target (Phase 3) |
+|---|---|---|
+| `/the-tin-dung` | Credit card listing | persona slug TBD |
+| `/the-tin-dung-visa` | Visa credit cards | persona slug TBD |
+| `/the-ghi-no` | Debit card listing | persona slug TBD |
+| `/the-tin-dung-phi-thuong-nien-thap` | Low annual fee | persona slug TBD |
+| `/cards/credit` | Old credit listing | → `/the` (interim) |
+| `/cards/debit` | Old debit listing | → `/the` (interim) |
+| `/cards/visa` | Old Visa listing | → `/the` (interim) |
+| `/cards/mastercard` | Old MC listing | → `/the` (interim) |
+| `/cards/amex` | Old Amex listing | → `/the-tin-dung-amex` or `/the` |
+| `/cards/jcb` | Old JCB listing | → `/the` (interim) |
+| `/cards/napas` | Old NAPAS listing | → `/the` (interim) |
+| `/cards/unionpay` | Old UnionPay listing | → `/the` (interim) |
+| `/cards/2in1` | Old 2-in-1 listing | → `/the-2-trong-1` or `/the` |
+| `/cards/networks/*` | Old network filter pages | → `/the` (interim) |
+| `/cards/co-branded/*` | Old co-branded pages | → `/the` (interim) |
+| `/cards` | Old card index | → `/the` |
+| `/banks` | Old bank index | → `/ngan-hang` |
+| `/blog` | Old blog index | → `/tin-tuc` |
+
+**Interim fix needed in `next.config.ts`:** Current `/cards/:slug*` redirect sends `/cards/credit` → `/the/credit` (404). Need specific rules for category paths before the generic slug rule.
+
 ---
 
 ## Phase 4: Chat / MCP Release Readiness

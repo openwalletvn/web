@@ -29,6 +29,21 @@ When asked to "edit local api repo" → work in `../api`. "edit local mcp repo" 
 3. **Vietnamese-first** — UI/content targets Vietnamese users. Technical terms stay English.
 4. **SEO-first** — every public page has JSON-LD, OG metadata, sitemap entries.
 
+## Breadcrumbs
+
+Every marketing page **must** include breadcrumb JSON-LD via `buildBreadcrumbJsonLd()` from `lib/page-meta/breadcrumb.ts`. Pass `breadcrumbItems` into the page's `<JsonLd>` component.
+
+Pattern:
+```ts
+const breadcrumbItems = [
+  { label: 'Trang chủ', href: '/' },
+  { label: 'Section', href: '/section' },
+  { label: 'Current page' }, // no href on last item
+];
+```
+
+Pages currently missing breadcrumbs (add when touching): `dieu-khoan`, `docs`, `ve-openwallet`, `lien-he`, `mien-tru-trach-nhiem`, `chinh-sach-bao-mat`, `card-battle` (index).
+
 ## Component conventions
 - Every component's wrapper element **must** have a class name matching its filename, prefixed with `ow-`.
 - Pattern: `ow-<filename-kebab-case>` → e.g. `post-card.tsx` → `ow-post-card`, `card-image.tsx` → `ow-card-image`.

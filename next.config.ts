@@ -37,16 +37,32 @@ const nextConfig: NextConfig = {
         destination: cardMatchHref,
         permanent: true,
       },
+      // category paths — must be before generic /cards/:slug* rule
+      { source: '/cards', destination: '/the', permanent: true },
+      { source: '/cards/credit', destination: '/the', permanent: true },
+      { source: '/cards/debit', destination: '/the', permanent: true },
+      { source: '/cards/2in1', destination: '/the-2-trong-1', permanent: true },
+      { source: '/cards/visa', destination: '/the', permanent: true },
+      { source: '/cards/mastercard', destination: '/the', permanent: true },
+      { source: '/cards/amex', destination: '/the', permanent: true },
+      { source: '/cards/jcb', destination: '/the', permanent: true },
+      { source: '/cards/napas', destination: '/the', permanent: true },
+      { source: '/cards/unionpay', destination: '/the', permanent: true },
+      { source: '/cards/networks/:path*', destination: '/the', permanent: true },
+      { source: '/cards/co-branded/:path*', destination: '/the', permanent: true },
+      // generic card slug — after category rules
       {
         source: '/cards/:slug*',
         destination: '/the/:slug*',
         permanent: true,
       },
+      { source: '/banks', destination: '/ngan-hang', permanent: true },
       {
         source: '/banks/:slug*',
         destination: '/ngan-hang/:slug*',
         permanent: true,
       },
+      { source: '/blog', destination: '/tin-tuc', permanent: true },
       {
         source: '/blog/:slug*',
         destination: '/tin-tuc/:slug*',
