@@ -1,30 +1,44 @@
+import type {
+    Bank,
+    Brand,
+    Card,
+    CashbackCategory,
+    FeeEntry,
+    FeeEntryWithWaiver,
+    FeeWaiver,
+    Intent,
+    IntentGroupNode,
+    Merchant,
+    Network,
+    Persona,
+    RuleScope,
+} from './api-types.generated'
+
+export type {
+    Card,
+    Bank,
+    Network,
+    Brand,
+    FeeEntry,
+    FeeWaiver,
+    FeeEntryWithWaiver,
+    CashbackCategory,
+    Merchant,
+    Intent,
+    IntentGroupNode,
+    Persona,
+    RuleScope,
+}
+
+export type {Contactless} from './api-types.generated'
+
+// Types not in OpenAPI spec — kept here
 export interface CardTierData {
     id: string;
     rank: number | null;
 }
 
 export type CardTierOrder = Record<string, string[]>;
-
-export interface Brand {
-    id: string;
-    name: string;
-    logo_url: string;
-    link?: string;
-}
-
-export interface Network {
-    id: string;
-    name: string;
-    logo_url: string;
-    link?: string;
-}
-
-export interface ContactlessMethod {
-    id: string;
-    name: string;
-    logo_url: string;
-    link?: string;
-}
 
 export interface BankStats {
     card_count: number;
@@ -35,30 +49,6 @@ export interface BankStats {
     free_annual_fee_count: number;
     max_annual_fee?: number;
     network_counts: Record<string, number>;
-}
-
-export interface Bank {
-    id: string;
-    name: string;
-    full_name: string;
-    link: string;
-    logo_url: string;
-    brand_color?: string;
-    stats?: BankStats;
-    networks?: string[];
-    networks_data?: Network[];
-}
-
-interface BankListResponse {
-    success: boolean;
-    data: Bank[];
-    meta: { total: number };
-}
-
-interface BankDetailResponse {
-    success: boolean;
-    data: Bank;
-    meta: { total: number };
 }
 
 export type CardNetwork = 'visa' | 'mastercard' | 'jcb' | 'napas' | 'amex' | 'unionpay';
@@ -72,110 +62,13 @@ export interface CardImage {
     lqip?: string;
 }
 
-export interface FeeWaiver {
-    waiver: boolean;
-    condition?: string;
-}
-
-export interface FeeEntry {
-    amount: number;
-    type: 'currency' | 'rate';
-    note?: string;
-}
-
-export interface FeeEntryWithWaiver extends FeeEntry {
-    first_year?: FeeWaiver;
-    subsequent_years?: FeeWaiver;
-}
-
-
 export interface CardFees {
-    annual?: FeeEntryWithWaiver;
-    annual_supplementary?: FeeEntry;
-    issuance?: FeeEntry;
-    cancellation?: FeeEntry;
-    foreign?: FeeEntry;
-    foreign_dcc?: FeeEntry;
-}
-
-export interface CashbackCategory {
-    slug: string;
-    label: string;
-    icon: string; // emoji
-}
-
-export interface Merchant {
-    slug: string;
-    label: string;
-    category: string;
-    url?: string;
-    co_brand?: string;
-}
-
-export interface Intent {
-    slug: string;
-    label: string;
-    icon: string; // emoji
-    merchants: string[];
-    groups: string[];
-    co_brands: string[];
-}
-
-export interface IntentGroupNode {
-    slug: string;
-    label: string;
-    icon: string;
-    intents: string[];
-    children?: IntentGroupNode[];
-}
-
-export interface Persona {
-    slug: string;
-    label: string;
-    note?: string;
-    labelVi?: string;
-    rank_intents?: string[];
-}
-
-export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'points_pool';
-
-export interface CashbackCap {
-    amount: number; // VND
-    category_caps?: Record<string, number>; // per-category sub-caps within rule cap (VND)
-}
-
-export interface SpendTier {
-    min_spend: number; // VND
-    rate: number;      // decimal
-    cap?: number;      // VND cap for this tier, absent = uncapped
-}
-
-export interface CashbackRuleScope {
-    channel?: 'online' | 'offline';
-    geography?: 'foreign' | 'domestic' | string;
-}
-
-export interface CashbackRule {
-    rate: number;           // decimal, e.g. 0.05 = 5%
-    rate_max?: number;      // decimal, e.g. 0.10 = 10% — present when tiered/conditional
-    cap?: CashbackCap;      // per-rule cap; absent = uncapped
-    cap_max?: CashbackCap;  // upper bound of cap range — present when tiered/conditional
-    intents?: string[];     // intent slugs; ["all"]/["all-online"]/["all-offline"] = catch-all
-    merchants?: string[];   // merchant slugs, e.g. "grab", "shopee"
-    max_intents?: number;   // user picks at most N intents per cycle (e.g. MSB mDigi, VIB Family Link)
-    tiers?: SpendTier[];    // spend-tiered rates; when present, rate/cap are display-only summaries
-    scope?: CashbackRuleScope;
-    note?: string;
-}
-
-export interface CashbackBenefit {
-    rules: CashbackRule[];
-    package_exclusive?: boolean; // true = rules are mutually exclusive packages; cardholder picks one at issuance
-    global_cap?: CashbackCap;
-    global_cap_max?: CashbackCap;
-    min_spend_per_period?: number; // VND
-    redemption?: CashbackRedemption;
-    note?: string;
+    annual?: import('./api-types.generated').FeeEntryWithWaiver;
+    annual_supplementary?: import('./api-types.generated').FeeEntry;
+    issuance?: import('./api-types.generated').FeeEntry;
+    cancellation?: import('./api-types.generated').FeeEntry;
+    foreign?: import('./api-types.generated').FeeEntry;
+    foreign_dcc?: import('./api-types.generated').FeeEntry;
 }
 
 export interface CardSource {
@@ -184,36 +77,46 @@ export interface CardSource {
     page?: number;
 }
 
-export interface Card {
-    id: string;
-    name: string;
-    image?: CardImage | null;
-    bank_id: string;
-    bank_data?: Bank;
-    card_network: CardNetwork;
-    card_tier?: string;
-    card_tier_data?: CardTierData;
-    co_brand?: string;
-    co_brand_data?: Brand;
-    card_network_data?: Network;
-    card_type: CardType[];
-    fees?: CardFees;
-    sources?: CardSource[];
-    currency?: string;
-    interest_free_days?: number;
-    statement_date?: number;
-    card_link?: string;
-    status?: 'published' | 'draft' | 'discontinued';
-    contactless_methods?: string[];
-    contactless_methods_data?: ContactlessMethod[];
-    last_modified?: string;
-    is_metal?: boolean;
-    for_business?: boolean;
-    description?: string;
-    score?: number; // Computed data completeness score (0–100)
-    data_score?: number; // Combined data quality score: 60% card score + 40% cashback score (equals score if no cashback)
+export type CashbackRedemption = 'auto_statement_credit' | 'manual_request' | 'points_pool'
+
+export interface SpendTier {
+    min_spend: number;
+    rate: number;
+    cap?: number;
+}
+
+export interface CashbackRuleScope {
+    channel?: 'online' | 'offline';
+    geography?: 'foreign' | 'domestic' | string;
+}
+
+// Extended types: OpenAPI spec omits these fields; kept local until spec is updated
+export interface CashbackCap {
+    amount: number;
+    category_caps?: Record<string, number>;
+}
+
+export interface CashbackRule {
+    rate: number;
+    rate_max?: number;
+    cap?: CashbackCap;
+    cap_max?: CashbackCap;
     intents?: string[];
-    cashback?: CashbackBenefit;
+    merchants?: string[];
+    max_intents?: number;
+    tiers?: SpendTier[];
+    scope?: RuleScope;
+    note?: string;
+}
+
+export interface CashbackBenefit {
+    rules: CashbackRule[];
+    package_exclusive?: boolean;
+    global_cap?: CashbackCap;
+    global_cap_max?: CashbackCap;
+    min_spend_per_period?: number;
+    redemption?: CashbackRedemption;
+    note?: string;
 }
 
 export type CardSort = 'fee_asc' | 'fee_desc';
@@ -242,6 +145,18 @@ export const SEGMENT_FILTERS: Record<string, Pick<CardFilters, 'type'>> = {
     '2in1':       { type: '2in1' },
     'co-branded': { type: 'co-branded' },
 };
+
+interface BankListResponse {
+    success: boolean;
+    data: Bank[];
+    meta: { total: number };
+}
+
+interface BankDetailResponse {
+    success: boolean;
+    data: Bank;
+    meta: { total: number };
+}
 
 interface CardListResponse {
     success: boolean;

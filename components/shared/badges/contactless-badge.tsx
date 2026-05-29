@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import type { ContactlessMethod } from '@/lib/api';
+import type { Contactless } from '@/lib/api';
 import { getWalletImageUrl } from '@/lib/api';
 
 interface Props {
-    method: ContactlessMethod;
+    method: Contactless;
     showName?: boolean;
 }
 

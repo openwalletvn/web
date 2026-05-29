@@ -12,7 +12,8 @@
     "evals": "concurrently -n ui,server -c blue,cyan \"evals/ui/node_modules/.bin/vite --config evals/ui/vite.config.ts\" \"tsx evals/server.ts\"",
     "evals:build": "evals/ui/node_modules/.bin/vite build --config evals/ui/vite.config.ts",
     "eval": "tsx scripts/eval-chat.ts",
-    "clask": "clask"
+    "clask": "clask",
+    "generate:types": "tsx --env-file=.env.local scripts/generate-types.ts"
   },
   "dependencies": {
     "@ai-sdk/mcp": "^1.0.43",
@@ -68,6 +69,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "concurrently": "^9.2.1",
+    "openapi-typescript": "^7.13.0",
     "shadcn": "^3.8.5",
     "tailwindcss": "^4.1.18",
     "tsx": "^4.19.3",
