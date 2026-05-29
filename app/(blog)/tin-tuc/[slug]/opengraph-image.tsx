@@ -17,7 +17,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const post = getPostBySlug(slug);
 
   if (!post) {
-    return createOgImage({ title: 'Blog', description: 'Open Wallet' });
+    return createOgImage({ title: 'Blog', description: 'OpenWallet' });
   }
 
   if (post.frontmatter.cover_image) {

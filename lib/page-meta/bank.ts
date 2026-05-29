@@ -11,8 +11,8 @@ export interface BankPageMeta {
 }
 
 export function buildBankPageMeta(bank: Bank, cards: Card[]): BankPageMeta {
-    const description = `${bank.full_name} - thẻ và thông tin chi tiết trên Open Wallet.`;
-    const title = `${bank.name} | Open Wallet`;
+    const description = `${bank.full_name} - thẻ và thông tin chi tiết trên OpenWallet.`;
+    const title = `${bank.name} | OpenWallet`;
 
     const breadcrumbItems: BreadcrumbItem[] = [
         {label: 'Trang chủ', href: '/'},

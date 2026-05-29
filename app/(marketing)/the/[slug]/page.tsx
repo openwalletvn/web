@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         const { metadata } = buildCardPageMeta(card, bank);
         return metadata;
     } catch {
-        return { title: 'Không tìm thấy | Open Wallet' };
+        return { title: 'Không tìm thấy | OpenWallet' };
     }
 }
 

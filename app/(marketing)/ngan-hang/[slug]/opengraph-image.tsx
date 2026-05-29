@@ -69,6 +69,6 @@ export default async function Image({ params }: { params: Promise<{ slug: string
       ) : undefined,
     });
   } catch {
-    return createOgImage({ title: slug, description: 'Open Wallet · Ngan hang' });
+    return createOgImage({ title: slug, description: 'OpenWallet · Ngan hang' });
   }
 }

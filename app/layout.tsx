@@ -28,7 +28,7 @@ export function generateMetadata(): Metadata {
   return {
     metadataBase: new URL('https://openwallet.vn'),
     ...(isPreview && { robots: { index: false, follow: false } }),
-    title: 'Open Wallet – Tra cứu thẻ. Quản lý thẻ.',
+    title: 'OpenWallet – Tra cứu thẻ. Quản lý thẻ.',
     description: 'Tra cứu thông tin thẻ ngân hàng Việt Nam và quản lý ngày sao kê, nhắc hạn thanh toán. Miễn phí, bảo mật, mã nguồn mở.',
     alternates: {
       canonical: '/',
@@ -38,17 +38,17 @@ export function generateMetadata(): Metadata {
       },
     },
     openGraph: {
-      title: 'Open Wallet – Tra cứu thẻ. Quản lý thẻ.',
+      title: 'OpenWallet – Tra cứu thẻ. Quản lý thẻ.',
       description: 'Tra cứu thông tin thẻ tín dụng, thẻ ghi nợ Việt Nam. Theo dõi ngày sao kê, quản lý thẻ cá nhân.',
       url: 'https://openwallet.vn',
-      siteName: 'Open Wallet',
+      siteName: 'OpenWallet',
       locale: 'vi_VN',
       type: 'website',
       images: [{ url: '/og.png' }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Open Wallet – Tra cứu thẻ. Quản lý thẻ.',
+      title: 'OpenWallet – Tra cứu thẻ. Quản lý thẻ.',
       description: 'Tra cứu thông tin thẻ tín dụng, thẻ ghi nợ Việt Nam. Theo dõi ngày sao kê, quản lý thẻ cá nhân.',
       images: ['/og.png'],
     },

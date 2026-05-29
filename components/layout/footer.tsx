@@ -64,7 +64,7 @@ export function Footer() {
                 <div className="w-full leading-[0] overflow-hidden" style={{maxHeight: '11rem'}}>
                     <Image
                         src="/footer-open-wallet.svg"
-                        alt="Open Wallet"
+                        alt="OpenWallet"
                         width={1602}
                         height={269}
                         className="w-full h-auto"

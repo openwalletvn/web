@@ -68,6 +68,6 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             accentColor: brandColor,
         });
     } catch {
-        return createOgImage({title: slug, description: 'Open Wallet · The ngan hang'});
+        return createOgImage({title: slug, description: 'OpenWallet · The ngan hang'});
     }
 }

@@ -17,7 +17,7 @@ export function buildComparePageMeta(
     cardB: Card,
     frontmatter?: CompareFrontmatter,
 ): ComparePageMeta {
-    const title = frontmatter?.title ?? `So sánh ${cardA.name} vs ${cardB.name} | Open Wallet`;
+    const title = frontmatter?.title ?? `So sánh ${cardA.name} vs ${cardB.name} | OpenWallet`;
     const description =
         frontmatter?.description ??
         `So sánh chi tiết ${cardA.name} và ${cardB.name}: phí thường niên, mạng thanh toán, ưu đãi và nhiều hơn nữa.`;

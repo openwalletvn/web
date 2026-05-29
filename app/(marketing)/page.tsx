@@ -21,13 +21,13 @@ export default async function HomePage() {
         '@graph': [
             {
                 '@type': 'WebSite',
-                name: 'Open Wallet',
+                name: 'OpenWallet',
                 url: 'https://openwallet.vn',
                 description: 'Tra cứu thông tin thẻ ngân hàng Việt Nam và quản lý ngày sao kê, nhắc hạn thanh toán. Miễn phí, bảo mật, mã nguồn mở.',
             },
             {
                 '@type': 'Organization',
-                name: 'Open Wallet',
+                name: 'OpenWallet',
                 url: 'https://openwallet.vn',
                 logo: 'https://openwallet.vn/logo.png',
                 description: 'Nguồn dữ liệu thẻ ngân hàng Việt Nam mã nguồn mở.',

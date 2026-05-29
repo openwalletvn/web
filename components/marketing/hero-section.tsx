@@ -68,7 +68,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
                     className="w-full max-w-[320px] md:max-w-[480px] lg:max-w-[620px] aspect-square relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-[200px] before:bg-gradient-to-t before:from-[#F7F7F7] before:to-transparent before:z-10">
                     <Image
                         src="/hero-mockup.png"
-                        alt="Open Wallet app on phone"
+                        alt="OpenWallet app on phone"
                         width={1200}
                         height={1200}
                         className="w-full h-full object-contain"

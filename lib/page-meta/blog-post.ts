@@ -37,12 +37,12 @@ export function buildBlogPostPageMeta(post: Post): BlogPostPageMeta {
                 inLanguage: 'vi-VN',
                 author: {
                     '@type': 'Organization',
-                    name: 'Open Wallet',
+                    name: 'OpenWallet',
                     url: BASE_URL,
                 },
                 publisher: {
                     '@type': 'Organization',
-                    name: 'Open Wallet',
+                    name: 'OpenWallet',
                     url: BASE_URL,
                 },
             },

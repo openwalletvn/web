@@ -13,8 +13,8 @@ const BREADCRUMB_ITEMS = [
 export async function generateMetadata(): Promise<Metadata> {
     const banks = await getBanks();
     const {metadata} = buildCollectionPageMeta({
-        title: 'Ngân hàng | Open Wallet',
-        description: 'Danh sách tất cả các ngân hàng Việt Nam trên Open Wallet.',
+        title: 'Ngân hàng | OpenWallet',
+        description: 'Danh sách tất cả các ngân hàng Việt Nam trên OpenWallet.',
         url: ROUTES.banks,
         items: banks.map((b) => ({name: b.name, url: ROUTES.bank(b.id)})),
         breadcrumbItems: BREADCRUMB_ITEMS,
@@ -26,8 +26,8 @@ export default async function BanksPage() {
     const banks = await getBanks();
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
-        title: 'Ngân hàng | Open Wallet',
-        description: 'Danh sách tất cả các ngân hàng Việt Nam trên Open Wallet.',
+        title: 'Ngân hàng | OpenWallet',
+        description: 'Danh sách tất cả các ngân hàng Việt Nam trên OpenWallet.',
         url: ROUTES.banks,
         items: banks.map((b) => ({name: b.name, url: ROUTES.bank(b.id)})),
         breadcrumbItems: BREADCRUMB_ITEMS,

@@ -29,14 +29,14 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { pair } = await params;
     const ids = pair.split('-vs-');
-    if (ids.length < 2) return { title: 'So sánh thẻ | Open Wallet' };
+    if (ids.length < 2) return { title: 'So sánh thẻ | OpenWallet' };
     try {
         const [cardA, cardB] = await Promise.all([getCard(ids[0]), getCard(ids[1])]);
         const mdx = ids.length === 2 ? lookupCompareMdx(pair) : null;
         const { metadata } = buildComparePageMeta(cardA, cardB, mdx?.frontmatter);
         return metadata;
     } catch {
-        return { title: 'So sánh thẻ | Open Wallet' };
+        return { title: 'So sánh thẻ | OpenWallet' };
     }
 }
 

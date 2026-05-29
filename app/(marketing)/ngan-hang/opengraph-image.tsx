@@ -7,6 +7,6 @@ export const contentType = 'image/png';
 export default async function Image() {
     return createOgImage({
         title: 'Ngân hàng',
-        description: 'Danh sách tất cả các ngân hàng Việt Nam trên Open Wallet.',
+        description: 'Danh sách tất cả các ngân hàng Việt Nam trên OpenWallet.',
     });
 }

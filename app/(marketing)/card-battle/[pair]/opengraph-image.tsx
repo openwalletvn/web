@@ -73,7 +73,7 @@ export default async function Image({ params }: { params: Promise<{ pair: string
     } catch {
         return createOgImage({
             title: 'So sánh thẻ',
-            description: 'Open Wallet · So sánh thẻ ngân hàng',
+            description: 'OpenWallet · So sánh thẻ ngân hàng',
         });
     }
 }
