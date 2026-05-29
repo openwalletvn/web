@@ -40,3 +40,7 @@ next-env.d.ts
 /.idea
 .env.local
 .dev.vars
+
+# Search Console exports
+search-console/
+search-console-page-indexing/
