@@ -4,6 +4,7 @@ import {CARD_CATEGORIES} from '@/lib/card-categories';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import Link from 'next/link';
+import {Button} from '@/components/ui/button';
 
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
@@ -11,8 +12,8 @@ const BREADCRUMB_ITEMS = [
 ];
 
 const META = {
-    title: 'Thẻ ngân hàng theo nhu cầu | Open Wallet',
-    description: 'Tìm thẻ ngân hàng phù hợp với nhu cầu chi tiêu của bạn: Shopee, siêu thị, y tế, giáo dục, bảo hiểm, dịch vụ số, doanh nghiệp.',
+    title: 'Thẻ ngân hàng theo nhu cầu | OpenWallet',
+    description: 'Danh sách thẻ ngân hàng phân loại theo nhu cầu sử dụng: Shopee, siêu thị, du lịch, di chuyển, dịch vụ số, gia đình, doanh nghiệp. Xếp hạng tự động bằng thuật toán.',
     url: '/the-theo-nhu-cau',
 };
 
@@ -47,11 +48,17 @@ export default async function PersonaHubPage() {
     return (
         <MarketingPageShell
             title="Thẻ theo nhu cầu"
-            description={META.description}
+            description="Tìm thẻ ngân hàng phù hợp với nhu cầu của bạn, từ mua sắm online đến du lịch hay chi tiêu gia đình."
             breadcrumbItems={breadcrumbItems}
             jsonLd={jsonLd}
         >
-            <section className="ow-persona-hub-page">
+            <section className="ow-persona-hub-page flex flex-col gap-10">
+                <div className="flex flex-col gap-3 max-w-2xl">
+                    <p className="text-base text-text-muted">
+                        Dưới đây là danh sách thẻ ngân hàng được phân loại theo nhu cầu sử dụng thực tế phổ biến. Mỗi nhóm bao gồm thẻ tín dụng và thẻ ghi nợ từ nhiều ngân hàng, được xếp hạng tự động bằng thuật toán của OpenWallet dựa trên các tiêu chí như cashback, phí và điều kiện thực tế.
+                    </p>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {items.map(({persona, category}) => (
                         <Link
@@ -63,6 +70,17 @@ export default async function PersonaHubPage() {
                             <span className="text-text-muted text-sm">{category.description}</span>
                         </Link>
                     ))}
+                </div>
+
+                <div className="flex flex-col gap-3 max-w-2xl">
+                    <p className="text-base text-text-muted">
+                        OpenWallet tiếp tục cập nhật dữ liệu và tối ưu thuật toán để gợi ý thẻ chính xác hơn theo từng nhu cầu. Nếu bạn muốn tìm thẻ theo tiêu chí cá nhân cụ thể, mức chi tiêu hoặc danh mục riêng, hãy dùng công cụ Card Match.
+                    </p>
+                    <div>
+                        <Button asChild variant="outline">
+                            <Link href="/card-match">Đi đến Card Match</Link>
+                        </Button>
+                    </div>
                 </div>
             </section>
         </MarketingPageShell>

@@ -9,7 +9,7 @@ const CONFIG: IntentCategoryConfig = {
     url: '/the-theo-nhu-cau/doanh-nghiep',
     personaSlug: 'business',
     rankingTitle: 'Xếp hạng thẻ doanh nghiệp',
-    intro: 'Thẻ ngân hàng dành riêng cho doanh nghiệp khác thẻ cá nhân ở hạn mức, điều kiện mở thẻ và khả năng quản lý chi tiêu nhóm. Doanh nghiệp vừa và nhỏ có thể mở từ 1 thẻ, trong khi công ty lớn thường phát hành thẻ phụ cho từng bộ phận. Open Wallet tổng hợp thẻ doanh nghiệp từ các ngân hàng Việt Nam, bao gồm hạn mức, phí thường niên và điều kiện mở thẻ cho hộ kinh doanh và công ty TNHH/cổ phần.',
+    intro: 'Thẻ ngân hàng dành riêng cho doanh nghiệp khác thẻ cá nhân ở hạn mức, điều kiện mở thẻ và khả năng quản lý chi tiêu nhóm. Doanh nghiệp vừa và nhỏ có thể mở từ 1 thẻ, trong khi công ty lớn thường phát hành thẻ phụ cho từng bộ phận. OpenWallet tổng hợp thẻ doanh nghiệp từ các ngân hàng Việt Nam, bao gồm hạn mức, phí thường niên và điều kiện mở thẻ cho hộ kinh doanh và công ty TNHH/cổ phần.',
     faqs: [
         {q: 'Doanh nghiệp mới thành lập có mở được thẻ công ty không?', a: 'Có, nhưng thường cần tài khoản doanh nghiệp ít nhất 3–6 tháng và có doanh thu chứng minh với một số ngân hàng.'},
         {q: 'Thẻ doanh nghiệp có hạn mức cao hơn thẻ cá nhân không?', a: 'Thường có — hạn mức tính trên tài chính doanh nghiệp, không phải thu nhập cá nhân.'},

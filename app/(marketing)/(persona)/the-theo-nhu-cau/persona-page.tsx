@@ -11,7 +11,7 @@ export async function PersonaPage({config}: { config: IntentCategoryConfig }) {
         getCards({persona: config.personaSlug}),
         getRankedCards({persona: config.personaSlug, intents: [], limit: 10}).catch(() => []),
     ]);
-    const {jsonLd, breadcrumbItems} = buildIntentCategoryMeta(config, poolCards);
+    const {jsonLd, breadcrumbItems} = buildIntentCategoryMeta(config, initialRanked.map(r => r.card));
     const rankedIds = new Set(initialRanked.map((r) => r.card.id));
 
     return (
@@ -21,8 +21,8 @@ export async function PersonaPage({config}: { config: IntentCategoryConfig }) {
             <CardRankingTable initialRanked={initialRanked} personaSlug={config.personaSlug}
                               title={config.rankingTitle}/>
             <PersonaFAQ faqs={config.faqs}/>
-            <BrowsePersonas excludeHref={config.url}/>
             <PersonaPoolCards poolCards={poolCards} excludeIds={rankedIds} excludeRanked={true}/>
+            <BrowsePersonas currentHref={config.url}/>
         </MarketingPageShell>
     );
 }
