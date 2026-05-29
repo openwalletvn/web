@@ -112,6 +112,7 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 | `/generate-images` | `commands/generate-images.md` | Add images to blog posts + Gemini prompts |
 | `/add-json-ld` | `commands/add-json-ld.md` | Add JSON-LD structured data to a page |
 | `/add-changelog` | `commands/add-changelog.md` | Add a changelog entry |
+| `/update-persona-content` | `commands/update-persona-content.md` | Update persona page intro + FAQs from live API data |
 
 @.claude/docs/architecture.md
 @.claude/docs/layout.md
