@@ -10,7 +10,7 @@ import {CategoryIntro, CategoryFAQ} from '@/components/marketing/category-seo-se
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Shopee',
     description: 'So sánh thẻ tín dụng và ghi nợ liên kết Shopee từ các ngân hàng Việt Nam. Tìm thẻ hoàn tiền Shopee cao nhất, phí thường niên thấp nhất.',
-    url: '/the-shopee',
+    url: '/the-theo-nhu-cau/shopee',
     personaSlug: 'shopee',
     rankingTitle: 'Xếp hạng thẻ theo cashback Shopee',
     intro: 'Mua sắm trên Shopee thường xuyên? Chọn đúng thẻ ngân hàng có thể giúp bạn tiết kiệm 5–10% mỗi đơn hàng nhờ cashback hoặc tích điểm đổi voucher. Không phải thẻ nào liên kết Shopee cũng như nhau, một số hoàn tiền cố định 5%, số khác chỉ áp dụng khi đạt ngưỡng chi tiêu tối thiểu.',
@@ -19,6 +19,11 @@ const CONFIG: IntentCategoryConfig = {
         {q: 'Thẻ ghi nợ có cashback Shopee không?', a: 'Có, nhưng tỷ lệ hoàn tiền thường thấp hơn thẻ tín dụng. Thẻ tín dụng đồng thương hiệu Shopee thường có mức hoàn tốt nhất.'},
         {q: 'Dùng thẻ liên kết Shopee Pay có ưu đãi khác không?', a: 'Shopee Pay là ví điện tử, khác với thẻ ngân hàng. Một số thẻ tặng thêm điểm khi nạp vào Shopee Pay, nhưng cashback chính vẫn tính theo giao dịch mua hàng.'},
         {q: 'Phí thường niên thẻ Shopee có được miễn không?', a: 'Tùy ngân hàng. Nhiều thẻ miễn phí năm đầu hoặc miễn khi đạt mức chi tiêu nhất định trong năm.'},
+    ],
+    breadcrumbItems: [
+        {label: 'Trang chủ', href: '/'},
+        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Thẻ Shopee'},
     ],
 };
 
@@ -29,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ShopeeCardsPage() {
     const [poolCards, initialRanked] = await Promise.all([
         getCards({persona: CONFIG.personaSlug}),
-        getRankedCards({persona: CONFIG.personaSlug, limit: 10}).catch(() => []),
+        getRankedCards({persona: CONFIG.personaSlug, intents: [], limit: 10}).catch(() => []),
     ]);
     const {jsonLd, breadcrumbItems} = buildIntentCategoryMeta(CONFIG, poolCards);
     const rankedIds = new Set(initialRanked.map((r) => r.card.id));

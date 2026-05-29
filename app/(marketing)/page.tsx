@@ -4,7 +4,7 @@ import {BanksSection, BanksSectionSkeleton} from '@/components/marketing/banks-s
 import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {HeroSection} from '@/components/marketing/hero-section';
-import {FeaturedCardCategories} from '@/components/marketing/featured-card-categories';
+import {PersonaCategories} from '@/components/marketing/persona-categories';
 import {GradientShader} from "@/components/shared/gradient-shader";
 import {CardMatchFinder} from '@/components/match/card-match-finder';
 
@@ -48,7 +48,7 @@ export default async function HomePage() {
                 <div className="lg:p-3 p-2">
                     <HeroSection cardCount={cards.length} bankCount={banks.length}/>
                 </div>
-                <FeaturedCardCategories/>
+                <PersonaCategories/>
             </div>
 
             <section className="border-t border-dashed border-border py-12">

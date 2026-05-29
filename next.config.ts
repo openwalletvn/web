@@ -56,6 +56,14 @@ const nextConfig: NextConfig = {
         destination: '/the/:slug*',
         permanent: true,
       },
+      // persona pages — old flat URLs redirect to nested structure
+      { source: '/the-shopee', destination: '/the-theo-nhu-cau/shopee', permanent: true },
+      { source: '/the-sieu-thi', destination: '/the-theo-nhu-cau/sieu-thi', permanent: true },
+      { source: '/the-chi-tieu-dich-vu-so', destination: '/the-theo-nhu-cau/dich-vu-so', permanent: true },
+      { source: '/the-danh-cho-giao-duc', destination: '/the-theo-nhu-cau/gia-dinh', permanent: true },
+      { source: '/the-danh-cho-y-te', destination: '/the-theo-nhu-cau/gia-dinh', permanent: true },
+      { source: '/the-danh-cho-bao-hiem', destination: '/the-theo-nhu-cau/gia-dinh', permanent: true },
+      { source: '/the-doanh-nghiep', destination: '/the-theo-nhu-cau/doanh-nghiep', permanent: true },
       { source: '/banks', destination: '/ngan-hang', permanent: true },
       {
         source: '/banks/:slug*',

@@ -3,6 +3,8 @@ import type { Card } from '@/lib/api';
 import { buildCollectionPageMeta, type CollectionPageMeta } from './collection';
 import { ROUTES } from '@/lib/routes';
 
+export type BreadcrumbItem = { label: string; href?: string };
+
 export type IntentCategoryConfig = {
     title: string;
     description: string;
@@ -11,6 +13,7 @@ export type IntentCategoryConfig = {
     rankingTitle: string;
     intro: string;
     faqs: Array<{ q: string; a: string }>;
+    breadcrumbItems?: BreadcrumbItem[];
 };
 
 const BREADCRUMB_BASE = [
@@ -22,12 +25,13 @@ export function buildIntentCategoryMeta(
     config: IntentCategoryConfig,
     poolCards: Card[],
 ): CollectionPageMeta {
+    const breadcrumbItems = config.breadcrumbItems ?? [...BREADCRUMB_BASE, { label: config.title }];
     return buildCollectionPageMeta({
         title: `${config.title} | Open Wallet`,
         description: config.description,
         url: config.url,
         items: poolCards.map((c) => ({ name: c.name, url: `/the/${c.id}` })),
-        breadcrumbItems: [...BREADCRUMB_BASE, { label: config.title }],
+        breadcrumbItems,
     });
 }
 
