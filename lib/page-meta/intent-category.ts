@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import type { Card } from '@/lib/api';
 import { buildCollectionPageMeta, type CollectionPageMeta } from './collection';
 import { ROUTES } from '@/lib/routes';
@@ -11,8 +12,8 @@ export type IntentCategoryConfig = {
     url: string;
     personaSlug: string;
     rankingTitle: string;
-    intro: string;
-    faqs: Array<{ q: string; a: string }>;
+    intro: ReactNode;
+    faqs: Array<{ q: string; a: ReactNode; aText?: string }>;
     breadcrumbItems?: BreadcrumbItem[];
 };
 
@@ -27,7 +28,7 @@ export function buildIntentCategoryMeta(
 ): CollectionPageMeta {
     const breadcrumbItems = config.breadcrumbItems ?? [...BREADCRUMB_BASE, { label: config.title }];
     return buildCollectionPageMeta({
-        title: `${config.title} | Open Wallet`,
+        title: `${config.title} | OpenWallet`,
         description: config.description,
         url: config.url,
         items: poolCards.map((c) => ({ name: c.name, url: `/the/${c.id}` })),
