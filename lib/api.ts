@@ -190,17 +190,13 @@ export async function getBank(id: string): Promise<Bank> {
 
 export async function getCards(filters?: CardFilters): Promise<Card[]> {
     const params = new URLSearchParams();
-    if (filters?.type) params.set('type', filters.type);
-    if (filters?.network) params.set('network', filters.network);
-    if (filters?.bank_id) params.set('bank_id', filters.bank_id);
-    if (filters?.co_brand === true) params.set('co_brand', 'true');
-    else if (typeof filters?.co_brand === 'string') params.set('co_brand', filters.co_brand);
-    if (filters?.intent) params.set('intent', filters.intent);
-    if (filters?.contactless) params.set('contactless', filters.contactless);
-    if (filters?.tier) params.set('tier', filters.tier);
-    if (filters?.metal) params.set('metal', 'true');
-    if (filters?.for_business) params.set('for_business', 'true');
-    if (filters?.network_tier) params.set('network_tier', filters.network_tier);
+    if (filters) {
+        for (const [key, value] of Object.entries(filters)) {
+            if (value !== undefined && value !== null && value !== '') {
+                params.set(key, String(value));
+            }
+        }
+    }
     const query = params.size > 0 ? `?${params.toString()}` : '';
     const res = await apiFetch(`/api/v1/cards${query}`);
     const json = (await res.json()) as CardListResponse;

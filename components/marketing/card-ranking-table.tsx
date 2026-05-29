@@ -7,11 +7,11 @@ import {IconInfoCircle} from '@tabler/icons-react';
 
 interface Props {
     initialRanked: RankedCard[];
-    intentSlug: string;
+    personaSlug: string;
     title?: string;
 }
 
-export function CardRankingTable({initialRanked, intentSlug, title}: Props) {
+export function CardRankingTable({initialRanked, personaSlug, title}: Props) {
     const [ranked] = useState<RankedCard[]>(initialRanked);
 
     const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
@@ -31,7 +31,7 @@ export function CardRankingTable({initialRanked, intentSlug, title}: Props) {
                         key={r.card.id}
                         ranked={r}
                         viewTransitionName={`card-row-${r.card.id}`}
-                        intentSlug={intentSlug}
+                        intentSlug={personaSlug}
                     />
                 ))}
 
@@ -44,7 +44,7 @@ export function CardRankingTable({initialRanked, intentSlug, title}: Props) {
                                 ranked={r}
                                 muted
                                 viewTransitionName={`card-row-${r.card.id}`}
-                                intentSlug={intentSlug}
+                                intentSlug={personaSlug}
                             />
                         ))}
                     </>

@@ -7,11 +7,10 @@ export type IntentCategoryConfig = {
     title: string;
     description: string;
     url: string;
-    intentSlug: string;
+    personaSlug: string;
     rankingTitle: string;
     intro: string;
     faqs: Array<{ q: string; a: string }>;
-    filterFn: (card: Card) => boolean;
 };
 
 const BREADCRUMB_BASE = [
@@ -21,21 +20,21 @@ const BREADCRUMB_BASE = [
 
 export function buildIntentCategoryMeta(
     config: IntentCategoryConfig,
-    cards: Card[],
+    poolCards: Card[],
 ): CollectionPageMeta {
     return buildCollectionPageMeta({
         title: `${config.title} | Open Wallet`,
         description: config.description,
         url: config.url,
-        items: cards.filter(config.filterFn).map((c) => ({ name: c.name, url: `/the/${c.id}` })),
+        items: poolCards.map((c) => ({ name: c.name, url: `/the/${c.id}` })),
         breadcrumbItems: [...BREADCRUMB_BASE, { label: config.title }],
     });
 }
 
 export async function generateIntentCategoryMetadata(
     config: IntentCategoryConfig,
-    getCards: () => Promise<Card[]>,
+    getPoolCards: () => Promise<Card[]>,
 ): Promise<Metadata> {
-    const allCards = await getCards();
-    return buildIntentCategoryMeta(config, allCards).metadata;
+    const poolCards = await getPoolCards();
+    return buildIntentCategoryMeta(config, poolCards).metadata;
 }
