@@ -25,7 +25,7 @@ function FeeBox({
     return (
         <div className="border border-slate-200 rounded-lg px-4 py-4 flex flex-col items-center text-center gap-1">
             {entry ? (
-                <p className={cn('sm:text-2xl text-lg font-bold leading-tight', free ? 'text-green-600' : red ? 'text-brand-red' : 'text-slate-900')}>
+                <p className={cn('text-numeral leading-tight', free ? 'text-green-600' : red ? 'text-brand-red' : 'text-slate-900')}>
                     {formatFee(entry)}
                 </p>
             ) : (

@@ -16,7 +16,7 @@ function WaiverDisplay({ waiver }: { waiver: FeeWaiver }) {
     if (waiver.waiver && waiver.condition) {
         return (
             <div className="flex flex-col gap-0.5">
-                <p className="text-2xl font-bold text-green-600">Miễn phí</p>
+                <p className="text-numeral text-green-600">Miễn phí</p>
                 <p className="text-xs text-slate-600">
                     với điều kiện: {waiver.condition}
                 </p>
@@ -73,7 +73,7 @@ export function CardDetailFees({ card }: Props) {
                 <div className="grid grid-cols-3 gap-x-4">
                     {/* Col 1: Phát hành */}
                     <div className="flex flex-col items-start gap-1">
-                        <p className={cn('sm:text-2xl text-lg font-bold leading-tight', !fees.issuance || fees.issuance.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
+                        <p className={cn('text-numeral leading-tight', !fees.issuance || fees.issuance.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
                             {fees.issuance ? formatFee(fees.issuance) : 'Miễn phí'}
                         </p>
                         {fees.issuance?.note && <NoteLines note={fees.issuance.note} />}
@@ -83,7 +83,7 @@ export function CardDetailFees({ card }: Props) {
                     <div className="flex flex-col items-center text-center gap-1">
                         {annual ? (
                             <>
-                                <p className={cn('sm:text-2xl text-lg font-bold leading-tight', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
+                                <p className={cn('text-numeral leading-tight', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
                                     {formatFee(annual)}
                                 </p>
                                 {annual.first_year && (
@@ -92,7 +92,7 @@ export function CardDetailFees({ card }: Props) {
                                 {annual.note && <NoteLines note={annual.note} />}
                             </>
                         ) : (
-                            <p className="sm:text-2xl text-lg font-bold text-slate-500">—</p>
+                            <p className="text-numeral text-slate-500">—</p>
                         )}
                     </div>
 
@@ -100,7 +100,7 @@ export function CardDetailFees({ card }: Props) {
                     <div className="flex flex-col items-end text-right gap-1">
                         {annual ? (
                             <>
-                                <p className={cn('sm:text-2xl text-lg font-bold leading-tight', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
+                                <p className={cn('text-numeral leading-tight', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
                                     {formatFee(annual)}
                                 </p>
                                 {annual.subsequent_years && (
@@ -108,7 +108,7 @@ export function CardDetailFees({ card }: Props) {
                                 )}
                             </>
                         ) : (
-                            <p className="sm:text-2xl text-lg font-bold text-slate-500">—</p>
+                            <p className="text-numeral text-slate-500">—</p>
                         )}
                     </div>
                 </div>

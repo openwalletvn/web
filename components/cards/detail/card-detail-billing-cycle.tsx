@@ -85,7 +85,7 @@ export function CardDetailBillingCycle({ card }: Props) {
 
                     <span
                         className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap font-semibold text-slate-700">
-                        <span className="text-2xl">{card.interest_free_days}</span>
+                        <span className="text-numeral">{card.interest_free_days}</span>
                         <span className="text-base"> ngày miễn lãi</span>
                     </span>
                 </div>
@@ -103,7 +103,7 @@ export function CardDetailBillingCycle({ card }: Props) {
                 <div>
                     <p className="font-semibold text-slate-700">Chốt sao kê</p>
                     <p className="text-slate-700">
-                        Ngày <span className="ow-cycle-statement-date text-2xl font-bold">
+                        Ngày <span className="ow-cycle-statement-date text-numeral">
                         {card.statement_date}
                         {info && <span className="text-slate-500">/{info.closeMonth}</span>}
                     </span>
@@ -114,7 +114,7 @@ export function CardDetailBillingCycle({ card }: Props) {
                     <p className="text-base font-semibold text-slate-700">Hạn thanh toán</p>
                     <p className="text-slate-700">
                         {info
-                            ? <>Ngày <span className="ow-cycle-due-date text-2xl font-bold">{info.dueDay}
+                            ? <>Ngày <span className="ow-cycle-due-date text-numeral">{info.dueDay}
                                 <span className="text-slate-500">/{info.dueMonth}</span>
                             </span></>
                             : '…'}

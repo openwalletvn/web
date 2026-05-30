@@ -83,7 +83,7 @@ export default function ChangelogPage() {
                                             {formatDate(entry.date)}
                                         </time>
 
-                                        <h2 id={entryId} className="text-xl mb-4 group">
+                                        <h4 id={entryId} className="mb-4 group">
                                             <a
                                                 href={`#${entryId}`}
                                                 className="no-underline hover:underline"
@@ -91,7 +91,7 @@ export default function ChangelogPage() {
                                                 {entry.title}
                                                 <span className="opacity-0 group-hover:opacity-100 text-slate-300 ml-2 transition-opacity">#</span>
                                             </a>
-                                        </h2>
+                                        </h4>
 
                                         <article
                                             className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline prose-strong:text-slate-900 prose-code:text-brand-red prose-code:before:content-none prose-code:after:content-none prose-li:text-slate-700 prose-hr:border-dashed prose-hr:border-slate-200 prose-table:text-sm prose-th:text-slate-700 prose-th:bg-slate-50 prose-td:text-slate-600">

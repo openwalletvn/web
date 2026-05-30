@@ -10,7 +10,7 @@ export function RelatedPosts({ posts }: Props) {
 
  return (
  <section className="ow-related-posts">
- <h2 className="text-xl mb-1">Bài viết liên quan</h2>
+ <h4 className="mb-1">Bài viết liên quan</h4>
  <div className="border-t border-dashed border-slate-300 mt-1 mb-6" />
  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
  {posts.map((post) => (
