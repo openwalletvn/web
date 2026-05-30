@@ -117,6 +117,7 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 | `/create-story` | `commands/create-story.md` | Create Storybook story for a component |
 | `/add-ow-ui` | `commands/add-ow-ui.md` | Move component to `ow-ui/`, rename to `Ow*`, create story, report usages |
 | `/commit-all` | `commands/commit-all.md` | Stage + commit all changes in logical groups with conventional commit messages |
+| `/sync-api-types` | `commands/sync-api-types.md` | Regenerate types from API schema, diff changes, scan codebase, suggest updates |
 
 @.claude/docs/architecture.md
 @.claude/docs/layout.md
