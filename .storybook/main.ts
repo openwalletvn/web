@@ -14,6 +14,9 @@ const config: StorybookConfig = {
   "framework": "@storybook/nextjs-vite",
   "staticDirs": [
     "../public"
-  ]
+  ],
+  "env": () => ({
+    NEXT_PUBLIC_API_URL: '',
+  })
 };
 export default config;
