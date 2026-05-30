@@ -1,5 +1,5 @@
 import {CARD_CATEGORIES, type CardCategory} from '@/lib/card-categories';
-import {BrandButton} from '@/components/ui/brand-button';
+import {OwButton} from '@/components/ow-ui/ow-button';
 
 function CategoryLink({cat}: {cat: CardCategory}) {
     if (cat.available === false) {
@@ -50,7 +50,7 @@ export function PersonaCategories() {
             </div>
 
             <div className="flex justify-center md:mt-10 mt-6">
-                <BrandButton asChild><a href="/the-theo-nhu-cau">Xem tất cả thẻ theo nhu cầu</a></BrandButton>
+                <OwButton asChild><a href="/the-theo-nhu-cau">Xem tất cả thẻ theo nhu cầu</a></OwButton>
             </div>
         </section>
     );
