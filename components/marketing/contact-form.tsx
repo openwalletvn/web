@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import {OwButton} from '@/components/ow-ui/ow-button';
 
 const TOPICS = [
     {
@@ -80,12 +81,9 @@ export function ContactForm() {
                 </div>
             </div>
 
-            <a
-                href={mailto}
-                className="inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity w-fit"
-            >
-                Mở ứng dụng email
-            </a>
+            <OwButton asChild size="sm">
+                <a href={mailto}>Mở ứng dụng email</a>
+            </OwButton>
             <p className="text-xs text-slate-500 -mt-3">
                 Chúng tôi cố gắng phản hồi trong vòng 2 ngày làm việc.
             </p>

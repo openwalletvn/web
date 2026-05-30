@@ -7,8 +7,8 @@ type OwButtonColor = "default" | "primary"
 type OwButtonSize = "md" | "sm"
 
 const colorClasses: Record<OwButtonColor, string> = {
-    default: "bg-black text-white border-2 border-black hover:bg-primary",
-    primary: "bg-primary text-white border-2 border-primary hover:bg-black",
+    default: "bg-black !text-white border-2 border-black hover:bg-primary",
+    primary: "bg-primary !text-white border-2 border-primary hover:bg-black",
 }
 
 const sizeClasses: Record<OwButtonSize, string> = {

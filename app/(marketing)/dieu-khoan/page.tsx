@@ -1,4 +1,6 @@
 import type {Metadata} from 'next';
+import Link from 'next/link';
+import {OwButton} from '@/components/ow-ui/ow-button';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
 import {buildTitle} from '@/lib/page-meta/title';
 
@@ -78,7 +80,12 @@ export default function Page() {
                         </Section>
 
                         <Section title="10. Liên hệ">
-                            <p>Nếu có thắc mắc về điều khoản sử dụng, vui lòng liên hệ qua <a href="/lien-he" className="text-link">trang liên hệ</a>.</p>
+                            <p>Nếu có thắc mắc về điều khoản sử dụng, vui lòng liên hệ với chúng tôi.</p>
+                            <div>
+                                <OwButton asChild size="sm">
+                                    <Link href="/lien-he">Liên hệ với chúng tôi</Link>
+                                </OwButton>
+                            </div>
                         </Section>
                     </div>
         </ProsePageShell>

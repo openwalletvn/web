@@ -5,7 +5,7 @@ import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import Link from 'next/link';
-import {Button} from '@/components/ui/button';
+import {OwButton} from '@/components/ow-ui/ow-button';
 
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
@@ -78,9 +78,9 @@ export default async function PersonaHubPage() {
                         OpenWallet tiếp tục cập nhật dữ liệu và tối ưu thuật toán để gợi ý thẻ chính xác hơn theo từng nhu cầu. Nếu bạn muốn tìm thẻ theo tiêu chí cá nhân cụ thể, mức chi tiêu hoặc danh mục riêng, hãy dùng công cụ Card Match.
                     </p>
                     <div>
-                        <Button asChild variant="outline">
+                        <OwButton asChild>
                             <Link href="/card-match">Đi đến Card Match</Link>
-                        </Button>
+                        </OwButton>
                     </div>
                 </div>
             </section>

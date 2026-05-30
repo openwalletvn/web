@@ -1,4 +1,6 @@
 import type {Metadata} from 'next';
+import Link from 'next/link';
+import {OwButton} from '@/components/ow-ui/ow-button';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
 import {buildTitle} from '@/lib/page-meta/title';
 
@@ -35,7 +37,12 @@ export default function Page() {
 
                         <Section title="Một lời muốn nói">
                             <p>OpenWallet không cạnh tranh với bất kỳ nền tảng nào đang tồn tại. Nhiều cá nhân và cộng đồng đã bỏ thời gian thực sự để tạo ra nội dung chất lượng mà không có lợi ích thương mại, và chúng tôi tôn trọng điều đó.</p>
-                            <p>Đây là dự án được xây dựng với sự thận trọng. Nếu bạn phát hiện thông tin không chính xác hoặc có góp ý, hãy liên hệ qua <a href="/lien-he" className="text-link">trang liên hệ</a>.</p>
+                            <p>Đây là dự án được xây dựng với sự thận trọng. Nếu bạn phát hiện thông tin không chính xác hoặc có góp ý, vui lòng liên hệ với chúng tôi.</p>
+                            <div>
+                                <OwButton asChild size="sm">
+                                    <Link href="/lien-he">Liên hệ với chúng tôi</Link>
+                                </OwButton>
+                            </div>
                         </Section>
                     </div>
         </ProsePageShell>

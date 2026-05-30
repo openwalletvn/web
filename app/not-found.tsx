@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { IconError404 } from '@tabler/icons-react';
 import { SoSanh404Redirect } from '@/components/layout/so-sanh-404-redirect';
 import { Logo } from '@/components/layout/logo';
+import {OwButton} from '@/components/ow-ui/ow-button';
 
 export default function NotFound() {
   return (
@@ -19,12 +20,9 @@ export default function NotFound() {
         Trang bạn đang tìm kiếm có thể đã bị xóa, đổi tên, hoặc không tồn tại.
       </p>
 
-      <Link
-        href="/"
-        className="text-body-md inline-flex items-center rounded-[48px] bg-black px-6 py-4 text-white transition-opacity hover:opacity-80"
-      >
-        Về trang chủ
-      </Link>
+      <OwButton asChild>
+        <Link href="/">Về trang chủ</Link>
+      </OwButton>
     </div>
   );
 }
