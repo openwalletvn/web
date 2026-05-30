@@ -1,6 +1,7 @@
 import type {Meta, StoryObj} from '@storybook/nextjs-vite';
 import {OwCardRankedRow} from './ow-card-ranked-row';
 import type {RankedCard} from '@/lib/card-ranker';
+import {DEMO_CARD_HORIZONTAL} from './ow-story-constants';
 
 const meta: Meta<typeof OwCardRankedRow> = {
     component: OwCardRankedRow,
@@ -20,12 +21,12 @@ type Story = StoryObj<typeof OwCardRankedRow>;
 
 const baseRanked: RankedCard = {
     card: {
-        id: 'kbank-cashback-plus',
-        name: 'KBank Cashback Plus',
-        bank_id: 'kbank',
+        id: DEMO_CARD_HORIZONTAL.id,
+        name: DEMO_CARD_HORIZONTAL.name,
+        bank_id: 'msb',
         card_type: ['credit'],
         card_network: 'visa',
-        image: {url: '/images/cards/mb-visa.webp', orientation: 'horizontal' as const, width: 16, height: 10},
+        image: DEMO_CARD_HORIZONTAL.image,
         fees: {annual: {amount: 0, type: 'currency' as const}},
         cashback: {
             min_spend_per_period: 3000000,

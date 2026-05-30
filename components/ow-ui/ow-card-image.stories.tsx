@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/nextjs-vite';
 import {OwCardImage} from './ow-card-image';
+import {DEMO_CARD_HORIZONTAL, DEMO_CARD_VERTICAL} from './ow-story-constants';
 
 const meta: Meta<typeof OwCardImage> = {
     component: OwCardImage,
@@ -19,20 +20,20 @@ type Story = StoryObj<typeof OwCardImage>;
 
 export const Default: Story = {
     args: {
-        src: '/images/cards/msb-visa-online.webp',
-        alt: 'MSB Visa Online',
-        width: 130,
-        height: 82,
+        src: DEMO_CARD_HORIZONTAL.image.url,
+        alt: DEMO_CARD_HORIZONTAL.name,
+        width: DEMO_CARD_HORIZONTAL.image.width,
+        height: DEMO_CARD_HORIZONTAL.image.height,
         className: 'w-64',
     },
 };
 
 export const Vertical: Story = {
     args: {
-        src: '/images/cards/acb-express.webp',
-        alt: 'ACB Express',
-        width: 72,
-        height: 114,
+        src: DEMO_CARD_VERTICAL.image.url,
+        alt: DEMO_CARD_VERTICAL.name,
+        width: DEMO_CARD_VERTICAL.image.width,
+        height: DEMO_CARD_VERTICAL.image.height,
         className: 'w-32',
     },
 };
@@ -41,20 +42,20 @@ export const WithTilt: Story = {
     render: () => (
         <div className="flex gap-6 items-end">
             <OwCardImage
-                src="/images/cards/msb-visa-online.webp"
-                alt="MSB Visa Online"
-                width={130}
-                height={82}
+                src={DEMO_CARD_HORIZONTAL.image.url}
+                alt={DEMO_CARD_HORIZONTAL.name}
+                width={DEMO_CARD_HORIZONTAL.image.width}
+                height={DEMO_CARD_HORIZONTAL.image.height}
                 tilt={true}
                 className="w-48"
             />
             <OwCardImage
-                src="/images/cards/woori-visa-platinum.webp"
-                alt="Woori Visa Platinum"
-                width={130}
-                height={82}
+                src={DEMO_CARD_VERTICAL.image.url}
+                alt={DEMO_CARD_VERTICAL.name}
+                width={DEMO_CARD_VERTICAL.image.width}
+                height={DEMO_CARD_VERTICAL.image.height}
                 tilt={true}
-                className="w-48"
+                className="w-28"
             />
         </div>
     ),
