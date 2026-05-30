@@ -2,7 +2,7 @@ import {getBanks, getCards, getNetworks} from '@/lib/api';
 import {MobileNav} from './mobile-nav';
 import {SearchDialog} from '@/components/search/search-dialog';
 import {Nav2} from "@/components/layout/nav2";
-import {Logo} from "@/components/layout/logo";
+import {OwLogo} from "@/components/ow-ui/ow-logo";
 
 const NETWORK_TIER_FILTER = 'visa:infinite,visa:signature,mastercard:world-elite,mastercard:world,amex:platinum,jcb:ultimate';
 
@@ -69,7 +69,7 @@ export async function Header() {
 
                 {/* Left: logo */}
                 <div className="flex items-center">
-                    <Logo className="xl:h-20 h-10 aspect-square"/>
+                    <OwLogo className="xl:h-20 h-10 aspect-square"/>
                 </div>
 
                 {/* Center: nav */}

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {Logo} from '@/components/layout/logo';
+import {OwLogo} from '@/components/ow-ui/ow-logo';
 import {TOOLS} from '@/lib/tools';
 import {cn} from '@/lib/utils';
 import {ROUTES} from '@/lib/routes';
@@ -39,7 +39,7 @@ export function Footer() {
                         {/* Logo + columns */}
                         <div className="flex flex-col md:flex-row md:items-start gap-8 md:gap-0">
                             {/* Logo */}
-                            <Logo variant="full" color="white" className="w-16 sm:w-24 md:w-32 md:mr-16" />
+                            <OwLogo variant="full" color="white" className="w-16 sm:w-24 md:w-32 md:mr-16" />
 
                             {/* Link columns */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 flex-1">

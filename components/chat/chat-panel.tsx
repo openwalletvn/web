@@ -23,7 +23,7 @@ import {
     listConversations,
     type Conversation,
 } from '@/lib/chat/conversation-store';
-import {Logo} from "@/components/layout/logo";
+import {OwLogo} from "@/components/ow-ui/ow-logo";
 
 function groupConversations(convos: Conversation[]) {
     const todayStart = new Date().setHours(0, 0, 0, 0);
@@ -102,7 +102,7 @@ export function ChatPanel() {
             {/* Header */}
             <div className="flex shrink-0 items-center gap-2 border-b px-4 py-3 sm:rounded-t-xl">
                 <span className="flex-1 font-semibold text-sm flex gap-1 items-center">
-                    <Logo className="w-6" variant="full" color="red" href="/chat" />
+                    <OwLogo className="w-6" variant="full" color="red" href="/chat" />
                     Chat
                 </span>
 

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { IconAlertTriangle } from '@tabler/icons-react';
-import { Logo } from '@/components/layout/logo';
+import { OwLogo } from '@/components/ow-ui/ow-logo';
 
 export default function ErrorPage({
   reset,
@@ -12,7 +12,7 @@ export default function ErrorPage({
 }) {
   return (
     <div className="ow-error-page flex min-h-screen flex-col items-center justify-center px-4 text-center">
-      <Logo className="mb-10 h-12 w-12" />
+      <OwLogo className="mb-10 h-12 w-12" />
       <div className="mb-8">
         <IconAlertTriangle className="size-12 text-[var(--color-text-muted)]" stroke={1.5} />
       </div>
