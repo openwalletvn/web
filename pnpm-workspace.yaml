@@ -5,3 +5,4 @@ allowBuilds:
   protobufjs: false
   sharp: true
   vue-demi: false
+  workerd: true
