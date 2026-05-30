@@ -6,7 +6,7 @@ type Props = React.ComponentProps<"button"> & {
   asChild?: boolean
 }
 
-export function Chip({ active = false, className, children, ...props }: Props) {
+export function OwChip({ active = false, className, children, ...props }: Props) {
   return (
     <button
       data-active={active}

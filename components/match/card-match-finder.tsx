@@ -5,7 +5,7 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {getTool} from '@/lib/tools';
 import type {Intent, Persona} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
-import {Chip} from '@/components/ui/chip';
+import {OwChip} from '@/components/ow-ui/ow-chip';
 import {RankedRow} from '@/components/cards/ranked-row';
 import {cn} from "@/lib/utils";
 
@@ -147,13 +147,13 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                             <h2 className="text-body-lg text-text-muted mb-4">Bạn hay chi tiêu ở đâu?</h2>
                             <div className="flex flex-wrap gap-2">
                                 {personas.map(p => (
-                                    <Chip
+                                    <OwChip
                                         key={p.slug}
                                         active={activePersona === p.slug}
                                         onClick={() => { setActivePersona(p.slug); setActiveIntents([]); }}
                                     >
                                         {p.labelVi || p.label}
-                                    </Chip>
+                                    </OwChip>
                                 ))}
                             </div>
 
@@ -161,14 +161,14 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                                 <div className="flex mt-5">
                                     <div className="flex flex-wrap gap-2">
                                         {personaIntents.map(intent => (
-                                            <Chip
+                                            <OwChip
                                                 key={intent.slug}
                                                 // active={activeIntents.includes(intent.slug)}
                                                 // onClick={() => toggleIntent(intent.slug)}
                                                 className="text-sm px-3 py-1"
                                             >
                                                 {intent.icon} {intent.label}
-                                            </Chip>
+                                            </OwChip>
                                         ))}
                                     </div>
                                 </div>
@@ -181,9 +181,9 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                                 nhiêu?</h2>
                             <div className="flex flex-wrap gap-2">
                                 {[1, 3, 5, 10, 20, 50, 100].map(v => (
-                                    <Chip key={v} active={monthlySpend === v} onClick={() => setMonthlySpend(v)}>
+                                    <OwChip key={v} active={monthlySpend === v} onClick={() => setMonthlySpend(v)}>
                                         {v}tr
-                                    </Chip>
+                                    </OwChip>
                                 ))}
                             </div>
                         </div>
@@ -195,12 +195,12 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                     <div className="flex items-center flex-wrap justify-between mb-4 gap-3">
                         <p className="text-label text-text-muted">KẾT QUẢ ĐỀ XUẤT</p>
                         <div className="flex flex-wrap gap-1">
-                            <Chip active={rankBy === 'cashback'} onClick={() => setRankBy('cashback')}>
+                            <OwChip active={rankBy === 'cashback'} onClick={() => setRankBy('cashback')}>
                                 Hoàn tiền cao nhất
-                            </Chip>
-                            <Chip active={rankBy === 'annual_fee'} onClick={() => setRankBy('annual_fee')}>
+                            </OwChip>
+                            <OwChip active={rankBy === 'annual_fee'} onClick={() => setRankBy('annual_fee')}>
                                 Phí thấp nhất
-                            </Chip>
+                            </OwChip>
                         </div>
                     </div>
 
