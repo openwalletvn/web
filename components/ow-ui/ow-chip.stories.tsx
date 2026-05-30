@@ -62,15 +62,30 @@ export const AsLink: Story = {
   ),
 };
 
+export const Small: Story = {
+  args: { size: 'sm' },
+};
+
+export const SmallActive: Story = {
+  args: { size: 'sm', active: true },
+};
+
 export const AllVariants: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-3">
-      <OwChip>Hiển thị</OwChip>
-      <OwChip active>Đang chọn</OwChip>
-      <OwChip asChild><button onClick={() => {}}>Nút bấm</button></OwChip>
-      <OwChip asChild active><button onClick={() => {}}>Nút đang chọn</button></OwChip>
-      <OwChip asChild><a href="#">Liên kết</a></OwChip>
-      <OwChip asChild><button disabled>Vô hiệu</button></OwChip>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-3">
+        <OwChip>Hiển thị</OwChip>
+        <OwChip active>Đang chọn</OwChip>
+        <OwChip asChild><button onClick={() => {}}>Nút bấm</button></OwChip>
+        <OwChip asChild active><button onClick={() => {}}>Nút đang chọn</button></OwChip>
+        <OwChip asChild><a href="#">Liên kết</a></OwChip>
+        <OwChip asChild><button disabled>Vô hiệu</button></OwChip>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <OwChip size="sm">Nhỏ</OwChip>
+        <OwChip size="sm" active>Nhỏ đang chọn</OwChip>
+        <OwChip size="sm" asChild><button onClick={() => {}}>Nút nhỏ</button></OwChip>
+      </div>
     </div>
   ),
 };

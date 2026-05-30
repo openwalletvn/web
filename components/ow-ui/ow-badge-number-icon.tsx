@@ -25,23 +25,23 @@ export function OwBadgeNumberIcon({
     const iconEl = (
         <div className={cn(
             'aspect-square flex justify-center items-center bg-white rounded-full shrink-0',
-            sm ? 'w-8' : 'w-14',
+            sm ? 'w-8' : 'w-8 sm:w-14',
         )}>
-            <Icon className={sm ? 'w-4 h-4' : 'w-6 h-6'}/>
+            <Icon className={sm ? 'w-4 h-4' : 'w-4 h-4 sm:w-6 sm:h-6'}/>
         </div>
     );
 
     const textEl = (
         <div className={cn('flex flex-col text-white', iconPosition === 'left' ? 'pr-4' : 'pl-4')}>
-            <span className={cn('leading-none font-display', sm ? 'text-[22px]' : 'text-[40px]')}>{number}</span>
-            <span className={cn('capitalize', sm ? 'text-[10px]' : 'text-[12px]')}>{text}</span>
+            <span className={cn('!leading-none font-display', sm ? 'text-[22px]' : 'text-[22px] sm:text-[40px]')}>{number}</span>
+            <span className={cn('capitalize', sm ? 'text-[10px]' : 'text-[10px] sm:text-[12px]')}>{text}</span>
         </div>
     );
 
     return (
         <div className={cn(
             'ow-badge-number-icon inline-flex items-center gap-2 rounded-full',
-            sm ? 'p-1.5' : 'p-2',
+            sm ? 'p-1.5' : 'p-1.5 sm:p-2',
             color === 'primary' ? 'bg-primary' : 'bg-black',
             className,
         )}>

@@ -70,6 +70,7 @@
     --text-label:12px;
 
     /* Line heights */
+    --leading-none:1;
     --leading-tight:1;
     --leading-snug:1.2;
     --leading-normal:1.3;
