@@ -116,6 +116,7 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 | `/update-persona-content` | `commands/update-persona-content.md` | Update persona page intro + FAQs from live API data |
 | `/create-story` | `commands/create-story.md` | Create Storybook story for a component |
 | `/add-ow-ui` | `commands/add-ow-ui.md` | Move component to `ow-ui/`, rename to `Ow*`, create story, report usages |
+| `/commit-all` | `commands/commit-all.md` | Stage + commit all changes in logical groups with conventional commit messages |
 
 @.claude/docs/architecture.md
 @.claude/docs/layout.md
