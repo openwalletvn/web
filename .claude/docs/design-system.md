@@ -166,7 +166,7 @@ All in `components/shared/badges/`.
 | `NetworkBadge` | `shared/badges/network-badge.tsx` | Show Visa/MC/JCB network on card |
 | `CardTypeBadge` | `shared/badges/card-type-badge.tsx` | Single card type label |
 | `CardTypeBadges` | `shared/badges/card-type-badge.tsx` | All types on a card (handles Hybrid auto-merge) |
-| `BankDisplay` | `shared/badges/bank-display.tsx` | Bank logo + name, optionally linked |
+| `OwBankBadge` | `ow-ui/ow-bank-badge.tsx` | Bank logo + name, optionally linked via `asChild` |
 | `ContactlessBadge` | `shared/badges/contactless-badge.tsx` | NFC/contactless payment method pill |
 | `MetalBadge` | `shared/badges/metal-badge.tsx` | "Kim loại" gradient badge for metal cards |
 
@@ -177,9 +177,11 @@ All in `components/shared/badges/`.
 - `full` — bordered pill with logo + text (default)
 - `slim` — logo only (or text if no logo)
 
-### BankDisplay props
+### OwBankBadge props
 ```tsx
-<BankDisplay bank={bank} size="sm|md" asLink={false} showName={true} />
+<OwBankBadge bank={bank} size="sm|md" showName={true} />
+// interactive — caller provides element via asChild:
+<OwBankBadge bank={bank} asChild><a href="/ngan-hang/id" /></OwBankBadge>
 ```
 
 ### ContactlessBadge props

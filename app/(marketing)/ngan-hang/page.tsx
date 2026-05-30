@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {getBanks} from '@/lib/api';
-import {BankItem} from '@/components/shared/bank-item';
+import {OwBankRow} from '@/components/ow-ui/ow-bank-row';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {ROUTES} from '@/lib/routes';
@@ -36,9 +36,9 @@ export default async function BanksPage() {
 
     return (
         <MarketingPageShell title="Ngân hàng" description={`${banks.length} ngân hàng`} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="flex flex-col gap-4">
                 {banks.map((bank) => (
-                    <BankItem key={bank.id} bank={bank}/>
+                    <OwBankRow key={bank.id} bank={bank}/>
                 ))}
             </div>
         </MarketingPageShell>

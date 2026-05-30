@@ -1,7 +1,7 @@
 import type { Card, Bank } from '@/lib/api';
 import { MetalBadge } from '@/components/shared/badges/metal-badge';
 import { CoBrandDisplay } from '@/components/cards/co-brand-display';
-import { BankDisplay } from '@/components/shared/badges/bank-display';
+import { OwBankImage } from '@/components/ow-ui/ow-bank-image';
 import { OwCardBadge, OwCardBadges } from '@/components/ow-ui/ow-card-badge';
 import { ContactlessBadge } from '@/components/shared/badges/contactless-badge';
 
@@ -12,8 +12,8 @@ interface Props {
 
 export function CardDetailHeader({ card, bank }: Props) {
     return (
-        <div className="ow-card-detail-header flex flex-col gap-3">
-            {bank && <BankDisplay bank={bank} asLink />}
+        <div className="ow-card-detail-header flex flex-col items-start gap-3">
+            {bank && <OwBankImage className="h-6 w-auto" bank={bank} href={`/ngan-hang/${bank.id}`} />}
 
             <h1>{card.name}</h1>
 

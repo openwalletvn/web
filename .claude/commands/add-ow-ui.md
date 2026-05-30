@@ -32,10 +32,26 @@ If user passes a name (e.g. `chip`), search `components/` for the file. Multiple
 
 Before writing the component, apply **design-system.md §6**:
 - Default element → semantically neutral (`<span>` not `<button>`)
-- Add `asChild?: boolean` prop + import `Slot` from `"radix-ui"`
-- `const Comp = asChild ? Slot : "span"`
-- Interactive styles via CSS selector: `[&:is(button,a)]:cursor-pointer [&:is(button,a)]:hover:bg-primary/10`
 - Never hardcode `<button>` as default for components that can be display-only
+
+**Choose pattern based on component structure:**
+
+**A) Component renders `{children}` from caller** (chips, badges, pills) → use `asChild` + Slot:
+- `asChild?: boolean` prop + import `Slot` from `"radix-ui"`
+- `const Comp = asChild ? Slot : "span"`
+- Interactive styles: `[&:is(button,a)]:cursor-pointer [&:is(button,a)]:hover:bg-primary/10`
+
+**B) Component owns its internal content** (logo + text, icon + label, avatar + name) → use `href` prop:
+- `href?: string` — renders `<Link href>` when provided, `<span>` otherwise
+- Do NOT use `asChild` — Slot requires single child and will throw when component renders multiple internal elements
+
+### 4. Props discipline
+
+**Only port props that are actually used by existing callers.** Do not add props speculatively:
+- Scan all usages before writing the component
+- If a prop from the original component is never passed by any caller → omit it
+- If user explicitly asks for a prop → add it
+- Example: original has `size="sm|md"` but no caller passes `size` → drop `size` entirely
 
 ### 5. Create story file
 

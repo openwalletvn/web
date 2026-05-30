@@ -1,3 +1,4 @@
+import React from 'react';
 import type {Meta, StoryObj} from '@storybook/nextjs-vite';
 
 const meta: Meta = {
@@ -39,7 +40,7 @@ const bodyScales = [
 const sample = 'Việt Nam Ơi — OpenWallet';
 
 function Row({ tag, cls, label, note }: { tag: string; cls: string; label: string; note: string }) {
-  const Tag = tag as keyof JSX.IntrinsicElements;
+  const Tag = tag as React.ElementType;
   return (
     <div className="flex items-baseline gap-6 border-b border-border py-4">
       <div className="w-40 shrink-0">

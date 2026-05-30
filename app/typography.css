@@ -7,6 +7,7 @@
     h6, .heading-6 {
         font-family: var(--font-display), sans-serif;
         font-weight: 400;
+        @apply tracking-wide;
     }
 
     h1, .heading-1 {
@@ -44,7 +45,7 @@
     h6, .heading-6 {
         font-size: 14px;
         line-height: 130%;
-        @apply sm:text-[17px] lg:text-[20px] xl:text-[26px];
+        @apply sm:text-[17px] lg:text-[20px] xl:text-[20px];
     }
 }
 

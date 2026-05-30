@@ -14,7 +14,7 @@ export function OwChip({ active = false, asChild = false, size = "md", className
     <Comp
       data-active={active}
       className={cn(
-        "ow-chip inline-flex items-center justify-center whitespace-nowrap shrink-0",
+        "ow-chip inline-flex gap-2 items-center justify-center whitespace-nowrap shrink-0",
           "rounded-[52px] border font-medium leading-[1.3] py-1 min-h-[30px] px-3 text-sm",
           size === "md" && "sm:min-h-[40px] sm:px-4 ",
           size === "sm" && "",

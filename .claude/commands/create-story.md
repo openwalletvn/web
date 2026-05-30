@@ -85,7 +85,7 @@ export const VariantB: Story = {
 ## Title convention
 
 Map folder → Storybook group:
-- `components/ow-ui/` → `OW UI/` for primitive/generic components; `Card UI/` for card-domain components (name contains "card", wraps card data, used in card listing/detail contexts)
+- `components/ow-ui/` → `OW UI/` for primitive/generic components; `Card UI/` for card-domain components (name contains "card", wraps card data, used in card listing/detail contexts); `Bank UI/` for bank-domain components (name contains "bank", wraps bank data, used in bank listing/detail contexts)
 - `components/cards/` → `Cards/`
 - `components/marketing/` → `Marketing/`
 - `components/shared/` → `Shared/`
