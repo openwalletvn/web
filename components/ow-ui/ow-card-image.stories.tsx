@@ -19,7 +19,7 @@ type Story = StoryObj<typeof OwCardImage>;
 
 export const Default: Story = {
     args: {
-        src: 'https://api.openwallet.vn/images/cards/msb/msb-visa-online',
+        src: '/images/cards/msb-visa-online.webp',
         alt: 'MSB Visa Online',
         width: 130,
         height: 82,
@@ -29,7 +29,7 @@ export const Default: Story = {
 
 export const Vertical: Story = {
     args: {
-        src: 'https://api.openwallet.vn/images/cards/acb/acb-express',
+        src: '/images/cards/acb-express.webp',
         alt: 'ACB Express',
         width: 72,
         height: 114,
@@ -41,7 +41,7 @@ export const WithTilt: Story = {
     render: () => (
         <div className="flex gap-6 items-end">
             <OwCardImage
-                src="https://api.openwallet.vn/images/cards/msb/msb-visa-online"
+                src="/images/cards/msb-visa-online.webp"
                 alt="MSB Visa Online"
                 width={130}
                 height={82}
@@ -49,7 +49,7 @@ export const WithTilt: Story = {
                 className="w-48"
             />
             <OwCardImage
-                src="https://api.openwallet.vn/images/cards/woori/woori-visa-platinum"
+                src="/images/cards/woori-visa-platinum.webp"
                 alt="Woori Visa Platinum"
                 width={130}
                 height={82}

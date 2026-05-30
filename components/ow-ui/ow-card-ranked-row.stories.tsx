@@ -25,7 +25,7 @@ const baseRanked: RankedCard = {
         bank_id: 'kbank',
         card_type: ['credit'],
         card_network: 'visa',
-        image: {url: 'https://api.openwallet.vn/images/cards/mb/mb-visa', orientation: 'horizontal' as const, width: 16, height: 10},
+        image: {url: '/images/cards/mb-visa.webp', orientation: 'horizontal' as const, width: 16, height: 10},
         fees: {annual: {amount: 0, type: 'currency' as const}},
         cashback: {
             min_spend_per_period: 3000000,
