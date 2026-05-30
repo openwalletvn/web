@@ -22,6 +22,7 @@ When asked to "edit local api repo" → work in `../api`. "edit local mcp repo" 
 - Lint: `pnpm lint`
 - Validate posts: `pnpm validate:posts`
 - Admin server: `pnpm admin`
+- Storybook: `pnpm storybook` → http://localhost:4000
 
 ## Core principles
 1. **Vercel deployment** — SSR/SSG via Vercel. Dynamic routes allowed. Data fetched at build time where possible.
@@ -113,6 +114,7 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 | `/add-json-ld` | `commands/add-json-ld.md` | Add JSON-LD structured data to a page |
 | `/add-changelog` | `commands/add-changelog.md` | Add a changelog entry |
 | `/update-persona-content` | `commands/update-persona-content.md` | Update persona page intro + FAQs from live API data |
+| `/create-story` | `commands/create-story.md` | Create Storybook story for a component |
 
 @.claude/docs/architecture.md
 @.claude/docs/layout.md

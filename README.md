@@ -17,6 +17,14 @@ pnpm dev
 
 Open http://localhost:3000.
 
+## Component Browser (Storybook)
+
+```bash
+pnpm storybook
+```
+
+Open http://localhost:4000. Stories live alongside components as `*.stories.tsx`. Use `/create-story` in Claude Code to generate a story for any component.
+
 ## Environment Variables
 
 Create `.env.local`:
@@ -38,6 +46,7 @@ Vercel. SSR/SSG with dynamic routes. Data fetched at build time where possible.
 - Tailwind CSS v4
 - Dexie.js (IndexedDB)
 - PostHog
+- Storybook 10
 - pnpm
 
 ## License

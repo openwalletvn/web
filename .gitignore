@@ -44,3 +44,6 @@ next-env.d.ts
 # Search Console exports
 search-console/
 search-console-page-indexing/
+
+*storybook.log
+storybook-static
