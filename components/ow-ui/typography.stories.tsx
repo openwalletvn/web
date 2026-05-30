@@ -4,6 +4,7 @@ import {OwStories, OwStorySection} from './ow-story-section';
 
 const meta: Meta = {
   title: 'OW UI/Typography',
+  tags: ['autodocs'],
   parameters: {
     controls: { hideNoControlsWarning: true },
     docs: {
