@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { OwAccordion } from '@/components/ow-ui/ow-accordion';
 
 export function PersonaIntro({intro}: {intro: ReactNode}) {
     return (
@@ -19,21 +20,19 @@ export function PersonaFAQ({faqs}: {faqs: FAQ[]}) {
         })),
     };
 
+    const items = faqs.map(({q, a}, i) => ({
+        value: String(i),
+        trigger: q,
+        content: a,
+    }));
+
+    const defaultValue = faqs.map((_, i) => String(i));
+
     return (
         <div className="ow-category-faq mt-12">
             <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
             <h2 className="mb-3 heading-3">Câu hỏi thường gặp</h2>
-            <div className="divide-y divide-border">
-                {faqs.map(({q, a}, i) => (
-                    <details key={i} className="group py-4" open>
-                        <summary className="cursor-pointer list-none flex justify-between items-start gap-4 font-medium">
-                            <span>{q}</span>
-                            <span className="shrink-0 text-text-muted group-open:rotate-180 transition-transform">↓</span>
-                        </summary>
-                        <p className="mt-3 text-text-muted">{a}</p>
-                    </details>
-                ))}
-            </div>
+            <OwAccordion items={items} type="multiple" defaultValue={defaultValue}/>
         </div>
     );
 }
