@@ -5,6 +5,13 @@ const meta: Meta<typeof OwButton> = {
   component: OwButton,
   title: 'OW UI/OwButton',
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component: 'Brand button component. Supports `default` and `primary` colors, `sm` and `md` sizes. Use `primary` for main CTAs.',
+      },
+    },
+  },
   args: {
     children: 'Tìm hiểu thẻ phù hợp',
     color: 'default',
