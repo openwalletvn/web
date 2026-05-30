@@ -1,5 +1,6 @@
 import React from 'react';
 import type {Meta, StoryObj} from '@storybook/nextjs-vite';
+import {OwStories, OwStorySection} from './ow-story-section';
 
 const meta: Meta = {
   title: 'OW UI/Typography',
@@ -52,6 +53,34 @@ function Row({ tag, cls, label, note }: { tag: string; cls: string; label: strin
     </div>
   );
 }
+
+export const Overview: Story = {
+  render: () => (
+    <OwStories>
+      <OwStorySection title="Headings">
+        <div className="max-w-2xl">
+          {headings.map((h) => (
+            <Row key={h.cls} tag={h.tag} cls={h.cls} label={h.label} note={h.note} />
+          ))}
+        </div>
+      </OwStorySection>
+      <OwStorySection title="Body Scale">
+        <div className="max-w-2xl">
+          {bodyScales.map((s) => (
+            <div key={s.cls} className="flex items-baseline gap-6 border-b border-border py-4">
+              <div className="w-40 shrink-0">
+                <span className="text-label text-muted-foreground">{s.label}</span>
+                <div className="text-body-sm text-muted-foreground opacity-60 mt-1 normal-case tracking-normal font-sans">.{s.cls}</div>
+                <div className="text-body-sm text-muted-foreground opacity-60 normal-case tracking-normal font-sans">{s.note}</div>
+              </div>
+              <span className={s.cls}>{sample}</span>
+            </div>
+          ))}
+        </div>
+      </OwStorySection>
+    </OwStories>
+  ),
+};
 
 export const Headings: Story = {
   render: () => (
