@@ -1,9 +1,22 @@
 import type { Preview } from '@storybook/nextjs-vite';
 import { INITIAL_VIEWPORTS } from 'storybook/viewport';
+import { Title, Subtitle, Description, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
 import '../app/globals.css';
 
 const preview: Preview = {
   parameters: {
+    docs: {
+      page: () => (
+        <>
+          <Title/>
+          <Subtitle/>
+          <Description/>
+          <Primary/>
+          <Controls/>
+          <Stories includePrimary={false}/>
+        </>
+      ),
+    },
     viewport: {
       options: INITIAL_VIEWPORTS,
     },
