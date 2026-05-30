@@ -1,8 +1,12 @@
 import type { Preview } from '@storybook/nextjs-vite';
+import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 import '../app/globals.css';
 
 const preview: Preview = {
   parameters: {
+    viewport: {
+      options: INITIAL_VIEWPORTS,
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -17,6 +21,9 @@ const preview: Preview = {
         order: ['OW UI', '*'],
       },
     },
+  },
+  initialGlobals: {
+    viewport: { value: 'iphone12', isRotated: false },
   },
 };
 
