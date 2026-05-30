@@ -1,6 +1,6 @@
 // AUTO-GENERATED — do not edit manually
 // Run: pnpm generate:types
-// Source: https://api.openwallet.vn/openapi.json
+// Source: http://localhost:8000/openapi.json
 
 export interface paths {
     "/banks": {
@@ -516,6 +516,14 @@ export interface components {
              *     ]
              */
             rank_intents: string[];
+            /**
+             * @description Cobrand slugs relevant to this persona. Consumers can use these to sub-filter by co_brand= when the persona has associated cobrand cards.
+             * @example [
+             *       "vietnam-airlines",
+             *       "vna-lotusmiles"
+             *     ]
+             */
+            cobrands?: string[];
             /** @description CardFilter object applied to narrow the card pool. Shape varies by persona type. */
             filter: Record<string, never>;
         };
@@ -679,6 +687,12 @@ export interface components {
             logo_url: string;
             /** @example #EF4444 */
             brand_color?: string;
+            /**
+             * @description Bank classification group
+             * @example commercial
+             * @enum {string}
+             */
+            group: "big4" | "foreign" | "digital" | "commercial";
             stats?: {
                 /**
                  * @description Total number of active cards (published + discontinued) for this bank
@@ -1146,6 +1160,8 @@ export interface operations {
             query?: {
                 /** @description Fuzzy text search across bank id, name, and full_name. Supports partial words, typos, and common abbreviations (e.g. "vcb", "viet com"). Results are ranked by relevance. */
                 q?: string;
+                /** @description Filter by bank group. big4: state-owned banks (Agribank, BIDV, Vietcombank, Vietinbank). foreign: 100% foreign-owned banks. digital: digital-only banks. commercial: Vietnamese joint-stock commercial banks. */
+                group?: "big4" | "foreign" | "digital" | "commercial";
             };
             header?: never;
             path?: never;
@@ -1279,7 +1295,7 @@ export interface operations {
                      * @example shopee
                      * @enum {string}
                      */
-                    persona?: "shopee" | "groceries" | "digital" | "traveler" | "commuter" | "family";
+                    persona?: "shopee" | "groceries" | "digital" | "traveler" | "commuter" | "family" | "business";
                     /** @description Restrict ranking pool to specific card IDs. */
                     cards?: string[];
                     /**
@@ -1839,7 +1855,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @description Persona slug */
-                slug: "shopee" | "groceries" | "digital" | "traveler" | "commuter" | "family";
+                slug: "shopee" | "groceries" | "digital" | "traveler" | "commuter" | "family" | "business";
             };
             cookie?: never;
         };
