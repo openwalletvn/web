@@ -3,7 +3,7 @@ import {OwCardImage} from './ow-card-image';
 
 const meta: Meta<typeof OwCardImage> = {
     component: OwCardImage,
-    title: 'OW UI/OwCardImage',
+    title: 'Card UI/OwCardImage',
     tags: ['autodocs'],
     parameters: {
         docs: {
