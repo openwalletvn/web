@@ -18,7 +18,7 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ['OW UI', '*'],
+        order: ['OW UI', ['Typography', '*'], '*'],
       },
     },
   },
