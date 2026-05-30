@@ -4,7 +4,7 @@ import type {RankedCard} from '@/lib/card-ranker';
 
 const meta: Meta<typeof OwCardRankedRow> = {
     component: OwCardRankedRow,
-    title: 'OW UI/OwCardRankedRow',
+    title: 'Card UI/OwCardRankedRow',
     tags: ['autodocs'],
     parameters: {
         docs: {

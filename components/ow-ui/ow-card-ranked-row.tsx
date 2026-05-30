@@ -8,6 +8,7 @@ import {CardImage} from '@/components/cards/card-image';
 import {RankBadge} from '@/components/cards/rank-badge';
 import {CashbackDisplay} from '@/components/cards/cashback-display';
 import {IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
+import {OwCardBadge, CARD_TYPE_LABELS} from '@/components/ow-ui/ow-card-badge';
 
 function catchallLabel(rule: CashbackRule): string {
     const intentSlug = rule.intents?.find(i => CATCHALL_SLUGS.has(i));
@@ -93,17 +94,11 @@ export function OwCardRankedRow({ranked, muted = false, viewTransitionName, inte
                                 {card.name}
                             </Link>
                             {card.card_type && card.card_type.length > 0 && (
-                                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-bg-muted text-text-muted">
+                                <OwCardBadge>
                                     {card.card_type.includes('credit') && card.card_type.includes('debit')
                                         ? 'Hybrid'
-                                        : card.card_type[0] === 'credit'
-                                        ? 'Tín dụng'
-                                        : card.card_type[0] === 'debit'
-                                        ? 'Ghi nợ'
-                                        : card.card_type[0] === 'prepaid'
-                                        ? 'Trả trước'
-                                        : card.card_type[0]}
-                                </span>
+                                        : (CARD_TYPE_LABELS[card.card_type[0]] ?? card.card_type[0])}
+                                </OwCardBadge>
                             )}
                         </div>
                         {card.fees?.annual != null && (
