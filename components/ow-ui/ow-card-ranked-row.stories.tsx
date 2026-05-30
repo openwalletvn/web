@@ -1,0 +1,81 @@
+import type {Meta, StoryObj} from '@storybook/nextjs-vite';
+import {OwCardRankedRow} from './ow-card-ranked-row';
+import type {RankedCard} from '@/lib/card-ranker';
+
+const meta: Meta<typeof OwCardRankedRow> = {
+    component: OwCardRankedRow,
+    title: 'OW UI/OwCardRankedRow',
+    tags: ['autodocs'],
+    parameters: {
+        docs: {
+            description: {
+                component: 'Displays a ranked card row with cashback info, intent chips, and rank badge. Used in ranking tables and card match finder.',
+            },
+        },
+    },
+};
+export default meta;
+
+type Story = StoryObj<typeof OwCardRankedRow>;
+
+const baseRanked: RankedCard = {
+    card: {
+        id: 'kbank-cashback-plus',
+        name: 'KBank Cashback Plus',
+        bank: 'KBank',
+        card_type: ['credit'],
+        network: ['visa'],
+        image: {url: '/the/kbank-cashback-plus.avif', orientation: 'horizontal' as const, width: 16, height: 10},
+        fees: {annual: {amount: 0, waivable: false}},
+        cashback: {
+            min_spend_per_period: 3000000,
+            rules: [
+                {rate: 0.05, intents: ['dining', 'shopping'], merchants: [], scope: {}},
+                {rate: 0.01, intents: ['all-spend'], merchants: [], scope: {}},
+            ],
+        },
+    } as RankedCard['card'],
+    rank: 1,
+    rank_reason: 'Hoàn tiền cao nhất trong danh mục ăn uống',
+    rank_reason_type: 'higher_cashback',
+    tiebreaker_delta: undefined,
+    cashback_result: {cashback: 150000, breakdown: []},
+};
+
+export const Default: Story = {
+    args: {ranked: baseRanked},
+};
+
+export const Muted: Story = {
+    args: {ranked: {...baseRanked, rank: 4}, muted: true},
+};
+
+export const WithTiebreakerUp: Story = {
+    args: {ranked: {...baseRanked, tiebreaker_delta: 2}},
+};
+
+export const WithTiebreakerDown: Story = {
+    args: {ranked: {...baseRanked, rank: 3, tiebreaker_delta: -1}},
+};
+
+export const WithIntentChips: Story = {
+    args: {
+        ranked: baseRanked,
+        intentMap: new Map([
+            ['dining', {slug: 'dining', label: 'Ăn uống', icon: '🍜'}],
+            ['shopping', {slug: 'shopping', label: 'Mua sắm', icon: '🛍️'}],
+        ]),
+        highlightedSlugs: ['dining'],
+        intentSlug: 'dining',
+    },
+};
+
+export const WithRankReason: Story = {
+    args: {
+        ranked: {
+            ...baseRanked,
+            rank_reason: 'Miễn phí thường niên, tiết kiệm hơn thẻ tương đương',
+            rank_reason_type: 'lower_annual_fee',
+        },
+    },
+};

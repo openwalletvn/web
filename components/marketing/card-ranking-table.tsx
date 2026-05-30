@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import type {RankedCard} from '@/lib/card-ranker';
-import {RankedRow} from '@/components/cards/ranked-row';
+import {OwCardRankedRow} from '@/components/ow-ui/ow-card-ranked-row';
 import {IconInfoCircle} from '@tabler/icons-react';
 
 interface Props {
@@ -27,7 +27,7 @@ export function CardRankingTable({initialRanked, personaSlug, title}: Props) {
 
             <div className="flex flex-col sm:gap-8 gap-6">
                 {withCashback.map(r => (
-                    <RankedRow
+                    <OwCardRankedRow
                         key={r.card.id}
                         ranked={r}
                         viewTransitionName={`card-row-${r.card.id}`}
@@ -39,7 +39,7 @@ export function CardRankingTable({initialRanked, personaSlug, title}: Props) {
                     <>
                         <p className="text-body-sm text-text-muted mt-2 mb-1">Các thẻ khác trong nhóm</p>
                         {noCashback.map(r => (
-                            <RankedRow
+                            <OwCardRankedRow
                                 key={r.card.id}
                                 ranked={r}
                                 muted

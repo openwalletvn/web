@@ -23,7 +23,7 @@ function catchallLabel(rule: CashbackRule): string {
     return '🌐 Tất cả chi tiêu';
 }
 
-export function RankedRow({ranked, muted = false, viewTransitionName, intentMap, highlightedSlugs, intentSlug}: {
+export function OwCardRankedRow({ranked, muted = false, viewTransitionName, intentMap, highlightedSlugs, intentSlug}: {
     ranked: RankedCard;
     muted?: boolean;
     viewTransitionName?: string;
@@ -57,7 +57,7 @@ export function RankedRow({ranked, muted = false, viewTransitionName, intentMap,
 
     return (
         <div
-            className="ow-ranked-row flex flex-col"
+            className="ow-card-ranked-row flex flex-col"
             style={viewTransitionName ? {viewTransitionName} as React.CSSProperties : undefined}
         >
             {/*row 1*/}

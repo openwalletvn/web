@@ -6,7 +6,7 @@ import {getTool} from '@/lib/tools';
 import type {Intent, Persona} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
 import {OwChip} from '@/components/ow-ui/ow-chip';
-import {RankedRow} from '@/components/cards/ranked-row';
+import {OwCardRankedRow} from '@/components/ow-ui/ow-card-ranked-row';
 import {cn} from "@/lib/utils";
 
 const STORAGE_KEY = 'ow-rec-prefs';
@@ -223,7 +223,7 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                     ) : (
                         <div className={cn('flex flex-col gap-6 transition-opacity duration-200', loading ? 'opacity-50' : '')}>
                             {ranked.map(r => (
-                                <RankedRow
+                                <OwCardRankedRow
                                     key={r.card.id}
                                     ranked={r}
                                     intentMap={intentMap}
