@@ -23,7 +23,7 @@ const MOCK_BANK_FULL = {
     name: 'Techcombank',
     full_name: 'Ngân hàng TMCP Kỹ thương Việt Nam',
     link: 'https://techcombank.com/',
-    logo_url: 'https://api.openwallet.vn/images/banks/techcombank.png',
+    logo_url: '/images/banks/techcombank.png',
     group: 'commercial' as const,
     stats: {card_count: 8},
     networks: ['visa', 'mastercard', 'jcb'],
@@ -34,7 +34,7 @@ const MOCK_BANK_NO_STATS = {
     name: 'Vietcombank',
     full_name: 'Ngân hàng TMCP Ngoại thương Việt Nam',
     link: 'https://vietcombank.com.vn/',
-    logo_url: 'https://api.openwallet.vn/images/banks/vietcombank.png',
+    logo_url: '/images/banks/vietcombank.png',
     group: 'big4' as const,
 };
 
