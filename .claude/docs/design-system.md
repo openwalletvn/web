@@ -41,23 +41,39 @@ my-widget.tsx → className="ow-my-widget ..."
 Prepend to existing `className`. Never add a wrapper element just for this.
 
 ### 6. Interactive components — use `asChild` + `Slot`, not hardcoded element
-OW UI components default to the **least-semantic element** (e.g. `<span>`). For clickable variants, callers pass the real element via `asChild`:
+
+Two patterns depending on intent:
+
+**A) Display components that are *sometimes* interactive** (chips, badges, tags, pills, avatars)
+Default to neutral element (`<span>`). Caller opts in via `asChild`:
 
 ```tsx
-// display only — renders <span>
+// display only
 <OwChip>Label</OwChip>
 
-// interactive — renders <button> or <a>, gets cursor + hover automatically
+// interactive — caller provides the element
 <OwChip asChild><button onClick={fn}>Filter</button></OwChip>
 <OwChip asChild><a href="/x">Link</a></OwChip>
 ```
 
+**B) Components that are *always* interactive** (header buttons, trigger buttons, nav items)
+Default to `"button"`. `asChild` lets caller swap to `<a>` or custom element:
+
+```tsx
+// default — renders <button>
+<OwButtonHeader onClick={fn}>...</OwButtonHeader>
+
+// swap to link
+<OwButtonHeader asChild><a href="/search">...</a></OwButtonHeader>
+```
+
 Rules:
-- Default element = semantically neutral (`<span>`, `<div>`)
 - `asChild` prop + Radix `Slot` (import from `"radix-ui"`) delegates rendering to child
-- `cursor-pointer` + hover styles via CSS selector `[&:is(button,a)]` — no extra prop needed
-- **Never hardcode `<button>` as default** for components that can be display-only
-- Pattern applies to: chips, badges, tags, pills, avatars, any display component that sometimes needs click
+- **Display components** (can be display-only) → default `"span"`, interactive styles via `[&:is(button,a)]`
+- **Always-interactive components** → default `"button"`, no `[&:is(button,a)]` guard needed
+- Never hardcode `<button>` on display components; never default to `<span>` on always-interactive ones
+- Pattern A applies to: chips, badges, tags, pills, avatars
+- Pattern B applies to: header buttons, search triggers, nav action buttons
 
 ### 7. Token/style rules
 - Colors, spacing, radius → tokens from `DESIGN.md`, not hardcoded values
