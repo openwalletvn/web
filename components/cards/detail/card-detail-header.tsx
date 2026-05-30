@@ -2,8 +2,7 @@ import type { Card, Bank } from '@/lib/api';
 import { MetalBadge } from '@/components/shared/badges/metal-badge';
 import { CoBrandDisplay } from '@/components/cards/co-brand-display';
 import { BankDisplay } from '@/components/shared/badges/bank-display';
-import { NetworkBadge } from '@/components/shared/badges/network-badge';
-import { CardTypeBadges } from '@/components/shared/badges/card-type-badge';
+import { OwCardBadge, OwCardBadges } from '@/components/ow-ui/ow-card-badge';
 import { ContactlessBadge } from '@/components/shared/badges/contactless-badge';
 
 interface Props {
@@ -24,8 +23,8 @@ export function CardDetailHeader({ card, bank }: Props) {
                         Dừng phát hành
                     </span>
                 )}
-                <NetworkBadge card={card} />
-                <CardTypeBadges types={card.card_type} />
+                <OwCardBadge networkData={card.card_network_data} tier={card.card_tier}/>
+                <OwCardBadges>{card.card_type.map(t => <OwCardBadge key={t} cardType={t}/>)}</OwCardBadges>
                 {card.is_metal && <MetalBadge />}
             </div>
 

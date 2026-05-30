@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import type { Card, CardFees, Intent } from '@/lib/api';
-import { getNetworkImageUrl } from '@/lib/api';
-import { CompareDueDateRow } from './compare-due-date-row';
-import { NetworkBadge } from '@/components/shared/badges/network-badge';
+import type {Card, CardFees, Intent} from '@/lib/api';
+import {getNetworkImageUrl} from '@/lib/api';
+import {CompareDueDateRow} from './compare-due-date-row';
+import {CARD_TYPE_LABELS, OwCardBadge} from '@/components/ow-ui/ow-card-badge';
 
 const empty = <span className="text-slate-300">—</span>;
 
@@ -10,16 +10,6 @@ interface Props {
     cards: (Card | null)[];
     intentMap?: Map<string, Intent>;
 }
-
-const CARD_TYPE_LABELS: Record<string, string> = {
-    credit: 'Tín dụng',
-    debit: 'Ghi nợ',
-    prepaid: 'Trả trước',
-    '2in1': '2 trong 1',
-    'co-branded': 'Đồng thương hiệu',
-    atm: 'ATM',
-    transit: 'Transit',
-};
 
 function formatFee(fee?: { amount: number; type: string } | null): string {
     if (fee == null) return '—';
@@ -63,7 +53,8 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
     const showPaymentSection = cards.some((c) => c && !purelyDebit(c));
 
     // ── Section 1 — identity ──────────────────────────────────────────────────
-    const networkValues = cards.map((c) => c ? <NetworkBadge card={c} /> : empty);
+    const networkValues = cards.map((c) => c ?
+        <OwCardBadge networkData={c.card_network_data} tier={c.card_tier}/> : empty);
     const types = cards.map((c) => c ? c.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(', ') : empty);
 
     // ── Section 2 — fees ──────────────────────────────────────────────────────

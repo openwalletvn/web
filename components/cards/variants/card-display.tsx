@@ -8,8 +8,7 @@ import type { Card, Bank } from '@/lib/api';
 import { getBankImageUrl } from '@/lib/api';
 import { CardImage } from '@/components/cards/card-image';
 import { MetalBadge } from '@/components/shared/badges/metal-badge';
-import { NetworkBadge } from '@/components/shared/badges/network-badge';
-import { CardTypeBadges } from '@/components/shared/badges/card-type-badge';
+import { OwCardBadge, OwCardBadges } from '@/components/ow-ui/ow-card-badge';
 import { useCompareList } from '@/lib/use-compare-list';
 
 interface BadgeConfig {
@@ -140,8 +139,8 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                                 Dừng phát hành
                             </span>
                         )}
-                        {network && <NetworkBadge card={card} variant="slim" />}
-                        {type && <CardTypeBadges types={card.card_type} />}
+                        {network && <OwCardBadge networkData={card.card_network_data} tier={card.card_tier}/>}
+                        {type && <OwCardBadges>{card.card_type.map(t => <OwCardBadge key={t} cardType={t}/>)}</OwCardBadges>}
                         {metal && card.is_metal && <MetalBadge />}
                     </div>
                 </div>
@@ -221,8 +220,8 @@ function CardDisplayRow({ card, bank, badges = {}, slot, className }: Omit<RowPr
                             Dừng phát hành
                         </span>
                     )}
-                    {network && <NetworkBadge card={card} />}
-                    {type && <CardTypeBadges types={card.card_type} />}
+                    {network && <OwCardBadge networkData={card.card_network_data} tier={card.card_tier}/>}
+                    {type && <OwCardBadges>{card.card_type.map(t => <OwCardBadge key={t} cardType={t}/>)}</OwCardBadges>}
                     {metal && card.is_metal && <MetalBadge />}
                 </div>
             </div>
@@ -269,8 +268,8 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
                             Dừng phát hành
                         </span>
                     )}
-                    {network && <NetworkBadge card={card} />}
-                    {type && <CardTypeBadges types={card.card_type} />}
+                    {network && <OwCardBadge networkData={card.card_network_data} tier={card.card_tier}/>}
+                    {type && <OwCardBadges>{card.card_type.map(t => <OwCardBadge key={t} cardType={t}/>)}</OwCardBadges>}
                     {card.is_metal && <MetalBadge />}
                 </div>
             </div>
@@ -297,7 +296,7 @@ function CardDisplayInline({ card, badges = {}, showLogo = true, asLink = false,
     const content = (
         <span className="inline-flex items-center gap-2">
             <span className="font-medium text-slate-800">{card.name}</span>
-            {network && <NetworkBadge card={card} variant={showLogo ? 'slim' : 'full'} />}
+            {network && <OwCardBadge networkData={card.card_network_data} tier={card.card_tier}/>}
         </span>
     );
 
