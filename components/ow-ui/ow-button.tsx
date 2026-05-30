@@ -41,7 +41,7 @@ export function OwButton({
             variant="default"
             disabled={disabled}
             className={cn(
-                "ow-button cursor-pointer rounded-full max-w-[320px] w-auto !whitespace-normal h-auto px-6 py-3 inline-flex items-center justify-center text-center font-display !leading-[1.15] capitalize",
+                "ow-button cursor-pointer rounded-full tracking-wide max-w-[320px] w-auto !whitespace-normal h-auto px-6 py-3 inline-flex items-center justify-center text-center font-display !leading-[1.15] capitalize",
                 sizeClasses[size],
                 active ? activeColorClasses[color] : colorClasses[color],
                 disabled && "opacity-60 cursor-not-allowed",
