@@ -35,7 +35,7 @@ export default async function HomePage() {
                 '@type': 'Organization',
                 name: 'OpenWallet',
                 url: 'https://openwallet.vn',
-                logo: 'https://openwallet.vn/logo.png',
+                logo: 'https://openwallet.vn/icon.png',
                 description: 'Nguồn dữ liệu thẻ ngân hàng Việt Nam mã nguồn mở.',
             },
             buildBreadcrumbJsonLd([{label: 'Trang chủ', href: '/'}]),

@@ -73,7 +73,7 @@ function WalletSwitcher() {
   return (
     <div className="relative">
       <SidebarMenuButton size="lg" onClick={() => setOpen(!open)} tooltip={walletName}>
-        <img src="/logo.png" alt="OpenWallet" className="h-6 w-6 object-contain shrink-0" />
+        <img src="/icon.png" alt="OpenWallet" className="h-6 w-6 object-contain shrink-0" />
         <span className="font-bold text-slate-900 truncate flex-1">{walletName}</span>
         <IconChevronDown
           size={14}
