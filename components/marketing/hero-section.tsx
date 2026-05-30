@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {IconCircleCheck, IconCreditCard, IconSettings} from '@tabler/icons-react';
 import {ROUTES} from '@/lib/routes';
-import {BadgeNumberIcon} from '@/components/shared/badge-number-icon';
+import {OwBadgeNumberIcon} from '@/components/ow-ui/ow-badge-number-icon';
 import {CardImageTag} from '@/components/cards/card-image-tag';
 
 export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCount: number }) {
@@ -37,7 +37,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
 
                     {/* 100+ cards badge (orange) */}
                     <div className="absolute top-0 right-0">
-                        <BadgeNumberIcon
+                        <OwBadgeNumberIcon
                             iconPosition="left"
                             number={`${cardCount}+`}
                             icon={IconCreditCard}
@@ -88,7 +88,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
 
                     {/* 25+ banks badge */}
                     <div className="absolute top-[6%] left-0">
-                        <BadgeNumberIcon
+                        <OwBadgeNumberIcon
                             iconPosition="right"
                             color="black"
                             number={`${bankCount}+`}
@@ -98,7 +98,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
                     </div>
 
                     <div className="absolute bottom-[5%] left-[5%]">
-                    <BadgeNumberIcon
+                    <OwBadgeNumberIcon
                         iconPosition="right"
                         number="100%"
                         icon={IconCircleCheck}

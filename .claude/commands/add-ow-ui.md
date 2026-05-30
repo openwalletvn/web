@@ -21,7 +21,16 @@ If user passes a name (e.g. `chip`), search `components/` for the file. Multiple
 - Add `ow-<name>` CSS class to the wrapper element's `className` if not already present (per component conventions)
 - Update all imports across the codebase to the new path + new export name
 
-### 3. Create story file
+### 3. Apply interactivity pattern
+
+Before writing the component, apply **design-system.md §6**:
+- Default element → semantically neutral (`<span>` not `<button>`)
+- Add `asChild?: boolean` prop + import `Slot` from `"radix-ui"`
+- `const Comp = asChild ? Slot : "span"`
+- Interactive styles via CSS selector: `[&:is(button,a)]:cursor-pointer [&:is(button,a)]:hover:bg-primary/10`
+- Never hardcode `<button>` as default for components that can be display-only
+
+### 5. Create story file
 
 Create `components/ow-ui/ow-<name>.stories.tsx`:
 
@@ -56,7 +65,7 @@ export const Default: Story = { args: { /* required props with realistic Vietnam
 - Never mock Next.js router — `@storybook/nextjs-vite` handles it
 - Never mock `apiFetch`
 
-### 4. Report usages
+### 6. Report usages
 
 After all changes, output a Markdown table:
 

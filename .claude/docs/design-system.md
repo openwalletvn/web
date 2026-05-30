@@ -40,7 +40,26 @@ my-widget.tsx → className="ow-my-widget ..."
 ```
 Prepend to existing `className`. Never add a wrapper element just for this.
 
-### 6. Token/style rules
+### 6. Interactive components — use `asChild` + `Slot`, not hardcoded element
+OW UI components default to the **least-semantic element** (e.g. `<span>`). For clickable variants, callers pass the real element via `asChild`:
+
+```tsx
+// display only — renders <span>
+<OwChip>Label</OwChip>
+
+// interactive — renders <button> or <a>, gets cursor + hover automatically
+<OwChip asChild><button onClick={fn}>Filter</button></OwChip>
+<OwChip asChild><a href="/x">Link</a></OwChip>
+```
+
+Rules:
+- Default element = semantically neutral (`<span>`, `<div>`)
+- `asChild` prop + Radix `Slot` (import from `"radix-ui"`) delegates rendering to child
+- `cursor-pointer` + hover styles via CSS selector `[&:is(button,a)]` — no extra prop needed
+- **Never hardcode `<button>` as default** for components that can be display-only
+- Pattern applies to: chips, badges, tags, pills, avatars, any display component that sometimes needs click
+
+### 7. Token/style rules
 - Colors, spacing, radius → tokens from `DESIGN.md`, not hardcoded values
 - Typography → classes from `typography.css`, never Tailwind text/font utilities on `<h1>`–`<h6>`
 - Layout → `ow-container`, never ad-hoc `max-w-*`

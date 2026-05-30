@@ -8,7 +8,24 @@ const meta: Meta<typeof OwChip> = {
   parameters: {
     docs: {
       description: {
-        component: 'Filter chip for toggling options. Use `active` to highlight selected state. Common in spend selectors and ranking filters.',
+        component: [
+          'Filter chip for toggling options. Use `active` to highlight selected state. Common in spend selectors and ranking filters.',
+          '',
+          'Renders as `<span>` by default (display only). For clickable chips, use `asChild` to render as the actual interactive element:',
+          '',
+          '```tsx',
+          '// display only',
+          '<OwChip>Label</OwChip>',
+          '',
+          '// clickable button',
+          '<OwChip asChild><button onClick={fn}>Filter</button></OwChip>',
+          '',
+          '// link chip',
+          '<OwChip asChild><a href="/x">Link</a></OwChip>',
+          '```',
+          '',
+          '`cursor-pointer` and hover styles apply automatically to `<button>` and `<a>` elements via CSS selector — no extra props needed.',
+        ].join('\n'),
       },
     },
   },
@@ -28,17 +45,32 @@ export const Active: Story = {
 };
 
 export const Disabled: Story = {
-  args: { disabled: true },
+  render: () => (
+    <OwChip asChild><button disabled>Không khả dụng</button></OwChip>
+  ),
+};
+
+export const AsButton: Story = {
+  render: () => (
+    <OwChip asChild><button onClick={() => alert('clicked')}>Bấm vào đây</button></OwChip>
+  ),
+};
+
+export const AsLink: Story = {
+  render: () => (
+    <OwChip asChild><a href="#">Xem thêm</a></OwChip>
+  ),
 };
 
 export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-3">
-      <OwChip>Hoàn tiền</OwChip>
-      <OwChip active>Phí thường niên</OwChip>
-      <OwChip>Miễn phí năm đầu</OwChip>
-      <OwChip active>Chi tiêu online</OwChip>
-      <OwChip disabled>Không khả dụng</OwChip>
+      <OwChip>Hiển thị</OwChip>
+      <OwChip active>Đang chọn</OwChip>
+      <OwChip asChild><button onClick={() => {}}>Nút bấm</button></OwChip>
+      <OwChip asChild active><button onClick={() => {}}>Nút đang chọn</button></OwChip>
+      <OwChip asChild><a href="#">Liên kết</a></OwChip>
+      <OwChip asChild><button disabled>Vô hiệu</button></OwChip>
     </div>
   ),
 };
