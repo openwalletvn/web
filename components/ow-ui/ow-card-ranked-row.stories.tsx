@@ -22,11 +22,11 @@ const baseRanked: RankedCard = {
     card: {
         id: 'kbank-cashback-plus',
         name: 'KBank Cashback Plus',
-        bank: 'KBank',
+        bank_id: 'kbank',
         card_type: ['credit'],
-        network: ['visa'],
+        card_network: 'visa',
         image: {url: '/the/kbank-cashback-plus.avif', orientation: 'horizontal' as const, width: 16, height: 10},
-        fees: {annual: {amount: 0, waivable: false}},
+        fees: {annual: {amount: 0, type: 'currency' as const}},
         cashback: {
             min_spend_per_period: 3000000,
             rules: [

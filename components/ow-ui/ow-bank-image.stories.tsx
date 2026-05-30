@@ -24,6 +24,7 @@ const MOCK_BANK = {
     full_name: 'Ngân hàng TMCP Kỹ thương Việt Nam',
     link: 'https://techcombank.com/',
     logo_url: '/images/banks/techcombank.png',
+    group: 'commercial' as const,
 };
 
 // ─── Overview ────────────────────────────────────────────────────────────────
