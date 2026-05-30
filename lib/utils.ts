@@ -11,3 +11,9 @@ export function formatFee(entry: FeeEntry): string {
   if (entry.type === 'currency') return `${entry.amount.toLocaleString('vi-VN')}đ`;
   return `${entry.amount.toFixed(2)}%`;
 }
+
+export function formatFeeParts(entry: FeeEntry): { value: string; unit: string | null } {
+  if (entry.amount === 0) return { value: 'Miễn phí', unit: null };
+  if (entry.type === 'currency') return { value: entry.amount.toLocaleString('vi-VN'), unit: 'đ' };
+  return { value: entry.amount.toFixed(2), unit: '%' };
+}

@@ -1,5 +1,6 @@
 import type {Bank, Card, FeeEntryWithWaiver, FeeWaiver} from '@/lib/api';
-import {cn, formatFee} from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { FeeDisplay } from '../fee-display';
 
 function NoteLines({ note }: { note: string }) {
     const lines = note.split('|').map((l) => l.trim()).filter(Boolean);
@@ -73,9 +74,7 @@ export function CardDetailFees({ card }: Props) {
                 <div className="grid grid-cols-3 gap-x-4">
                     {/* Col 1: Phát hành */}
                     <div className="flex flex-col items-start gap-1">
-                        <p className={cn('text-numeral leading-tight', !fees.issuance || fees.issuance.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
-                            {fees.issuance ? formatFee(fees.issuance) : 'Miễn phí'}
-                        </p>
+                        <FeeDisplay entry={fees.issuance} />
                         {fees.issuance?.note && <NoteLines note={fees.issuance.note} />}
                     </div>
 
@@ -83,16 +82,14 @@ export function CardDetailFees({ card }: Props) {
                     <div className="flex flex-col items-center text-center gap-1">
                         {annual ? (
                             <>
-                                <p className={cn('text-numeral leading-tight', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
-                                    {formatFee(annual)}
-                                </p>
+                                <FeeDisplay entry={annual} />
                                 {annual.first_year && (
                                     <WaiverDisplay waiver={annual.first_year} />
                                 )}
                                 {annual.note && <NoteLines note={annual.note} />}
                             </>
                         ) : (
-                            <p className="text-numeral text-slate-500">—</p>
+                            <FeeDisplay entry={null} />
                         )}
                     </div>
 
@@ -100,15 +97,13 @@ export function CardDetailFees({ card }: Props) {
                     <div className="flex flex-col items-end text-right gap-1">
                         {annual ? (
                             <>
-                                <p className={cn('text-numeral leading-tight', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
-                                    {formatFee(annual)}
-                                </p>
+                                <FeeDisplay entry={annual} />
                                 {annual.subsequent_years && (
                                     <WaiverDisplay waiver={annual.subsequent_years} />
                                 )}
                             </>
                         ) : (
-                            <p className="text-numeral text-slate-500">—</p>
+                            <FeeDisplay entry={null} />
                         )}
                     </div>
                 </div>

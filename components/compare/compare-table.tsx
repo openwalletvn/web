@@ -49,7 +49,7 @@ function Row({ label, values }: RowProps) {
             <p className="text-xs text-slate-400 mb-1.5">{label}</p>
             <div className="grid" style={{ gridTemplateColumns: `repeat(${values.length}, 1fr)` }}>
                 {values.map((v, i) => (
-                    <div key={i} className="text-lg font-semibold text-slate-800">{v}</div>
+                    <div key={i} className="text-body-md text-slate-800">{v}</div>
                 ))}
             </div>
         </div>

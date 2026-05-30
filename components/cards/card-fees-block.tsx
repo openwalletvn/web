@@ -1,5 +1,6 @@
 import type { CardFees, FeeEntry, FeeWaiver, CardSource } from '@/lib/api';
-import { formatFee, cn } from '@/lib/utils';
+import { cn, formatFee } from '@/lib/utils';
+import { FeeDisplay } from './fee-display';
 
 function FeeNote({ note }: { note: string }) {
     const lines = note.split('|').map((l) => l.trim()).filter(Boolean);
@@ -59,9 +60,7 @@ export function CardFeesBlock({ fees, sources }: Props) {
                 <div className="flex items-start justify-between gap-3">
                     <span className="text-sm font-semibold text-slate-700">Phí thường niên</span>
                     {annual ? (
-                        <span className={cn('text-lg font-bold', annual.amount === 0 ? 'text-green-600' : 'text-slate-900')}>
-                            {formatFee(annual)}
-                        </span>
+                        <FeeDisplay entry={annual} />
                     ) : (
                         <span className="text-sm text-slate-400">Chưa có thông tin</span>
                     )}

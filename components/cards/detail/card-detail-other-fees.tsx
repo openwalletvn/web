@@ -1,5 +1,6 @@
 import type { Card, Bank, FeeEntry } from '@/lib/api';
-import { formatFee, cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { FeeDisplay } from '../fee-display';
 
 function NoteLines({ note }: { note: string }) {
     const lines = note.split('|').map((l) => l.trim()).filter(Boolean);
@@ -24,13 +25,7 @@ function FeeBox({
     const free = entry && entry.amount === 0;
     return (
         <div className="border border-slate-200 rounded-lg px-4 py-4 flex flex-col items-center text-center gap-1">
-            {entry ? (
-                <p className={cn('text-numeral leading-tight', free ? 'text-green-600' : red ? 'text-brand-red' : 'text-slate-900')}>
-                    {formatFee(entry)}
-                </p>
-            ) : (
-                <p className="text-lg font-medium text-slate-500">—</p>
-            )}
+            <FeeDisplay entry={entry} className={red && entry && entry.amount > 0 ? 'text-brand-red' : undefined} />
             <p className="text-xs text-slate-700 mt-0.5">{label}</p>
             {entry?.note && <NoteLines note={entry.note} />}
             {!entry && (
