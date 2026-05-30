@@ -21,7 +21,7 @@ export function OwButtonHeader({asChild = false, icon, kbd, className, children,
             {...props}
         >
             <span className="bg-primary rounded-sm w-8 h-8 flex justify-center items-center text-white shrink-0">
-                {icon ?? <OwLogo variant="full" color="white" href={null} width={20}/>}
+                {icon ?? <OwLogo variant="full" color="white" href={null} className="w-5"/>}
             </span>
             <span className="flex-1 text-left">{children}</span>
             {kbd && (
