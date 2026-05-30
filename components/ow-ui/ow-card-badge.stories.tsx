@@ -19,12 +19,12 @@ export default meta;
 type Story = StoryObj<typeof OwCardBadge>;
 
 const NETWORKS = [
-    {id: 'visa' as const, name: 'Visa', logo_url: '/images/networks/visa.png'},
-    {id: 'mastercard' as const, name: 'Mastercard', logo_url: '/images/networks/mastercard.png'},
-    {id: 'jcb' as const, name: 'JCB', logo_url: '/images/networks/jcb.png'},
-    {id: 'napas' as const, name: 'NAPAS', logo_url: '/images/networks/napas.png'},
-    {id: 'amex' as const, name: 'American Express', logo_url: '/images/networks/amex.png'},
-    {id: 'unionpay' as const, name: 'UnionPay', logo_url: '/images/networks/unionpay.png'},
+    {id: 'visa' as const, name: 'Visa', logo_url: 'https://api.openwallet.vn/images/networks/visa.png'},
+    {id: 'mastercard' as const, name: 'Mastercard', logo_url: 'https://api.openwallet.vn/images/networks/mastercard.png'},
+    {id: 'jcb' as const, name: 'JCB', logo_url: 'https://api.openwallet.vn/images/networks/jcb.png'},
+    {id: 'napas' as const, name: 'NAPAS', logo_url: 'https://api.openwallet.vn/images/networks/napas.png'},
+    {id: 'amex' as const, name: 'American Express', logo_url: 'https://api.openwallet.vn/images/networks/amex.png'},
+    {id: 'unionpay' as const, name: 'UnionPay', logo_url: 'https://api.openwallet.vn/images/networks/unionpay.png'},
 ];
 
 // ─── Overview ────────────────────────────────────────────────────────────────

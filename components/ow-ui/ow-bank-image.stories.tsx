@@ -23,7 +23,7 @@ const MOCK_BANK = {
     name: 'Techcombank',
     full_name: 'Ngân hàng TMCP Kỹ thương Việt Nam',
     link: 'https://techcombank.com/',
-    logo_url: '/images/banks/techcombank.png',
+    logo_url: 'https://api.openwallet.vn/images/banks/techcombank.png',
     group: 'commercial' as const,
 };
 
