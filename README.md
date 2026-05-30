@@ -3,6 +3,7 @@
 [![Vercel Deployment](https://img.shields.io/github/deployments/openwalletvn/web/Production?logo=vercel&label=vercel&color=black)](https://openwallet.vn)
 [![MCP v0.1.0](https://img.shields.io/endpoint?url=https%3A%2F%2Fmcp.openwallet.vn%2Fbadge&cacheSeconds=60)](https://mcp.openwallet.vn/health)
 [![API v1.0.0](https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.openwallet.vn%2Fbadge&cacheSeconds=60)](https://api.openwallet.vn/health)
+[![Storybook](https://img.shields.io/badge/storybook-FF4785?logo=storybook&logoColor=white)](https://storybook.openwallet.vn)
 
 Open-source digital wallet card database for Vietnam. Public card comparison site + local-first wallet manager (IndexedDB, no accounts).
 
@@ -24,6 +25,8 @@ pnpm storybook
 ```
 
 Open http://localhost:4000. Stories live alongside components as `*.stories.tsx`. Use `/create-story` in Claude Code to generate a story for any component.
+
+Published: https://storybook.openwallet.vn
 
 ## Environment Variables
 
