@@ -2,10 +2,17 @@
 
 Move a component into `components/ow-ui/`, ensure it follows OW UI conventions, create a Storybook story, then report usages.
 
-## Storybook title prefix constant
+## Storybook title groups
 
-All OW UI stories use: `'OW UI'` as the group prefix → `'OW UI/OwButton'`, `'OW UI/OwChip'`, etc.
-Change this one line here to rename the group across all stories.
+All OW UI stories use `'OW UI'` as the root prefix with subgroups based on component type:
+
+| Subgroup | Pattern | Examples |
+|----------|---------|---------|
+| `Card UI/Ow*` | Components that display card data | `OwCardImage`, `OwCardRankedRow` |
+| `OW UI/Ow*` | Generic UI primitives | `OwButton`, `OwChip`, `OwAccordion`, `OwLogo`, `OwBadgeNumberIcon` |
+| `OW UI/Typography` | Type scale reference (no `Ow*` prefix) | `Typography` |
+
+When adding a new component, pick the subgroup that best fits. Card-related → `Card`. Anything else → `UI`.
 
 ## Steps
 
@@ -32,38 +39,9 @@ Before writing the component, apply **design-system.md §6**:
 
 ### 5. Create story file
 
-Create `components/ow-ui/ow-<name>.stories.tsx`:
+Create `components/ow-ui/ow-<name>.stories.tsx` following the structure and rules in `commands/create-story.md`.
 
-```tsx
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { OwName } from './ow-name';
-
-const meta: Meta<typeof OwName> = {
-  component: OwName,
-  title: 'OW UI/OwName',  // ← prefix constant: 'OW UI'
-  tags: ['autodocs'],
-  parameters: {
-    docs: {
-      description: {
-        component: '<one-line description of what this component does and when to use it>',
-      },
-    },
-  },
-};
-export default meta;
-
-type Story = StoryObj<typeof OwName>;
-
-export const Default: Story = { args: { /* required props with realistic Vietnamese data */ } };
-// Add named exports for key visual states
-```
-
-**Story rules:**
-- Use realistic Vietnamese data in args (card names, bank names, Vietnamese text)
-- Cover key visual states: default, active/inactive, disabled, empty (where applicable)
-- If no props (fully self-contained), use `render: () => <OwName />` instead of `args`
-- Never mock Next.js router — `@storybook/nextjs-vite` handles it
-- Never mock `apiFetch`
+Title: `'OW UI/OwName'` — use `'Card UI/OwName'` for card-related components.
 
 ### 6. Report usages
 
