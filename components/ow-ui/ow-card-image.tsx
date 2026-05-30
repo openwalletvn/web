@@ -17,7 +17,7 @@ interface Props {
     className?: string;
 }
 
-export function CardImageTag({src, alt, width, height, lqip, tilt = false, priority = false, className}: Props) {
+export function OwCardImage({src, alt, width, height, lqip, tilt = false, priority = false, className}: Props) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [radius, setRadius] = useState(0);
     const [loaded, setLoaded] = useState(false);
@@ -61,7 +61,7 @@ export function CardImageTag({src, alt, width, height, lqip, tilt = false, prior
     return (
         <div
             ref={containerRef}
-            className={cn('ow-card-image-tag relative overflow-hidden group/shimmer', className)}
+            className={cn('ow-card-image relative overflow-hidden group/shimmer', className)}
             style={{aspectRatio: `${width} / ${height}`, borderRadius: radius, ...tiltStyle}}
             {...tiltHandlers}
         >

@@ -2,7 +2,7 @@
 
 import {type Card, getCardImageUrl} from '@/lib/api';
 import {cn} from '@/lib/utils';
-import {CardImageTag} from './card-image-tag';
+import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 
 interface Props {
     card: Card;
@@ -17,14 +17,14 @@ export function CardImage({card, className, classNameVertical, tilt = false, pri
     const imageUrl = getCardImageUrl(card);
     const width = card.image?.width ?? (isVertical ? 2 : 16);
     const height = card.image?.height ?? (isVertical ? 3 : 10);
-    const containerClass = cn('ow-card-image w-full', className, isVertical ? classNameVertical : className);
+    const containerClass = cn('w-full', className, isVertical ? classNameVertical : className);
 
     if (!imageUrl) {
         return <div className={cn(containerClass, 'relative overflow-hidden')} style={{aspectRatio: `${width} / ${height}`}}/>;
     }
 
     return (
-        <CardImageTag
+        <OwCardImage
             src={imageUrl}
             alt={card.name}
             width={width}

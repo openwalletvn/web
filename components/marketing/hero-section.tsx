@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {IconCircleCheck, IconCreditCard, IconSettings} from '@tabler/icons-react';
 import {ROUTES} from '@/lib/routes';
 import {OwBadgeNumberIcon} from '@/components/ow-ui/ow-badge-number-icon';
-import {CardImageTag} from '@/components/cards/card-image-tag';
+import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 
 export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCount: number }) {
     return (
@@ -45,7 +45,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
                         />
                     </div>
 
-                    <CardImageTag
+                    <OwCardImage
                         src="/the/sacombank-uniq.avif"
                         alt="Sacombank Uniq"
                         width={72}
@@ -53,7 +53,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
                         tilt={true}
                         className="w-[128px] absolute top-1/4 left-0"
                     />
-                    <CardImageTag
+                    <OwCardImage
                         src="/the/msb-visa-online.avif"
                         alt="MSB Visa Online"
                         width={130}
@@ -106,7 +106,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
                     />
                     </div>
 
-                    <CardImageTag
+                    <OwCardImage
                         src="/the/woori-vv-hype-point-gold.avif"
                         alt="Woori Card"
                         width={63}
