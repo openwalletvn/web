@@ -7,7 +7,6 @@ type OwLogoProps = {
     color?: 'black' | 'white' | 'red';
     className?: string;
     href?: string | null;
-    width?: number;
 };
 
 function getSrc(variant: 'icon' | 'full', color: 'black' | 'white' | 'red') {
@@ -18,17 +17,15 @@ function getSrc(variant: 'icon' | 'full', color: 'black' | 'white' | 'red') {
     return '/icon.svg';
 }
 
-export function OwLogo({variant = 'icon', color = 'black', className = '', href = '/', width = 70}: OwLogoProps) {
+export function OwLogo({variant = 'icon', color = 'black', className = '', href = '/'}: OwLogoProps) {
     const src = getSrc(variant, color);
-    // intrinsic dims: full uses 72/58 aspect ratio, icon is square
     const intrinsic = variant === 'full' ? {width: 72, height: 58} : {width: 80, height: 80};
     const img = (
         <Image
             src={src}
             alt="OpenWallet"
             {...intrinsic}
-            style={{width, height: 'auto'}}
-            className="block"
+            className="block w-[80px] h-auto"
         />
     );
 
