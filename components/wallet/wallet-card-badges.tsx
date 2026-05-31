@@ -1,4 +1,5 @@
 import { DashedBadge } from '@/components/ui/dashed-badge';
+import { OwFeeAmount } from '@/components/ow-ui/ow-fee-amount';
 import type { WalletCard } from '@/lib/db';
 import type { Card } from '@/lib/api';
 import type { CreditBadge } from './wallet-card-row';
@@ -49,7 +50,7 @@ export function WalletCardBadges({
         catalogCard.fees.annual.amount === 0 ? (
           <DashedBadge variant="green">Miễn phí thường niên</DashedBadge>
         ) : (
-          <DashedBadge>PTN: {catalogCard.fees.annual.amount.toLocaleString('vi-VN')}đ</DashedBadge>
+          <DashedBadge>PTN: <OwFeeAmount amount={catalogCard.fees.annual.amount} compact textOnly/></DashedBadge>
         )
       )}
 
