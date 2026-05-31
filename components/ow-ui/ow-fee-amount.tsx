@@ -2,7 +2,7 @@ import * as React from 'react';
 
 interface Props {
     amount: number;
-    period?: 'năm' | 'tháng' | null;
+    period?: 'năm' | 'tháng' | 'kỳ' | string;
     compact?: boolean;
 }
 

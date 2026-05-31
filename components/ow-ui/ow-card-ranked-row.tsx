@@ -122,14 +122,14 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
                           className="text-body font-semibold truncate hover:underline text-black">
                         {card.name}
                     </Link>
-                    {card.card_type && card.card_type.length > 0 && (
-                        <OwBadge small variant="card-type" cardTypes={card.card_type}/>
-                    )}
                 </div>
 
                 {/*intent badges*/}
                 {intentMap && (cardIntents.length > 0 || catchallRules.length > 0) && (
                     <OwBadges>
+                        {card.card_type && card.card_type.length > 0 && (
+                            <OwBadge small variant="card-type" cardTypes={card.card_type}/>
+                        )}
                         {catchallRules.map((rule, i) => (
                             <OwBadge small key={i} colorHex={highlighted.size > 0 ? 'var(--color-primary)' : undefined}>
                                 {catchallLabel(rule)}
@@ -188,7 +188,7 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
 
             {/*col 3 — cashback amount [2]*/}
             <div className="col-span-2 flex flex-col items-end">
-                <OwFeeAmount amount={ranked.cashback_result.cashback} compact/>
+                <OwFeeAmount amount={ranked.cashback_result.cashback} compact period="kỳ"/>
             </div>
 
             {/*col 4 — annual fee [2]*/}
