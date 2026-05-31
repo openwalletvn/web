@@ -13,7 +13,7 @@ const meta: Meta<typeof OwBadge> = {
                 component: [
                     'Single primitive for all badge and chip UI. Replaces `OwChip`, `OwCardBadge`, and `OwIntentBadge`.',
                     '',
-                    '**Variants:** `intent` | `network` | `contactless` | `card-type` | _(default)_',
+                    '**Variants:** `intent` | `network` | `contactless` | `card-type` | `metal` | _(default)_',
                     '',
                     'All variants support `active` and `asChild` for interactive use:',
                     '',
@@ -69,10 +69,10 @@ const NETWORKS = [
 const CARD_TYPES = ['credit', 'debit', 'prepaid', '2in1', 'co-branded', 'atm', 'transit'] as const;
 
 const CONTACTLESS = [
-    {id: 'apple-pay' as const, name: 'Apple Pay', logo_url: '/images/contactless/apple_pay.png', link: ''},
-    {id: 'google-pay' as const, name: 'Google Pay', logo_url: '/images/contactless/google_pay.png', link: ''},
-    {id: 'samsung-pay' as const, name: 'Samsung Pay', logo_url: '/images/contactless/samsung_pay.png', link: ''},
-    {id: 'garmin-pay' as const, name: 'Garmin Pay', logo_url: '/images/contactless/garmin_pay.png', link: ''},
+    {id: 'apple-pay' as const, name: 'Apple Pay', logo_url: '/images/wallets/apple-pay.png', link: ''},
+    {id: 'google-pay' as const, name: 'Google Pay', logo_url: '/images/wallets/google-pay.png', link: ''},
+    {id: 'samsung-pay' as const, name: 'Samsung Pay', logo_url: '/images/wallets/samsung-pay.png', link: ''},
+    {id: 'garmin-pay' as const, name: 'Garmin Pay', logo_url: '/images/wallets/garmin-pay.png', link: ''},
 ];
 
 // ─── Overview ─────────────────────────────────────────────────────────────────
@@ -133,12 +133,19 @@ export const Overview: Story = {
                     <OwBadge colorHex="#f97316">Custom color</OwBadge>
                 </OwBadges>
             </OwStorySection>
+            <OwStorySection title="Metal">
+                <OwBadges>
+                    <OwBadge variant="metal"/>
+                    <OwBadge small variant="metal"/>
+                </OwBadges>
+            </OwStorySection>
             <OwStorySection title="Small — all variants">
                 <OwBadges>
                     <OwBadge small variant="intent" slug="dining" emoji="🍜" label="Ăn uống" rate={0.03}/>
                     <OwBadge small variant="network" networkData={NETWORKS[0]}/>
                     <OwBadge small variant="contactless" contactlessData={CONTACTLESS[0]}/>
                     <OwBadge small variant="card-type" cardType="credit"/>
+                    <OwBadge small variant="metal"/>
                     <OwBadge small>Default small</OwBadge>
                     <OwBadge small active>Active small</OwBadge>
                     <OwBadge small colorHex="#f97316">Custom small</OwBadge>
@@ -219,4 +226,12 @@ export const Contactless: Story = {
 
 export const SmallContactless: Story = {
     args: {small: true, variant: 'contactless', contactlessData: CONTACTLESS[0]},
+};
+
+export const Metal: Story = {
+    args: {variant: 'metal'},
+};
+
+export const SmallMetal: Story = {
+    args: {small: true, variant: 'metal'},
 };

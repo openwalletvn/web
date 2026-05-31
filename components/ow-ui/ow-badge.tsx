@@ -1,15 +1,9 @@
 import * as React from 'react';
 import {Slot as SlotPrimitive} from 'radix-ui';
 import {cn} from '@/lib/utils';
-import {getNetworkImageUrl, getWalletImageUrl} from '@/lib/api';
-import type {CardType, Network, Contactless} from '@/lib/api';
-import {
-    IconCreditCardFilled,
-    IconCashBanknoteFilled,
-    IconYinYangFilled,
-    IconTrainFilled,
-} from '@tabler/icons-react';
-import {isHybridCard} from '@/lib/api';
+import type {CardType, Contactless, Network} from '@/lib/api';
+import {getNetworkImageUrl, getWalletImageUrl, isHybridCard} from '@/lib/api';
+import {IconCashBanknoteFilled, IconCreditCardFilled, IconTrainFilled, IconYinYangFilled,} from '@tabler/icons-react';
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
@@ -133,6 +127,7 @@ export type OwBadgeProps =
         variant: 'contactless';
         contactlessData: Pick<Contactless, 'id' | 'name' | 'logo_url'>;
     })
+    | (BaseProps & { variant: 'metal' })
     | (BaseProps & {
         variant?: never;
         colorHex?: string;
@@ -198,8 +193,8 @@ export function OwBadge(props: OwBadgeProps) {
             <span data-active={active} style={style} onClick={onClick}
                   className={cn(BASE_CLS, sizeCls, smallCls, className)}>
                 <img src={getWalletImageUrl(contactlessData.logo_url)} alt={contactlessData.name}
-                     style={{height: small ? 12 : 16}} className="object-contain"/>
-                {contactlessData.name}
+                     style={{height: small ? 12 : 16}} className="object-contain mix-blend-multiply dark:mix-blend-screen"/>
+                {/*{contactlessData.name}*/}
             </span>
         );
     }
@@ -231,6 +226,17 @@ export function OwBadge(props: OwBadgeProps) {
                       className)}>
                 {renderIcon()}
                 {cardType ? (CARD_TYPE_LABELS[cardType] ?? cardType) : children}
+            </span>
+        );
+    }
+
+    if (props.variant === 'metal') {
+        return (
+            <span data-active={active} onClick={onClick}
+                  className={cn(BASE_CLS, sizeCls, smallCls,
+                      'bg-gradient-to-r from-slate-200 via-white to-slate-300 border-slate-300 text-slate-600',
+                      className)}>
+                Kim loại
             </span>
         );
     }
