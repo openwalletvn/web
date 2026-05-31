@@ -1,6 +1,7 @@
 import type {CashbackRule, Intent, Merchant, SpendTier} from '@/lib/api';
 import {cn} from '@/lib/utils';
 import {OwBadge} from '@/components/ow-ui/ow-badge';
+import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
 import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
 import {
     IconBuildingStore,
@@ -24,10 +25,6 @@ function formatRate(rate: number): string {
 
 function formatVnd(amount: number): string {
     return amount.toLocaleString('vi-VN') + 'đ';
-}
-
-function formatCap(amount: number): string {
-    return amount === -1 ? 'Không giới hạn' : formatVnd(amount);
 }
 
 // ─── Labels ──────────────────────────────────────────────────────────────────
@@ -107,7 +104,7 @@ function TiersTable({tiers}: { tiers: SpendTier[] }) {
                         </td>
                         <td className="py-1 pr-3 font-semibold text-slate-900">{formatRate(tier.rate)}</td>
                         <td className="py-1 text-slate-700">
-                            {tier.cap != null ? formatVnd(tier.cap) : 'Không giới hạn'}
+                            {tier.cap != null ? <OwFeeAmount amount={tier.cap} compact textOnly period=""/> : 'Không giới hạn'}
                         </td>
                     </tr>
                 ))}
@@ -135,7 +132,7 @@ function CategoryCaps({
                 return (
                     <div key={slug} className="flex items-center justify-between text-xs text-slate-700">
                         <span>{label}</span>
-                        <span className="font-medium">{formatVnd(amount)}</span>
+                        <span className="font-medium"><OwFeeAmount amount={amount} compact textOnly period=""/></span>
                     </div>
                 );
             })}
@@ -240,17 +237,19 @@ export function OwCardCashbackRule({rule, intentMap, merchantMap}: OwCardCashbac
                 )}
 
                 {/* Cap */}
-                <div className="space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                        <IconCurrencyDollar className="w-3.5 h-3.5 text-slate-400"/>
-                        {rule.cap && rule.cap.amount !== -1
-                            ? `Tối đa ${formatCap(rule.cap.amount)}${rule.cap_max ? ` – ${formatCap(rule.cap_max.amount)}` : ''} / kỳ sao kê`
-                            : 'Hoàn không giới hạn'}
+                {rule.cap != null && (
+                    <div className="space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                            <IconCurrencyDollar className="w-3.5 h-3.5 text-slate-400"/>
+                            {rule.cap.amount === -1
+                                ? 'Hoàn không giới hạn'
+                                : <>Tối đa {rule.cap_max ? <><OwFeeAmount amount={rule.cap.amount} compact textOnly period=""/> – <OwFeeAmount amount={rule.cap_max.amount} compact textOnly period="kỳ sao kê"/></> : <OwFeeAmount amount={rule.cap.amount} compact textOnly period="kỳ sao kê"/>}</>}
+                        </div>
+                        {rule.cap.category_caps && (
+                            <CategoryCaps categoryCaps={rule.cap.category_caps} intentMap={intentMap}/>
+                        )}
                     </div>
-                    {rule.cap?.category_caps && (
-                        <CategoryCaps categoryCaps={rule.cap.category_caps} intentMap={intentMap}/>
-                    )}
-                </div>
+                )}
 
                 {/* Note */}
                 {rule.note && (

@@ -1,21 +1,13 @@
+import * as React from 'react';
 import type {Card, CashbackBenefit, Intent, Merchant} from '@/lib/api';
 import {getIntents, getMerchants} from '@/lib/api';
 import {OwCardCashbackRule} from '@/components/ow-ui/ow-card-cashback-rule';
+import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
 import {
     IconAlertCircle,
     IconInfoCircle,
     IconPackages,
 } from '@tabler/icons-react';
-
-// ─── Formatters ──────────────────────────────────────────────────────────────
-
-function formatVnd(amount: number): string {
-    return amount.toLocaleString('vi-VN') + 'đ';
-}
-
-function formatCap(amount: number): string {
-    return amount === -1 ? 'Không giới hạn' : formatVnd(amount);
-}
 
 // ─── Labels ──────────────────────────────────────────────────────────────────
 
@@ -27,7 +19,7 @@ const REDEMPTION_LABELS: Record<string, string> = {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function FooterRow({label, value}: { label: string; value: string }) {
+function FooterRow({label, value}: { label: string; value: React.ReactNode }) {
     return (
         <div className="flex items-start gap-2 text-xs text-slate-600">
             <IconInfoCircle className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0"/>
@@ -113,7 +105,7 @@ function CashbackSection({
                     {cashback.min_spend_per_period && (
                         <FooterRow
                             label="Chi tiêu tối thiểu"
-                            value={`${formatVnd(cashback.min_spend_per_period)} / kỳ sao kê`}
+                            value={<OwFeeAmount amount={cashback.min_spend_per_period} compact textOnly period="kỳ sao kê"/>}
                         />
                     )}
                     {cashback.global_cap && (
@@ -122,7 +114,7 @@ function CashbackSection({
                             value={
                                 cashback.global_cap.amount === -1
                                     ? 'Hoàn không giới hạn'
-                                    : `${formatVnd(cashback.global_cap.amount)}${cashback.global_cap_max ? ` – ${formatCap(cashback.global_cap_max.amount)}` : ''} / kỳ`
+                                    : <>{cashback.global_cap_max ? <><OwFeeAmount amount={cashback.global_cap.amount} compact textOnly period=""/> – <OwFeeAmount amount={cashback.global_cap_max.amount} compact textOnly period="kỳ"/></> : <OwFeeAmount amount={cashback.global_cap.amount} compact textOnly period="kỳ"/>}</>
                             }
                         />
                     )}
