@@ -29,13 +29,14 @@ const INTENT_HEX: Record<string, string> = {
     dining: '#f97316',
     'vietnam-airlines': '#3b82f6', 'bamboo-airways': '#3b82f6', agoda: '#3b82f6', travel: '#3b82f6',
     groceries: '#22c55e',
-    shopping: '#ec4899',
-    digital: '#6366f1', ads: '#6366f1',
+    shopping: '#ec4899', fashion: '#ec4899', books: '#ec4899',
+    digital: '#6366f1', ads: '#6366f1', telecom: '#6366f1',
     cinema: '#8b5cf6', entertainment: '#8b5cf6',
     health: '#f43f5e',
     insurance: '#14b8a6',
     education: '#84cc16',
     golf: '#f59e0b',
+    pets: '#f59e0b',
 };
 
 // ─── Network config ───────────────────────────────────────────────────────────
