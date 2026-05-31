@@ -870,6 +870,10 @@ export interface components {
             max_intents?: number;
             /** @description Spend-tiered rates. When present, rate/cap are display-only summaries of the best tier. */
             tiers?: components["schemas"]["SpendTier"][];
+            /** @description ISO 8601 date (YYYY-MM-DD) when this rule becomes active. Absent = no start restriction. */
+            valid_from?: string;
+            /** @description ISO 8601 date (YYYY-MM-DD, inclusive) after which this rule is expired. Absent = no end restriction. */
+            valid_until?: string;
             /**
              * @description Free-text for unlock conditions, user-selectable mechanics, exclusions, or tier details that do not fit structured fields. Always in Vietnamese.
              * @example Khách hàng chọn 1 danh mục mỗi kỳ sao kê
@@ -913,6 +917,8 @@ export interface components {
              * @enum {string}
              */
             redemption?: "auto_statement_credit" | "manual_request" | "points_pool";
+            /** @description Computed at generate time. True when all cashback rules are past their valid_until date. Never set in source data. */
+            cashback_expired?: boolean;
             /** @description Benefit-level conditions in Vietnamese. */
             note?: string;
         };

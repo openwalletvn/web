@@ -16,6 +16,7 @@ export type CashbackBreakdownItem = {
     is_catchall: boolean;
     matched_intents?: string[];
     intent_breakdown?: IntentBreakdownItem[];
+    cashback_expired?: boolean;
 };
 
 export type RankedCard = {
@@ -27,5 +28,6 @@ export type RankedCard = {
     cashback_result: {
         cashback: number;
         breakdown?: CashbackBreakdownItem[];
+        cashback_expired?: boolean;
     };
 };

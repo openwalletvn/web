@@ -12,6 +12,8 @@ import {
  IconBuildingStore,
  IconPackages,
  IconSortAscending,
+ IconCalendar,
+ IconAlertCircle,
 } from '@tabler/icons-react';
 
 // ─── Formatters ─────────────────────────────────────────────────────────────
@@ -174,8 +176,13 @@ function RuleCard({
 
  const isCatchAll = rule.intents?.some((c) => CATCHALL_SLUGS.has(c)) ?? false;
 
+ const today = new Date().toISOString().slice(0, 10);
+ const isExpired =
+  (rule.valid_until != null && rule.valid_until < today) ||
+  (rule.valid_from != null && rule.valid_from > today);
+
  return (
-  <div className="flex gap-3 border-dashed border border-slate-300 p-4 w-full hover:bg-slate-50 transition-colors">
+  <div className={`flex gap-3 border-dashed border border-slate-300 p-4 w-full hover:bg-slate-50 transition-colors${isExpired ? ' opacity-50' : ''}`}>
    <IconCirclePercentage className="w-4 h-4 min-w-4 text-slate-500 translate-y-0.5 shrink-0" />
 
    <div className="space-y-3 w-full">
@@ -187,8 +194,25 @@ function RuleCard({
        <span className="ml-2 font-normal text-slate-500">· Tất cả chi tiêu còn lại</span>
       )}
      </p>
+     {isExpired && (
+      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+       Đã hết hạn
+      </span>
+     )}
      {rule.scope && <ScopeBadges scope={rule.scope} />}
     </div>
+
+    {/* Validity window */}
+    {(rule.valid_from || rule.valid_until) && (
+     <div className="flex items-center gap-1.5 text-xs text-slate-500">
+      <IconCalendar className="w-3.5 h-3.5 text-slate-400" />
+      {rule.valid_from && rule.valid_until
+       ? `${rule.valid_from} – ${rule.valid_until}`
+       : rule.valid_until
+       ? `Đến ${rule.valid_until}`
+       : `Từ ${rule.valid_from}`}
+     </div>
+    )}
 
     {/* Spend tiers */}
     {rule.tiers && rule.tiers.length >= 2 && <TiersTable tiers={rule.tiers} />}
@@ -282,6 +306,15 @@ function CashbackSection({
 
  return (
   <div className="space-y-3">
+   {cashback.cashback_expired && (
+    <div className="flex items-start gap-2 px-3 py-2.5 bg-red-50 border border-red-200 rounded text-xs text-red-800">
+     <IconAlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-red-500" />
+     <span>
+      <strong>Chương trình hoàn tiền đã kết thúc.</strong> Thông tin bên dưới chỉ mang tính tham khảo.
+     </span>
+    </div>
+   )}
+
    {cashback.package_exclusive && (
     <div className="flex items-start gap-2 px-3 py-2.5 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
      <IconPackages className="w-3.5 h-3.5 mt-0.5 shrink-0 text-amber-600" />

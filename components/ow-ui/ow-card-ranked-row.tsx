@@ -85,7 +85,8 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
     const showReason = rank_reason && rank_reason_type !== 'higher_cashback';
 
     const {cashback, breakdown} = ranked.cashback_result;
-    const showBreakdown = cashback > 0 && breakdown && breakdown.length >= 1;
+    const activeBreakdown = breakdown?.filter(b => !b.cashback_expired);
+    const showBreakdown = cashback > 0 && activeBreakdown && activeBreakdown.length >= 1;
     const rateDisplay = cashback > 0 && !showBreakdown ? getRateDisplay(card, intentSlug) : null;
 
     return (
@@ -171,7 +172,7 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
                 ) : (
                     <div className="ow-cashback-display flex flex-col items-start gap-0.5">
                         {showBreakdown ? (
-                            breakdown.map((item, i) => (
+                            activeBreakdown!.map((item, i) => (
                                 <div key={i} className="flex flex-col items-start sm:items-end">
                                     <span className="text-[11px] text-text-muted max-w-[200px] leading-3">
                                         {breakdownLabel(item, intentMap)} · {fmtRate(item.rate)}{item.spend ? ` · ${item.spend.toLocaleString('vi-VN')}đ` : ''}: {item.cashback.toLocaleString('vi-VN')}đ
