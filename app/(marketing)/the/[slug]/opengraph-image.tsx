@@ -1,5 +1,5 @@
 import {createOgImage, OG_SIZE} from '@/lib/og';
-import {apiFetch} from '@/lib/api';
+import {apiFetch, isHybridCard} from '@/lib/api';
 import {createCardOgImage} from "@/lib/og-card";
 
 export const dynamic = 'force-static';
@@ -47,10 +47,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         }
 
 
-        const types = card.card_type as string[];
-        const cardType = types.includes('credit') && types.includes('debit')
+        const cardType = isHybridCard(card.card_type)
             ? 'Thẻ hybrid'
-            : types.includes('credit')
+            : card.card_type.includes('credit')
                 ? 'Thẻ tín dụng'
                 : 'Thẻ ghi nợ';
         const description = [cardType, card.card_network?.toUpperCase()]

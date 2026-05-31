@@ -1,4 +1,4 @@
-import {getBanks, getCards, getNetworks} from '@/lib/api';
+import {getBanks, getCards, getNetworks, isHybridCard} from '@/lib/api';
 import {MobileNav} from './mobile-nav';
 import {SearchDialog} from '@/components/search/search-dialog';
 import {Nav2} from "@/components/layout/nav2";
@@ -23,7 +23,7 @@ export async function Header() {
             (c) => c.card_type.includes('credit') && c.card_network === 'napas'
         ).length,
         '/the-2-trong-1': allCards.filter(
-            (c) => c.card_type.includes('credit') && c.card_type.includes('debit')
+            (c) => isHybridCard(c.card_type)
         ).length,
         '/the-ghi-no-mien-phi': allCards.filter(
             (c) => c.card_type.includes('debit') && c.fees?.annual?.amount === 0

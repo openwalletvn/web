@@ -36,6 +36,10 @@ import type {
 export type CardNetwork = 'visa' | 'mastercard' | 'jcb' | 'napas' | 'amex' | 'unionpay';
 export type CardType = 'credit' | 'debit' | 'prepaid' | 'transit' | 'atm' | '2in1' | 'co-branded';
 
+export function isHybridCard(types: CardType[]): boolean {
+    return types.includes('2in1') || (types.includes('credit') && types.includes('debit'));
+}
+
 export interface CardImage {
     url: string;
     width: number | null;

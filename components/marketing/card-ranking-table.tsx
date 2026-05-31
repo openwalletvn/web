@@ -30,7 +30,6 @@ export function CardRankingTable({initialRanked, personaSlug, title}: Props) {
                     <OwCardRankedRow
                         key={r.card.id}
                         ranked={r}
-                        viewTransitionName={`card-row-${r.card.id}`}
                         intentSlug={personaSlug}
                     />
                 ))}
@@ -43,7 +42,6 @@ export function CardRankingTable({initialRanked, personaSlug, title}: Props) {
                                 key={r.card.id}
                                 ranked={r}
                                 muted
-                                viewTransitionName={`card-row-${r.card.id}`}
                                 intentSlug={personaSlug}
                             />
                         ))}

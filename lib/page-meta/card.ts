@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import type {Card, Bank} from '@/lib/api';
-import {getCardImageUrl, getBankImageUrl} from '@/lib/api';
+import {getCardImageUrl, getBankImageUrl, isHybridCard} from '@/lib/api';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
 import {BASE_URL} from './constants';
 import {ROUTES} from '@/lib/routes';
@@ -26,8 +26,8 @@ export function buildCardPageMeta(card: Card, bank: Bank | null): CardPageMeta {
     ];
 
     const cardCategory =
-        card.card_type.includes('credit') && card.card_type.includes('debit')
-            ? 'Thẻ 2 trong 1'
+        isHybridCard(card.card_type)
+            ? 'Thẻ hybrid'
             : card.card_type.includes('credit')
                 ? 'Thẻ tín dụng'
                 : 'Thẻ ghi nợ';

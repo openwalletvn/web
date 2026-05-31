@@ -9,6 +9,7 @@ import {
     IconYinYangFilled,
     IconTrainFilled,
 } from '@tabler/icons-react';
+import {isHybridCard} from '@/lib/api';
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
@@ -58,7 +59,7 @@ export const CARD_TYPE_LABELS: Record<CardType, string> = {
     credit: 'Thẻ tín dụng',
     debit: 'Thẻ ghi nợ',
     prepaid: 'Thẻ trả trước',
-    '2in1': '2 trong 1',
+    '2in1': 'Thẻ hybrid',
     'co-branded': 'Đồng thương hiệu',
     atm: 'ATM',
     transit: 'Transit',
@@ -117,6 +118,7 @@ export type OwBadgeProps =
     })
     | (BaseProps & {
         variant: 'card-type';
+        cardTypes?: CardType[];
         cardType?: CardType;
         icon?: IconComponent | string;
         children?: React.ReactNode;
@@ -174,7 +176,10 @@ export function OwBadge(props: OwBadgeProps) {
     }
 
     if (props.variant === 'card-type') {
-        const {cardType, icon, children} = props;
+        const {cardTypes, icon, children} = props;
+        const cardType = cardTypes
+            ? (isHybridCard(cardTypes) ? '2in1' : cardTypes[0])
+            : props.cardType;
         const resolvedIcon = icon ?? (cardType ? CARD_TYPE_ICON[cardType] : undefined);
         const hex = cardType ? CARD_TYPE_HEX[cardType] : undefined;
         const hasIcon = !!resolvedIcon;

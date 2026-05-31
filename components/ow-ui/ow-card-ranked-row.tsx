@@ -7,7 +7,7 @@ import {CardImage} from '@/components/cards/card-image';
 import {OwRankBadge} from '@/components/ow-ui/ow-rank-badge';
 import {CashbackDisplay} from '@/components/cards/cashback-display';
 import {IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
-import {OwBadge, OwBadges, CARD_TYPE_LABELS} from '@/components/ow-ui/ow-badge';
+import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 
 function catchallLabel(rule: CashbackRule): string {
     const intentSlug = rule.intents?.find(i => CATCHALL_SLUGS.has(i));
@@ -76,9 +76,9 @@ export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSl
             </div>
 
             {/*row 2*/}
-            <div className="grid @sm:grid-cols-12 gap-3 flex-wrap">
+            <div className="flex flex-wrap justify-between gap-3">
                 {/*left col*/}
-                <div className="col-span-6 flex gap-3">
+                <div className="flex gap-3 ring">
                     <Link href={`/the/${card.id}`} className="shrink-0 w-24 @sm:w-32">
                         <CardImage card={card} className="w-24 @sm:w-32"/>
                     </Link>
@@ -89,11 +89,7 @@ export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSl
                                 {card.name}
                             </Link>
                             {card.card_type && card.card_type.length > 0 && (
-                                <OwBadge variant="card-type">
-                                    {card.card_type.includes('credit') && card.card_type.includes('debit')
-                                        ? 'Hybrid'
-                                        : (CARD_TYPE_LABELS[card.card_type[0]] ?? card.card_type[0])}
-                                </OwBadge>
+                                <OwBadge variant="card-type" cardTypes={card.card_type}/>
                             )}
                         </div>
                         {card.fees?.annual != null && (
@@ -141,7 +137,7 @@ export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSl
                     </div>
                 </div>
                 {/*right col*/}
-                <div className="col-span-6 @sm:text-right hidden @sm:block">
+                <div className="@md:text-right hidden @sm:block ring">
                     <CashbackDisplay ranked={ranked} intentSlug={intentSlug} intentMap={intentMap}/>
                 </div>
             </div>

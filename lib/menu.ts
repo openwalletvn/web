@@ -68,7 +68,7 @@ export const MENU: NavItem[] = [
                     {label: 'Tất cả', href: '/the-tin-dung'},
                     {label: 'Miễn phí thường niên', href: '/the-tin-dung-mien-phi-thuong-nien'},
                     {label: 'Thẻ tín dụng Napas', href: '/the-tin-dung-noi-dia'},
-                    {label: 'Thẻ hybrid (2 trong 1)', href: '/the-2-trong-1'},
+                    {label: 'Thẻ hybrid', href: '/the-2-trong-1'},
                 ],
             },
             {

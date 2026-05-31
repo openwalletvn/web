@@ -46,10 +46,10 @@ const baseRanked: RankedCard = {
 export const ResponsiveOverview: Story = {
     render: (args) => (
         <div className="flex flex-col gap-8">
-            {([800, 640, 480, 320] as const).map(w => (
+            {([1280, 1024, 768, 640] as const).map(w => (
                 <div key={w}>
                     <p className="text-xs text-gray-400 mb-2">{w}px container</p>
-                    <div style={{width: w}}>
+                    <div style={{width: w}} className="ring">
                         <OwCardRankedRow {...args} />
                     </div>
                 </div>
