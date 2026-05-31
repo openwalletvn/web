@@ -236,7 +236,7 @@ export function OwBadge(props: OwBadgeProps) {
                   className={cn(BASE_CLS, sizeCls, smallCls,
                       'bg-gradient-to-r from-slate-200 via-white to-slate-300 border-slate-300 text-slate-600',
                       className)}>
-                Kim loại
+                <span className="uppercase font-display tracking-wider text-xs">Thẻ kim loại</span>
             </span>
         );
     }
