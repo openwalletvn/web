@@ -7,7 +7,7 @@
     h6, .heading-6 {
         font-family: var(--font-display), sans-serif;
         font-weight: 400;
-        @apply tracking-wide;
+        @apply tracking-wide leading-[1.15];
     }
 
     h1, .heading-1 {
