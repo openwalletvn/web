@@ -163,7 +163,7 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                                                 key={intent.slug}
                                                 // active={activeIntents.includes(intent.slug)}
                                                 // onClick={() => toggleIntent(intent.slug)}
-                                                size="sm"
+                                                small
                                             >
                                                 {intent.icon} {intent.label}
                                             </OwBadge>

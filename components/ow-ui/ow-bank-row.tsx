@@ -32,12 +32,12 @@ export function OwBankRow({bank, className}: Props) {
                     <h2 className="heading-6">{bank.full_name}</h2>
                     <p className="flex gap-2 flex-wrap">
                         {(bank.stats?.card_count ?? 0) > 0 && (
-                            <OwBadge size="sm">
+                            <OwBadge small>
                                 <IconCreditCardFilled className="w-5"/> {bank.stats!.card_count} thẻ
                             </OwBadge>
                         )}
                         {(bank.networks?.length ?? 0) > 0 && (
-                            <OwBadge size="sm">
+                            <OwBadge small>
                                 <IconAffiliateFilled className="w-5"/> {bank.networks?.length} mạng thẻ
                             </OwBadge>
                         )}
