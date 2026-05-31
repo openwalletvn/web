@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import {cn} from '@/lib/utils';
 import type {CashbackRule, Intent} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
 import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
@@ -23,9 +22,8 @@ function catchallLabel(rule: CashbackRule): string {
     return '🌐 Tất cả chi tiêu';
 }
 
-export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSlugs, intentSlug}: {
+export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug}: {
     ranked: RankedCard;
-    muted?: boolean;
     intentMap?: Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
     highlightedSlugs?: string[];
     intentSlug?: string;
@@ -52,17 +50,13 @@ export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSl
             .filter((i): i is NonNullable<typeof i> => !!i)
         : [];
 
-    const showReason = !muted && rank_reason && rank_reason_type !== 'higher_cashback';
+    const showReason = rank_reason && rank_reason_type !== 'higher_cashback';
 
     return (
         <div className="ow-card-ranked-row @container flex flex-col">
             {/*row 1*/}
             <div className="shrink-0 flex gap-0.5 w-full mb-2">
-                {muted ? (
-                    <span className="text-label text-text-muted">#{ranked.rank}</span>
-                ) : (
-                    <OwRankBadge rank={rank}/>
-                )}
+                <OwRankBadge rank={rank}/>
                 {tiebreaker_delta !== undefined && tiebreaker_delta > 0 && (
                     <span className="flex items-center gap-0.5 text-emerald-500 text-[10px] font-semibold leading-none">
                         <IconCaretUpFilled size={10}/>{tiebreaker_delta}
@@ -85,7 +79,7 @@ export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSl
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 min-w-0">
                             <Link href={`/the/${card.id}`}
-                                  className={cn('text-body font-semibold truncate hover:underline', muted ? 'text-text-muted' : 'text-black')}>
+                                  className="text-body font-semibold truncate hover:underline text-black">
                                 {card.name}
                             </Link>
                             {card.card_type && card.card_type.length > 0 && (

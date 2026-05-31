@@ -41,7 +41,6 @@ export function CardRankingTable({initialRanked, personaSlug, title}: Props) {
                             <OwCardRankedRow
                                 key={r.card.id}
                                 ranked={r}
-                                muted
                                 intentSlug={personaSlug}
                             />
                         ))}
