@@ -304,13 +304,44 @@ function CashbackSection({
   (a, b) => (b.rate_max ?? b.rate) - (a.rate_max ?? a.rate),
  );
 
+ const fmtIsoDate = (iso: string) => {
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+ };
+
+ const allFrom = cashback.rules.map((r) => r.valid_from).filter(Boolean) as string[];
+ const allUntil = cashback.rules.map((r) => r.valid_until).filter(Boolean) as string[];
+ const programFrom = allFrom.length ? allFrom.reduce((a, b) => (a < b ? a : b)) : null;
+ const programUntil = allUntil.length ? allUntil.reduce((a, b) => (a > b ? a : b)) : null;
+
+ const fmtLifespan = (from: string, until: string): string => {
+  const [fy, fm, fd] = from.split('-').map(Number);
+  const [uy, um, ud] = until.split('-').map(Number);
+  let months = (uy - fy) * 12 + (um - fm) + (ud >= fd ? 0 : -1);
+  const years = Math.floor(months / 12);
+  months = months % 12;
+  const parts: string[] = [];
+  if (years > 0) parts.push(`${years} năm`);
+  if (months > 0) parts.push(`${months} tháng`);
+  return parts.length ? ` · ${parts.join(' ')}` : '';
+ };
+
+ const expiredDateRange =
+  programFrom && programUntil
+   ? ` (${fmtIsoDate(programFrom)} – ${fmtIsoDate(programUntil)}${fmtLifespan(programFrom, programUntil)})`
+   : programUntil
+   ? ` (đến ${fmtIsoDate(programUntil)})`
+   : programFrom
+   ? ` (từ ${fmtIsoDate(programFrom)})`
+   : '';
+
  return (
   <div className="space-y-3">
    {cashback.cashback_expired && (
     <div className="flex items-start gap-2 px-3 py-2.5 bg-red-50 border border-red-200 rounded text-xs text-red-800">
      <IconAlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-red-500" />
      <span>
-      <strong>Chương trình hoàn tiền đã kết thúc.</strong> Thông tin bên dưới chỉ mang tính tham khảo.
+      <strong>Chương trình hoàn tiền đã kết thúc{expiredDateRange}.</strong> Thông tin bên dưới chỉ mang tính tham khảo.
      </span>
     </div>
    )}
