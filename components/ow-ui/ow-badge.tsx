@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {Slot as SlotPrimitive} from 'radix-ui';
 import {cn} from '@/lib/utils';
-import {getNetworkImageUrl} from '@/lib/api';
-import type {CardType, Network} from '@/lib/api';
+import {getNetworkImageUrl, getWalletImageUrl} from '@/lib/api';
+import type {CardType, Network, Contactless} from '@/lib/api';
 import {
     IconCreditCardFilled,
     IconCashBanknoteFilled,
@@ -129,6 +129,10 @@ export type OwBadgeProps =
         children?: React.ReactNode;
     })
     | (BaseProps & {
+        variant: 'contactless';
+        contactlessData: Pick<Contactless, 'id' | 'name' | 'logo_url'>;
+    })
+    | (BaseProps & {
         variant?: never;
         colorHex?: string;
         children?: React.ReactNode;
@@ -178,6 +182,23 @@ export function OwBadge(props: OwBadgeProps) {
                 <img src={getNetworkImageUrl(networkData.logo_url)} alt={networkData.name}
                      style={{height: imgHeight}} className="object-contain"/>
                 {tier && <span className="uppercase font-display tracking-wider text-xs">{tier}</span>}
+            </span>
+        );
+    }
+
+    if (props.variant === 'contactless') {
+        const {contactlessData} = props;
+        const style: React.CSSProperties = {
+            backgroundColor: hexToRgba('#64748b', active ? 0.2 : 0.08),
+            borderColor: hexToRgba('#64748b', active ? 0.5 : 0.2),
+            color: '#475569',
+        };
+        return (
+            <span data-active={active} style={style} onClick={onClick}
+                  className={cn(BASE_CLS, sizeCls, smallCls, className)}>
+                <img src={getWalletImageUrl(contactlessData.logo_url)} alt={contactlessData.name}
+                     style={{height: small ? 12 : 16}} className="object-contain"/>
+                {contactlessData.name}
             </span>
         );
     }

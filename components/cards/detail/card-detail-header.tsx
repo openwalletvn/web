@@ -1,9 +1,8 @@
-import type { Card, Bank } from '@/lib/api';
-import { MetalBadge } from '@/components/shared/badges/metal-badge';
-import { CoBrandDisplay } from '@/components/cards/co-brand-display';
-import { OwBankImage } from '@/components/ow-ui/ow-bank-image';
-import { OwBadge, OwBadges } from '@/components/ow-ui/ow-badge';
-import { ContactlessBadge } from '@/components/shared/badges/contactless-badge';
+import type {Bank, Card} from '@/lib/api';
+import {MetalBadge} from '@/components/shared/badges/metal-badge';
+import {CoBrandDisplay} from '@/components/cards/co-brand-display';
+import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
+import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 
 interface Props {
     card: Card;
@@ -23,8 +22,17 @@ export function CardDetailHeader({ card, bank }: Props) {
                         Dừng phát hành
                     </span>
                 )}
-                <OwBadge variant="network" networkData={card.card_network_data} tier={card.card_tier}/>
-                <OwBadges>{card.card_type.map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}</OwBadges>
+                <OwBadges>
+                    {card.card_network_data && <OwBadge variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
+                    {card.card_type.map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}
+                    {card.contactless_methods_data && card.contactless_methods_data.length > 0 && (
+                        <>
+                            {card.contactless_methods_data.map((method) => (
+                                <OwBadge key={method.id} variant="contactless" contactlessData={method}/>
+                            ))}
+                        </>
+                    )}
+                </OwBadges>
                 {card.is_metal && <MetalBadge />}
             </div>
 
@@ -35,14 +43,6 @@ export function CardDetailHeader({ card, bank }: Props) {
                         ? <CoBrandDisplay brand={card.co_brand_data} fallback={card.co_brand} />
                         : <span className="text-text-primary">{card.co_brand}</span>
                     }
-                </div>
-            )}
-
-            {card.contactless_methods_data && card.contactless_methods_data.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                    {card.contactless_methods_data.map((method) => (
-                        <ContactlessBadge key={method.id} method={method} />
-                    ))}
                 </div>
             )}
         </div>

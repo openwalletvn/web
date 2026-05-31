@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type {Card, CardFees, Intent} from '@/lib/api';
-import {getNetworkImageUrl} from '@/lib/api';
+
 import {CompareDueDateRow} from './compare-due-date-row';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
@@ -48,8 +48,9 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
     const showPaymentSection = cards.some((c) => c && !purelyDebit(c));
 
     // ── Section 1 — identity ──────────────────────────────────────────────────
-    const networkValues = cards.map((c) => c ?
-        <OwBadge variant="network" networkData={c.card_network_data} tier={c.card_tier}/> : empty);
+    const networkValues = cards.map((c) => c && c.card_network_data
+        ? <OwBadge variant="network" networkData={c.card_network_data} tier={c.card_tier}/>
+        : empty);
     const types = cards.map((c) => c
         ? (
             <OwBadges>
@@ -78,11 +79,9 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
         const methods = c.contactless_methods_data;
         if (!methods || methods.length === 0) return <span>—</span>;
         return (
-            <div className="flex flex-row flex-wrap items-center gap-1.5">
-                {methods.map((m) => (
-                    <img key={m.id} src={getNetworkImageUrl(m.logo_url)} alt={m.name} style={{ height: 24 }} className="object-contain" />
-                ))}
-            </div>
+            <OwBadges>
+                {methods.map((m) => <OwBadge key={m.id} variant="contactless" contactlessData={m}/>)}
+            </OwBadges>
         );
     });
 

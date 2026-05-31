@@ -13,7 +13,7 @@ const meta: Meta<typeof OwBadge> = {
                 component: [
                     'Single primitive for all badge and chip UI. Replaces `OwChip`, `OwCardBadge`, and `OwIntentBadge`.',
                     '',
-                    '**Variants:** `intent` | `network` | `card-type` | _(default)_',
+                    '**Variants:** `intent` | `network` | `contactless` | `card-type` | _(default)_',
                     '',
                     'All variants support `active` and `asChild` for interactive use:',
                     '',
@@ -58,15 +58,22 @@ const SAMPLE_INTENTS = [
 ];
 
 const NETWORKS = [
-    {id: 'visa',      name: 'Visa',             logo_url: '/images/networks/visa.png'},
-    {id: 'mastercard',name: 'Mastercard',        logo_url: '/images/networks/mastercard.png'},
-    {id: 'jcb',       name: 'JCB',              logo_url: '/images/networks/jcb.png'},
-    {id: 'napas',     name: 'NAPAS',            logo_url: '/images/networks/napas.png'},
-    {id: 'amex',      name: 'American Express', logo_url: '/images/networks/amex.png'},
-    {id: 'unionpay',  name: 'UnionPay',         logo_url: '/images/networks/unionpay.png'},
+    {id: 'visa' as const, name: 'Visa', logo_url: '/images/networks/visa.png'},
+    {id: 'mastercard' as const, name: 'Mastercard', logo_url: '/images/networks/mastercard.png'},
+    {id: 'jcb' as const, name: 'JCB', logo_url: '/images/networks/jcb.png'},
+    {id: 'napas' as const, name: 'NAPAS', logo_url: '/images/networks/napas.png'},
+    {id: 'amex' as const, name: 'American Express', logo_url: '/images/networks/amex.png'},
+    {id: 'unionpay' as const, name: 'UnionPay', logo_url: '/images/networks/unionpay.png'},
 ];
 
 const CARD_TYPES = ['credit', 'debit', 'prepaid', '2in1', 'co-branded', 'atm', 'transit'] as const;
+
+const CONTACTLESS = [
+    {id: 'apple-pay' as const, name: 'Apple Pay', logo_url: '/images/contactless/apple_pay.png', link: ''},
+    {id: 'google-pay' as const, name: 'Google Pay', logo_url: '/images/contactless/google_pay.png', link: ''},
+    {id: 'samsung-pay' as const, name: 'Samsung Pay', logo_url: '/images/contactless/samsung_pay.png', link: ''},
+    {id: 'garmin-pay' as const, name: 'Garmin Pay', logo_url: '/images/contactless/garmin_pay.png', link: ''},
+];
 
 // ─── Overview ─────────────────────────────────────────────────────────────────
 
@@ -103,6 +110,11 @@ export const Overview: Story = {
                     {NETWORKS.map(n => <OwBadge key={n.id} variant="network" networkData={n} tier="Platinum"/>)}
                 </OwBadges>
             </OwStorySection>
+            <OwStorySection title="Contactless">
+                <OwBadges>
+                    {CONTACTLESS.map(c => <OwBadge key={c.id} variant="contactless" contactlessData={c}/>)}
+                </OwBadges>
+            </OwStorySection>
             <OwStorySection title="Card type">
                 <OwBadges>
                     {CARD_TYPES.map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}
@@ -125,6 +137,7 @@ export const Overview: Story = {
                 <OwBadges>
                     <OwBadge small variant="intent" slug="dining" emoji="🍜" label="Ăn uống" rate={0.03}/>
                     <OwBadge small variant="network" networkData={NETWORKS[0]}/>
+                    <OwBadge small variant="contactless" contactlessData={CONTACTLESS[0]}/>
                     <OwBadge small variant="card-type" cardType="credit"/>
                     <OwBadge small>Default small</OwBadge>
                     <OwBadge small active>Active small</OwBadge>
@@ -198,4 +211,12 @@ export const SmallNetwork: Story = {
 
 export const SmallCardType: Story = {
     args: {small: true, variant: 'card-type', cardType: 'credit'},
+};
+
+export const Contactless: Story = {
+    args: {variant: 'contactless', contactlessData: CONTACTLESS[0]},
+};
+
+export const SmallContactless: Story = {
+    args: {small: true, variant: 'contactless', contactlessData: CONTACTLESS[0]},
 };
