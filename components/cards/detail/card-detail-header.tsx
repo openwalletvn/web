@@ -1,5 +1,4 @@
 import type {Bank, Card} from '@/lib/api';
-import {MetalBadge} from '@/components/shared/badges/metal-badge';
 import {CoBrandDisplay} from '@/components/cards/co-brand-display';
 import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
@@ -33,7 +32,7 @@ export function CardDetailHeader({ card, bank }: Props) {
                         </>
                     )}
                 </OwBadges>
-                {card.is_metal && <MetalBadge />}
+                {card.is_metal && <OwBadge variant="metal"/>}
             </div>
 
             {card.co_brand && (

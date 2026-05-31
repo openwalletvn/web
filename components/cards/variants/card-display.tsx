@@ -1,15 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
-import { IconExternalLink, IconBuildingBank, IconScale } from '@tabler/icons-react';
-import type { Card, Bank } from '@/lib/api';
-import { getBankImageUrl } from '@/lib/api';
-import { CardImage } from '@/components/cards/card-image';
-import { MetalBadge } from '@/components/shared/badges/metal-badge';
-import { OwBadge, OwBadges } from '@/components/ow-ui/ow-badge';
-import { useCompareList } from '@/lib/use-compare-list';
+import type {ReactNode} from 'react';
+import {cn} from '@/lib/utils';
+import {IconBuildingBank, IconExternalLink, IconScale} from '@tabler/icons-react';
+import type {Bank, Card} from '@/lib/api';
+import {getBankImageUrl} from '@/lib/api';
+import {CardImage} from '@/components/cards/card-image';
+import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
+import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
+import {useCompareList} from '@/lib/use-compare-list';
 
 interface BadgeConfig {
     network?: boolean;
@@ -124,25 +124,25 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
             </div>
 
             <div className="relative min-h-[80px]">
-                <div className="transition-opacity duration-150 group-hover:opacity-0">
-                    <p className="font-medium text-slate-800 leading-tight">{card.name}</p>
+                <div className="transition-opacity duration-150 group-hover:opacity-0 space-y-1">
+                    <p className="heading-6 text-base">{card.name}</p>
                     {fee && card.fees?.annual != null && (
                         <p className="text-sm text-slate-500">
-                            {card.fees.annual.amount === 0
-                                ? 'Miễn phí'
-                                : `${card.fees.annual.amount.toLocaleString()} ${card.currency ?? 'VND'}`}
+                            <OwFeeAmount amount={card.fees.annual.amount}/>
                         </p>
                     )}
-                    <div className="flex flex-wrap items-center gap-1 mt-1">
+                    <OwBadges className="mt-1">
                         {status && card.status === 'discontinued' && (
-                            <span className="px-1.5 py-0.5 border border-dashed border-amber-400 text-amber-600 bg-amber-50 text-[11px]">
-                                Dừng phát hành
-                            </span>
+                            <OwBadge small colorHex="#d97706"
+                                     className="border-dashed bg-amber-50 text-amber-600 border-amber-400">Dừng phát
+                                hành</OwBadge>
                         )}
-                        {network && <OwBadge variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
-                        {type && <OwBadges>{card.card_type.map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}</OwBadges>}
-                        {metal && card.is_metal && <MetalBadge />}
-                    </div>
+                        {network && card.card_network_data &&
+                            <OwBadge small variant="network" networkData={card.card_network_data}
+                                     tier={card.card_tier}/>}
+                        {type && card.card_type.map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
+                        {metal && card.is_metal && <OwBadge small variant="metal"/>}
+                    </OwBadges>
                 </div>
 
                 {showActions && (
@@ -214,16 +214,17 @@ function CardDisplayRow({ card, bank, badges = {}, slot, className }: Omit<RowPr
 
             <div className="flex-1 min-w-0">
                 <p className="font-medium leading-tight truncate text-sm text-slate-900">{card.name}</p>
-                <div className="flex flex-wrap gap-1 mt-1">
+                <OwBadges className="mt-1">
                     {status && card.status === 'discontinued' && (
-                        <span className="px-1.5 py-0.5 border border-dashed border-amber-400 text-amber-600 bg-amber-50 text-[11px]">
-                            Dừng phát hành
-                        </span>
+                        <OwBadge small colorHex="#d97706"
+                                 className="border-dashed bg-amber-50 text-amber-600 border-amber-400">Dừng phát
+                            hành</OwBadge>
                     )}
-                    {network && <OwBadge variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
-                    {type && <OwBadges>{card.card_type.map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}</OwBadges>}
-                    {metal && card.is_metal && <MetalBadge />}
-                </div>
+                    {network && card.card_network_data &&
+                        <OwBadge small variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
+                    {type && card.card_type.map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
+                    {metal && card.is_metal && <OwBadge small variant="metal"/>}
+                </OwBadges>
             </div>
 
             {slot != null && <div className="shrink-0 flex items-center gap-2">{slot}</div>}
@@ -237,9 +238,7 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
 
     const feeLabel = card.fees?.annual == null
         ? null
-        : card.fees.annual.amount === 0
-            ? 'Miễn phí'
-            : `${card.fees.annual.amount.toLocaleString('vi-VN')} ${card.currency ?? 'VND'}`;
+        : <OwFeeAmount amount={card.fees.annual.amount} textOnly/>;
 
     const content = (
         <>
@@ -262,16 +261,17 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
                 {fee && feeLabel && (
                     <p className="text-[11px] text-slate-400 mt-0.5">{feeLabel}</p>
                 )}
-                <div className="flex flex-wrap gap-1 mt-1">
+                <OwBadges className="mt-1">
                     {card.status === 'discontinued' && (
-                        <span className="text-[10px] px-1.5 py-0.5 border border-dashed border-amber-300 text-amber-600 bg-amber-50 rounded-sm leading-none">
-                            Dừng phát hành
-                        </span>
+                        <OwBadge small colorHex="#d97706"
+                                 className="border-dashed bg-amber-50 text-amber-600 border-amber-400">Dừng phát
+                            hành</OwBadge>
                     )}
-                    {network && <OwBadge variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
-                    {type && <OwBadges>{card.card_type.map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}</OwBadges>}
-                    {card.is_metal && <MetalBadge />}
-                </div>
+                    {network && card.card_network_data &&
+                        <OwBadge small variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
+                    {type && card.card_type.map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
+                    {card.is_metal && <OwBadge small variant="metal"/>}
+                </OwBadges>
             </div>
         </>
     );
@@ -296,7 +296,8 @@ function CardDisplayInline({ card, badges = {}, showLogo = true, asLink = false,
     const content = (
         <span className="inline-flex items-center gap-2">
             <span className="font-medium text-slate-800">{card.name}</span>
-            {network && <OwBadge variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
+            {network && card.card_network_data &&
+                <OwBadge variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
         </span>
     );
 
