@@ -1,4 +1,5 @@
 import type {Meta, StoryObj} from '@storybook/nextjs-vite';
+import {IconStarFilled} from '@tabler/icons-react';
 import {OwBadge, OwBadges} from './ow-badge';
 import {OwStories, OwStorySection} from './ow-story-section';
 
@@ -107,6 +108,12 @@ export const Overview: Story = {
                     {CARD_TYPES.map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}
                 </OwBadges>
             </OwStorySection>
+            <OwStorySection title="Card type — custom icon prop (component ref)">
+                <OwBadges>
+                    <OwBadge variant="card-type" cardType="prepaid" icon={IconStarFilled}/>
+                    <OwBadge variant="card-type" cardType="co-branded" icon="🤝"/>
+                </OwBadges>
+            </OwStorySection>
             <OwStorySection title="Default — active state (filter chip use case)">
                 <OwBadges>
                     <OwBadge>Inactive</OwBadge>
@@ -145,6 +152,14 @@ export const NetworkWithTier: Story = {
 
 export const CardType: Story = {
     args: {variant: 'card-type', cardType: 'credit'},
+};
+
+export const CardTypeCustomIcon: Story = {
+    args: {variant: 'card-type', cardType: 'prepaid', icon: IconStarFilled},
+};
+
+export const CardTypeEmojiIcon: Story = {
+    args: {variant: 'card-type', cardType: 'co-branded', icon: '🤝'},
 };
 
 export const DefaultActive: Story = {

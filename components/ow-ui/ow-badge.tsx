@@ -3,6 +3,12 @@ import {Slot as SlotPrimitive} from 'radix-ui';
 import {cn} from '@/lib/utils';
 import {getNetworkImageUrl} from '@/lib/api';
 import type {CardType, Network} from '@/lib/api';
+import {
+    IconCreditCardFilled,
+    IconCashBanknoteFilled,
+    IconYinYangFilled,
+    IconTrainFilled,
+} from '@tabler/icons-react';
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
@@ -58,6 +64,22 @@ export const CARD_TYPE_LABELS: Record<CardType, string> = {
     transit: 'Transit',
 };
 
+type IconComponent = React.ComponentType<{size?: number; className?: string}>;
+
+const CARD_TYPE_ICON: Partial<Record<CardType, IconComponent>> = {
+    credit: IconCreditCardFilled,
+    debit: IconCashBanknoteFilled,
+    '2in1': IconYinYangFilled,
+    transit: IconTrainFilled,
+};
+
+const CARD_TYPE_HEX: Partial<Record<CardType, string>> = {
+    credit: '#3b82f6',
+    debit: '#22c55e',
+    '2in1': '#8b5cf6',
+    transit: '#f97316',
+};
+
 // ─── Base styles ──────────────────────────────────────────────────────────────
 
 const BASE_CLS = [
@@ -96,6 +118,7 @@ export type OwBadgeProps =
     | (BaseProps & {
         variant: 'card-type';
         cardType?: CardType;
+        icon?: IconComponent | string;
         children?: React.ReactNode;
     })
     | (BaseProps & {
@@ -151,16 +174,28 @@ export function OwBadge(props: OwBadgeProps) {
     }
 
     if (props.variant === 'card-type') {
-        const {cardType, children} = props;
+        const {cardType, icon, children} = props;
+        const resolvedIcon = icon ?? (cardType ? CARD_TYPE_ICON[cardType] : undefined);
+        const hex = cardType ? CARD_TYPE_HEX[cardType] : undefined;
+        const hasIcon = !!resolvedIcon;
         const style: React.CSSProperties = active
             ? {backgroundColor: 'var(--color-primary)', borderColor: 'var(--color-primary)', color: '#fff'}
+            : hex
+            ? {backgroundColor: hexToRgba(hex, 0.1), borderColor: hexToRgba(hex, 0.3), color: hex}
             : {};
+        const renderIcon = () => {
+            if (!hasIcon) return null;
+            if (typeof resolvedIcon === 'string') return <span>{resolvedIcon}</span>;
+            const Icon = resolvedIcon;
+            return <Icon size={14}/>;
+        };
         return (
             <span data-active={active} style={style} onClick={onClick}
                   className={cn(BASE_CLS,
-                      !active && 'bg-[#EDEFEC] border-[#D3D3D3] text-foreground',
+                      !active && !hex && 'bg-[#EDEFEC] border-[#D3D3D3] text-foreground',
                       '[&:is(button,a)]:hover:bg-primary/10 [&:is(button,a)]:hover:border-primary [&:is(button,a)]:hover:text-primary',
                       className)}>
+                {renderIcon()}
                 {cardType ? (CARD_TYPE_LABELS[cardType] ?? cardType) : children}
             </span>
         );
