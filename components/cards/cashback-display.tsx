@@ -1,5 +1,5 @@
 import type {Intent} from '@/lib/api';
-import type {RankedCard, CashbackBreakdownItem} from '@/lib/card-ranker';
+import type {CashbackBreakdownItem, RankedCard} from '@/lib/card-ranker';
 import {getRateDisplay} from '@/lib/cashback-utils';
 
 export {getRateDisplay};
@@ -41,7 +41,7 @@ export function CashbackDisplay({ranked, intentSlug, intentMap}: {ranked: Ranked
 
     if (cashback === 0) {
         return (
-            <div className="ow-cashback-display flex flex-col items-start sm:items-end gap-0.5">
+            <div className="ow-cashback-display flex flex-col items-start gap-0.5">
                 <span className="text-body-sm text-text-muted">Đang cập nhật thông tin ưu đãi</span>
             </div>
         );
@@ -50,7 +50,7 @@ export function CashbackDisplay({ranked, intentSlug, intentMap}: {ranked: Ranked
     const showBreakdown = breakdown && breakdown.length >= 1;
     const rateDisplay = !showBreakdown ? getRateDisplay(ranked.card, intentSlug) : null;
     return (
-        <div className="ow-cashback-display flex flex-col items-start sm:items-end gap-0.5">
+        <div className="ow-cashback-display flex flex-col items-start gap-0.5">
             <span className="text-body-lg font-semibold text-primary">
                 {cashback.toLocaleString('vi-VN')}đ
             </span>
