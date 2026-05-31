@@ -43,6 +43,22 @@ const baseRanked: RankedCard = {
     cashback_result: {cashback: 150000, breakdown: []},
 };
 
+export const ResponsiveOverview: Story = {
+    render: (args) => (
+        <div className="flex flex-col gap-8">
+            {([800, 640, 480, 320] as const).map(w => (
+                <div key={w}>
+                    <p className="text-xs text-gray-400 mb-2">{w}px container</p>
+                    <div style={{width: w}}>
+                        <OwCardRankedRow {...args} />
+                    </div>
+                </div>
+            ))}
+        </div>
+    ),
+    args: {ranked: baseRanked},
+};
+
 export const Default: Story = {
     args: {ranked: baseRanked},
 };

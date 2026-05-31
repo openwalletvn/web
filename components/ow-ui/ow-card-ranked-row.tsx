@@ -1,14 +1,13 @@
-import React from 'react';
 import Link from 'next/link';
 import {cn} from '@/lib/utils';
 import type {CashbackRule, Intent} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
 import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
 import {CardImage} from '@/components/cards/card-image';
-import {RankBadge} from '@/components/cards/rank-badge';
+import {OwRankBadge} from '@/components/ow-ui/ow-rank-badge';
 import {CashbackDisplay} from '@/components/cards/cashback-display';
 import {IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
-import {OwCardBadge, CARD_TYPE_LABELS} from '@/components/ow-ui/ow-card-badge';
+import {OwBadge, OwBadges, CARD_TYPE_LABELS} from '@/components/ow-ui/ow-badge';
 
 function catchallLabel(rule: CashbackRule): string {
     const intentSlug = rule.intents?.find(i => CATCHALL_SLUGS.has(i));
@@ -24,10 +23,9 @@ function catchallLabel(rule: CashbackRule): string {
     return '🌐 Tất cả chi tiêu';
 }
 
-export function OwCardRankedRow({ranked, muted = false, viewTransitionName, intentMap, highlightedSlugs, intentSlug}: {
+export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSlugs, intentSlug}: {
     ranked: RankedCard;
     muted?: boolean;
-    viewTransitionName?: string;
     intentMap?: Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
     highlightedSlugs?: string[];
     intentSlug?: string;
@@ -57,16 +55,13 @@ export function OwCardRankedRow({ranked, muted = false, viewTransitionName, inte
     const showReason = !muted && rank_reason && rank_reason_type !== 'higher_cashback';
 
     return (
-        <div
-            className="ow-card-ranked-row flex flex-col"
-            style={viewTransitionName ? {viewTransitionName} as React.CSSProperties : undefined}
-        >
+        <div className="ow-card-ranked-row @container flex flex-col">
             {/*row 1*/}
             <div className="shrink-0 flex gap-0.5 w-full mb-2">
                 {muted ? (
                     <span className="text-label text-text-muted">#{ranked.rank}</span>
                 ) : (
-                    <RankBadge rank={rank}/>
+                    <OwRankBadge rank={rank}/>
                 )}
                 {tiebreaker_delta !== undefined && tiebreaker_delta > 0 && (
                     <span className="flex items-center gap-0.5 text-emerald-500 text-[10px] font-semibold leading-none">
@@ -81,11 +76,11 @@ export function OwCardRankedRow({ranked, muted = false, viewTransitionName, inte
             </div>
 
             {/*row 2*/}
-            <div className="grid sm:grid-cols-12 gap-3 flex-wrap">
+            <div className="grid @sm:grid-cols-12 gap-3 flex-wrap">
                 {/*left col*/}
                 <div className="col-span-6 flex gap-3">
-                    <Link href={`/the/${card.id}`} className="shrink-0 w-24 sm:w-32">
-                        <CardImage card={card} className="w-24 sm:w-32"/>
+                    <Link href={`/the/${card.id}`} className="shrink-0 w-24 @sm:w-32">
+                        <CardImage card={card} className="w-24 @sm:w-32"/>
                     </Link>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 min-w-0">
@@ -94,11 +89,11 @@ export function OwCardRankedRow({ranked, muted = false, viewTransitionName, inte
                                 {card.name}
                             </Link>
                             {card.card_type && card.card_type.length > 0 && (
-                                <OwCardBadge>
+                                <OwBadge variant="card-type">
                                     {card.card_type.includes('credit') && card.card_type.includes('debit')
                                         ? 'Hybrid'
                                         : (CARD_TYPE_LABELS[card.card_type[0]] ?? card.card_type[0])}
-                                </OwCardBadge>
+                                </OwBadge>
                             )}
                         </div>
                         {card.fees?.annual != null && (
@@ -114,22 +109,24 @@ export function OwCardRankedRow({ranked, muted = false, viewTransitionName, inte
                             </p>
                         )}
                         {intentMap && (cardIntents.length > 0 || catchallRules.length > 0) && (
-                            <div className="flex flex-wrap gap-1 mt-1.5">
+                            <OwBadges className="mt-1.5">
                                 {catchallRules.map((rule, i) => (
-                                    <span key={i}
-                                        className={cn('inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium', highlighted.size > 0 ? 'bg-primary/10 text-primary' : 'bg-bg-muted text-text-muted')}>
+                                    <OwBadge key={i} colorHex={highlighted.size > 0 ? 'var(--color-primary)' : undefined}>
                                         {catchallLabel(rule)}
-                                    </span>
+                                    </OwBadge>
                                 ))}
                                 {cardIntents.map(intent => (
-                                    <span
+                                    <OwBadge
                                         key={intent.slug}
-                                        className={cn('inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium', highlighted.has(intent.slug) ? 'bg-primary/10 text-primary' : 'bg-bg-muted text-text-muted opacity-50')}
-                                    >
-                                    {intent.icon} {intent.label}{intent.rate !== undefined ? ` ${(intent.rate * 100).toFixed(intent.rate * 100 % 1 === 0 ? 0 : 1)}%` : ''}
-                                </span>
+                                        variant="intent"
+                                        slug={intent.slug}
+                                        emoji={intent.icon}
+                                        label={intent.label}
+                                        rate={intent.rate}
+                                        highlighted={highlighted.has(intent.slug)}
+                                    />
                                 ))}
-                            </div>
+                            </OwBadges>
                         )}
                         {showReason && (
                             <span className="flex items-center gap-1 mt-1 text-xs text-text-muted">
@@ -138,13 +135,13 @@ export function OwCardRankedRow({ranked, muted = false, viewTransitionName, inte
                             </span>
                         )}
 
-                        <div className="sm:hidden">
+                        <div className="@sm:hidden">
                             <CashbackDisplay ranked={ranked} intentSlug={intentSlug} intentMap={intentMap}/>
                         </div>
                     </div>
                 </div>
                 {/*right col*/}
-                <div className="col-span-6 sm:text-right hidden sm:block">
+                <div className="col-span-6 @sm:text-right hidden @sm:block">
                     <CashbackDisplay ranked={ranked} intentSlug={intentSlug} intentMap={intentMap}/>
                 </div>
             </div>

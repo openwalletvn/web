@@ -2,20 +2,15 @@ import Link from 'next/link';
 import type {Card, CardFees, Intent} from '@/lib/api';
 import {getNetworkImageUrl} from '@/lib/api';
 import {CompareDueDateRow} from './compare-due-date-row';
-import {CARD_TYPE_LABELS, OwCardBadge} from '@/components/ow-ui/ow-card-badge';
+import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
+import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
+import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
 
 const empty = <span className="text-slate-300">—</span>;
 
 interface Props {
     cards: (Card | null)[];
     intentMap?: Map<string, Intent>;
-}
-
-function formatFee(fee?: { amount: number; type: string } | null): string {
-    if (fee == null) return '—';
-    if (fee.amount === 0) return 'Miễn phí';
-    if (fee.type === 'rate') return `${fee.amount}%`;
-    return `${fee.amount.toLocaleString('vi-VN')} VNĐ/năm`;
 }
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
@@ -54,8 +49,14 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
 
     // ── Section 1 — identity ──────────────────────────────────────────────────
     const networkValues = cards.map((c) => c ?
-        <OwCardBadge networkData={c.card_network_data} tier={c.card_tier}/> : empty);
-    const types = cards.map((c) => c ? c.card_type.map((t) => CARD_TYPE_LABELS[t] ?? t).join(', ') : empty);
+        <OwBadge variant="network" networkData={c.card_network_data} tier={c.card_tier}/> : empty);
+    const types = cards.map((c) => c
+        ? (
+            <OwBadges>
+                {c.card_type.map((t) => <OwBadge key={t} variant="card-type" cardType={t}/>)}
+            </OwBadges>
+        )
+        : empty);
 
     // ── Section 2 — fees ──────────────────────────────────────────────────────
     const feeRows: Array<{ label: string; key: keyof CardFees }> = [
@@ -95,22 +96,30 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
                         label="Mục đích sử dụng"
                         values={cards.map((c) => {
                             if (!c?.intents?.length) return empty;
+                            const slugRateMap = new Map<string, number>();
+                            for (const rule of c.cashback?.rules ?? []) {
+                                for (const slug of [...(rule.merchants ?? []), ...(rule.intents ?? []).filter(s => !CATCHALL_SLUGS.has(s))]) {
+                                    if (!slugRateMap.has(slug)) slugRateMap.set(slug, rule.rate);
+                                }
+                            }
                             const intents = c.intents
                                 .map((slug) => intentMap.get(slug))
                                 .filter((i): i is Intent => i !== undefined);
                             if (!intents.length) return empty;
                             return (
-                                <div className="flex flex-wrap gap-1.5">
+                                <OwBadges>
                                     {intents.map((intent) => (
-                                        <span
+                                        <OwBadge
                                             key={intent.slug}
-                                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700"
-                                        >
-                                            <span>{intent.icon}</span>
-                                            {intent.label}
-                                        </span>
+                                            variant="intent"
+                                            slug={intent.slug}
+                                            emoji={intent.icon}
+                                            label={intent.label}
+                                            rate={slugRateMap.get(intent.slug)}
+                                            highlighted
+                                        />
                                     ))}
-                                </div>
+                                </OwBadges>
                             );
                         })}
                     />
@@ -133,7 +142,10 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
             <SectionHeader label="Phí" />
             {feeRows.map(({ label, key }) => {
                 if (!cards.some((c) => c?.fees?.[key] != null)) return null;
-                const values = cards.map((c) => c ? formatFee(c.fees?.[key]) : empty);
+                const values = cards.map((c) => {
+                    const fee = c?.fees?.[key];
+                    return fee ? <OwFeeAmount fee={fee}/> : empty;
+                });
                 return <Row key={key} label={label} values={values} />;
             })}
 

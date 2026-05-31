@@ -5,7 +5,7 @@ import type {Bank} from '@/lib/api';
 import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
 import {OwButton} from '@/components/ow-ui/ow-button';
 import {IconAffiliateFilled, IconCreditCardFilled} from "@tabler/icons-react";
-import {OwChip} from "@/components/ow-ui/ow-chip";
+import {OwBadge} from "@/components/ow-ui/ow-badge";
 
 interface Props {
     bank: Bank;
@@ -32,14 +32,14 @@ export function OwBankRow({bank, className}: Props) {
                     <h2 className="heading-6">{bank.full_name}</h2>
                     <p className="flex gap-2 flex-wrap">
                         {(bank.stats?.card_count ?? 0) > 0 && (
-                            <OwChip size="sm">
+                            <OwBadge size="sm">
                                 <IconCreditCardFilled className="w-5"/> {bank.stats!.card_count} thẻ
-                            </OwChip>
+                            </OwBadge>
                         )}
                         {(bank.networks?.length ?? 0) > 0 && (
-                            <OwChip size="sm">
+                            <OwBadge size="sm">
                                 <IconAffiliateFilled className="w-5"/> {bank.networks?.length} mạng thẻ
-                            </OwChip>
+                            </OwBadge>
                         )}
 
                     </p>

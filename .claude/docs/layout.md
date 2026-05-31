@@ -30,6 +30,30 @@ width: 100%
 - `container mx-auto` → use `ow-container`
 - `max-w-[1440px] mx-auto px-6` → use `ow-container`
 
+## Badge system
+
+**`OwBadge`** is the single primitive for all badge/chip UI. Import from `@/components/ow-ui/ow-badge`.
+
+Variants:
+- `variant="intent"` — cashback intent, colored by slug
+- `variant="network"` — card network with logo
+- `variant="card-type"` — card type label
+- _(no variant)_ — generic badge, pass `colorHex` for brand color
+
+All variants support `active`, `asChild` (for interactive usage).
+
+**`OwBadges` is the required wrapper** for any group of badges. Never use a raw `<div className="flex flex-wrap gap-*">`.
+
+```tsx
+<OwBadges>
+  <OwBadge variant="intent" slug="dining" emoji="🍜" label="Dining" highlighted />
+  <OwBadge variant="network" networkData={...} tier="Platinum" />
+</OwBadges>
+
+// with spacing override
+<OwBadges className="mt-2">...</OwBadges>
+```
+
 ## CSS & typography rules
 - **Typography source of truth:** `app/typography.css` — all text styles live here (h1–h6 base + utility classes).
 - **No hardcoded styles:** Never write hardcoded `font-size`, `font-weight`, `line-height`, `letter-spacing`, `color`, or `text-decoration` values in components or inline styles. Always use an existing class from `app/typography.css`. If no class fits, stop and ask for approval before adding one.

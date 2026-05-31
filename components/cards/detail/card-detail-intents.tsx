@@ -1,5 +1,7 @@
 import type { Card, Intent } from '@/lib/api';
 import { getIntents } from '@/lib/api';
+import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
+import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
 
 interface Props {
  card: Card;
@@ -11,6 +13,13 @@ export async function CardDetailIntents({ card }: Props) {
  const allIntents = await getIntents().catch(() => [] as Intent[]);
  const intentMap = new Map(allIntents.map((i) => [i.slug, i]));
 
+ const slugRateMap = new Map<string, number>();
+ for (const rule of card.cashback?.rules ?? []) {
+     for (const slug of [...(rule.merchants ?? []), ...(rule.intents ?? []).filter(s => !CATCHALL_SLUGS.has(s))]) {
+         if (!slugRateMap.has(slug)) slugRateMap.set(slug, rule.rate);
+     }
+ }
+
  const cardIntents = card.intents
  .map((slug) => intentMap.get(slug))
  .filter((i): i is Intent => i !== undefined);
@@ -20,17 +29,19 @@ export async function CardDetailIntents({ card }: Props) {
  return (
  <section className="ow-card-detail-intents flex flex-col gap-3">
  <h2 className="text-label text-text-muted">Phù hợp với</h2>
- <div className="flex flex-wrap gap-2">
+ <OwBadges>
  {cardIntents.map((intent) => (
- <span
+ <OwBadge
  key={intent.slug}
- className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700"
- >
- <span>{intent.icon}</span>
- {intent.label}
- </span>
+ variant="intent"
+ slug={intent.slug}
+ emoji={intent.icon}
+ label={intent.label}
+ rate={slugRateMap.get(intent.slug)}
+ highlighted
+ />
  ))}
- </div>
+ </OwBadges>
  </section>
  );
 }
