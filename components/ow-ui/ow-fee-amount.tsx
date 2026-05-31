@@ -1,17 +1,24 @@
 import * as React from 'react';
-import type {FeeEntry} from '@/lib/api';
-import {formatFeeParts, formatFeePartsCompact} from '@/lib/utils';
 
 interface Props {
-    fee: FeeEntry;
+    amount: number;
     period?: 'năm' | 'tháng' | null;
     compact?: boolean;
 }
 
-export function OwFeeAmount({fee, period = 'năm', compact = false}: Props) {
-    const {value, unit} = compact ? formatFeePartsCompact(fee) : formatFeeParts(fee);
+function formatAmount(amount: number, compact: boolean): { value: string; unit: string | null } {
+    if (amount === 0) return {value: 'Miễn phí', unit: null};
+    if (!compact) return {value: amount.toLocaleString('vi-VN'), unit: 'đ'};
+    if (amount >= 1_000_000 && amount % 1_000_000 === 0) return {value: `${amount / 1_000_000}tr`, unit: null};
+    if (amount >= 1_000_000) return {value: `${(amount / 1_000_000).toFixed(1).replace('.0', '')}tr`, unit: null};
+    if (amount >= 1_000 && amount % 1_000 === 0) return {value: `${amount / 1_000}k`, unit: null};
+    return {value: amount.toLocaleString('vi-VN'), unit: 'đ'};
+}
 
-    if (fee.amount === 0) {
+export function OwFeeAmount({amount, period = 'năm', compact = false}: Props) {
+    const {value, unit} = formatAmount(amount, compact);
+
+    if (amount === 0) {
         return <span className="ow-fee-amount text-body-md text-slate-800">{value}</span>;
     }
 

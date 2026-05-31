@@ -9,7 +9,7 @@ const meta: Meta<typeof OwFeeAmount> = {
     parameters: {
         docs: {
             description: {
-                component: 'Renders a fee entry (currency or rate) with styled value, unit, and optional period suffix.',
+                component: 'Renders a fee amount with styled value, unit, and optional period suffix.',
             },
         },
     },
@@ -22,23 +22,20 @@ export const Overview: Story = {
     render: () => (
         <OwStories>
             <OwStorySection title="Currency / năm">
-                <OwFeeAmount fee={{amount: 399000, type: 'currency'}} period="năm"/>
+                <OwFeeAmount amount={399000} period="năm"/>
             </OwStorySection>
             <OwStorySection title="Currency / tháng">
-                <OwFeeAmount fee={{amount: 50000, type: 'currency'}} period="tháng"/>
-            </OwStorySection>
-            <OwStorySection title="Rate (no period)">
-                <OwFeeAmount fee={{amount: 1.5, type: 'rate'}} period={null}/>
+                <OwFeeAmount amount={50000} period="tháng"/>
             </OwStorySection>
             <OwStorySection title="Free">
-                <OwFeeAmount fee={{amount: 0, type: 'currency'}}/>
+                <OwFeeAmount amount={0}/>
             </OwStorySection>
             <OwStorySection title="Compact — 100k, 399k, 1tr, 1.5tr">
                 <div className="flex flex-col gap-1">
-                    <OwFeeAmount fee={{amount: 100000, type: 'currency'}} period="năm" compact/>
-                    <OwFeeAmount fee={{amount: 1000000, type: 'currency'}} period="năm" compact/>
-                    <OwFeeAmount fee={{amount: 1500000, type: 'currency'}} period="năm" compact/>
-                    <OwFeeAmount fee={{amount: 399000, type: 'currency'}} period="năm" compact/>
+                    <OwFeeAmount amount={100000} period="năm" compact/>
+                    <OwFeeAmount amount={1000000} period="năm" compact/>
+                    <OwFeeAmount amount={1500000} period="năm" compact/>
+                    <OwFeeAmount amount={399000} period="năm" compact/>
                 </div>
             </OwStorySection>
         </OwStories>
@@ -46,33 +43,29 @@ export const Overview: Story = {
 };
 
 export const CurrencyAnnual: Story = {
-    render: () => <OwFeeAmount fee={{amount: 399000, type: 'currency'}} period="năm"/>,
+    render: () => <OwFeeAmount amount={399000} period="năm"/>,
 };
 
 export const CurrencyMonthly: Story = {
-    render: () => <OwFeeAmount fee={{amount: 50000, type: 'currency'}} period="tháng"/>,
-};
-
-export const Rate: Story = {
-    render: () => <OwFeeAmount fee={{amount: 1.5, type: 'rate'}} period={null}/>,
+    render: () => <OwFeeAmount amount={50000} period="tháng"/>,
 };
 
 export const Free: Story = {
-    render: () => <OwFeeAmount fee={{amount: 0, type: 'currency'}}/>,
+    render: () => <OwFeeAmount amount={0}/>,
 };
 
 export const Compact100k: Story = {
-    render: () => <OwFeeAmount fee={{amount: 100000, type: 'currency'}} period="năm" compact/>,
+    render: () => <OwFeeAmount amount={100000} period="năm" compact/>,
 };
 
 export const Compact1tr: Story = {
-    render: () => <OwFeeAmount fee={{amount: 1000000, type: 'currency'}} period="năm" compact/>,
+    render: () => <OwFeeAmount amount={1000000} period="năm" compact/>,
 };
 
 export const Compact1point5tr: Story = {
-    render: () => <OwFeeAmount fee={{amount: 1500000, type: 'currency'}} period="năm" compact/>,
+    render: () => <OwFeeAmount amount={1500000} period="năm" compact/>,
 };
 
 export const Compact399k: Story = {
-    render: () => <OwFeeAmount fee={{amount: 399000, type: 'currency'}} period="năm" compact/>,
+    render: () => <OwFeeAmount amount={399000} period="năm" compact/>,
 };

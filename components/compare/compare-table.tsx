@@ -144,7 +144,7 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
                 if (!cards.some((c) => c?.fees?.[key] != null)) return null;
                 const values = cards.map((c) => {
                     const fee = c?.fees?.[key];
-                    return fee ? <OwFeeAmount fee={fee}/> : empty;
+                    return fee ? <OwFeeAmount amount={fee.amount}/> : empty;
                 });
                 return <Row key={key} label={label} values={values} />;
             })}
