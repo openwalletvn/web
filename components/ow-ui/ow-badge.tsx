@@ -86,11 +86,15 @@ const CARD_TYPE_HEX: Partial<Record<CardType, string>> = {
 const BASE_CLS = [
     'ow-badge inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap',
     'rounded-[52px] border font-medium leading-[1.3]',
-    'min-h-[30px] px-3 py-1 text-sm',
     'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
     'disabled:pointer-events-none disabled:opacity-50',
     '[&:is(button,a)]:cursor-pointer',
 ].join(' ');
+
+const SIZE_CLS = {
+    default: 'min-h-[30px] px-3 py-1 text-sm',
+    small: 'min-h-[22px] px-2 py-0.5 text-xs',
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -99,6 +103,7 @@ type BaseProps = {
     asChild?: boolean;
     className?: string;
     onClick?: React.MouseEventHandler;
+    small?: boolean;
 };
 
 export type OwBadgeProps =
@@ -132,7 +137,9 @@ export type OwBadgeProps =
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function OwBadge(props: OwBadgeProps) {
-    const {active = false, asChild = false, className, onClick} = props;
+    const {active = false, asChild = false, className, onClick, small = false} = props;
+    const sizeCls = SIZE_CLS[small ? 'small' : 'default'];
+    const smallCls = small ? 'ow-badge-small' : '';
 
     if (props.variant === 'intent') {
         const {slug, emoji, label, rate, highlighted = false, colorHex} = props;
@@ -150,7 +157,7 @@ export function OwBadge(props: OwBadgeProps) {
             : '';
         return (
             <span data-active={active} style={style} onClick={onClick}
-                  className={cn(BASE_CLS, fallbackCls, className)}>
+                  className={cn(BASE_CLS, sizeCls, smallCls, fallbackCls, className)}>
                 {emoji} {label}{rateStr}
             </span>
         );
@@ -167,7 +174,7 @@ export function OwBadge(props: OwBadgeProps) {
         };
         return (
             <span data-active={active} style={style} onClick={onClick}
-                  className={cn(BASE_CLS, className)}>
+                  className={cn(BASE_CLS, sizeCls, smallCls, className)}>
                 <img src={getNetworkImageUrl(networkData.logo_url)} alt={networkData.name}
                      style={{height: imgHeight}} className="object-contain"/>
                 {tier && <span className="uppercase font-display tracking-wider text-xs">{tier}</span>}
@@ -196,7 +203,7 @@ export function OwBadge(props: OwBadgeProps) {
         };
         return (
             <span data-active={active} style={style} onClick={onClick}
-                  className={cn(BASE_CLS,
+                  className={cn(BASE_CLS, sizeCls, smallCls,
                       !active && !hex && 'bg-[#EDEFEC] border-[#D3D3D3] text-foreground',
                       '[&:is(button,a)]:hover:bg-primary/10 [&:is(button,a)]:hover:border-primary [&:is(button,a)]:hover:text-primary',
                       className)}>
@@ -220,7 +227,7 @@ export function OwBadge(props: OwBadgeProps) {
     } : {};
     return (
         <Comp data-active={active} style={style} onClick={onClick}
-              className={cn(BASE_CLS,
+              className={cn(BASE_CLS, sizeCls, smallCls,
                   !colorHex && !active && 'bg-[#EDEFEC] border-[#D3D3D3] text-foreground',
                   !colorHex && '[&:is(button,a)]:hover:bg-primary/10 [&:is(button,a)]:hover:border-primary [&:is(button,a)]:hover:text-primary',
                   className)}>
@@ -232,5 +239,5 @@ export function OwBadge(props: OwBadgeProps) {
 // ─── Wrapper ──────────────────────────────────────────────────────────────────
 
 export function OwBadges({children, className}: {children: React.ReactNode; className?: string}) {
-    return <div className={cn('ow-badges flex flex-wrap items-center gap-2', className)}>{children}</div>;
+    return <div className={cn('ow-badges flex flex-wrap items-center gap-2 has-[.ow-badge-small]:gap-1', className)}>{children}</div>;
 }

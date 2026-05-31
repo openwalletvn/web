@@ -89,7 +89,7 @@ export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSl
                                 {card.name}
                             </Link>
                             {card.card_type && card.card_type.length > 0 && (
-                                <OwBadge variant="card-type" cardTypes={card.card_type}/>
+                                <OwBadge small variant="card-type" cardTypes={card.card_type}/>
                             )}
                         </div>
                         {card.fees?.annual != null && (
@@ -107,12 +107,13 @@ export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSl
                         {intentMap && (cardIntents.length > 0 || catchallRules.length > 0) && (
                             <OwBadges className="mt-1.5">
                                 {catchallRules.map((rule, i) => (
-                                    <OwBadge key={i} colorHex={highlighted.size > 0 ? 'var(--color-primary)' : undefined}>
+                                    <OwBadge small key={i} colorHex={highlighted.size > 0 ? 'var(--color-primary)' : undefined}>
                                         {catchallLabel(rule)}
                                     </OwBadge>
                                 ))}
                                 {cardIntents.map(intent => (
                                     <OwBadge
+                                        small
                                         key={intent.slug}
                                         variant="intent"
                                         slug={intent.slug}
@@ -131,7 +132,7 @@ export function OwCardRankedRow({ranked, muted = false, intentMap, highlightedSl
                             </span>
                         )}
 
-                        <div className="@sm:hidden">
+                        <div className="@md:hidden">
                             <CashbackDisplay ranked={ranked} intentSlug={intentSlug} intentMap={intentMap}/>
                         </div>
                     </div>

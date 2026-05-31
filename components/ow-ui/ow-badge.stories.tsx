@@ -121,6 +121,16 @@ export const Overview: Story = {
                     <OwBadge colorHex="#f97316">Custom color</OwBadge>
                 </OwBadges>
             </OwStorySection>
+            <OwStorySection title="Small — all variants">
+                <OwBadges>
+                    <OwBadge small variant="intent" slug="dining" emoji="🍜" label="Ăn uống" rate={0.03}/>
+                    <OwBadge small variant="network" networkData={NETWORKS[0]}/>
+                    <OwBadge small variant="card-type" cardType="credit"/>
+                    <OwBadge small>Default small</OwBadge>
+                    <OwBadge small active>Active small</OwBadge>
+                    <OwBadge small colorHex="#f97316">Custom small</OwBadge>
+                </OwBadges>
+            </OwStorySection>
             <OwStorySection title="Interactive — asChild (default variant only)">
                 <OwBadges>
                     <OwBadge asChild><button onClick={() => alert('clicked')}>Button badge</button></OwBadge>
@@ -168,4 +178,24 @@ export const DefaultActive: Story = {
 
 export const DefaultColorHex: Story = {
     args: {colorHex: '#9333ea', children: 'Custom color'},
+};
+
+export const SmallDefault: Story = {
+    args: {small: true, children: 'Small badge'},
+};
+
+export const SmallActive: Story = {
+    args: {small: true, active: true, children: 'Small active'},
+};
+
+export const SmallIntent: Story = {
+    args: {small: true, variant: 'intent', slug: 'dining', emoji: '🍜', label: 'Ăn uống', rate: 0.03},
+};
+
+export const SmallNetwork: Story = {
+    args: {small: true, variant: 'network', networkData: NETWORKS[0]},
+};
+
+export const SmallCardType: Story = {
+    args: {small: true, variant: 'card-type', cardType: 'credit'},
 };
