@@ -4,6 +4,7 @@ interface Props {
     amount: number;
     period?: 'năm' | 'tháng' | 'kỳ' | string;
     compact?: boolean;
+    textOnly?: boolean;
 }
 
 function formatAmount(amount: number, compact: boolean): { value: string; unit: string | null } {
@@ -15,18 +16,18 @@ function formatAmount(amount: number, compact: boolean): { value: string; unit: 
     return {value: amount.toLocaleString('vi-VN'), unit: 'đ'};
 }
 
-export function OwFeeAmount({amount, period = 'năm', compact = false}: Props) {
+export function OwFeeAmount({amount, period = 'năm', compact = false, textOnly = false}: Props) {
     const {value, unit} = formatAmount(amount, compact);
 
     if (amount === 0) {
-        return <span className="ow-fee-amount text-body-md text-slate-800">{value}</span>;
+        return <span className={textOnly ? 'ow-fee-amount' : 'ow-fee-amount text-body-md text-slate-800'}>{value}</span>;
     }
 
     return (
-        <span className="ow-fee-amount text-body-md text-slate-800">
+        <span className={textOnly ? 'ow-fee-amount' : 'ow-fee-amount text-body-md text-slate-800'}>
             {value}
-            {unit && <span className="text-slate-500">{unit}</span>}
-            {period && <span className="text-xs text-slate-400">/{period}</span>}
+            {unit && <span className={textOnly ? undefined : 'text-slate-500'}>{unit}</span>}
+            {period && <span className={textOnly ? undefined : 'text-xs text-slate-400'}>/{period}</span>}
         </span>
     );
 }

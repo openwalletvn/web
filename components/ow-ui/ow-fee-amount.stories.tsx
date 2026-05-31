@@ -38,6 +38,11 @@ export const Overview: Story = {
                     <OwFeeAmount amount={399000} period="năm" compact/>
                 </div>
             </OwStorySection>
+            <OwStorySection title="Text only — no style classes">
+                <OwFeeAmount amount={399000} period="năm" textOnly/>
+                <OwFeeAmount amount={0} textOnly/>
+                <OwFeeAmount amount={1500000} period="năm" compact textOnly/>
+            </OwStorySection>
         </OwStories>
     ),
 };
@@ -68,4 +73,16 @@ export const Compact1point5tr: Story = {
 
 export const Compact399k: Story = {
     render: () => <OwFeeAmount amount={399000} period="năm" compact/>,
+};
+
+export const TextOnly: Story = {
+    render: () => <OwFeeAmount amount={399000} period="năm" textOnly/>,
+};
+
+export const TextOnlyFree: Story = {
+    render: () => <OwFeeAmount amount={0} textOnly/>,
+};
+
+export const TextOnlyCompact: Story = {
+    render: () => <OwFeeAmount amount={1500000} period="năm" compact textOnly/>,
 };
