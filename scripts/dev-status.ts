@@ -1,4 +1,5 @@
 import { createMCPClient } from '@ai-sdk/mcp';
+import { checkTypeSync } from './lib/types-utils';
 
 const MCP_URL = process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8001';
 const MCP_KEY = process.env.OPENWALLET_MCP_KEY ?? 'owmcp_dev';
@@ -9,6 +10,7 @@ const c = {
     cyan: (s: string) => `\x1b[36m${s}\x1b[0m`,
     green: (s: string) => `\x1b[32m${s}\x1b[0m`,
     red: (s: string) => `\x1b[31m${s}\x1b[0m`,
+    yellow: (s: string) => `\x1b[33m${s}\x1b[0m`,
     dim: (s: string) => `\x1b[2m${s}\x1b[0m`,
 };
 
@@ -42,7 +44,6 @@ async function checkAPI() {
             const data = await healthRes.json() as { version?: string; endpoints?: number };
             return { online: true, version: data.version ?? '', endpoints: data.endpoints ?? 0 };
         }
-        // /health broken on remote — verify via cards endpoint
         const fallback = await fetch(`${API_URL}/api/v1/cards?limit=0`, {
             headers: { 'X-OpenWallet-Key': API_KEY, 'Origin': 'https://openwallet.vn' },
         });
@@ -59,14 +60,25 @@ function line(label: string, online: boolean, info: string, url: string) {
 }
 
 async function printStatus() {
-    const [mcp, api] = await Promise.all([checkMCP(), checkAPI()]);
+    const [mcp, api, types] = await Promise.all([
+        checkMCP(),
+        checkAPI(),
+        checkTypeSync(API_URL, API_KEY, true),
+    ]);
     const time = c.dim(new Date().toLocaleTimeString());
 
     const mcpInfo = mcp.online
         ? `${mcp.version} ${c.dim('|')} ${mcp.toolCount} tools`
         : 'offline';
+
+    const typesLabel = types === 'synced'
+        ? `${c.dim('|')} types ${c.green('✓')}`
+        : types === 'updated'
+            ? `${c.dim('|')} types ${c.yellow('↻ updated')}`
+            : `${c.dim('|')} types ${c.dim('?')}`;
+
     const apiInfo = api.online
-        ? `v${api.version} ${c.dim('|')} ${api.endpoints} endpoints`
+        ? `v${api.version} ${c.dim('|')} ${api.endpoints} endpoints ${typesLabel}`
         : 'offline';
 
     process.stdout.write(

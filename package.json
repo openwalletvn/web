@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently -n next,mcp,sb -c blue,cyan,magenta --kill-others-on-fail \"rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next dev\" \"tsx --env-file=.env.local scripts/mcp-status.ts\" \"storybook dev -p 4000 --quiet\"",
+    "dev": "concurrently -n next,status,sb -c blue,cyan,magenta --kill-others-on-fail \"rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next dev\" \"tsx --env-file=.env.local scripts/dev-status.ts\" \"storybook dev -p 4000 --quiet\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest & pnpm check:types",
     "validate:posts": "node scripts/validate-posts.js",
     "admin": "tsx admin/server.ts",
     "evals": "concurrently -n ui,server -c blue,cyan \"evals/ui/node_modules/.bin/vite --config evals/ui/vite.config.ts\" \"tsx evals/server.ts\"",
@@ -14,6 +15,7 @@
     "eval": "tsx scripts/eval-chat.ts",
     "clask": "clask",
     "generate:types": "tsx --env-file=.env.local scripts/generate-types.ts",
+    "check:types": "tsx --env-file=.env.local scripts/check-types.ts",
     "storybook": "storybook dev -p 4000",
     "build-storybook": "storybook build"
   },
