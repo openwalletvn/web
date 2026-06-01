@@ -2,20 +2,15 @@ import { createOgImage, OG_SIZE } from '@/lib/og';
 import { createCompareOgImage } from '@/lib/og-card-compare';
 import { apiFetch } from '@/lib/api';
 import { getComparePairs } from '@/lib/api';
-import { getCompareMdxPairs } from '@/lib/compare-mdx';
+// lib/compare-mdx + content/so-sanh/ MDX files — unused, remove when cleaning up
 
 export const dynamic = 'force-static';
 export const size = OG_SIZE;
 export const contentType = 'image/png';
 
 export async function generateStaticParams() {
-    const [apiPairs, mdxPairs] = await Promise.all([
-        getComparePairs().catch(() => []),
-        Promise.resolve(getCompareMdxPairs()),
-    ]);
-    const apiPairStrings = apiPairs.map((p) => p.compare_path.slice(1));
-    const all = [...new Set([...apiPairStrings, ...mdxPairs])];
-    return all.map((pair) => ({ pair }));
+    const apiPairs = await getComparePairs().catch(() => []);
+    return apiPairs.map((p) => ({ pair: p.compare_path.slice(1) }));
 }
 
 export default async function Image({ params }: { params: Promise<{ pair: string }> }) {
