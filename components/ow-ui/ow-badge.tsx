@@ -87,7 +87,7 @@ const BASE_CLS = [
 ].join(' ');
 
 const SIZE_CLS = {
-    default: 'min-h-[30px] px-3 py-1 text-sm',
+    default: 'min-h-[30px] px-3 py-1 text-sm max-sm:min-h-[22px] max-sm:px-2 max-sm:py-0.5 max-sm:text-xs',
     small: 'min-h-[22px] px-2 py-0.5 text-xs',
 };
 
