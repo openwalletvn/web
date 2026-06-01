@@ -25,6 +25,7 @@ export const Default: Story = {
         width: DEMO_CARD_HORIZONTAL.image.width,
         height: DEMO_CARD_HORIZONTAL.image.height,
         className: 'w-64',
+        priority: true,
     },
 };
 

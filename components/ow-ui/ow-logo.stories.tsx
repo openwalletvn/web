@@ -24,7 +24,7 @@ export const Overview: Story = {
     render: () => (
         <OwStories>
             <OwStorySection title="Icon">
-                <OwLogo variant="icon"/>
+                <OwLogo variant="icon" priority/>
             </OwStorySection>
             <OwStorySection title="Full — black">
                 <OwLogo variant="full" color="black"/>

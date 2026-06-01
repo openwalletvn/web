@@ -44,10 +44,10 @@ export const Overview: Story = {
     render: () => (
         <OwStories>
             <OwStorySection title="With stats & networks">
-                <OwBankRow bank={MOCK_BANK_FULL}/>
+                <OwBankRow bank={MOCK_BANK_FULL} priority/>
             </OwStorySection>
             <OwStorySection title="No stats / no networks">
-                <OwBankRow bank={MOCK_BANK_NO_STATS}/>
+                <OwBankRow bank={MOCK_BANK_NO_STATS} priority/>
             </OwStorySection>
         </OwStories>
     ),
