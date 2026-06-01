@@ -8,6 +8,7 @@ import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {CompareSection} from '@/components/compare/compare-section';
 import {CompareSuggestedCards} from '@/components/compare/compare-suggested-cards';
+import {IntentMapProvider} from '@/lib/intent-map-context';
 
 export const dynamicParams = true;
 export const revalidate = 3600;
@@ -65,10 +66,12 @@ export default async function ComparePairPage({ params }: Props) {
 
     return (
         <MarketingPageShell title={title} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
-            <div className="ow-compare-wrapper mt-16">
-                <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap} recordOnMount={pair}/>
-                <CompareSuggestedCards cards={suggestedCards}/>
-            </div>
+            <IntentMapProvider intentMap={intentMap}>
+                <div className="ow-compare-wrapper mt-16">
+                    <CompareSection defaultPair={pair} excludePair={pair} recordOnMount={pair}/>
+                    <CompareSuggestedCards cards={suggestedCards}/>
+                </div>
+            </IntentMapProvider>
         </MarketingPageShell>
     );
 }

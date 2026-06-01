@@ -6,6 +6,7 @@ import {CompareSection} from '@/components/compare/compare-section';
 import {CompareSuggestedCards} from '@/components/compare/compare-suggested-cards';
 import {getTool} from '@/lib/tools';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
+import {IntentMapProvider} from '@/lib/intent-map-context';
 
 export const metadata: Metadata = {
     title: buildTitle(SECTION_TITLES.compare),
@@ -38,7 +39,9 @@ export default async function ComparePage({
     const intentMap = new Map(allIntents.map((i) => [i.slug, i]));
     return (
         <MarketingPageShell title="So sánh thẻ" breadcrumbItems={BREADCRUMB_ITEMS}>
-            <CompareSection intentMap={intentMap} />
+            <IntentMapProvider intentMap={intentMap}>
+                <CompareSection />
+            </IntentMapProvider>
             <CompareSuggestedCards cards={suggestedCards} />
         </MarketingPageShell>
     );

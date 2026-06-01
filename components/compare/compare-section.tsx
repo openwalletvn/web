@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {IconPlus, IconX} from '@tabler/icons-react';
 import {cn} from '@/lib/utils';
 import type {SearchCard} from '@/lib/search-types';
-import type {Card, CompareResult, Intent} from '@/lib/api';
+import type {Card, CompareResult} from '@/lib/api';
 import {compareCards, getCard} from '@/lib/api';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {CardSearchInput} from '@/components/compare/card-search-input';
@@ -70,10 +70,9 @@ interface CompareDisplayProps {
     compareResult?: CompareResult | null;
     children?: React.ReactNode;
     onStickyChange?: (visible: boolean) => void;
-    intentMap?: Map<string, Intent>;
 }
 
-function CompareDisplay({ cards, compareResult, children, onStickyChange, intentMap }: CompareDisplayProps) {
+function CompareDisplay({ cards, compareResult, children, onStickyChange }: CompareDisplayProps) {
     const cardHeaderRef = useRef<HTMLDivElement>(null);
     const [showSticky, setShowSticky] = useState(false);
 
@@ -149,7 +148,7 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange, intent
                 ))}
             </div>
 
-            <CompareTable cards={cards} compareResult={compareResult} intentMap={intentMap} />
+            <CompareTable cards={cards} compareResult={compareResult} />
 
             {children && (
                 <div className="mt-12 prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline">
@@ -166,11 +165,10 @@ interface InnerProps {
     defaultPair?: string;
     children?: React.ReactNode;
     excludePair?: string;
-    intentMap?: Map<string, Intent>;
     recordOnMount?: string;
 }
 
-function CompareSectionInner({ defaultPair, children, excludePair, intentMap, recordOnMount }: InnerProps) {
+function CompareSectionInner({ defaultPair, children, excludePair, recordOnMount }: InnerProps) {
     const router = useRouter();
     const pathname = usePathname();
 
@@ -349,7 +347,7 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap, re
                     {isLoading ? (
                         <CompareTemplateSkeleton numSlots={numSlots} />
                     ) : (
-                        <CompareDisplay cards={slotCards} compareResult={compareResult} onStickyChange={setStickyVisible} intentMap={intentMap}>
+                        <CompareDisplay cards={slotCards} compareResult={compareResult} onStickyChange={setStickyVisible}>
                             {children}
                         </CompareDisplay>
                     )}
@@ -367,14 +365,13 @@ interface Props {
     defaultPair?: string;
     children?: React.ReactNode;
     excludePair?: string;
-    intentMap?: Map<string, Intent>;
     recordOnMount?: string;
 }
 
-export function CompareSection({ defaultPair, children, excludePair, intentMap, recordOnMount }: Props) {
+export function CompareSection({ defaultPair, children, excludePair, recordOnMount }: Props) {
     return (
         <Suspense>
-            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair} intentMap={intentMap} recordOnMount={recordOnMount}>
+            <CompareSectionInner defaultPair={defaultPair} excludePair={excludePair} recordOnMount={recordOnMount}>
                 {children}
             </CompareSectionInner>
         </Suspense>
