@@ -420,6 +420,7 @@ export type CompareTableRow = {
     higher_is_better: boolean;
     winner: string | null;
     values: Record<string, number>;
+    labels: Record<string, string>;
 };
 
 export type CompareCardEntry = {
