@@ -487,682 +487,908 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description A curated persona that expands to a card pool filter and optional rank intents. Pass the slug to GET /cards?persona= or POST /cards/rank. */
-        Persona: {
-            /**
-             * @description Unique identifier for the persona
-             * @example shopee
-             */
-            slug: string;
-            /**
-             * @description Human-readable display name
-             * @example Shopee
-             */
-            label: string;
-            /**
-             * @description Vietnamese display name
-             * @example Shopee
-             */
-            labelVi?: string;
-            /**
-             * @description Short description of what the persona targets
-             * @example shopee intent only
-             */
-            note?: string;
-            /**
-             * @description Intent slugs used when ranking cards under this persona. Empty for pool-filter-only personas.
-             * @example [
-             *       "shopee"
-             *     ]
-             */
-            rank_intents: string[];
-            /**
-             * @description Cobrand slugs relevant to this persona. Consumers can use these to sub-filter by co_brand= when the persona has associated cobrand cards.
-             * @example [
-             *       "vietnam-airlines",
-             *       "vna-lotusmiles"
-             *     ]
-             */
-            cobrands?: string[];
-            /** @description CardFilter object applied to narrow the card pool. Shape varies by persona type. */
-            filter: Record<string, never>;
+        /** @description Fee waiver conditions for a card fee */
+        FeeWaiver: {
+            /** @description True when the fee is waived under the given condition */
+            waiver: boolean;
+            /** @description Human-readable condition for the waiver (e.g. "Chi tiêu tối thiểu 10tr/tháng") */
+            condition?: string;
         };
-        /** @description A single weekly stats snapshot. */
-        StatsSnapshot: {
-            /**
-             * Format: date-time
-             * @description ISO timestamp when this snapshot was recorded
-             * @example 2026-05-26T02:00:00Z
-             */
-            snapshot_at: string;
-            all: components["schemas"]["StatsGroup"];
-            by_type: {
-                credit?: components["schemas"]["StatsGroup"];
-                debit?: components["schemas"]["StatsGroup"];
-                business?: components["schemas"]["StatsGroup"];
-                cashback?: components["schemas"]["StatsGroup"];
-            };
-            by_bank: {
-                [key: string]: components["schemas"]["StatsGroup"] & {
-                    name?: string;
-                };
-            };
-        };
-        /** @description Aggregated data quality metrics for a group of cards. */
-        StatsGroup: {
-            /**
-             * @description Number of cards in this group
-             * @example 52
-             */
-            total: number;
-            /**
-             * @description Average data quality score (0–100)
-             * @example 74
-             */
-            avg_score: number;
-            /**
-             * @description Cards with score ≥ 90
-             * @example 12
-             */
-            complete: number;
-            /**
-             * @description Percentage of complete cards
-             * @example 23
-             */
-            complete_pct: number;
-            issues: {
-                /**
-                 * @description Cards with at least one critical issue
-                 * @example 4
-                 */
-                critical: number;
-                /**
-                 * @description Cards with at least one important issue
-                 * @example 18
-                 */
-                important: number;
-                /**
-                 * @description Cards with at least one minor issue
-                 * @example 31
-                 */
-                minor: number;
-            };
-        };
-        /** @description A single fee entry with amount, type, and an optional note. */
+        /** @description A single fee entry with amount, type, and an optional note */
         FeeEntry: {
-            /**
-             * @description Fee amount. Interpret based on `type`: VND if "currency", percentage (%) if "rate".
-             * @example 150000
-             */
+            /** @description Fee amount. Interpret based on type: VND if "currency", percentage (%) if "rate" */
             amount: number;
             /**
              * @description "currency" = amount is in VND; "rate" = amount is a percentage (%)
-             * @example currency
              * @enum {string}
              */
             type: "currency" | "rate";
-            /**
-             * @description Human-readable note about the fee (e.g. conditions, variants). Parts separated by " | ".
-             * @example Miễn phí trong vòng 12 tháng kể từ ngày phát hành lần đầu
-             */
+            /** @description Human-readable note about the fee (e.g. conditions, variants). Parts separated by " | " */
             note?: string;
         };
-        /** @description Waiver policy for a fee period. */
-        FeeWaiver: {
+        /** @description Fee entry with optional first-year and subsequent-year waiver conditions */
+        FeeEntryWithWaiver: {
+            /** @description Fee amount. Interpret based on type: VND if "currency", percentage (%) if "rate" */
+            amount: number;
             /**
-             * @description Whether the fee can be waived this period
-             * @example true
-             */
-            waiver: boolean;
-            /**
-             * @description Waiver condition in Vietnamese. Present only when waiver is true.
-             * @example Miễn phí khi chi tiêu tối thiểu 12 triệu đồng trong năm liền trước
-             */
-            condition?: string;
-        };
-        FeeEntryWithWaiver: components["schemas"]["FeeEntry"] & {
-            /** @description Waiver policy for the first year. Omitted if not mentioned in source. */
-            first_year?: components["schemas"]["FeeWaiver"];
-            /** @description Waiver policy from the second year onward. Omitted if not mentioned in source. */
-            subsequent_years?: components["schemas"]["FeeWaiver"];
-        };
-        Contactless: {
-            /**
-             * @example apple_pay
+             * @description "currency" = amount is in VND; "rate" = amount is a percentage (%)
              * @enum {string}
              */
-            id: "apple-pay" | "google-pay" | "samsung-pay" | "garmin-pay";
-            /** @example Apple Pay */
+            type: "currency" | "rate";
+            /** @description Human-readable note about the fee (e.g. conditions, variants). Parts separated by " | " */
+            note?: string;
+            /** @description First-year waiver conditions */
+            first_year?: {
+                /** @description True when the fee is waived under the given condition */
+                waiver: boolean;
+                /** @description Human-readable condition for the waiver (e.g. "Chi tiêu tối thiểu 10tr/tháng") */
+                condition?: string;
+            };
+            /** @description Subsequent-year waiver conditions */
+            subsequent_years?: {
+                /** @description True when the fee is waived under the given condition */
+                waiver: boolean;
+                /** @description Human-readable condition for the waiver (e.g. "Chi tiêu tối thiểu 10tr/tháng") */
+                condition?: string;
+            };
+        };
+        /** @description A supported contactless payment method */
+        Contactless: {
+            /** @description Unique identifier (e.g. "apple-pay") */
+            id: string;
+            /** @description Human-readable display name */
             name: string;
-            /** @example /images/contactless/apple_pay.png */
+            /** @description Absolute URL to the logo image */
             logo_url: string;
             /**
              * Format: uri
-             * @example https://www.apple.com/apple-pay/
+             * @description Link to the contactless method homepage
              */
             link: string;
         };
+        /** @description A card payment network (Visa, Mastercard, JCB, etc.) */
         Network: {
-            /**
-             * @example visa
-             * @enum {string}
-             */
-            id: "visa" | "mastercard" | "jcb" | "napas" | "amex" | "unionpay";
-            /** @example Visa */
+            /** @description Unique identifier (e.g. "visa") */
+            id: string;
+            /** @description Human-readable display name */
             name: string;
-            /** @example /images/networks/visa.png */
+            /** @description Absolute URL to the network logo */
             logo_url: string;
             /**
              * Format: uri
-             * @example https://www.visa.com.vn
+             * @description Link to the network homepage
              */
             link?: string;
         };
+        /** @description A co-brand partner (airline, retailer, etc.) */
         Brand: {
-            /** @example vietnam-airlines */
+            /** @description Unique kebab-case identifier (e.g. "vietnam-airlines") */
             id: string;
-            /** @example Vietnam Airlines */
+            /** @description Human-readable display name */
             name: string;
-            /** @example /images/brands/vietnam-airlines.png */
+            /** @description Absolute URL to the brand logo */
             logo_url: string;
             /**
              * Format: uri
-             * @example https://www.vietnamairlines.com
+             * @description Link to the brand homepage
              */
             link?: string;
         };
+        /** @description A Vietnamese bank */
         Bank: {
-            /** @example techcombank */
+            /** @description Unique kebab-case identifier (e.g. "bidv") */
             id: string;
-            /** @example Techcombank */
+            /** @description Short display name (e.g. "BIDV") */
             name: string;
-            /** @example Ngân hàng TMCP Kỹ thương Việt Nam */
+            /** @description Full legal name in Vietnamese */
             full_name: string;
             /**
              * Format: uri
-             * @example https://techcombank.com/
+             * @description Bank homepage URL
              */
             link: string;
-            /** @example /images/banks/techcombank.png */
+            /** @description Absolute URL to the bank logo */
             logo_url: string;
-            /** @example #EF4444 */
+            /** @description Primary brand color as hex (e.g. "#036b69") */
             brand_color?: string;
             /**
-             * @description Bank classification group
-             * @example commercial
+             * @description Bank category: big4, foreign, digital, or commercial
              * @enum {string}
              */
             group: "big4" | "foreign" | "digital" | "commercial";
-            stats?: {
+            /** @description Source references for fee data */
+            sources?: {
+                /** @description Human-readable label for the source (e.g. "VPBank Biểu phí thẻ tín dụng 2025") */
+                label: string;
                 /**
-                 * @description Total number of active cards (published + discontinued) for this bank
-                 * @example 10
+                 * Format: uri
+                 * @description URL to the source document
                  */
-                card_count?: number;
-                /**
-                 * @description Number of active credit cards (published + discontinued, including 2-in-1)
-                 * @example 6
-                 */
-                credit_count?: number;
-                /**
-                 * @description Number of active debit cards (published + discontinued, including 2-in-1)
-                 * @example 4
-                 */
-                debit_count?: number;
-                /**
-                 * @description Number of cards that are both credit and debit (2-in-1)
-                 * @example 1
-                 */
-                hybrid_count?: number;
-                /**
-                 * @description Number of co-branded cards
-                 * @example 2
-                 */
-                co_branded_count?: number;
-                /**
-                 * @description Number of cards with zero annual fee
-                 * @example 3
-                 */
-                free_annual_fee_count?: number;
-                /**
-                 * @description Highest annual fee (VND) across all active cards for this bank. Cards with no fee info are treated as 0.
-                 * @example 3600000
-                 */
-                max_annual_fee?: number;
-                /**
-                 * @description Card count per network
-                 * @example {
-                 *       "visa": 5,
-                 *       "mastercard": 3
-                 *     }
-                 */
-                network_counts?: {
-                    [key: string]: number;
-                };
-            };
-            /**
-             * @description Distinct network IDs of active (published + discontinued) cards belonging to this bank
-             * @example [
-             *       "visa",
-             *       "mastercard",
-             *       "napas"
-             *     ]
-             */
-            networks?: string[];
-            /** @description Full Network objects for each network ID (only included in the detail endpoint) */
-            networks_data?: components["schemas"]["Network"][];
+                url: string;
+                /** @description PDF page number where the data was found. Null or absent for non-PDF web sources */
+                page?: number;
+            }[];
+            /** @description ISO timestamp of last admin edit */
+            last_modified?: string | null;
         };
         Merchant: {
-            /**
-             * @description Unique kebab-case identifier
-             * @example shopee
-             */
+            /** @description Unique kebab-case identifier */
             slug: string;
-            /**
-             * @description Human-readable display name
-             * @example Shopee
-             */
+            /** @description Human-readable display name */
             label: string;
-            /**
-             * @description Default cashback category this merchant belongs to
-             * @example ecommerce
-             */
+            /** @description Default cashback category this merchant belongs to */
             category: string;
             /**
              * Format: uri
              * @description Merchant website URL
-             * @example https://shopee.vn
              */
             url?: string;
-            /**
-             * @description Matching brand slug in data/brands/ if this merchant has a co-branded card
-             * @example shopee
-             */
+            /** @description Matching brand slug in data/brands/ if this merchant has a co-branded card */
             co_brand?: string;
-            /**
-             * @description MCC codes this merchant typically uses. Ranges (e.g. "7374-7379") expanded at generate time.
-             * @example [
-             *       "7372"
-             *     ]
-             */
+            /** @description MCC codes this merchant typically uses (4-digit strings, ranges like "7374-7379" allowed in source - expanded at generate time) */
             mcc?: string[];
+            /** @description Payment methods accepted (e.g. "Online", "POS") */
+            method?: string[];
         };
-        /** @description A Merchant Category Code entry. */
         Mcc: {
-            /**
-             * @description 4-digit MCC code
-             * @example 7372
-             */
             code: string;
-            /**
-             * @description Kebab-case identifier
-             * @example software
-             */
+            /** @description Kebab-case identifier (e.g. "software") */
             slug: string;
-            /**
-             * @description Human-readable label in Vietnamese
-             * @example Phần mềm
-             */
+            /** @description Human-readable label in Vietnamese */
             label: string;
         };
-        /** @description A spend tier for tiered cashback rates. */
+        CardTierData: {
+            /** @description Tier identifier */
+            id: string;
+            /** @description Rank within the network (1 = highest). Null if tier has no defined order for this network. */
+            rank: number | null;
+        };
         SpendTier: {
-            /**
-             * @description Minimum spend (VND) to unlock this tier rate.
-             * @example 5000000
-             */
+            /** @description Minimum total monthly spend (VND) to activate this tier. Base tier must be 0. */
             min_spend: number;
-            /**
-             * @description Cashback rate as decimal for this tier.
-             * @example 0.1
-             */
+            /** @description Cashback rate for this tier (decimal, e.g. 0.10 = 10%). */
             rate: number;
-            /**
-             * @description VND cap for this tier. Absent = uncapped.
-             * @example 200000
-             */
+            /** @description Per-rule cashback cap for this tier (VND). Absent = no per-rule cap (global_cap may still apply). */
             cap?: number;
         };
         CashbackCap: {
-            /**
-             * @description Cap amount in VND. Use -1 for explicitly unlimited. Positive integer for a hard ceiling.
-             * @example 300000
-             */
             amount: number;
-            /**
-             * @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher.
-             * @example {
-             *       "insurance": 400000
-             *     }
-             */
+            /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
             category_caps?: {
                 [key: string]: number;
             };
         };
-        /** @description A single cashback earning rule. Rules are ordered - first matching rule wins per intent. */
-        CashbackRule: {
-            /**
-             * @description Base/guaranteed cashback rate as decimal (e.g. 0.05 = 5%). Used by ranking algorithm at the 3M VND/month reference spend.
-             * @example 0.05
-             */
-            rate: number;
-            /**
-             * @description Best achievable rate when tiered or conditional (e.g. spend-tier unlocks higher rate). Omit if flat. Example: BVBank JCB Sense gives 5% at <15M/month spend, up to 20% at ≥50M/month - stored as rate: 0.05, rate_max: 0.20.
-             * @example 0.2
-             */
-            rate_max?: number;
-            /** @description Per-rule cashback cap per statement period. */
-            cap?: components["schemas"]["CashbackCap"];
-            /** @description Best achievable per-rule cap when tiered. Omit if flat. */
-            cap_max?: components["schemas"]["CashbackCap"];
-            /**
-             * @description Intent slugs this rule applies to (from /intents). Absent or empty = incomplete data, scores 0. Use ["all"] for rules that apply to all remaining transactions - channel specificity is expressed via rule scope, not intent string. Example catch-all cards: acb-visa-platinum (0.3% on all), sacombank-uniq (0.5% on all others).
-             * @example [
-             *       "dining",
-             *       "travel"
-             *     ]
-             */
-            intents?: string[];
-            /**
-             * @description Specific merchant slugs this rule applies to (from /merchants). Takes precedence over intents for merchant-specific rates.
-             * @example [
-             *       "shopee",
-             *       "lazada"
-             *     ]
-             */
-            merchants?: string[];
-            /**
-             * @description MCC codes this rule targets. More specific than intents; matched first when present.
-             * @example [
-             *       "7372",
-             *       "5045"
-             *     ]
-             */
-            mcc?: string[];
-            /**
-             * @description Maximum number of intents/merchants the cardholder can apply this rule to per billing cycle. Use when the product lets the user pick N intents each cycle. Example: MSB mDigi (max_intents: 1, pick one of dining/travel/digital per cycle), VIB Family Link (max_intents: 1, pick one of education/health/insurance). Does not affect ranking - only affects computeCashbackResult display accuracy.
-             * @example 1
-             */
-            max_intents?: number;
-            /** @description Spend-tiered rates. When present, rate/cap are display-only summaries of the best tier. */
-            tiers?: components["schemas"]["SpendTier"][];
-            /**
-             * @description Free-text for unlock conditions, user-selectable mechanics, exclusions, or tier details that do not fit structured fields. Always in Vietnamese.
-             * @example Khách hàng chọn 1 danh mục mỗi kỳ sao kê
-             */
-            note?: string;
-            /** @description Restricts when this rule fires along channel and geography axes. Absent = universal (all channels + all geographies). */
-            scope?: components["schemas"]["RuleScope"];
-        };
-        /** @description Restricts a cashback rule to a specific payment channel and/or geography. Absent scope = universal (fires for all channels and geographies). */
+        /** @description Scope restricts when a rule fires along channel and geography axes. Absent scope = universal (all channels + all geographies). See cashback-rules.md for defaults and migration from deprecated foreign_offline/foreign_online category strings. */
         RuleScope: {
             /**
-             * @description Restrict to one payment channel. Absent = both online and offline.
-             * @example online
+             * @description Restrict rule to one payment channel. Absent = both online and offline.
              * @enum {string}
              */
             channel?: "online" | "offline";
-            /**
-             * @description "domestic" | "foreign" | ISO 3166-1 alpha-2 country code (e.g. "JP", "TH"). Absent = all geographies.
-             * @example domestic
-             */
+            /** @description "domestic" | "foreign" | ISO 3166-1 alpha-2 country code (e.g. "JP", "TH"). Absent = all geographies. */
             geography?: string;
         };
-        /** @description Cashback benefit attached to a card. Rules are evaluated in order - first matching rule wins per intent. */
+        CashbackRule: {
+            /** @description Base/guaranteed cashback rate as decimal (e.g. 0.05 = 5%). Always the minimum achievable rate for this rule. When tiers is present, set to tiers[0].rate. */
+            rate: number;
+            /** @description Best achievable rate if tiered or conditional (e.g. 0.10 = 10%). When tiers is present, set to tiers[last].rate. Omit entirely if flat rate. */
+            rate_max?: number;
+            /** @description Per-rule cashback cap. Use { amount: -1 } for explicitly unlimited. When tiers is present, set to tiers[0] cap. Absent means not specified. */
+            cap?: {
+                amount: number;
+                /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                category_caps?: {
+                    [key: string]: number;
+                };
+            };
+            /** @description Best achievable per-rule cap when tiered. When tiers is present, set to max cap across tiers. Omit if cap is flat. */
+            cap_max?: {
+                amount: number;
+                /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                category_caps?: {
+                    [key: string]: number;
+                };
+            };
+            /** @description Intent slugs this rule applies to (from data/intents.json). Use ["all"] for catch-all rules. Absent or empty = incomplete data, scores 0. */
+            intents?: string[];
+            /** @description MCC codes this rule targets (4-digit strings, ranges like "7374-7379" allowed in source - expanded at generate time). More specific than intents; matched first. */
+            mcc?: string[];
+            /** @description Specific merchant slugs (e.g. "grab", "shopee"). Absent means all merchants. */
+            merchants?: string[];
+            /** @description Scope restricts when a rule fires along channel and geography axes. Absent scope = universal (all channels + all geographies). See cashback-rules.md for defaults and migration from deprecated foreign_offline/foreign_online category strings. */
+            scope?: {
+                /**
+                 * @description Restrict rule to one payment channel. Absent = both online and offline.
+                 * @enum {string}
+                 */
+                channel?: "online" | "offline";
+                /** @description "domestic" | "foreign" | ISO 3166-1 alpha-2 country code (e.g. "JP", "TH"). Absent = all geographies. */
+                geography?: string;
+            };
+            /** @description Max number of intents/merchants this rule applies to per period. Use when the cardholder picks N intents each cycle (e.g. 1 = choose one). */
+            max_intents?: number;
+            /** @description Spend-tier array for rules where rate/cap changes based on total monthly spend. Ordered ascending by min_spend. First entry must have min_spend: 0 (base tier). When present, algorithm uses tiers for rate/cap selection; rate/rate_max/cap/cap_max fields become display-only summaries. */
+            tiers?: {
+                /** @description Minimum total monthly spend (VND) to activate this tier. Base tier must be 0. */
+                min_spend: number;
+                /** @description Cashback rate for this tier (decimal, e.g. 0.10 = 10%). */
+                rate: number;
+                /** @description Per-rule cashback cap for this tier (VND). Absent = no per-rule cap (global_cap may still apply). */
+                cap?: number;
+            }[];
+            /** @description ISO 8601 date (YYYY-MM-DD) when this rule becomes active. Absent = no start restriction. */
+            valid_from?: string;
+            /** @description ISO 8601 date (YYYY-MM-DD, inclusive) after which this rule is expired. Absent = no end restriction. */
+            valid_until?: string;
+            /** @description Free-text for unlock conditions, user-selectable mechanics, specific merchant names, or exclusions that don't fit structured fields. */
+            note?: string;
+        };
         CashbackBenefit: {
-            /** @description Ordered list of cashback rules. Specific rules first (merchants/specific intents), catch-all last. */
-            rules: components["schemas"]["CashbackRule"][];
-            /** @description True = rules are mutually exclusive packages; cardholder picks one at issuance. */
+            /** @description Ordered array of cashback rules. Most specific rule first, universal fallback last. First matching rule wins. */
+            rules: {
+                /** @description Base/guaranteed cashback rate as decimal (e.g. 0.05 = 5%). Always the minimum achievable rate for this rule. When tiers is present, set to tiers[0].rate. */
+                rate: number;
+                /** @description Best achievable rate if tiered or conditional (e.g. 0.10 = 10%). When tiers is present, set to tiers[last].rate. Omit entirely if flat rate. */
+                rate_max?: number;
+                /** @description Per-rule cashback cap. Use { amount: -1 } for explicitly unlimited. When tiers is present, set to tiers[0] cap. Absent means not specified. */
+                cap?: {
+                    amount: number;
+                    /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                    category_caps?: {
+                        [key: string]: number;
+                    };
+                };
+                /** @description Best achievable per-rule cap when tiered. When tiers is present, set to max cap across tiers. Omit if cap is flat. */
+                cap_max?: {
+                    amount: number;
+                    /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                    category_caps?: {
+                        [key: string]: number;
+                    };
+                };
+                /** @description Intent slugs this rule applies to (from data/intents.json). Use ["all"] for catch-all rules. Absent or empty = incomplete data, scores 0. */
+                intents?: string[];
+                /** @description MCC codes this rule targets (4-digit strings, ranges like "7374-7379" allowed in source - expanded at generate time). More specific than intents; matched first. */
+                mcc?: string[];
+                /** @description Specific merchant slugs (e.g. "grab", "shopee"). Absent means all merchants. */
+                merchants?: string[];
+                /** @description Scope restricts when a rule fires along channel and geography axes. Absent scope = universal (all channels + all geographies). See cashback-rules.md for defaults and migration from deprecated foreign_offline/foreign_online category strings. */
+                scope?: {
+                    /**
+                     * @description Restrict rule to one payment channel. Absent = both online and offline.
+                     * @enum {string}
+                     */
+                    channel?: "online" | "offline";
+                    /** @description "domestic" | "foreign" | ISO 3166-1 alpha-2 country code (e.g. "JP", "TH"). Absent = all geographies. */
+                    geography?: string;
+                };
+                /** @description Max number of intents/merchants this rule applies to per period. Use when the cardholder picks N intents each cycle (e.g. 1 = choose one). */
+                max_intents?: number;
+                /** @description Spend-tier array for rules where rate/cap changes based on total monthly spend. Ordered ascending by min_spend. First entry must have min_spend: 0 (base tier). When present, algorithm uses tiers for rate/cap selection; rate/rate_max/cap/cap_max fields become display-only summaries. */
+                tiers?: {
+                    /** @description Minimum total monthly spend (VND) to activate this tier. Base tier must be 0. */
+                    min_spend: number;
+                    /** @description Cashback rate for this tier (decimal, e.g. 0.10 = 10%). */
+                    rate: number;
+                    /** @description Per-rule cashback cap for this tier (VND). Absent = no per-rule cap (global_cap may still apply). */
+                    cap?: number;
+                }[];
+                /** @description ISO 8601 date (YYYY-MM-DD) when this rule becomes active. Absent = no start restriction. */
+                valid_from?: string;
+                /** @description ISO 8601 date (YYYY-MM-DD, inclusive) after which this rule is expired. Absent = no end restriction. */
+                valid_until?: string;
+                /** @description Free-text for unlock conditions, user-selectable mechanics, specific merchant names, or exclusions that don't fit structured fields. */
+                note?: string;
+            }[];
+            /** @description True when rules are mutually exclusive benefit packages - cardholder picks ONE rule group at card issuance and that choice is permanent. Algorithm evaluates each rule independently against the full intent set and returns the max-scoring rule only (no summing, no remaining set). Use when: bank note says "chọn 1 trong N gói khi phát hành thẻ" and each rule covers non-overlapping categories with different rates. Real example: lpbank-jcb-ultimate (Gói Chăm sóc 15% vs Gói Trải nghiệm 10%). Different from max_intents (which picks N intents per cycle within one rule) - this is a one-time permanent package choice. */
             package_exclusive?: boolean;
-            /** @description Total cashback ceiling across all rules per statement period. */
-            global_cap?: components["schemas"]["CashbackCap"];
-            /** @description Best achievable global cap when tiered. */
-            global_cap_max?: components["schemas"]["CashbackCap"];
-            /**
-             * @description Minimum total spend (VND) in the statement period to activate any cashback. If unmet, all rules earn 0.
-             * @example 3000000
-             */
+            /** @description Overall cashback cap across all rules combined per period. Use the lower (guaranteed) value when tiered. */
+            global_cap?: {
+                amount: number;
+                /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                category_caps?: {
+                    [key: string]: number;
+                };
+            };
+            /** @description Best achievable overall cap when tiered (e.g. higher spend unlocks a larger global cap). Omit if global_cap is flat. */
+            global_cap_max?: {
+                amount: number;
+                /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                category_caps?: {
+                    [key: string]: number;
+                };
+            };
+            /** @description Total spend (VND) at which global_cap_max activates instead of global_cap. Required when global_cap_max is present and the threshold differs from rule tiers. Absent = global_cap is flat (global_cap_max is display-only). */
+            global_cap_threshold?: number;
+            /** @description Minimum total spend in the statement period to activate any cashback (VND integer). If not met, no cashback is earned regardless of rules. */
             min_spend_per_period?: number;
             /**
-             * @description How cashback is credited.
-             * @example auto_statement_credit
+             * @description How cashback is credited: automatic statement credit, user-initiated request, or pooled points redeemable later.
              * @enum {string}
              */
             redemption?: "auto_statement_credit" | "manual_request" | "points_pool";
-            /** @description Computed at generate time. True when all cashback rules are past their valid_until date. Never set in source data. */
+            /** @description Computed at generate time. True when all rules have passed their valid_until date. Never set manually in source data. */
             cashback_expired?: boolean;
-            /** @description Benefit-level conditions in Vietnamese. */
+            /** @description Overall benefit-level conditions that don't fit rule fields. */
             note?: string;
         };
-        Intent: {
-            /**
-             * @description Unique kebab-case identifier. Used in card.intents[]
-             * @example shopee
-             */
-            slug: string;
-            /**
-             * @description Vietnamese display name
-             * @example Shopee
-             */
-            label: string;
-            /**
-             * @description Emoji icon
-             * @example 🛍️
-             */
-            icon: string;
-            /**
-             * @description Merchant slugs from data/merchants.json that satisfy this intent
-             * @example [
-             *       "shopee"
-             *     ]
-             */
-            merchants?: string[];
-            /**
-             * @description Cashback category group slugs that satisfy this intent
-             * @example [
-             *       "ecommerce"
-             *     ]
-             */
-            categories?: string[];
-            /**
-             * @description Brand slugs from data/brands/ that satisfy this intent
-             * @example [
-             *       "shopee"
-             *     ]
-             */
-            co_brands?: string[];
-        };
-        IntentGroupNode: {
-            /** @example travel */
-            slug: string;
-            /** @example Du lịch */
-            label: string;
-            /** @example 🌏 */
-            icon: string;
-            /**
-             * @description Intent slugs active when this group node is selected
-             * @example [
-             *       "travel"
-             *     ]
-             */
-            intents: string[];
-            /** @description Sub-groups (optional) */
-            children?: components["schemas"]["IntentGroupNode"][];
-        };
         Card: {
-            /** @example bidv-visa-signature-credit */
+            /** @description Unique kebab-case card identifier (e.g. "bidv-visa-signature-credit") */
             id: string;
-            /** @example BIDV Visa Signature */
+            /** @description Human-readable card name (e.g. "BIDV Visa Signature") */
             name: string;
-            /** @description Editorial description of the card in Vietnamese. 100–200 words covering who the card is for and key strengths. Used for SEO meta description and human-readable summaries. */
+            /** @description Editorial description in Vietnamese. 100–200 words covering who the card is for and key strengths. Used for SEO meta description and summaries. */
             description?: string;
-            /** @description Card image data. Null if no image is available. */
+            /** @description Card image data. Null if no image is available */
             image?: {
+                /** @description Absolute URL to the card image (no file extension) */
+                url: string;
+                /** @description Image width in pixels */
+                width: number | null;
+                /** @description Image height in pixels */
+                height: number | null;
                 /**
-                 * @description Absolute URL to the card image (no file extension).
-                 * @example https://api.openwallet.vn/images/cards/bidv/bidv-jcb-hybrid
-                 */
-                url?: string;
-                /**
-                 * @description Image width in pixels.
-                 * @example 800
-                 */
-                width?: number | null;
-                /**
-                 * @description Image height in pixels.
-                 * @example 504
-                 */
-                height?: number | null;
-                /**
-                 * @description Card image orientation.
-                 * @example horizontal
+                 * @description Card image orientation
                  * @enum {string}
                  */
-                orientation?: "horizontal" | "vertical";
-                /**
-                 * @description Low quality image placeholder (base64 data URL or blurred preview URL).
-                 * @example data:image/webp;base64,...
-                 */
+                orientation: "horizontal" | "vertical";
+                /** @description Low quality image placeholder (base64 data URL or blurred preview URL) */
                 lqip?: string;
             } | null;
-            /** @example bidv */
+            /** @description Bank identifier matching a bank in /banks */
             bank_id: string;
             /** @description Full bank data, always included */
-            bank_data?: components["schemas"]["Bank"];
+            bank_data?: {
+                /** @description Unique kebab-case identifier (e.g. "bidv") */
+                id: string;
+                /** @description Short display name (e.g. "BIDV") */
+                name: string;
+                /** @description Full legal name in Vietnamese */
+                full_name: string;
+                /**
+                 * Format: uri
+                 * @description Bank homepage URL
+                 */
+                link: string;
+                /** @description Absolute URL to the bank logo */
+                logo_url: string;
+                /** @description Primary brand color as hex (e.g. "#036b69") */
+                brand_color?: string;
+                /**
+                 * @description Bank category: big4, foreign, digital, or commercial
+                 * @enum {string}
+                 */
+                group: "big4" | "foreign" | "digital" | "commercial";
+                /** @description Source references for fee data */
+                sources?: {
+                    /** @description Human-readable label for the source (e.g. "VPBank Biểu phí thẻ tín dụng 2025") */
+                    label: string;
+                    /**
+                     * Format: uri
+                     * @description URL to the source document
+                     */
+                    url: string;
+                    /** @description PDF page number where the data was found. Null or absent for non-PDF web sources */
+                    page?: number;
+                }[];
+                /** @description ISO timestamp of last admin edit */
+                last_modified?: string | null;
+            };
             /**
-             * @example visa
+             * @description Card payment network (e.g. "visa", "mastercard", "jcb", "napas")
              * @enum {string}
              */
             card_network: "visa" | "mastercard" | "jcb" | "napas" | "amex" | "unionpay";
+            /** @description Full network data, always included */
+            card_network_data?: {
+                /** @description Unique identifier (e.g. "visa") */
+                id: string;
+                /** @description Human-readable display name */
+                name: string;
+                /** @description Absolute URL to the network logo */
+                logo_url: string;
+                /**
+                 * Format: uri
+                 * @description Link to the network homepage
+                 */
+                link?: string;
+            };
             /**
-             * @description Card tier level
-             * @example signature
+             * @description Card tier level (e.g. "signature", "platinum", "gold")
              * @enum {string}
              */
             card_tier?: "classic" | "gold" | "green" | "infinite" | "platinum" | "platinum-business" | "signature" | "standard" | "ultimate" | "world" | "world-elite";
             /** @description Enriched tier data, included when card_tier is set */
             card_tier_data?: {
-                /**
-                 * @description Tier identifier
-                 * @example signature
-                 */
-                id?: string;
-                /**
-                 * @description Rank within the network (1 = highest). Null if tier has no defined order for this network.
-                 * @example 2
-                 */
-                rank?: number | null;
+                /** @description Tier identifier */
+                id: string;
+                /** @description Rank within the network (1 = highest). Null if tier has no defined order for this network. */
+                rank: number | null;
             };
-            /**
-             * @description Co-brand partner identifier
-             * @example vietnam-airlines
-             */
+            /** @description One or more card types (e.g. ["credit", "debit"] for 2-in-1 cards) */
+            card_type: ("credit" | "debit" | "prepaid" | "transit" | "atm" | "2in1" | "co-branded")[];
+            /** @description Co-brand partner identifier (e.g. "vietnam-airlines") */
             co_brand?: string;
             /** @description Full brand data, included when co_brand is set */
-            co_brand_data?: components["schemas"]["Brand"];
-            /** @description Full network data, always included */
-            card_network_data?: components["schemas"]["Network"];
-            /**
-             * @description One or more card types (e.g. ["credit", "debit"] for 2-in-1 cards)
-             * @example [
-             *       "credit"
-             *     ]
-             */
-            card_type: ("credit" | "debit" | "prepaid" | "transit" | "atm" | "2in1" | "co-branded")[];
-            /**
-             * @description Default statement date (day of month)
-             * @example 5
-             */
+            co_brand_data?: {
+                /** @description Unique kebab-case identifier (e.g. "vietnam-airlines") */
+                id: string;
+                /** @description Human-readable display name */
+                name: string;
+                /** @description Absolute URL to the brand logo */
+                logo_url: string;
+                /**
+                 * Format: uri
+                 * @description Link to the brand homepage
+                 */
+                link?: string;
+            };
+            /** @description Default statement date (day of month) */
             statement_date?: number;
-            /**
-             * @description Currency code
-             * @example VND
-             */
+            /** @description Currency code (e.g. "VND") */
             currency?: string;
-            /**
-             * @description Number of interest-free days
-             * @example 55
-             */
+            /** @description Number of interest-free days */
             interest_free_days?: number;
             /**
              * Format: uri
-             * @description Link to card details page
-             * @example https://bidv.com.vn/visa-signature
+             * @description Link to the card details page on the bank website
              */
             card_link?: string;
             /**
-             * @description "published" = active and visible; "discontinued" = visible but no longer issued to new customers; "draft" = hidden from API.
-             * @example published
+             * @description "published" = active and visible; "discontinued" = visible but no longer issued; "draft" = hidden from API
              * @enum {string}
              */
             status?: "published" | "draft" | "discontinued";
             /**
-             * @description Supported contactless payment methods (IDs)
-             * @example [
-             *       "apple-pay",
-             *       "google-pay"
-             *     ]
+             * @description Supported contactless payment method IDs (e.g. ["apple-pay", "google-pay"])
+             * @default []
              */
-            contactless_methods?: ("apple-pay" | "google-pay" | "samsung-pay" | "garmin-pay")[];
+            contactless_methods: ("apple-pay" | "google-pay" | "samsung-pay" | "garmin-pay")[];
             /** @description Full contactless method data, included when contactless_methods is set */
-            contactless_methods_data?: components["schemas"]["Contactless"][];
-            /**
-             * @description Whether the card is made of metal. Absent means unspecified (assumed plastic).
-             * @example true
-             */
-            is_metal?: boolean | null;
-            /**
-             * @description Whether this card is intended for business use. Absent or false means personal card.
-             * @example false
-             */
+            contactless_methods_data?: {
+                /** @description Unique identifier (e.g. "apple-pay") */
+                id: string;
+                /** @description Human-readable display name */
+                name: string;
+                /** @description Absolute URL to the logo image */
+                logo_url: string;
+                /**
+                 * Format: uri
+                 * @description Link to the contactless method homepage
+                 */
+                link: string;
+            }[];
+            /** @description Whether the card is made of metal. Absent means unspecified (assumed plastic) */
+            is_metal?: boolean;
+            /** @description Whether this card is intended for business use. Absent or false means personal card */
             for_business?: boolean;
-            /**
-             * @description ISO timestamp of when the card was last modified via admin. Null if never edited via admin.
-             * @example 2026-02-21T10:00:00.000Z
-             */
+            /** @description ISO timestamp of last admin edit. Null if never edited via admin */
             last_modified?: string | null;
-            /** @description Fee schedule for this card. All sub-fields are optional. */
+            /** @description Fee schedule for this card */
             fees?: {
-                /** @description Annual card fee. `amount` = base fee without waiver. */
-                annual?: components["schemas"]["FeeEntryWithWaiver"];
-                /** @description Annual fee for supplementary (add-on) cards. `amount` = base fee without waiver. */
-                annual_supplementary?: components["schemas"]["FeeEntryWithWaiver"];
+                /** @description Annual card fee. amount = base fee without waiver */
+                annual?: {
+                    /** @description Fee amount. Interpret based on type: VND if "currency", percentage (%) if "rate" */
+                    amount: number;
+                    /**
+                     * @description "currency" = amount is in VND; "rate" = amount is a percentage (%)
+                     * @enum {string}
+                     */
+                    type: "currency" | "rate";
+                    /** @description Human-readable note about the fee (e.g. conditions, variants). Parts separated by " | " */
+                    note?: string;
+                    /** @description First-year waiver conditions */
+                    first_year?: {
+                        /** @description True when the fee is waived under the given condition */
+                        waiver: boolean;
+                        /** @description Human-readable condition for the waiver (e.g. "Chi tiêu tối thiểu 10tr/tháng") */
+                        condition?: string;
+                    };
+                    /** @description Subsequent-year waiver conditions */
+                    subsequent_years?: {
+                        /** @description True when the fee is waived under the given condition */
+                        waiver: boolean;
+                        /** @description Human-readable condition for the waiver (e.g. "Chi tiêu tối thiểu 10tr/tháng") */
+                        condition?: string;
+                    };
+                };
+                /** @description Annual fee for supplementary (add-on) cards. amount = base fee without waiver */
+                annual_supplementary?: {
+                    /** @description Fee amount. Interpret based on type: VND if "currency", percentage (%) if "rate" */
+                    amount: number;
+                    /**
+                     * @description "currency" = amount is in VND; "rate" = amount is a percentage (%)
+                     * @enum {string}
+                     */
+                    type: "currency" | "rate";
+                    /** @description Human-readable note about the fee (e.g. conditions, variants). Parts separated by " | " */
+                    note?: string;
+                    /** @description First-year waiver conditions */
+                    first_year?: {
+                        /** @description True when the fee is waived under the given condition */
+                        waiver: boolean;
+                        /** @description Human-readable condition for the waiver (e.g. "Chi tiêu tối thiểu 10tr/tháng") */
+                        condition?: string;
+                    };
+                    /** @description Subsequent-year waiver conditions */
+                    subsequent_years?: {
+                        /** @description True when the fee is waived under the given condition */
+                        waiver: boolean;
+                        /** @description Human-readable condition for the waiver (e.g. "Chi tiêu tối thiểu 10tr/tháng") */
+                        condition?: string;
+                    };
+                };
                 /** @description One-time card issuance fee */
-                issuance?: components["schemas"]["FeeEntry"];
+                issuance?: {
+                    /** @description Fee amount. Interpret based on type: VND if "currency", percentage (%) if "rate" */
+                    amount: number;
+                    /**
+                     * @description "currency" = amount is in VND; "rate" = amount is a percentage (%)
+                     * @enum {string}
+                     */
+                    type: "currency" | "rate";
+                    /** @description Human-readable note about the fee (e.g. conditions, variants). Parts separated by " | " */
+                    note?: string;
+                };
                 /** @description Card cancellation fee */
-                cancellation?: components["schemas"]["FeeEntry"];
+                cancellation?: {
+                    /** @description Fee amount. Interpret based on type: VND if "currency", percentage (%) if "rate" */
+                    amount: number;
+                    /**
+                     * @description "currency" = amount is in VND; "rate" = amount is a percentage (%)
+                     * @enum {string}
+                     */
+                    type: "currency" | "rate";
+                    /** @description Human-readable note about the fee (e.g. conditions, variants). Parts separated by " | " */
+                    note?: string;
+                };
                 /** @description Foreign transaction fee */
-                foreign?: components["schemas"]["FeeEntry"];
+                foreign?: {
+                    /** @description Fee amount. Interpret based on type: VND if "currency", percentage (%) if "rate" */
+                    amount: number;
+                    /**
+                     * @description "currency" = amount is in VND; "rate" = amount is a percentage (%)
+                     * @enum {string}
+                     */
+                    type: "currency" | "rate";
+                    /** @description Human-readable note about the fee (e.g. conditions, variants). Parts separated by " | " */
+                    note?: string;
+                };
                 /** @description Foreign transaction fee when DCC (Dynamic Currency Conversion) is applied */
-                foreign_dcc?: components["schemas"]["FeeEntry"];
+                foreign_dcc?: {
+                    /** @description Fee amount. Interpret based on type: VND if "currency", percentage (%) if "rate" */
+                    amount: number;
+                    /**
+                     * @description "currency" = amount is in VND; "rate" = amount is a percentage (%)
+                     * @enum {string}
+                     */
+                    type: "currency" | "rate";
+                    /** @description Human-readable note about the fee (e.g. conditions, variants). Parts separated by " | " */
+                    note?: string;
+                };
+            };
+            /** @description Cashback benefit data. Absent if this card has no cashback program */
+            cashback?: {
+                /** @description Ordered array of cashback rules. Most specific rule first, universal fallback last. First matching rule wins. */
+                rules: {
+                    /** @description Base/guaranteed cashback rate as decimal (e.g. 0.05 = 5%). Always the minimum achievable rate for this rule. When tiers is present, set to tiers[0].rate. */
+                    rate: number;
+                    /** @description Best achievable rate if tiered or conditional (e.g. 0.10 = 10%). When tiers is present, set to tiers[last].rate. Omit entirely if flat rate. */
+                    rate_max?: number;
+                    /** @description Per-rule cashback cap. Use { amount: -1 } for explicitly unlimited. When tiers is present, set to tiers[0] cap. Absent means not specified. */
+                    cap?: {
+                        amount: number;
+                        /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                        category_caps?: {
+                            [key: string]: number;
+                        };
+                    };
+                    /** @description Best achievable per-rule cap when tiered. When tiers is present, set to max cap across tiers. Omit if cap is flat. */
+                    cap_max?: {
+                        amount: number;
+                        /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                        category_caps?: {
+                            [key: string]: number;
+                        };
+                    };
+                    /** @description Intent slugs this rule applies to (from data/intents.json). Use ["all"] for catch-all rules. Absent or empty = incomplete data, scores 0. */
+                    intents?: string[];
+                    /** @description MCC codes this rule targets (4-digit strings, ranges like "7374-7379" allowed in source - expanded at generate time). More specific than intents; matched first. */
+                    mcc?: string[];
+                    /** @description Specific merchant slugs (e.g. "grab", "shopee"). Absent means all merchants. */
+                    merchants?: string[];
+                    /** @description Scope restricts when a rule fires along channel and geography axes. Absent scope = universal (all channels + all geographies). See cashback-rules.md for defaults and migration from deprecated foreign_offline/foreign_online category strings. */
+                    scope?: {
+                        /**
+                         * @description Restrict rule to one payment channel. Absent = both online and offline.
+                         * @enum {string}
+                         */
+                        channel?: "online" | "offline";
+                        /** @description "domestic" | "foreign" | ISO 3166-1 alpha-2 country code (e.g. "JP", "TH"). Absent = all geographies. */
+                        geography?: string;
+                    };
+                    /** @description Max number of intents/merchants this rule applies to per period. Use when the cardholder picks N intents each cycle (e.g. 1 = choose one). */
+                    max_intents?: number;
+                    /** @description Spend-tier array for rules where rate/cap changes based on total monthly spend. Ordered ascending by min_spend. First entry must have min_spend: 0 (base tier). When present, algorithm uses tiers for rate/cap selection; rate/rate_max/cap/cap_max fields become display-only summaries. */
+                    tiers?: {
+                        /** @description Minimum total monthly spend (VND) to activate this tier. Base tier must be 0. */
+                        min_spend: number;
+                        /** @description Cashback rate for this tier (decimal, e.g. 0.10 = 10%). */
+                        rate: number;
+                        /** @description Per-rule cashback cap for this tier (VND). Absent = no per-rule cap (global_cap may still apply). */
+                        cap?: number;
+                    }[];
+                    /** @description ISO 8601 date (YYYY-MM-DD) when this rule becomes active. Absent = no start restriction. */
+                    valid_from?: string;
+                    /** @description ISO 8601 date (YYYY-MM-DD, inclusive) after which this rule is expired. Absent = no end restriction. */
+                    valid_until?: string;
+                    /** @description Free-text for unlock conditions, user-selectable mechanics, specific merchant names, or exclusions that don't fit structured fields. */
+                    note?: string;
+                }[];
+                /** @description True when rules are mutually exclusive benefit packages - cardholder picks ONE rule group at card issuance and that choice is permanent. Algorithm evaluates each rule independently against the full intent set and returns the max-scoring rule only (no summing, no remaining set). Use when: bank note says "chọn 1 trong N gói khi phát hành thẻ" and each rule covers non-overlapping categories with different rates. Real example: lpbank-jcb-ultimate (Gói Chăm sóc 15% vs Gói Trải nghiệm 10%). Different from max_intents (which picks N intents per cycle within one rule) - this is a one-time permanent package choice. */
+                package_exclusive?: boolean;
+                /** @description Overall cashback cap across all rules combined per period. Use the lower (guaranteed) value when tiered. */
+                global_cap?: {
+                    amount: number;
+                    /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                    category_caps?: {
+                        [key: string]: number;
+                    };
+                };
+                /** @description Best achievable overall cap when tiered (e.g. higher spend unlocks a larger global cap). Omit if global_cap is flat. */
+                global_cap_max?: {
+                    amount: number;
+                    /** @description Per-category sub-caps within the rule cap (VND). E.g. { "insurance": 400000 } limits insurance cashback to 400k even if rule cap is higher. See cashback-rule-patterns.md Pattern 5. */
+                    category_caps?: {
+                        [key: string]: number;
+                    };
+                };
+                /** @description Total spend (VND) at which global_cap_max activates instead of global_cap. Required when global_cap_max is present and the threshold differs from rule tiers. Absent = global_cap is flat (global_cap_max is display-only). */
+                global_cap_threshold?: number;
+                /** @description Minimum total spend in the statement period to activate any cashback (VND integer). If not met, no cashback is earned regardless of rules. */
+                min_spend_per_period?: number;
+                /**
+                 * @description How cashback is credited: automatic statement credit, user-initiated request, or pooled points redeemable later.
+                 * @enum {string}
+                 */
+                redemption?: "auto_statement_credit" | "manual_request" | "points_pool";
+                /** @description Computed at generate time. True when all rules have passed their valid_until date. Never set manually in source data. */
+                cashback_expired?: boolean;
+                /** @description Overall benefit-level conditions that don't fit rule fields. */
+                note?: string;
             };
             /** @description Curated list of intent slugs this card is relevant for, referencing data/intents.json. Used for filtering, recommendation, and intent coverage analytics. */
             intents?: string[];
-            /** @description Cashback benefit data. Absent if this card has no cashback program. */
-            cashback?: components["schemas"]["CashbackBenefit"];
-            /** @description Total card score (0–100) from MCDA model: fees (50%), benefits (30%), issuance (10%), cashback data (10%). Null when card lacks enough data for percentile normalization. Use for overall card quality ranking. */
-            score?: number | null;
-            /** @description Data completeness score (0–100). Weighted composite of card field completeness and cashback data completeness (60/40 split). Equals card completeness when no cashback. Use to answer "does this card have enough data?" */
-            data_score?: number;
             /** @description Source references for fee and card data */
             sources?: {
-                /**
-                 * @description Human-readable label for the source
-                 * @example VPBank Biểu phí thẻ tín dụng 2025
-                 */
+                /** @description Human-readable label for the source (e.g. "VPBank Biểu phí thẻ tín dụng 2025") */
                 label: string;
                 /**
                  * Format: uri
                  * @description URL to the source document
-                 * @example https://r2.openwallet.vn/tnc/vpbank-credit-fees-2025.pdf
                  */
                 url: string;
-                /**
-                 * @description PDF page number where the data was found. Null or absent for non-PDF web sources.
-                 * @example 3
-                 */
-                page?: number | null;
+                /** @description PDF page number where the data was found. Null or absent for non-PDF web sources */
+                page?: number;
             }[];
+            /** @description Total card score (0–100) from MCDA model: fees (50%), benefits (30%), issuance (10%), cashback data (10%). Null when card lacks enough data for percentile normalization. */
+            score?: number;
+            /** @description Data completeness score (0–100). Weighted composite of card field completeness and cashback data completeness (60/40 split). */
+            data_score?: number;
+            /**
+             * @description Editorial assessment of how hard it is to apply for and receive this card. easy=online/eKYC only, standard=income proof required, strict=invitation/high-income threshold.
+             * @enum {string}
+             */
+            issuance_difficulty?: "easy" | "standard" | "strict";
+            /** @description Travel benefit data - stub for future scoring. Weight currently 0 in MCDA config. */
+            travel_benefit?: {
+                /** @description Miles earned per VND spent (decimal) */
+                miles_rate?: number;
+                /** @description Whether the card includes airport lounge access */
+                lounge_access?: boolean;
+                /** @description Whether the card includes travel insurance */
+                insurance?: boolean;
+                /** @description Additional travel benefit notes in Vietnamese */
+                note?: string;
+            };
+            /** @description Lifestyle benefit data - stub for future scoring. Weight currently 0 in MCDA config. */
+            lifestyle_benefit?: {
+                /** @description Cashback/rebate rate for dining (decimal) */
+                dining_rate?: number;
+                /** @description Cashback/rebate rate for entertainment (decimal) */
+                entertainment_rate?: number;
+                /** @description Additional lifestyle benefit notes in Vietnamese */
+                note?: string;
+            };
+        };
+        Persona: {
+            /** @description Unique identifier for the persona */
+            slug: string;
+            /** @description Human-readable display name */
+            label: string;
+            /** @description Vietnamese display name */
+            labelVi?: string;
+            /** @description Short description of what the persona targets */
+            note?: string;
+            /** @description Intent slugs used when ranking cards under this persona. Empty for pool-filter-only personas. */
+            rank_intents: string[];
+            /** @description Cobrand slugs relevant to this persona. Consumers can use these to sub-filter by co_brand= when the persona has associated cobrand cards. */
+            cobrands?: string[];
+            /** @description CardFilter object applied to narrow the card pool. Shape varies by persona type. */
+            filter: {
+                [key: string]: unknown;
+            };
+        };
+        Intent: {
+            /** @description Unique kebab-case identifier. Used in card.intents[] */
+            slug: string;
+            /** @description Vietnamese display name */
+            label: string;
+            /** @description Emoji icon */
+            icon: string;
+            /**
+             * @description Primary transaction channel for this intent
+             * @enum {string}
+             */
+            channel: "online" | "offline" | "both";
+            /**
+             * @description Merchant slugs from data/merchants.json that satisfy this intent
+             * @default []
+             */
+            merchants: string[];
+            /**
+             * @description Group-level intent slugs this atomic intent rolls up into (e.g. "ecommerce", "dining"). Validated against intent-groups.json.
+             * @default []
+             */
+            groups: string[];
+            /**
+             * @description Brand slugs from data/brands/ that satisfy this intent
+             * @default []
+             */
+            co_brands: string[];
+        };
+        IntentGroupNode: {
+            slug: string;
+            label: string;
+            icon: string;
+            /** @description Intent slugs active when this group node is selected */
+            intents: string[];
+            children?: components["schemas"]["IntentGroupNode"][];
+        };
+        StatsGroup: {
+            /** @description Number of cards in this group */
+            total: number;
+            /** @description Average data quality score (0–100) */
+            avg_score: number;
+            /** @description Cards with score ≥ 90 */
+            complete: number;
+            /** @description Percentage of complete cards */
+            complete_pct: number;
+            issues: {
+                /** @description Cards with at least one critical issue */
+                critical: number;
+                /** @description Cards with at least one important issue */
+                important: number;
+                /** @description Cards with at least one minor issue */
+                minor: number;
+            };
+        };
+        StatsSnapshot: {
+            /** @description ISO timestamp when this snapshot was recorded */
+            snapshot_at: string;
+            all: {
+                /** @description Number of cards in this group */
+                total: number;
+                /** @description Average data quality score (0–100) */
+                avg_score: number;
+                /** @description Cards with score ≥ 90 */
+                complete: number;
+                /** @description Percentage of complete cards */
+                complete_pct: number;
+                issues: {
+                    /** @description Cards with at least one critical issue */
+                    critical: number;
+                    /** @description Cards with at least one important issue */
+                    important: number;
+                    /** @description Cards with at least one minor issue */
+                    minor: number;
+                };
+            };
+            by_type: {
+                credit?: {
+                    /** @description Number of cards in this group */
+                    total: number;
+                    /** @description Average data quality score (0–100) */
+                    avg_score: number;
+                    /** @description Cards with score ≥ 90 */
+                    complete: number;
+                    /** @description Percentage of complete cards */
+                    complete_pct: number;
+                    issues: {
+                        /** @description Cards with at least one critical issue */
+                        critical: number;
+                        /** @description Cards with at least one important issue */
+                        important: number;
+                        /** @description Cards with at least one minor issue */
+                        minor: number;
+                    };
+                };
+                debit?: {
+                    /** @description Number of cards in this group */
+                    total: number;
+                    /** @description Average data quality score (0–100) */
+                    avg_score: number;
+                    /** @description Cards with score ≥ 90 */
+                    complete: number;
+                    /** @description Percentage of complete cards */
+                    complete_pct: number;
+                    issues: {
+                        /** @description Cards with at least one critical issue */
+                        critical: number;
+                        /** @description Cards with at least one important issue */
+                        important: number;
+                        /** @description Cards with at least one minor issue */
+                        minor: number;
+                    };
+                };
+                business?: {
+                    /** @description Number of cards in this group */
+                    total: number;
+                    /** @description Average data quality score (0–100) */
+                    avg_score: number;
+                    /** @description Cards with score ≥ 90 */
+                    complete: number;
+                    /** @description Percentage of complete cards */
+                    complete_pct: number;
+                    issues: {
+                        /** @description Cards with at least one critical issue */
+                        critical: number;
+                        /** @description Cards with at least one important issue */
+                        important: number;
+                        /** @description Cards with at least one minor issue */
+                        minor: number;
+                    };
+                };
+                cashback?: {
+                    /** @description Number of cards in this group */
+                    total: number;
+                    /** @description Average data quality score (0–100) */
+                    avg_score: number;
+                    /** @description Cards with score ≥ 90 */
+                    complete: number;
+                    /** @description Percentage of complete cards */
+                    complete_pct: number;
+                    issues: {
+                        /** @description Cards with at least one critical issue */
+                        critical: number;
+                        /** @description Cards with at least one important issue */
+                        important: number;
+                        /** @description Cards with at least one minor issue */
+                        minor: number;
+                    };
+                };
+            };
+            by_bank: {
+                [key: string]: {
+                    /** @description Number of cards in this group */
+                    total: number;
+                    /** @description Average data quality score (0–100) */
+                    avg_score: number;
+                    /** @description Cards with score ≥ 90 */
+                    complete: number;
+                    /** @description Percentage of complete cards */
+                    complete_pct: number;
+                    issues: {
+                        /** @description Cards with at least one critical issue */
+                        critical: number;
+                        /** @description Cards with at least one important issue */
+                        important: number;
+                        /** @description Cards with at least one minor issue */
+                        minor: number;
+                    };
+                    name?: string;
+                };
+            };
         };
     };
     responses: never;
