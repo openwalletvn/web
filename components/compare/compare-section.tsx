@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import type { SearchCard } from '@/lib/search-types';
 import type { Card, Intent, CompareResult } from '@/lib/api';
 import { getCard, compareCards } from '@/lib/api';
-import { CardImage } from '@/components/cards/card-image';
+import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import { CardSearchInput } from '@/components/compare/card-search-input';
 import { CompareTable } from '@/components/compare/compare-table';
 import { RecentCompares } from '@/components/compare/recent-compares';
@@ -97,16 +97,16 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange, intent
     return (
         <div className="ow-compare-display">
             <div className={cn('fixed top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm transition-transform duration-200 ease-out', showSticky ? 'translate-y-0' : '-translate-y-full')}>
-                <div className="min-h-[80px] max-w-[980px] mx-auto py-2 flex items-center">
+                <div className="ow-compare-display-sticky min-h-[80px] ow-container py-2 flex items-center">
                     <div className="grid w-full" style={colStyle}>
                         {cards.map((card, i) => (
                             <div key={card?.id ?? i} className="flex items-center gap-2">
                                 {card ? (
                                     <>
                                         <Link href={`/the/${card.id}`} className="block shrink-0">
-                                            <CardImage card={card} tilt className="h-[60px] w-auto" />
+                                            <OwCardImage card={card} tilt className="sm:h-[60px] h-[40px] w-auto" />
                                         </Link>
-                                        <Link href={`/the/${card.id}`} className="text-sm font-semibold text-slate-900 hover:text-brand-red transition-colors line-clamp-2">
+                                        <Link href={`/the/${card.id}`} className="sm:text-sm text-xs font-semibold text-slate-900 hover:text-brand-red transition-colors line-clamp-2">
                                             {card.name}
                                         </Link>
                                     </>
@@ -128,11 +128,11 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange, intent
                                     <Link href={`/the/${card.id}`}>
                                         {card.image?.orientation === 'vertical' ? (
                                             <div className="h-[200px] flex items-center">
-                                                <CardImage card={card} tilt className="h-full w-auto" />
+                                                <OwCardImage card={card} tilt className="h-full w-auto" />
                                             </div>
                                         ) : (
                                             <div className="w-full max-w-[200px]">
-                                                <CardImage card={card} tilt className="w-full" />
+                                                <OwCardImage card={card} tilt className="w-full" />
                                             </div>
                                         )}
                                     </Link>

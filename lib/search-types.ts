@@ -6,6 +6,7 @@ export interface SearchCard {
   card_type: string[]
   card_network: string
   image_url: string
+  is_vertical: boolean
   url: string
 }
 

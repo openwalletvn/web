@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { type Bank, type Card } from '@/lib/api';
 import { getMyCardUrl } from '@/lib/routes';
-import { CardImage } from '@/components/cards/card-image';
+import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import type { CardStatus, WalletCard } from '@/lib/db';
 import { WalletCardBadges } from './wallet-card-badges';
 
@@ -50,11 +50,11 @@ export function WalletCardContent({
               <>
                   {catalogCard.image?.orientation === "vertical" ? (
                       <div className="h-20 flex justify-center items-center">
-                          <CardImage card={catalogCard} className="h-full w-auto"/>
+                          <OwCardImage card={catalogCard} className="h-full w-auto"/>
                       </div>
                   ) : (
                       <div className="w-full flex justify-center items-center">
-                          <CardImage card={catalogCard} className="w-full"/>
+                          <OwCardImage card={catalogCard} className="w-full"/>
                       </div>
                   )}
               </>

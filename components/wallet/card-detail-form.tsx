@@ -11,7 +11,7 @@ import { appDb } from '@/lib/app-db';
 import { type Card, type Bank } from '@/lib/api';
 import type { WalletCard, CreditAccount, CardStatus } from '@/lib/db';
 import type { AppWallet } from '@/lib/app-db';
-import { CardImage } from '@/components/cards/card-image';
+import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import { FormField } from '@/components/ui/form-field';
 import { CreditPoolSelector, type PoolSelection } from './credit-pool-selector';
 import { MoveToWalletPicker } from './move-to-wallet-picker';
@@ -240,7 +240,7 @@ export function CardDetailForm({
 
       {/* ── Left column: card image + uneditable API info ── */}
       <div className="space-y-5">
-        <CardImage card={card} />
+        <OwCardImage card={card} />
 
         <div className="border border-dashed border-slate-200 rounded-sm">
           <div className="px-4 py-2.5 border-b border-dashed border-slate-100">

@@ -6,7 +6,7 @@ import {cn} from '@/lib/utils';
 import {IconBuildingBank, IconExternalLink, IconScale} from '@tabler/icons-react';
 import type {Bank, Card} from '@/lib/api';
 import {getBankImageUrl} from '@/lib/api';
-import {CardImage} from '@/components/cards/card-image';
+import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
 import {useCompareList} from '@/lib/use-compare-list';
@@ -119,7 +119,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                     aria-label={badge}
                     className="relative block group-hover:scale-105 transition-transform duration-300"
                 >
-                    <CardImage card={card} tilt />
+                    <OwCardImage card={card} tilt />
                 </Link>
             </div>
 
@@ -203,11 +203,11 @@ function CardDisplayRow({ card, bank, badges = {}, slot, className }: Omit<RowPr
             <div className="shrink-0 w-20">
                 {isVertical ? (
                     <div className="h-20 flex justify-center items-center">
-                        <CardImage card={card} className="h-full w-auto" />
+                        <OwCardImage card={card} className="h-full w-auto" />
                     </div>
                 ) : (
                     <div className="w-full flex justify-center items-center">
-                        <CardImage card={card} className="w-full" />
+                        <OwCardImage card={card} className="w-full" />
                     </div>
                 )}
             </div>
@@ -245,11 +245,11 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
             {showThumb && (
                 isVertical ? (
                     <div className="w-24 h-20 shrink-0 flex items-center justify-center">
-                        <CardImage card={card} className="h-full w-auto" />
+                        <OwCardImage card={card} className="h-full w-auto" />
                     </div>
                 ) : (
                     <div className="w-24 shrink-0">
-                        <CardImage card={card} />
+                        <OwCardImage card={card} />
                     </div>
                 )
             )}

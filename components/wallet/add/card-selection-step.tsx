@@ -1,6 +1,6 @@
 import { IconCheck } from '@tabler/icons-react';
 import { getBankImageUrl, type Bank, type Card } from '@/lib/api';
-import { CardImage } from '@/components/cards/card-image';
+import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 
 export function CardSelectionStep({
   bank,
@@ -46,7 +46,7 @@ export function CardSelectionStep({
                 className="flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded-sm hover:border-brand-blue hover:bg-blue-50/40 transition-colors text-left"
               >
                 <div className="relative w-full aspect-[16/10]">
-                  <CardImage card={card} />
+                  <OwCardImage card={card} />
                   {owned && (
                     <div className="absolute top-1.5 right-1.5 bg-green-500 text-white rounded-full p-0.5">
                       <IconCheck size={10} strokeWidth={3} />

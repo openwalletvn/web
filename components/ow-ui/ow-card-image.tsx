@@ -5,19 +5,45 @@ import Image from 'next/image';
 import {IconCreditCard} from '@tabler/icons-react';
 import {ShimmerLayer} from '@/components/phucbm/shimmer-layer';
 import {cn} from '@/lib/utils';
+import {type Card, getCardImageUrl} from '@/lib/api';
 
-interface Props {
+type RawProps = {
     src: string;
     alt: string;
     width: number;
     height: number;
     lqip?: string;
+    card?: never;
+    classNameVertical?: never;
+};
+
+type CardProps = {
+    card: Card;
+    src?: never;
+    alt?: never;
+    width?: never;
+    height?: never;
+    lqip?: never;
+    classNameVertical?: string;
+};
+
+type Props = (RawProps | CardProps) & {
     tilt?: boolean;
     priority?: boolean;
     className?: string;
-}
+};
 
-export function OwCardImage({src, alt, width, height, lqip, tilt = false, priority = false, className}: Props) {
+export function OwCardImage(props: Props) {
+    const {tilt = false, priority = false, className} = props;
+
+    const isVertical = props.card ? props.card.image?.orientation === 'vertical' : false;
+    const src = props.card ? getCardImageUrl(props.card) : props.src;
+    const alt = props.card ? props.card.name : props.alt;
+    const width = props.card ? (props.card.image?.width ?? (isVertical ? 2 : 16)) : props.width;
+    const height = props.card ? (props.card.image?.height ?? (isVertical ? 3 : 10)) : props.height;
+    const lqip = props.card ? props.card.image?.lqip : props.lqip;
+    const containerClass = cn('w-full', className, isVertical ? props.classNameVertical : className);
+
     const containerRef = useRef<HTMLDivElement>(null);
     const [radius, setRadius] = useState(0);
     const [loaded, setLoaded] = useState(false);
@@ -58,10 +84,14 @@ export function OwCardImage({src, alt, width, height, lqip, tilt = false, priori
         transition: hovering ? 'transform 0.05s linear' : 'transform 0.5s ease',
     } : {};
 
+    if (!src) {
+        return <div className={cn(containerClass, 'relative overflow-hidden')} style={{aspectRatio: `${width} / ${height}`}}/>;
+    }
+
     return (
         <div
             ref={containerRef}
-            className={cn('ow-card-image relative overflow-hidden group/shimmer', className)}
+            className={cn('ow-card-image relative overflow-hidden group/shimmer', containerClass)}
             style={{aspectRatio: `${width} / ${height}`, borderRadius: radius, ...tiltStyle}}
             {...tiltHandlers}
         >

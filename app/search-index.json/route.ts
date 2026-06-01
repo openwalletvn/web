@@ -18,6 +18,7 @@ export async function GET(): Promise<NextResponse<SearchIndex>> {
     card_type: card.card_type,
     card_network: card.card_network,
     image_url: getCardImageUrl(card),
+    is_vertical: card.image?.orientation === 'vertical',
     url: `/the/${card.id}`,
   }));
 

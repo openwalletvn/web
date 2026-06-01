@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {cn} from '@/lib/utils';
 import {getBank, getCard, getCards, getRelatedCards} from '@/lib/api';
 import {ChatContextSetter} from '@/components/chat/chat-context-setter';
-import {CardImage} from '@/components/cards/card-image';
+import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {buildCardPageMeta} from '@/lib/page-meta/card';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
@@ -85,7 +85,7 @@ export default async function CardPage({ params }: Props) {
                     <div
                         className={cn(isVertical ? 'xl:col-span-2 md:col-span-3 col-span-12' : 'xl:col-span-3 md:col-span-4 col-span-12')}>
                         <div className={cn("lg:sticky lg:top-8", isVertical ? "sm:max-w-[300px] max-w-[240px] mx-auto" : "max-w-[360px]")}>
-                            <CardImage card={card} tilt priority/>
+                            <OwCardImage card={card} tilt priority/>
                             <div className="mt-4 flex flex-col gap-2">
                                 <CompareButton
                                     card={{id: card.id, name: card.name, image_url: card.image?.url ?? null}}/>

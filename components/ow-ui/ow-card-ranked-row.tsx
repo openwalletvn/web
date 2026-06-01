@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type {CashbackRule, Intent} from '@/lib/api';
 import type {CashbackBreakdownItem, RankedCard} from '@/lib/card-ranker';
 import {CATCHALL_SLUGS, getRateDisplay} from '@/lib/card-display-utils';
-import {CardImage} from '@/components/cards/card-image';
+import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwRankBadge} from '@/components/ow-ui/ow-rank-badge';
 import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
 import {IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
@@ -94,7 +94,7 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
             {/*col 1 — card image [2]*/}
             <div className="col-span-2">
                 <Link href={`/the/${card.id}`}>
-                    <CardImage card={card} className="w-full"/>
+                    <OwCardImage card={card} className="w-full"/>
                 </Link>
             </div>
 
