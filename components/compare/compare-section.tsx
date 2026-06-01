@@ -26,15 +26,16 @@ function parseIds(pair: string): string[] {
     return (pair.includes(',') ? pair.split(',') : pair.split('-vs-')).filter(Boolean);
 }
 
+import {colSpan} from './compare-col-span';
+
 // ─── Loading skeleton matching CompareTemplate dimensions ────────────────────
 
 function CompareTemplateSkeleton({ numSlots }: { numSlots: number }) {
-    const colStyle = { gridTemplateColumns: `repeat(${numSlots}, 1fr)` };
     return (
         <div className="animate-pulse">
-            <div className="grid mb-8" style={colStyle}>
+            <div className="grid grid-cols-12 mb-8">
                 {Array.from({ length: numSlots }, (_, i) => (
-                    <div key={i} className="flex flex-col gap-3">
+                    <div key={i} className={`${colSpan(numSlots, i)} flex flex-col gap-3`}>
                         <div className="flex items-end h-[200px]">
                             <div className="w-full max-w-[200px] aspect-[16/10] bg-slate-100 rounded-lg" />
                         </div>
@@ -50,9 +51,9 @@ function CompareTemplateSkeleton({ numSlots }: { numSlots: number }) {
                     {Array.from({ length: rowCount }, (_, r) => (
                         <div key={r} className="py-3">
                             <div className="h-3 w-20 bg-slate-100 rounded mb-1.5" />
-                            <div className="grid" style={colStyle}>
+                            <div className="grid grid-cols-12">
                                 {Array.from({ length: numSlots }, (_, c) => (
-                                    <div key={c} className="h-7 w-16 bg-slate-100 rounded" />
+                                    <div key={c} className={`${colSpan(numSlots, c)} h-7 w-16 bg-slate-100 rounded`} />
                                 ))}
                             </div>
                         </div>
@@ -92,15 +93,13 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange, intent
         return () => observer.disconnect();
     }, [onStickyChange]);
 
-    const colStyle = { gridTemplateColumns: `repeat(${cards.length}, 1fr)` };
-
     return (
         <div className="ow-compare-display">
             <div className={cn('fixed top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm transition-transform duration-200 ease-out', showSticky ? 'translate-y-0' : '-translate-y-full')}>
                 <div className="ow-compare-display-sticky min-h-[80px] ow-container py-2 flex items-center">
-                    <div className="grid w-full" style={colStyle}>
+                    <div className="grid grid-cols-12 w-full">
                         {cards.map((card, i) => (
-                            <div key={card?.id ?? i} className="flex items-center gap-2">
+                            <div key={card?.id ?? i} className={`${colSpan(cards.length, i)} flex items-center gap-2`}>
                                 {card ? (
                                     <>
                                         <Link href={`/the/${card.id}`} className="block shrink-0">
@@ -119,19 +118,19 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange, intent
                 </div>
             </div>
 
-            <div ref={cardHeaderRef} className="grid mb-8" style={colStyle}>
+            <div ref={cardHeaderRef} className="grid grid-cols-12 mb-8">
                 {cards.map((card, i) => (
-                    <div key={card?.id ?? i} className="flex flex-col gap-3">
+                    <div key={card?.id ?? i} className={`${colSpan(cards.length, i)} flex flex-col gap-3`}>
                         {card ? (
                             <>
-                                <div className="flex items-end h-[200px]">
+                                <div className="flex items-end sm:h-[200px] h-[120px]">
                                     <Link href={`/the/${card.id}`}>
                                         {card.image?.orientation === 'vertical' ? (
-                                            <div className="h-[200px] flex items-center">
+                                            <div className="sm:h-[200px] h-[120px] flex items-center">
                                                 <OwCardImage card={card} tilt className="h-full w-auto" />
                                             </div>
                                         ) : (
-                                            <div className="w-full max-w-[200px]">
+                                            <div className="w-full sm:max-w-[200px] max-w-[100px]">
                                                 <OwCardImage card={card} tilt className="w-full" />
                                             </div>
                                         )}
@@ -142,8 +141,8 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange, intent
                                 </Link>
                             </>
                         ) : (
-                            <div className="flex items-end h-[200px]">
-                                <div className="w-full max-w-[200px] aspect-[16/10] bg-slate-100 rounded-lg" />
+                            <div className="flex items-end sm:h-[200px] h-[120px]">
+                                <div className="w-full sm:max-w-[200px] max-w-[100px] aspect-[16/10] bg-slate-100 rounded-lg" />
                             </div>
                         )}
                     </div>
@@ -300,7 +299,7 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap, re
     return (
         <>
             {/* Card picker */}
-            <div className="flex items-center gap-2">
+            <div className="ow-compare-card-picker grid grid-cols-12 items-center gap-2">
                 {Array.from({ length: numSlots }, (_, i) => {
                     const card = cards[i];
                     const isExtraSlot = i >= 2;
@@ -308,7 +307,7 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap, re
                         .filter((c, j): c is SearchCard => c !== null && j !== i)
                         .map((c) => c.id);
                     return (
-                        <div key={i} className="relative" style={{ width: `${100 / MAX_CARDS}%` }}>
+                        <div key={i} className={`${colSpan(numSlots, i)} relative`}>
                             {isExtraSlot && (
                                 <button
                                     type="button"

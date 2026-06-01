@@ -7,6 +7,8 @@ import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
 import {formatFeePartsCompact} from '@/lib/utils';
 
+import {colSpan} from './compare-col-span';
+
 const empty = <span className="text-slate-300">—</span>;
 
 // VI labels for API criteria — fallback to API label if not mapped
@@ -59,10 +61,10 @@ function Row({label, values, winnerIndex}: RowProps) {
     return (
         <div className="ow-compare-row py-3">
             <p className="text-xs text-slate-400 mb-1.5">{label}</p>
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${values.length}, 1fr)` }}>
+            <div className="grid grid-cols-12">
                 {values.map((v, i) => (
                     <div key={i}
-                         className={`text-body-md flex items-center gap-1 ${winnerIndex === i ? 'text-green-600 font-semibold' : 'text-slate-800'}`}>
+                         className={`ow-compare-col-${i + 1} ${colSpan(values.length, i)} text-body-md flex items-center gap-1 ${winnerIndex === i ? 'text-green-600 font-semibold' : 'text-slate-800'}`}>
                         {winnerIndex === i && <IconCircleCheckFilled size={14} className="shrink-0"/>}
                         {v}
                     </div>
@@ -221,12 +223,12 @@ export function CompareTable({cards, compareResult, intentMap = new Map()}: Prop
             {hasWinner && (
                 <>
                     <SectionHeader label="Tổng kết" />
-                    <div className="grid py-3 gap-x-4" style={{gridTemplateColumns: `repeat(${cards.length}, 1fr)`}}>
+                    <div className="grid grid-cols-12 py-3 gap-x-4">
                         {cards.map((c, i) => {
                             const wins = winCounts[i] ?? 0;
                             const isOverallWinner = wins === maxWins && wins > 0;
                             return (
-                                <div key={c?.id ?? i} className={`flex flex-col gap-1 p-3 rounded-lg ${isOverallWinner ? 'bg-green-50 border border-green-200' : 'bg-slate-50 border border-transparent'}`}>
+                                <div key={c?.id ?? i} className={`ow-compare-col-${i + 1} ${colSpan(cards.length, i)} flex flex-col gap-1 p-3 rounded-lg ${isOverallWinner ? 'bg-green-50 border border-green-200' : 'bg-slate-50 border border-transparent'}`}>
                                     <div className={`flex items-center gap-1 text-sm font-semibold ${isOverallWinner ? 'text-green-700' : 'text-slate-500'}`}>
                                         {isOverallWinner && <IconCircleCheckFilled size={14} className="shrink-0" />}
                                         {wins} tiêu chí tốt hơn

@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import { getRelatedStatements } from '@/lib/card-dates';
 import type { Card } from '@/lib/api';
 
+import {colSpan} from './compare-col-span';
+
 interface Props {
     cards: (Card | null)[];
 }
@@ -30,9 +32,13 @@ export function CompareDueDateRow({ cards }: Props) {
     return (
         <div className="ow-compare-due-date-row py-3">
             <p className="text-xs text-slate-400 mb-1.5">Ngày đến hạn dự kiến</p>
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${cards.length}, 1fr)` }}>
+            <div className="grid grid-cols-12">
                 {dues.map((due, i) => (
-                    <div key={i} className={cn('text-numeral-sm min-w-[6ch]', due === '—' ? 'text-slate-300' : 'text-slate-800')}>
+                    <div key={i} className={cn(
+                        colSpan(cards.length, i),
+                        'text-numeral-sm min-w-[6ch]',
+                        due === '—' ? 'text-slate-300' : 'text-slate-800'
+                    )}>
                         {due ?? '…'}
                     </div>
                 ))}
