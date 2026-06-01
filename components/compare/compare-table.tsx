@@ -21,8 +21,9 @@ const VI_LABELS: Record<string, string> = {
     foreign_dcc_fee: 'Ngoại tệ DCC',
     interest_free_days: 'Ngày miễn lãi',
     network_rank: 'Độ phổ biến mạng',
-    card_score: 'Điểm thẻ',
-    data_score: 'Điểm dữ liệu',
+    persona_coverage: 'Phạm vi persona',
+    card_score: 'Điểm tổng hợp',
+    data_score: 'Độ đầy đủ dữ liệu',
 };
 
 const SECTION_VI_LABELS: Record<string, string> = {
@@ -56,7 +57,7 @@ interface RowProps {
 
 function Row({label, values, winnerIndex}: RowProps) {
     return (
-        <div className="py-3">
+        <div className="ow-compare-row py-3">
             <p className="text-xs text-slate-400 mb-1.5">{label}</p>
             <div className="grid" style={{ gridTemplateColumns: `repeat(${values.length}, 1fr)` }}>
                 {values.map((v, i) => (
@@ -136,7 +137,12 @@ export function CompareTable({cards, compareResult, intentMap = new Map()}: Prop
         return rows.map(row => {
             const values = cardIds.map(id => {
                 const v = id != null ? (row.values[id] ?? 0) : null;
-                return v != null ? formatApiValue(v, row.unit) : empty;
+                const desc = id != null ? (row.labels?.[id] ?? null) : null;
+                const formatted = v != null ? formatApiValue(v, row.unit) : empty;
+                return desc
+                    ? <span className="flex flex-col gap-0.5">{formatted}<span
+                        className="text-xs text-slate-400 font-normal">{desc}</span></span>
+                    : formatted;
             });
             return (
                 <Row
@@ -215,7 +221,7 @@ export function CompareTable({cards, compareResult, intentMap = new Map()}: Prop
             {hasWinner && (
                 <>
                     <SectionHeader label="Tổng kết" />
-                    <div className="grid py-3" style={{ gridTemplateColumns: `repeat(${cards.length}, 1fr)` }}>
+                    <div className="grid py-3 gap-x-4" style={{gridTemplateColumns: `repeat(${cards.length}, 1fr)`}}>
                         {cards.map((c, i) => {
                             const wins = winCounts[i] ?? 0;
                             const isOverallWinner = wins === maxWins && wins > 0;

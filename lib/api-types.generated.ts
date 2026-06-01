@@ -74,7 +74,7 @@ export interface paths {
         put?: never;
         /**
          * Rank cards by intent
-         * @description Ranks a card pool by estimated cashback per month. Three sources define the pool: `persona` (curated filter + intents), `cards` (explicit IDs), or `intents` (intent-matching gate). Pool filtering (type, network, for_business, etc.) is handled exclusively via `persona` — use the appropriate persona slug instead of passing raw filter params. Tiebreaker order: cashback desc → annual fee asc → network popularity → no min_spend_per_period.
+         * @description Ranks a card pool by estimated cashback per month. Three sources define the pool: `persona` (curated filter + intents), `cards` (explicit IDs), or `intents` (intent-matching gate). Pool filtering (type, network, for_business, etc.) is handled exclusively via `persona` - use the appropriate persona slug instead of passing raw filter params. Tiebreaker order: cashback desc → annual fee asc → network popularity → no min_spend_per_period.
          */
         post: operations["rankCards"];
         delete?: never;
@@ -452,7 +452,7 @@ export interface paths {
         };
         /**
          * Data quality stats
-         * @description Returns data completeness statistics for all cards — overall, by card type (credit/debit/business/cashback), and by bank. Public endpoint, no auth required. Use to track data quality improvements over time.
+         * @description Returns data completeness statistics for all cards - overall, by card type (credit/debit/business/cashback), and by bank. Public endpoint, no auth required. Use to track data quality improvements over time.
          */
         get: operations["getStats"];
         put?: never;
@@ -839,7 +839,7 @@ export interface components {
                 [key: string]: number;
             };
         };
-        /** @description A single cashback earning rule. Rules are ordered — first matching rule wins per intent. */
+        /** @description A single cashback earning rule. Rules are ordered - first matching rule wins per intent. */
         CashbackRule: {
             /**
              * @description Base/guaranteed cashback rate as decimal (e.g. 0.05 = 5%). Used by ranking algorithm at the 3M VND/month reference spend.
@@ -847,7 +847,7 @@ export interface components {
              */
             rate: number;
             /**
-             * @description Best achievable rate when tiered or conditional (e.g. spend-tier unlocks higher rate). Omit if flat. Example: BVBank JCB Sense gives 5% at <15M/month spend, up to 20% at ≥50M/month — stored as rate: 0.05, rate_max: 0.20.
+             * @description Best achievable rate when tiered or conditional (e.g. spend-tier unlocks higher rate). Omit if flat. Example: BVBank JCB Sense gives 5% at <15M/month spend, up to 20% at ≥50M/month - stored as rate: 0.05, rate_max: 0.20.
              * @example 0.2
              */
             rate_max?: number;
@@ -856,7 +856,7 @@ export interface components {
             /** @description Best achievable per-rule cap when tiered. Omit if flat. */
             cap_max?: components["schemas"]["CashbackCap"];
             /**
-             * @description Intent slugs this rule applies to (from /intents). Absent or empty = incomplete data, scores 0. Use ["all"] for rules that apply to all remaining transactions — channel specificity is expressed via rule scope, not intent string. Example catch-all cards: acb-visa-platinum (0.3% on all), sacombank-uniq (0.5% on all others).
+             * @description Intent slugs this rule applies to (from /intents). Absent or empty = incomplete data, scores 0. Use ["all"] for rules that apply to all remaining transactions - channel specificity is expressed via rule scope, not intent string. Example catch-all cards: acb-visa-platinum (0.3% on all), sacombank-uniq (0.5% on all others).
              * @example [
              *       "dining",
              *       "travel"
@@ -880,7 +880,7 @@ export interface components {
              */
             mcc?: string[];
             /**
-             * @description Maximum number of intents/merchants the cardholder can apply this rule to per billing cycle. Use when the product lets the user pick N intents each cycle. Example: MSB mDigi (max_intents: 1, pick one of dining/travel/digital per cycle), VIB Family Link (max_intents: 1, pick one of education/health/insurance). Does not affect ranking — only affects computeCashbackResult display accuracy.
+             * @description Maximum number of intents/merchants the cardholder can apply this rule to per billing cycle. Use when the product lets the user pick N intents each cycle. Example: MSB mDigi (max_intents: 1, pick one of dining/travel/digital per cycle), VIB Family Link (max_intents: 1, pick one of education/health/insurance). Does not affect ranking - only affects computeCashbackResult display accuracy.
              * @example 1
              */
             max_intents?: number;
@@ -908,7 +908,7 @@ export interface components {
              */
             geography?: string;
         };
-        /** @description Cashback benefit attached to a card. Rules are evaluated in order — first matching rule wins per intent. */
+        /** @description Cashback benefit attached to a card. Rules are evaluated in order - first matching rule wins per intent. */
         CashbackBenefit: {
             /** @description Ordered list of cashback rules. Specific rules first (merchants/specific intents), catch-all last. */
             rules: components["schemas"]["CashbackRule"][];
@@ -1140,9 +1140,9 @@ export interface components {
             intents?: string[];
             /** @description Cashback benefit data. Absent if this card has no cashback program. */
             cashback?: components["schemas"]["CashbackBenefit"];
-            /** @description Computed data completeness score (0–100). Higher = more complete card data. Used to determine eligibility for compare page static generation. */
-            score?: number;
-            /** @description Combined data quality score (0–100). Weighted composite of card completeness score and cashback data quality score (60/40 split). Equals score when card has no cashback. Use this to answer "does this card have good enough data?" */
+            /** @description Total card score (0–100) from MCDA model: fees (50%), benefits (30%), issuance (10%), cashback data (10%). Null when card lacks enough data for percentile normalization. Use for overall card quality ranking. */
+            score?: number | null;
+            /** @description Data completeness score (0–100). Weighted composite of card field completeness and cashback data completeness (60/40 split). Equals card completeness when no cashback. Use to answer "does this card have enough data?" */
             data_score?: number;
             /** @description Source references for fee and card data */
             sources?: {
@@ -1449,7 +1449,7 @@ export interface operations {
                                 cashback_reason?: string | null;
                                 intents_used: string[];
                             }[];
-                            /** @description Comparison rows — one per criterion. Values keyed by card_id. */
+                            /** @description Comparison rows - one per criterion. Values keyed by card_id. */
                             table: {
                                 /**
                                  * @description Machine-readable criterion identifier.
@@ -1652,14 +1652,14 @@ export interface operations {
                                     /** @description Human-readable explanation. */
                                     reason: string;
                                 } | null;
-                                /** @description Advisory notes for the consumer. Fires when optimal cashback spend across all rules is less than min_spend_per_period — informing the consumer that some spend must go to non-cashback categories to meet the monthly minimum. */
+                                /** @description Advisory notes for the consumer. Fires when optimal cashback spend across all rules is less than min_spend_per_period - informing the consumer that some spend must go to non-cashback categories to meet the monthly minimum. */
                                 notes?: string[] | null;
                             };
                         };
                     };
                 };
             };
-            /** @description Bad request — no intents on card and none provided in body */
+            /** @description Bad request - no intents on card and none provided in body */
             400: {
                 headers: {
                     [name: string]: unknown;
@@ -2105,6 +2105,13 @@ export interface operations {
             };
             /** @description Missing or invalid mcc query param */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description MCC code not in registry and no matching merchants or cards */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
