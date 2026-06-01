@@ -37,10 +37,22 @@
     --font-display:"Cal Sans", sans-serif;
     --font-body:"Inter Tight", sans-serif;
 
-    /* Brand */
-    --color-primary:#ef3c23;
+    /* Brand — primary scale */
+    --color-primary:#E8321A;
+    --color-primary-dark:#C42A12;
+    --color-primary-light:#FF5A40;
+    --color-primary-subtle:#FFF0ED;
     --color-black:#000;
     --color-white:#fff;
+
+    /* Neutral scale */
+    --color-neutral-900:#0D0D0D;
+    --color-neutral-700:#2E2E2E;
+    --color-neutral-500:#6B6B6B;
+    --color-neutral-300:#ABABAB;
+    --color-neutral-100:#F5F5F5;
+    --color-neutral-50:#FAFAFA;
+    --color-neutral-0:#FFFFFF;
 
     /* Backgrounds */
     --color-bg-light:#f7f7f7;
