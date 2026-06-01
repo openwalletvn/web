@@ -363,26 +363,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/meta/cashback-categories": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all cashback categories
-         * @description Returns a list of all cashback spending categories
-         */
-        get: operations["getAllCashbackCategories"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/meta/tiers": {
         parameters: {
             query?: never;
@@ -435,6 +415,26 @@ export interface paths {
          * @description Returns the nested group tree used to navigate intents from macro to micro to atomic level in the UI
          */
         get: operations["getIntentGroups"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mcc": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Look up by MCC code
+         * @description Returns merchants and card IDs that match a given 4-digit MCC code. Also returns the MCC label/slug if the code is in the MCC registry.
+         */
+        get: operations["lookupMcc"];
         put?: never;
         post?: never;
         delete?: never;
@@ -779,23 +779,31 @@ export interface components {
              * @example shopee
              */
             co_brand?: string;
-        };
-        CashbackCategory: {
             /**
-             * @description Unique kebab-case identifier
-             * @example dining
+             * @description MCC codes this merchant typically uses. Ranges (e.g. "7374-7379") expanded at generate time.
+             * @example [
+             *       "7372"
+             *     ]
+             */
+            mcc?: string[];
+        };
+        /** @description A Merchant Category Code entry. */
+        Mcc: {
+            /**
+             * @description 4-digit MCC code
+             * @example 7372
+             */
+            code: string;
+            /**
+             * @description Kebab-case identifier
+             * @example software
              */
             slug: string;
             /**
-             * @description Vietnamese display name
-             * @example Ăn uống
+             * @description Human-readable label in Vietnamese
+             * @example Phần mềm
              */
             label: string;
-            /**
-             * @description Emoji icon
-             * @example 🍜
-             */
-            icon: string;
         };
         /** @description A spend tier for tiered cashback rates. */
         SpendTier: {
@@ -864,16 +872,20 @@ export interface components {
              */
             merchants?: string[];
             /**
-             * @description Maximum number of intents/merchants the cardholder can apply this rule to per billing cycle. Use when the product lets the user pick N intents each cycle. Example: MSB mDigi (max_intents: 1, pick one of dining/travel/digital per cycle), VIB Family Link (max_intents: 1, pick one of education/health/insurance). Does not affect ranking — only affects calcCashback display accuracy.
+             * @description MCC codes this rule targets. More specific than intents; matched first when present.
+             * @example [
+             *       "7372",
+             *       "5045"
+             *     ]
+             */
+            mcc?: string[];
+            /**
+             * @description Maximum number of intents/merchants the cardholder can apply this rule to per billing cycle. Use when the product lets the user pick N intents each cycle. Example: MSB mDigi (max_intents: 1, pick one of dining/travel/digital per cycle), VIB Family Link (max_intents: 1, pick one of education/health/insurance). Does not affect ranking — only affects computeCashbackResult display accuracy.
              * @example 1
              */
             max_intents?: number;
             /** @description Spend-tiered rates. When present, rate/cap are display-only summaries of the best tier. */
             tiers?: components["schemas"]["SpendTier"][];
-            /** @description ISO 8601 date (YYYY-MM-DD) when this rule becomes active. Absent = no start restriction. */
-            valid_from?: string;
-            /** @description ISO 8601 date (YYYY-MM-DD, inclusive) after which this rule is expired. Absent = no end restriction. */
-            valid_until?: string;
             /**
              * @description Free-text for unlock conditions, user-selectable mechanics, exclusions, or tier details that do not fit structured fields. Always in Vietnamese.
              * @example Khách hàng chọn 1 danh mục mỗi kỳ sao kê
@@ -946,7 +958,7 @@ export interface components {
              */
             merchants?: string[];
             /**
-             * @description Cashback category slugs from data/cashback-categories.json that satisfy this intent
+             * @description Cashback category group slugs that satisfy this intent
              * @example [
              *       "ecommerce"
              *     ]
@@ -1236,11 +1248,11 @@ export interface operations {
                 /** @description Filter by card network (comma-separated OR, e.g. "visa,mastercard") */
                 network?: "visa" | "mastercard" | "jcb" | "napas" | "amex" | "unionpay";
                 /** @description Filter by bank ID (comma-separated OR, e.g. "bidv,techcombank") */
-                bank_id?: "acb" | "agribank" | "bidv" | "bvbank" | "eximbank" | "hsbc" | "kbank" | "lpbank" | "mb" | "msb" | "ncb" | "ocb" | "sacombank" | "seabank" | "shb" | "techcombank" | "uob" | "vib" | "vietcombank" | "vietinbank" | "vpbank" | "woori";
+                bank_id?: "acb" | "agribank" | "bidv" | "bvbank" | "eximbank" | "hsbc" | "kbank" | "liobank" | "lpbank" | "mb" | "msb" | "ncb" | "ocb" | "sacombank" | "seabank" | "shb" | "techcombank" | "uob" | "vib" | "vietcombank" | "vietinbank" | "vpbank" | "woori";
                 /** @description Filter by co-brand partner identifier (comma-separated OR, e.g. "vietnam-airlines,grab") */
                 co_brand?: string;
                 /** @description Filter by spending intent slug (comma-separated OR, e.g. "shopee,lazada"). Returns cards whose intents[] array includes any of the given values. */
-                intent?: "shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads";
+                intent?: "shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books";
                 /** @description Filter by contactless payment methods (comma-separated OR, e.g. "apple_pay,google_pay") */
                 contactless?: string;
                 /** @description Filter by card tier (comma-separated OR, e.g. "infinite,signature") */
@@ -1258,7 +1270,7 @@ export interface operations {
                 /** @description Atomic filter: card has ≥1 cashback rule with this geography scope. "unscoped" matches rules with no geography restriction. */
                 rule_geography?: "domestic" | "foreign" | "unscoped";
                 /** @description Atomic filter: card has ≥1 cashback rule targeting this intent slug (comma-separated OR, e.g. "digital,all"). */
-                rule_intent?: "shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "all";
+                rule_intent?: "shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books" | "all";
                 /** @description Filter by cashback benefit. "true" returns only cards with ≥1 cashback rule. "false" returns only cards with no cashback rules. */
                 has_cashback?: "true" | "false";
             };
@@ -1310,7 +1322,7 @@ export interface operations {
                      *       "shopee"
                      *     ]
                      */
-                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads")[];
+                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
                     /**
                      * @description Monthly spend in VND used to estimate cashback. Default 3,000,000.
                      * @example 3000000
@@ -1401,7 +1413,7 @@ export interface operations {
                      */
                     card_ids: string[];
                     /** @description Intent slugs for cashback estimation context. */
-                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads")[];
+                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
                     /**
                      * @description Monthly spend in VND for cashback estimates. Default 3,000,000.
                      * @example 3000000
@@ -1419,8 +1431,53 @@ export interface operations {
                 content: {
                     "application/json": {
                         success?: boolean;
-                        /** @description Comparison result keyed by card ID. */
-                        data?: Record<string, never>;
+                        /** @description Structured side-by-side comparison result. */
+                        data?: {
+                            /** @description Monthly spend used for cashback estimates (VND). */
+                            monthly_spend: number;
+                            /** @description Intent slugs used for cashback estimation, or null if none provided. */
+                            intents_context?: string[] | null;
+                            /** @description Intent slugs shared by all compared cards. */
+                            intent_overlap: string[];
+                            /** @description Per-card metadata and cashback breakdown. */
+                            cards: {
+                                card_id: string;
+                                card_name: string;
+                                bank_id: string;
+                                network: string;
+                                cashback_breakdown: Record<string, never>[];
+                                cashback_reason?: string | null;
+                                intents_used: string[];
+                            }[];
+                            /** @description Comparison rows — one per criterion. Values keyed by card_id. */
+                            table: {
+                                /**
+                                 * @description Machine-readable criterion identifier.
+                                 * @enum {string}
+                                 */
+                                criterion: "cashback_per_month" | "annual_fee" | "annual_supplementary_fee" | "issuance_fee" | "cancellation_fee" | "foreign_fee" | "foreign_dcc_fee" | "interest_free_days" | "min_spend_hurdle" | "network_rank" | "card_score" | "data_score";
+                                /** @description Human-readable label for the criterion. */
+                                label: string;
+                                /**
+                                 * @description Section grouping for display.
+                                 * @enum {string}
+                                 */
+                                section?: "cashback" | "fees" | "payment" | "scores";
+                                /**
+                                 * @description Value unit for display formatting.
+                                 * @enum {string|null}
+                                 */
+                                unit: "currency" | "percent" | "rank" | "score" | null;
+                                /** @description Whether a higher value is considered better for this criterion. */
+                                higher_is_better: boolean;
+                                /** @description card_id of the winning card for this criterion, or null if tied. */
+                                winner: string | null;
+                                /** @description Criterion value for each card, keyed by card_id. */
+                                values: {
+                                    [key: string]: number;
+                                };
+                            }[];
+                        };
                     };
                 };
             };
@@ -1532,7 +1589,7 @@ export interface operations {
             content: {
                 "application/json": {
                     /** @description Intent slugs to calculate for. Defaults to the card's own intents when omitted. */
-                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads")[];
+                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
                     /**
                      * @description Total monthly spend in VND. Default 3,000,000.
                      * @example 3000000
@@ -1576,6 +1633,8 @@ export interface operations {
                                     intents?: string[] | null;
                                     merchants?: string[] | null;
                                     is_catchall: boolean;
+                                    /** @description True when this rule is outside its valid_from/valid_until window. Cashback is 0; spend is not consumed. */
+                                    cashback_expired?: boolean;
                                     matched_intents?: string[];
                                     /** @description Per-intent cashback split within this rule. Only present when the rule has category_caps. */
                                     intent_breakdown?: {
@@ -1914,32 +1973,6 @@ export interface operations {
             };
         };
     };
-    getAllCashbackCategories: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Success */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success?: boolean;
-                        data?: components["schemas"]["CashbackCategory"][];
-                        meta?: {
-                            total?: number;
-                        };
-                    };
-                };
-            };
-        };
-    };
     getTiers: {
         parameters: {
             query?: never;
@@ -2016,6 +2049,66 @@ export interface operations {
                         data?: components["schemas"]["IntentGroupNode"][];
                     };
                 };
+            };
+        };
+    };
+    lookupMcc: {
+        parameters: {
+            query: {
+                /**
+                 * @description 4-digit MCC code to look up (e.g. "7372")
+                 * @example 7372
+                 */
+                mcc: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success?: boolean;
+                        data?: {
+                            /**
+                             * @description The queried MCC code
+                             * @example 7372
+                             */
+                            code: string;
+                            /**
+                             * @description Kebab-case slug if code is in the MCC registry
+                             * @example software
+                             */
+                            slug?: string;
+                            /**
+                             * @description Vietnamese label if code is in the MCC registry
+                             * @example Phần mềm
+                             */
+                            label?: string;
+                            /** @description Merchants whose mcc[] includes this code. */
+                            matched_merchants: components["schemas"]["Merchant"][];
+                            /** @description IDs of cards that have a cashback rule targeting this MCC. */
+                            matched_card_ids: string[];
+                        };
+                        meta?: {
+                            merchant_count?: number;
+                            card_count?: number;
+                        };
+                    };
+                };
+            };
+            /** @description Missing or invalid mcc query param */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

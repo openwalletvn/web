@@ -1,15 +1,40 @@
 import Link from 'next/link';
-import type {Card, CardFees, Intent} from '@/lib/api';
+import {IconCircleCheckFilled} from '@tabler/icons-react';
+import type {Card, CompareResult, CompareTableRow as ApiRow, Intent} from '@/lib/api';
 
 import {CompareDueDateRow} from './compare-due-date-row';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
-import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
 import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
+import {formatFeePartsCompact} from '@/lib/utils';
 
 const empty = <span className="text-slate-300">—</span>;
 
+// VI labels for API criteria — fallback to API label if not mapped
+const VI_LABELS: Record<string, string> = {
+    cashback_per_month: 'Cashback hàng tháng',
+    min_spend_hurdle: 'Chi tiêu tối thiểu',
+    annual_fee: 'Thường niên',
+    annual_supplementary_fee: 'Thẻ phụ',
+    issuance_fee: 'Phát hành',
+    cancellation_fee: 'Hủy thẻ',
+    foreign_fee: 'Ngoại tệ',
+    foreign_dcc_fee: 'Ngoại tệ DCC',
+    interest_free_days: 'Ngày miễn lãi',
+    network_rank: 'Độ phổ biến mạng',
+    card_score: 'Điểm thẻ',
+    data_score: 'Điểm dữ liệu',
+};
+
+const SECTION_VI_LABELS: Record<string, string> = {
+    cashback: 'Cashback',
+    fees: 'Phí',
+    payment: 'Thanh toán',
+    scores: 'Điểm đánh giá',
+};
+
 interface Props {
     cards: (Card | null)[];
+    compareResult?: CompareResult | null;
     intentMap?: Map<string, Intent>;
 }
 
@@ -26,28 +51,62 @@ function SectionHeader({ label }: { label: string }) {
 interface RowProps {
     label: string;
     values: React.ReactNode[];
+    winnerIndex?: number | null;
 }
 
-function Row({ label, values }: RowProps) {
+function Row({label, values, winnerIndex}: RowProps) {
     return (
         <div className="py-3">
             <p className="text-xs text-slate-400 mb-1.5">{label}</p>
             <div className="grid" style={{ gridTemplateColumns: `repeat(${values.length}, 1fr)` }}>
                 {values.map((v, i) => (
-                    <div key={i} className="text-body-md text-slate-800">{v}</div>
+                    <div key={i}
+                         className={`text-body-md flex items-center gap-1 ${winnerIndex === i ? 'text-green-600 font-semibold' : 'text-slate-800'}`}>
+                        {winnerIndex === i && <IconCircleCheckFilled size={14} className="shrink-0"/>}
+                        {v}
+                    </div>
                 ))}
             </div>
         </div>
     );
 }
 
+function formatApiValue(value: number, unit: ApiRow['unit']): React.ReactNode {
+    if (unit === 'currency') {
+        if (value === 0) return 'Miễn phí';
+        const {value: v, unit: u} = formatFeePartsCompact({amount: value, type: 'currency'});
+        return <>{v}{u}</>;
+    }
+    if (unit === 'percent') return value === 0 ? '0%' : `${value}%`;
+    if (unit === 'rank') return `#${value}`;
+    if (unit === 'score') return Number.isInteger(value) ? String(value) : value.toFixed(1);
+    return String(value);
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function CompareTable({ cards, intentMap = new Map() }: Props) {
+export function CompareTable({cards, compareResult, intentMap = new Map()}: Props) {
+    const cardIds = cards.map(c => c?.id ?? null);
+
+    const winnerIndexOf = (criterion: string): number | null => {
+        const winnerId = compareResult?.table.find(r => r.criterion === criterion)?.winner ?? null;
+        if (!winnerId) return null;
+        const idx = cardIds.indexOf(winnerId);
+        return idx === -1 ? null : idx;
+    };
+
     const purelyDebit = (c: Card) => c.card_type.every((t) => t === 'debit' || t === 'atm');
     const showPaymentSection = cards.some((c) => c && !purelyDebit(c));
 
-    // ── Section 1 — identity ──────────────────────────────────────────────────
+    // Group API table rows by section
+    const rowsBySection = new Map<string, ApiRow[]>();
+    for (const row of compareResult?.table ?? []) {
+        const group = rowsBySection.get(row.section) ?? [];
+        group.push(row);
+        rowsBySection.set(row.section, group);
+    }
+
+    // ── Visual rows ──────────────────────────────────────────────────────────
     const networkValues = cards.map((c) => c && c.card_network_data
         ? <OwBadge variant="network" networkData={c.card_network_data} tier={c.card_tier}/>
         : empty);
@@ -58,22 +117,6 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
             </OwBadges>
         )
         : empty);
-
-    // ── Section 2 — fees ──────────────────────────────────────────────────────
-    const feeRows: Array<{ label: string; key: keyof CardFees }> = [
-        { label: 'Thường niên',   key: 'annual' },
-        { label: 'Thẻ phụ',      key: 'annual_supplementary' },
-        { label: 'Phát hành',    key: 'issuance' },
-        { label: 'Hủy thẻ',      key: 'cancellation' },
-        { label: 'Ngoại tệ',     key: 'foreign' },
-        { label: 'Ngoại tệ DCC', key: 'foreign_dcc' },
-    ];
-
-    // ── Section 3 — payment ───────────────────────────────────────────────────
-    const statements = cards.map((c) => c ? (c.statement_date ? `Ngày ${c.statement_date}` : '—') : empty);
-    const freeDays = cards.map((c) => c ? (c.interest_free_days ? `${c.interest_free_days} ngày` : '—') : empty);
-
-    // ── Section 4 — utility ───────────────────────────────────────────────────
     const contactlessValues = cards.map((c) => {
         if (!c) return empty;
         const methods = c.contactless_methods_data;
@@ -84,10 +127,41 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
             </OwBadges>
         );
     });
+    const statements = cards.map((c) => c ? (c.statement_date ? `Ngày ${c.statement_date}` : '—') : empty);
+
+    // ── Dynamic API section renderer ─────────────────────────────────────────
+    function renderApiSection(sectionKey: string) {
+        const rows = rowsBySection.get(sectionKey);
+        if (!rows?.length) return null;
+        return rows.map(row => {
+            const values = cardIds.map(id => {
+                const v = id != null ? (row.values[id] ?? 0) : null;
+                return v != null ? formatApiValue(v, row.unit) : empty;
+            });
+            return (
+                <Row
+                    key={row.criterion}
+                    label={VI_LABELS[row.criterion] ?? row.label}
+                    values={values}
+                    winnerIndex={winnerIndexOf(row.criterion)}
+                />
+            );
+        });
+    }
+
+    // Sections that exist in the API result, in order
+    const apiSections = ['cashback', 'fees', 'payment', 'scores'].filter(s => rowsBySection.has(s));
+
+    // Win counts per card
+    const winCounts = cardIds.map(id =>
+        id ? (compareResult?.table ?? []).filter(r => r.winner === id).length : 0
+    );
+    const maxWins = Math.max(...winCounts);
+    const hasWinner = compareResult && winCounts.some(w => w > 0);
 
     return (
         <div className="ow-compare-table">
-            {/* Section 1 — intents */}
+            {/* Intents — visual, Card-driven */}
             {cards.some((c) => c?.intents?.length) && (
                 <>
                     <SectionHeader label="Phù hợp với" />
@@ -125,7 +199,7 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
                 </>
             )}
 
-            {/* Section 2 — identity */}
+            {/* Identity — visual, Card-driven */}
             <SectionHeader label="Thông tin" />
             <Row
                 label="Ngân hàng"
@@ -137,28 +211,46 @@ export function CompareTable({ cards, intentMap = new Map() }: Props) {
             <Row label="Mạng lưới" values={networkValues} />
             <Row label="Loại thẻ" values={types} />
 
-            {/* Section 3 — fees */}
-            <SectionHeader label="Phí" />
-            {feeRows.map(({ label, key }) => {
-                if (!cards.some((c) => c?.fees?.[key] != null)) return null;
-                const values = cards.map((c) => {
-                    const fee = c?.fees?.[key];
-                    return fee ? <OwFeeAmount amount={fee.amount} type={fee.type}/> : empty;
-                });
-                return <Row key={key} label={label} values={values} />;
-            })}
-
-            {/* Section 3 — payment (credit/hybrid cards only) */}
-            {showPaymentSection && (
+            {/* Tổng kết banner */}
+            {hasWinner && (
                 <>
-                    <SectionHeader label="Thanh toán" />
-                    <Row label="Ngày sao kê" values={statements} />
-                    <Row label="Số ngày miễn lãi" values={freeDays} />
-                    <CompareDueDateRow cards={cards} />
+                    <SectionHeader label="Tổng kết" />
+                    <div className="grid py-3" style={{ gridTemplateColumns: `repeat(${cards.length}, 1fr)` }}>
+                        {cards.map((c, i) => {
+                            const wins = winCounts[i] ?? 0;
+                            const isOverallWinner = wins === maxWins && wins > 0;
+                            return (
+                                <div key={c?.id ?? i} className={`flex flex-col gap-1 p-3 rounded-lg ${isOverallWinner ? 'bg-green-50 border border-green-200' : 'bg-slate-50 border border-transparent'}`}>
+                                    <div className={`flex items-center gap-1 text-sm font-semibold ${isOverallWinner ? 'text-green-700' : 'text-slate-500'}`}>
+                                        {isOverallWinner && <IconCircleCheckFilled size={14} className="shrink-0" />}
+                                        {wins} tiêu chí tốt hơn
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </>
             )}
 
-            {/* Section 5 — utility */}
+            {/* Dynamic API sections */}
+            {apiSections.map(sectionKey => (
+                <div key={sectionKey}>
+                    {sectionKey === 'payment' && !showPaymentSection ? null : (
+                        <>
+                            <SectionHeader label={SECTION_VI_LABELS[sectionKey] ?? sectionKey}/>
+                            {renderApiSection(sectionKey)}
+                            {sectionKey === 'payment' && showPaymentSection && (
+                                <>
+                                    <Row label="Ngày sao kê" values={statements}/>
+                                    <CompareDueDateRow cards={cards}/>
+                                </>
+                            )}
+                        </>
+                    )}
+                </div>
+            ))}
+
+            {/* Utility — visual, Card-driven */}
             <SectionHeader label="Tiện ích" />
             <Row label="Thanh toán không tiếp xúc" values={contactlessValues} />
         </div>

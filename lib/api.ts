@@ -411,3 +411,45 @@ export async function getRelatedCardsForMany(cardIds: string[]): Promise<Related
     }
     return result;
 }
+
+export type CompareTableRow = {
+    criterion: string;
+    label: string;
+    section: string;
+    unit: 'currency' | 'percent' | 'rank' | 'score' | null;
+    higher_is_better: boolean;
+    winner: string | null;
+    values: Record<string, number>;
+};
+
+export type CompareCardEntry = {
+    card_id: string;
+    card_name: string;
+    bank_id: string;
+    network: string;
+    cashback_breakdown: unknown[];
+    cashback_reason?: string;
+    intents_used: string[];
+};
+
+export type CompareResult = {
+    monthly_spend: number;
+    intents_context: string[] | null;
+    intent_overlap: string[];
+    cards: CompareCardEntry[];
+    table: CompareTableRow[];
+};
+
+export async function compareCards(
+    cardIds: string[],
+    opts?: { intents?: string[]; monthly_spend?: number },
+): Promise<CompareResult> {
+    const res = await apiFetch('/api/v1/cards/compare', {
+        method: 'POST',
+        body: JSON.stringify({ card_ids: cardIds, ...opts }),
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const json = (await res.json()) as { success: boolean; data: CompareResult };
+    if (!json.success) throw new Error('Failed to compare cards');
+    return json.data;
+}

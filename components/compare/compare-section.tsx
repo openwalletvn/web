@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { IconPlus, IconX } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import type { SearchCard } from '@/lib/search-types';
-import type { Card, Intent } from '@/lib/api';
-import { getCard } from '@/lib/api';
+import type { Card, Intent, CompareResult } from '@/lib/api';
+import { getCard, compareCards } from '@/lib/api';
 import { CardImage } from '@/components/cards/card-image';
 import { CardSearchInput } from '@/components/compare/card-search-input';
 import { CompareTable } from '@/components/compare/compare-table';
@@ -67,12 +67,13 @@ function CompareTemplateSkeleton({ numSlots }: { numSlots: number }) {
 
 interface CompareDisplayProps {
     cards: (Card | null)[];
+    compareResult?: CompareResult | null;
     children?: React.ReactNode;
     onStickyChange?: (visible: boolean) => void;
     intentMap?: Map<string, Intent>;
 }
 
-function CompareDisplay({ cards, children, onStickyChange, intentMap }: CompareDisplayProps) {
+function CompareDisplay({ cards, compareResult, children, onStickyChange, intentMap }: CompareDisplayProps) {
     const cardHeaderRef = useRef<HTMLDivElement>(null);
     const [showSticky, setShowSticky] = useState(false);
 
@@ -149,7 +150,7 @@ function CompareDisplay({ cards, children, onStickyChange, intentMap }: CompareD
                 ))}
             </div>
 
-            <CompareTable cards={cards} intentMap={intentMap} />
+            <CompareTable cards={cards} compareResult={compareResult} intentMap={intentMap} />
 
             {children && (
                 <div className="mt-12 prose prose-slate max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline">
@@ -256,6 +257,18 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap, re
 
     const isLoading = cards.filter(Boolean).some((c) => !cardCache[c!.id]);
 
+    // Compare result — fetched once all slot cards are loaded
+    const [compareResult, setCompareResult] = useState<CompareResult | null>(null);
+    const lastCompareKey = useRef('');
+    useEffect(() => {
+        const validIds = slotCards.filter((c): c is Card => c !== null).map((c) => c.id);
+        if (validIds.length < 2 || isLoading) return;
+        const key = validIds.join(',');
+        if (key === lastCompareKey.current) return;
+        lastCompareKey.current = key;
+        compareCards(validIds).then(setCompareResult).catch(() => setCompareResult(null));
+    }, [slotCards, isLoading]);
+
     // Save to recent only when sticky header visible + ≥ 2 valid cards
     const lastSavedKey = useRef('');
     useEffect(() => {
@@ -337,7 +350,7 @@ function CompareSectionInner({ defaultPair, children, excludePair, intentMap, re
                     {isLoading ? (
                         <CompareTemplateSkeleton numSlots={numSlots} />
                     ) : (
-                        <CompareDisplay cards={slotCards} onStickyChange={setStickyVisible} intentMap={intentMap}>
+                        <CompareDisplay cards={slotCards} compareResult={compareResult} onStickyChange={setStickyVisible} intentMap={intentMap}>
                             {children}
                         </CompareDisplay>
                     )}
