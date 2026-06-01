@@ -3,7 +3,7 @@ import path from 'path'
 import { MetadataRoute } from 'next'
 import { getComparePairs } from '@/lib/api'
 import { apiFetch } from '@/lib/api'
-import { getCompareMdxPairs } from '@/lib/compare-mdx'
+// lib/compare-mdx + content/so-sanh/ MDX files — unused, remove when cleaning up
 import { getTool } from '@/lib/tools'
 
 export const dynamic = 'force-static'
@@ -78,11 +78,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // 5. Compare pairs
-  const [apiPairs, mdxPairs] = await Promise.all([
-    getComparePairs().catch(() => []),
-    Promise.resolve(getCompareMdxPairs()),
-  ])
-  const allPairs = [...new Set([...apiPairs.map((p) => p.compare_path), ...mdxPairs.map((p) => `/${p}`)])]
+  const apiPairs = await getComparePairs().catch(() => [])
+  const allPairs = apiPairs.map((p) => p.compare_path)
   const comparePages = [
     { url: `${BASE_URL}${cardBattleHref}`, changeFrequency: 'monthly' as const, priority: 0.8 },
     ...allPairs.map((pair) => ({
