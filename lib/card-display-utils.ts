@@ -1,7 +1,17 @@
-import type { Card } from '@/lib/api';
+import type { Card, CashbackRule } from '@/lib/api';
 import type { WalletCard } from './db';
 
 export const CATCHALL_SLUGS = new Set(['all', 'all-online', 'all-offline']);
+
+export function buildSlugRateMap(rules: CashbackRule[]): Map<string, number> {
+    const map = new Map<string, number>();
+    for (const rule of rules) {
+        for (const slug of [...(rule.merchants ?? []), ...(rule.intents ?? []).filter(s => !CATCHALL_SLUGS.has(s))]) {
+            if (!map.has(slug)) map.set(slug, rule.rate);
+        }
+    }
+    return map;
+}
 
 export function getRateDisplay(card: Card, intentSlug?: string): string {
     const rules = card.cashback?.rules ?? [];

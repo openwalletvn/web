@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import type {CashbackRule, Intent} from '@/lib/api';
 import type {CashbackBreakdownItem, RankedCard} from '@/lib/card-ranker';
-import {CATCHALL_SLUGS, getRateDisplay} from '@/lib/card-display-utils';
+import {buildSlugRateMap, CATCHALL_SLUGS, getRateDisplay} from '@/lib/card-display-utils';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwRankBadge} from '@/components/ow-ui/ow-rank-badge';
 import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
 import {IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
+import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
 
 type IntentMap = Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
 
@@ -64,12 +65,7 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
     const highlighted = new Set(highlightedSlugs ?? []);
 
     const catchallRules = card.cashback?.rules.filter(r => r.intents?.some(c => CATCHALL_SLUGS.has(c))) ?? [];
-    const slugRateMap = new Map<string, number>();
-    for (const rule of card.cashback?.rules ?? []) {
-        for (const slug of [...(rule.merchants ?? []), ...(rule.intents ?? []).filter(c => !CATCHALL_SLUGS.has(c))]) {
-            if (!slugRateMap.has(slug)) slugRateMap.set(slug, rule.rate);
-        }
-    }
+    const slugRateMap = buildSlugRateMap(card.cashback?.rules ?? []);
     const cardIntents = intentMap
         ? [...new Set(card.cashback?.rules.flatMap(r => [
               ...(r.merchants ?? []),
@@ -136,18 +132,7 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
                                 {catchallLabel(rule)}
                             </OwBadge>
                         ))}
-                        {cardIntents.map(intent => (
-                            <OwBadge
-                                small
-                                key={intent.slug}
-                                variant="intent"
-                                slug={intent.slug}
-                                emoji={intent.icon}
-                                label={intent.label}
-                                rate={intent.rate}
-                                highlighted={highlighted.has(intent.slug)}
-                            />
-                        ))}
+                        <OwCardIntentBadges intents={cardIntents} highlighted={highlighted} small/>
                     </OwBadges>
                 )}
 

@@ -1,10 +1,11 @@
-import Link from 'next/link';
 import {IconCircleCheckFilled} from '@tabler/icons-react';
-import type {Card, CompareResult, CompareTableRow as ApiRow, Intent} from '@/lib/api';
+import type {Card, CompareResult, CompareTableRow as ApiRow} from '@/lib/api';
+import {useIntentMap} from '@/lib/intent-map-context';
 
 import {CompareDueDateRow} from './compare-due-date-row';
+import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
-import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
+import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
 import {formatFeePartsCompact} from '@/lib/utils';
 
 import {colSpan} from './compare-col-span';
@@ -38,7 +39,6 @@ const SECTION_VI_LABELS: Record<string, string> = {
 interface Props {
     cards: (Card | null)[];
     compareResult?: CompareResult | null;
-    intentMap?: Map<string, Intent>;
 }
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
@@ -55,12 +55,13 @@ interface RowProps {
     label: string;
     values: React.ReactNode[];
     winnerIndex?: number | null;
+    id?: string;
 }
 
-function Row({label, values, winnerIndex}: RowProps) {
+function Row({label, values, winnerIndex, id}: RowProps) {
     return (
-        <div className="ow-compare-row py-3">
-            <p className="text-label mb-1.5">{label}</p>
+        <div id={id} className="ow-compare-row sm:py-6 py-3">
+            <p className="text-label sm:mb-3 mb-1.5">{label}</p>
             <div className="ow-compare-row-inner grid grid-cols-12">
                 {values.map((v, i) => (
                     <div key={i}
@@ -88,7 +89,8 @@ function formatApiValue(value: number, unit: ApiRow['unit']): React.ReactNode {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function CompareTable({cards, compareResult, intentMap = new Map()}: Props) {
+export function CompareTable({cards, compareResult}: Props) {
+    const intentMap = useIntentMap();
     const cardIds = cards.map(c => c?.id ?? null);
 
     const winnerIndexOf = (criterion: string): number | null => {
@@ -149,6 +151,7 @@ export function CompareTable({cards, compareResult, intentMap = new Map()}: Prop
             return (
                 <Row
                     key={row.criterion}
+                    id={`row-${row.criterion}`}
                     label={VI_LABELS[row.criterion] ?? row.label}
                     values={values}
                     winnerIndex={winnerIndexOf(row.criterion)}
@@ -172,53 +175,31 @@ export function CompareTable({cards, compareResult, intentMap = new Map()}: Prop
             {/* Identity — visual, Card-driven */}
             <SectionHeader label="Thông tin" />
             <Row
+                id="row-ngan-hang"
                 label="Ngân hàng"
-                values={cards.map((c, i) => c
-                    ? <Link key={i} href={`/ngan-hang/${c.bank_id}`} className="hover:text-brand-blue transition-colors">{c.bank_data?.name ?? c.bank_id}</Link>
+                values={cards.map((c) => c?.bank_data
+                    ? <OwBankImage className="h-[40px] w-auto" bank={c.bank_data} href={`/ngan-hang/${c.bank_id}`}/>
                     : empty
                 )}
             />
-            <Row label="Mạng lưới" values={networkValues} />
-            <Row label="Loại thẻ" values={types} />
+            <Row id="row-mang-luoi" label="Mạng lưới thẻ" values={networkValues}/>
+            <Row id="row-loai-the" label="Loại thẻ" values={types}/>
             {/* Intents — visual, Card-driven */}
             {cards.some((c) => c?.intents?.length) && (
                 <>
                     <Row
-                        label="Mục đích sử dụng"
+                        id="row-linh-vuc-uu-dai"
+                        label="Lĩnh vực ưu đãi"
                         values={cards.map((c) => {
                             if (!c?.intents?.length) return empty;
-                            const slugRateMap = new Map<string, number>();
-                            for (const rule of c.cashback?.rules ?? []) {
-                                for (const slug of [...(rule.merchants ?? []), ...(rule.intents ?? []).filter(s => !CATCHALL_SLUGS.has(s))]) {
-                                    if (!slugRateMap.has(slug)) slugRateMap.set(slug, rule.rate);
-                                }
-                            }
-                            const intents = c.intents
-                                .map((slug) => intentMap.get(slug))
-                                .filter((i): i is Intent => i !== undefined);
-                            if (!intents.length) return empty;
-                            return (
-                                <OwBadges>
-                                    {intents.map((intent) => (
-                                        <OwBadge
-                                            key={intent.slug}
-                                            variant="intent"
-                                            slug={intent.slug}
-                                            emoji={intent.icon}
-                                            label={intent.label}
-                                            rate={slugRateMap.get(intent.slug)}
-                                            highlighted
-                                        />
-                                    ))}
-                                </OwBadges>
-                            );
+                            return <OwCardIntentBadges card={c} highlighted/>;
                         })}
                     />
                 </>
             )}
 
             {/* Utility — visual, Card-driven */}
-            <Row label="Thanh toán không tiếp xúc" values={contactlessValues}/>
+            <Row id="row-thanh-toan-khong-tiep-xuc" label="Thanh toán không tiếp xúc" values={contactlessValues}/>
 
 
             {/* Dynamic API sections */}
@@ -230,7 +211,7 @@ export function CompareTable({cards, compareResult, intentMap = new Map()}: Prop
                             {renderApiSection(sectionKey)}
                             {sectionKey === 'payment' && showPaymentSection && (
                                 <>
-                                    <Row label="Ngày sao kê" values={statements}/>
+                                    <Row id="row-ngay-sao-ke" label="Ngày sao kê" values={statements}/>
                                     <CompareDueDateRow cards={cards}/>
                                 </>
                             )}
