@@ -6,7 +6,7 @@ import { lookupCompareMdx, getCompareMdxPairs } from '@/lib/compare-mdx';
 import { buildComparePageMeta } from '@/lib/page-meta/compare';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import { CompareTable } from '@/components/compare/compare-table';
-import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { MarketingPageShell } from '@/components/layout/marketing-page-shell';
 import { CompareSection } from '@/components/compare/compare-section';
 import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
 
@@ -60,26 +60,19 @@ export default async function ComparePairPage({ params }: Props) {
     const { jsonLd, breadcrumbItems } = buildComparePageMeta(cardA, cardB, mdx?.frontmatter);
     const hasContent = mdx && mdx.content.trim().length > 0;
 
+    const title = mdx?.frontmatter.title ?? `So sánh ${cards.map((c) => c!.name).join(' vs ')}`;
+
     return (
-        <div className="px-4 py-12">
-            <div className="max-w-[980px] mx-auto">
-                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-                <Breadcrumbs items={breadcrumbItems} />
-                <h1 className="mt-6 mb-8">
-                    {mdx?.frontmatter.title ?? `So sánh ${cards.map((c) => c!.name).join(' vs ')}`}
-                </h1>
-                <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap} recordOnMount={pair}>
-                    {hasContent && (
-                        <MDXRemote
-                            source={mdx.content}
-                            components={{ CompareTable: () => <CompareTable cards={[cardA, cardB]} intentMap={intentMap} /> }}
-                        />
-                    )}
-                </CompareSection>
-            </div>
-            <div className="ow-container">
-                <CompareSuggestedCards cards={suggestedCards} />
-            </div>
-        </div>
+        <MarketingPageShell title={title} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
+            <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap} recordOnMount={pair}>
+                {hasContent && (
+                    <MDXRemote
+                        source={mdx.content}
+                        components={{ CompareTable: () => <CompareTable cards={[cardA, cardB]} intentMap={intentMap} /> }}
+                    />
+                )}
+            </CompareSection>
+            <CompareSuggestedCards cards={suggestedCards} />
+        </MarketingPageShell>
     );
 }

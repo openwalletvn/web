@@ -2,15 +2,21 @@ import type {Metadata} from 'next';
 import { redirect } from 'next/navigation';
 import { getRelatedCardsForMany, getIntents } from '@/lib/api';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
+import { CompareSection } from '@/components/compare/compare-section';
+import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
+import { getTool } from '@/lib/tools';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 export const metadata: Metadata = {
     title: buildTitle(SECTION_TITLES.compare),
 };
-import { CompareSection } from '@/components/compare/compare-section';
-import { CompareSuggestedCards } from '@/components/compare/compare-suggested-cards';
-import { getTool } from '@/lib/tools';
 
 const DEFAULT_CARD_IDS = ['sacombank-uniq', 'msb-visa-online'];
+
+const BREADCRUMB_ITEMS = [
+    {label: 'Trang chủ', href: '/'},
+    {label: 'So sánh thẻ'},
+];
 
 export default async function ComparePage({
     searchParams,
@@ -31,14 +37,9 @@ export default async function ComparePage({
     ]);
     const intentMap = new Map(allIntents.map((i) => [i.slug, i]));
     return (
-        <div className="px-4 py-12">
-            <div className="max-w-[980px] mx-auto">
-                <h1 className="mb-8">So sánh thẻ</h1>
-                <CompareSection intentMap={intentMap} />
-            </div>
-            <div className="ow-container">
-                <CompareSuggestedCards cards={suggestedCards} />
-            </div>
-        </div>
+        <MarketingPageShell title="So sánh thẻ" breadcrumbItems={BREADCRUMB_ITEMS}>
+            <CompareSection intentMap={intentMap} />
+            <CompareSuggestedCards cards={suggestedCards} />
+        </MarketingPageShell>
     );
 }

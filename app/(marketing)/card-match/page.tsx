@@ -4,9 +4,15 @@ import {CardMatchFinder} from '@/components/match/card-match-finder';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {getTool} from '@/lib/tools';
 import {buildTitle} from '@/lib/page-meta/title';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 const BASE_URL = 'https://openwallet.vn';
 const tool = getTool('Card Match');
+
+const BREADCRUMB_ITEMS = [
+    {label: 'Trang chủ', href: '/'},
+    {label: 'Card Match'},
+];
 
 export const metadata: Metadata = {
     title: buildTitle('Card Match'),
@@ -33,22 +39,13 @@ export default async function CardMatchPage() {
                 url: `${BASE_URL}${tool.href}`,
                 description: 'Tìm thẻ ngân hàng phù hợp nhất với thói quen chi tiêu của bạn.',
             },
-            buildBreadcrumbJsonLd([
-                {label: 'Trang chủ', href: '/'},
-                {label: 'Card Match', href: tool.href},
-            ]),
+            buildBreadcrumbJsonLd(BREADCRUMB_ITEMS),
         ],
     };
 
     return (
-        <div>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
-            />
-            <div className="ow-container py-12">
-                <CardMatchFinder personas={personas} intents={intents}/>
-            </div>
-        </div>
+        <MarketingPageShell title="Card Match" breadcrumbItems={BREADCRUMB_ITEMS} jsonLd={jsonLd}>
+            <CardMatchFinder personas={personas} intents={intents}/>
+        </MarketingPageShell>
     );
 }
