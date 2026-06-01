@@ -1,3 +1,4 @@
+import React from 'react';
 import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
 // next-mdx-remote/rsc + lib/compare-mdx + content/so-sanh/ MDX files — unused, remove when cleaning up
@@ -50,12 +51,24 @@ export default async function ComparePairPage({ params }: Props) {
     const intentMap = new Map(allIntents.map((i) => [i.slug, i]));
     const { jsonLd, breadcrumbItems } = buildComparePageMeta(cardA, cardB);
 
-    const title = `So sánh ${cards.map((c) => c!.name).join(' vs ')}`;
+    const title = (
+        <>
+            So sánh{' '}
+            {cards.map((c, i) => (
+                <React.Fragment key={c!.id}>
+                    {i > 0 && ' vs '}
+                    <span className={i === 0 ? 'text-primary' : 'text-primary-light'}>{c!.name}</span>
+                </React.Fragment>
+            ))}
+        </>
+    );
 
     return (
         <MarketingPageShell title={title} breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
-            <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap} recordOnMount={pair} />
-            <CompareSuggestedCards cards={suggestedCards} />
+            <div className="ow-compare-wrapper mt-16">
+                <CompareSection defaultPair={pair} excludePair={pair} intentMap={intentMap} recordOnMount={pair}/>
+                <CompareSuggestedCards cards={suggestedCards}/>
+            </div>
         </MarketingPageShell>
     );
 }

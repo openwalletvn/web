@@ -1,3 +1,4 @@
+import React from 'react';
 import {Breadcrumbs, BreadcrumbSegment} from '@/components/layout/breadcrumbs';
 
 export function MarketingPageShell({
@@ -7,7 +8,7 @@ export function MarketingPageShell({
     jsonLd,
     children,
 }: {
-    title: string;
+    title: React.ReactNode;
     description?: string;
     breadcrumbItems: BreadcrumbSegment[];
     jsonLd?: object;
