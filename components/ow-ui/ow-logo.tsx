@@ -7,7 +7,6 @@ type OwLogoProps = {
     color?: 'black' | 'white' | 'red';
     className?: string;
     href?: string | null;
-    priority?: boolean;
 };
 
 function getSrc(variant: 'icon' | 'full', color: 'black' | 'white' | 'red') {
@@ -18,7 +17,7 @@ function getSrc(variant: 'icon' | 'full', color: 'black' | 'white' | 'red') {
     return '/icon.svg';
 }
 
-export function OwLogo({variant = 'icon', color = 'black', className = '', href = '/', priority = false}: OwLogoProps) {
+export function OwLogo({variant = 'icon', color = 'black', className = '', href = '/'}: OwLogoProps) {
     const src = getSrc(variant, color);
     const intrinsic = variant === 'full' ? {width: 72, height: 58} : {width: 80, height: 80};
     const img = (
@@ -26,8 +25,7 @@ export function OwLogo({variant = 'icon', color = 'black', className = '', href 
             src={src}
             alt="OpenWallet"
             {...intrinsic}
-            priority={priority}
-            style={{width: '80px', height: 'auto'}}
+            className="block w-[80px] h-auto"
         />
     );
 

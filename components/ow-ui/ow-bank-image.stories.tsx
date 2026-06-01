@@ -33,13 +33,13 @@ export const Overview: Story = {
     render: () => (
         <OwStories>
             <OwStorySection title="Default">
-                <OwBankImage bank={MOCK_BANK} priority/>
+                <OwBankImage bank={MOCK_BANK}/>
             </OwStorySection>
             <OwStorySection title="As link (href)">
-                <OwBankImage bank={MOCK_BANK} href="/ngan-hang/techcombank" priority/>
+                <OwBankImage bank={MOCK_BANK} href="/ngan-hang/techcombank"/>
             </OwStorySection>
             <OwStorySection title="Custom size">
-                <OwBankImage bank={MOCK_BANK} className="w-[200px] h-8" priority/>
+                <OwBankImage bank={MOCK_BANK} className="w-[200px] h-8"/>
             </OwStorySection>
         </OwStories>
     ),
@@ -48,7 +48,7 @@ export const Overview: Story = {
 // ─── Individual ──────────────────────────────────────────────────────────────
 
 export const Default: Story = {
-    render: () => <OwBankImage bank={MOCK_BANK} priority/>,
+    render: () => <OwBankImage bank={MOCK_BANK}/>,
 };
 
 export const AsLink: Story = {

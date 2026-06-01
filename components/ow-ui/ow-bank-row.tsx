@@ -10,10 +10,9 @@ import {OwBadge} from "@/components/ow-ui/ow-badge";
 interface Props {
     bank: Bank;
     className?: string;
-    priority?: boolean;
 }
 
-export function OwBankRow({bank, className, priority = false}: Props) {
+export function OwBankRow({bank, className}: Props) {
     return (
         <div
             className={`ow-bank-row group grid grid-cols-12 gap-2 p-3 max-sm:py-4 md:rounded-full rounded-lg bg-[#f6f6f6] ${className ?? ''}`}>
@@ -23,8 +22,7 @@ export function OwBankRow({bank, className, priority = false}: Props) {
                 {/*image*/}
                 <OwBankImage bank={bank}
                              className="lg:w-[200px] lg:min-w-[200px] sm:w-[100px] sm:min-w-[100px] sm:h-8 md:px-4 h-6 w-auto"
-                             href={`/ngan-hang/${bank.id}`}
-                             priority={priority}/>
+                             href={`/ngan-hang/${bank.id}`}/>
 
                 {/*sep*/}
                 <div className="w-[1px] h-full bg-gray-300 hidden sm:block"></div>

@@ -10,10 +10,9 @@ interface Props {
     bank: Bank;
     href?: string;
     className?: string;
-    priority?: boolean;
 }
 
-export function OwBankImage({bank, href, className, priority = false}: Props) {
+export function OwBankImage({bank, href, className}: Props) {
     const url = getBankImageUrl(bank.logo_url);
     const content = (
         <Image
@@ -21,9 +20,7 @@ export function OwBankImage({bank, href, className, priority = false}: Props) {
             alt={bank.name}
             width={120}
             height={24}
-            priority={priority}
-            className={cn("object-contain mix-blend-multiply dark:mix-blend-screen")}
-            style={{width: '100%', height: '100%'}}
+            className={cn("object-contain size-full mix-blend-multiply dark:mix-blend-screen")}
         />
     );
 
