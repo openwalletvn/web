@@ -6,7 +6,6 @@ export type {
     FeeEntry,
     FeeWaiver,
     FeeEntryWithWaiver,
-    CashbackCategory,
     CashbackCap,
     CashbackRule,
     CashbackBenefit,
@@ -26,7 +25,6 @@ import type {
     Brand,
     FeeEntry,
     FeeEntryWithWaiver,
-    CashbackCategory,
     Merchant,
     Intent,
     IntentGroupNode,
@@ -236,18 +234,6 @@ interface BrandDetailResponse {
     data: Brand;
 }
 
-interface CashbackCategoriesResponse {
-    success: boolean;
-    data: CashbackCategory[];
-    meta: { total: number };
-}
-
-export async function getCashbackCategories(): Promise<CashbackCategory[]> {
-    const res = await apiFetch('/api/v1/cashback-categories');
-    const json = (await res.json()) as CashbackCategoriesResponse;
-    if (!json.success) throw new Error('Failed to fetch cashback categories');
-    return json.data;
-}
 
 interface MerchantsResponse {
     success: boolean;

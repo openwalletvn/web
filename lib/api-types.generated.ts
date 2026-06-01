@@ -574,6 +574,38 @@ export interface components {
              */
             link?: string;
         };
+        /** @description Aggregated card stats for a bank (list endpoint) */
+        BankStatsList: {
+            /** @description Total number of cards from this bank */
+            card_count: number;
+            /** @description Number of credit cards */
+            credit_count?: number;
+            /** @description Number of debit cards */
+            debit_count?: number;
+            /** @description Highest annual fee across all cards (VND) */
+            max_annual_fee?: number;
+        };
+        /** @description Full aggregated card stats for a bank (detail endpoint) */
+        BankStatsDetail: {
+            /** @description Total number of cards from this bank */
+            card_count: number;
+            /** @description Number of credit cards */
+            credit_count?: number;
+            /** @description Number of debit cards */
+            debit_count?: number;
+            /** @description Highest annual fee across all cards (VND) */
+            max_annual_fee?: number;
+            /** @description Number of hybrid (credit+debit) cards */
+            hybrid_count?: number;
+            /** @description Number of co-branded cards */
+            co_branded_count?: number;
+            /** @description Number of cards with no annual fee */
+            free_annual_fee_count?: number;
+            /** @description Card count per network (e.g. { "visa": 3, "mastercard": 2 }) */
+            network_counts?: {
+                [key: string]: number;
+            };
+        };
         /** @description A Vietnamese bank */
         Bank: {
             /** @description Unique kebab-case identifier (e.g. "bidv") */
@@ -610,6 +642,43 @@ export interface components {
             }[];
             /** @description ISO timestamp of last admin edit */
             last_modified?: string | null;
+            /** @description Aggregated card stats. Subset of fields on list endpoint; full stats on detail endpoint. */
+            stats?: {
+                /** @description Total number of cards from this bank */
+                card_count: number;
+                /** @description Number of credit cards */
+                credit_count?: number;
+                /** @description Number of debit cards */
+                debit_count?: number;
+                /** @description Highest annual fee across all cards (VND) */
+                max_annual_fee?: number;
+                /** @description Number of hybrid (credit+debit) cards */
+                hybrid_count?: number;
+                /** @description Number of co-branded cards */
+                co_branded_count?: number;
+                /** @description Number of cards with no annual fee */
+                free_annual_fee_count?: number;
+                /** @description Card count per network (e.g. { "visa": 3, "mastercard": 2 }) */
+                network_counts?: {
+                    [key: string]: number;
+                };
+            };
+            /** @description Network IDs of cards issued by this bank */
+            networks?: string[];
+            /** @description Full network data for networks this bank issues cards on. Only on detail endpoint. */
+            networks_data?: {
+                /** @description Unique identifier (e.g. "visa") */
+                id: string;
+                /** @description Human-readable display name */
+                name: string;
+                /** @description Absolute URL to the network logo */
+                logo_url: string;
+                /**
+                 * Format: uri
+                 * @description Link to the network homepage
+                 */
+                link?: string;
+            }[];
         };
         Merchant: {
             /** @description Unique kebab-case identifier */
@@ -873,6 +942,43 @@ export interface components {
                 }[];
                 /** @description ISO timestamp of last admin edit */
                 last_modified?: string | null;
+                /** @description Aggregated card stats. Subset of fields on list endpoint; full stats on detail endpoint. */
+                stats?: {
+                    /** @description Total number of cards from this bank */
+                    card_count: number;
+                    /** @description Number of credit cards */
+                    credit_count?: number;
+                    /** @description Number of debit cards */
+                    debit_count?: number;
+                    /** @description Highest annual fee across all cards (VND) */
+                    max_annual_fee?: number;
+                    /** @description Number of hybrid (credit+debit) cards */
+                    hybrid_count?: number;
+                    /** @description Number of co-branded cards */
+                    co_branded_count?: number;
+                    /** @description Number of cards with no annual fee */
+                    free_annual_fee_count?: number;
+                    /** @description Card count per network (e.g. { "visa": 3, "mastercard": 2 }) */
+                    network_counts?: {
+                        [key: string]: number;
+                    };
+                };
+                /** @description Network IDs of cards issued by this bank */
+                networks?: string[];
+                /** @description Full network data for networks this bank issues cards on. Only on detail endpoint. */
+                networks_data?: {
+                    /** @description Unique identifier (e.g. "visa") */
+                    id: string;
+                    /** @description Human-readable display name */
+                    name: string;
+                    /** @description Absolute URL to the network logo */
+                    logo_url: string;
+                    /**
+                     * Format: uri
+                     * @description Link to the network homepage
+                     */
+                    link?: string;
+                }[];
             };
             /**
              * @description Card payment network (e.g. "visa", "mastercard", "jcb", "napas")
@@ -939,11 +1045,8 @@ export interface components {
              * @enum {string}
              */
             status?: "published" | "draft" | "discontinued";
-            /**
-             * @description Supported contactless payment method IDs (e.g. ["apple-pay", "google-pay"])
-             * @default []
-             */
-            contactless_methods: ("apple-pay" | "google-pay" | "samsung-pay" | "garmin-pay")[];
+            /** @description Supported contactless payment method IDs (e.g. ["apple-pay", "google-pay"]) */
+            contactless_methods?: ("apple-pay" | "google-pay" | "samsung-pay" | "garmin-pay")[];
             /** @description Full contactless method data, included when contactless_methods is set */
             contactless_methods_data?: {
                 /** @description Unique identifier (e.g. "apple-pay") */
