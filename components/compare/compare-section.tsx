@@ -1,20 +1,21 @@
 'use client';
 
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import {Suspense, useEffect, useRef, useState} from 'react';
+import {usePathname, useRouter} from 'next/navigation';
 import Link from 'next/link';
-import { IconPlus, IconX } from '@tabler/icons-react';
-import { cn } from '@/lib/utils';
-import type { SearchCard } from '@/lib/search-types';
-import type { Card, Intent, CompareResult } from '@/lib/api';
-import { getCard, compareCards } from '@/lib/api';
+import {IconPlus, IconX} from '@tabler/icons-react';
+import {cn} from '@/lib/utils';
+import type {SearchCard} from '@/lib/search-types';
+import type {Card, CompareResult, Intent} from '@/lib/api';
+import {compareCards, getCard} from '@/lib/api';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
-import { CardSearchInput } from '@/components/compare/card-search-input';
-import { CompareTable } from '@/components/compare/compare-table';
-import { RecentCompares } from '@/components/compare/recent-compares';
-import { useRecentCompares } from '@/lib/use-recent-compares';
-import { useCardSearch } from '@/lib/use-card-search';
-import { getTool } from '@/lib/tools';
+import {CardSearchInput} from '@/components/compare/card-search-input';
+import {CompareTable} from '@/components/compare/compare-table';
+import {RecentCompares} from '@/components/compare/recent-compares';
+import {useRecentCompares} from '@/lib/use-recent-compares';
+import {useCardSearch} from '@/lib/use-card-search';
+import {getTool} from '@/lib/tools';
+import {colSpan} from './compare-col-span';
 
 const MAX_CARDS = 3;
 const cardBattleHref = getTool('Card Battle').href;
@@ -26,14 +27,12 @@ function parseIds(pair: string): string[] {
     return (pair.includes(',') ? pair.split(',') : pair.split('-vs-')).filter(Boolean);
 }
 
-import {colSpan} from './compare-col-span';
-
 // ─── Loading skeleton matching CompareTemplate dimensions ────────────────────
 
 function CompareTemplateSkeleton({ numSlots }: { numSlots: number }) {
     return (
         <div className="animate-pulse">
-            <div className="grid grid-cols-12 mb-8">
+            <div className="ow-compare-section grid grid-cols-12 mb-8">
                 {Array.from({ length: numSlots }, (_, i) => (
                     <div key={i} className={`${colSpan(numSlots, i)} flex flex-col gap-3`}>
                         <div className="flex items-end h-[200px]">
@@ -95,8 +94,9 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange, intent
 
     return (
         <div className="ow-compare-display">
-            <div className={cn('fixed top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm transition-transform duration-200 ease-out', showSticky ? 'translate-y-0' : '-translate-y-full')}>
-                <div className="ow-compare-display-sticky min-h-[80px] ow-container py-2 flex items-center">
+            <div
+                className={cn('ow-compare-sticky fixed top-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm transition-transform duration-200 ease-out', showSticky ? 'translate-y-0' : '-translate-y-full')}>
+                <div className="min-h-[80px] ow-container py-2 flex items-center">
                     <div className="grid grid-cols-12 w-full">
                         {cards.map((card, i) => (
                             <div key={card?.id ?? i} className={`${colSpan(cards.length, i)} flex items-center gap-2`}>
@@ -118,7 +118,7 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange, intent
                 </div>
             </div>
 
-            <div ref={cardHeaderRef} className="grid grid-cols-12 mb-8">
+            <div ref={cardHeaderRef} className="ow-compare-head grid grid-cols-12 mb-8">
                 {cards.map((card, i) => (
                     <div key={card?.id ?? i} className={`${colSpan(cards.length, i)} flex flex-col gap-3`}>
                         {card ? (

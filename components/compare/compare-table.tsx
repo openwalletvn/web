@@ -45,8 +45,8 @@ interface Props {
 
 function SectionHeader({ label }: { label: string }) {
     return (
-        <div className="mt-10 border-t border-slate-100 pt-5 mb-2">
-            <p className="text-sm font-bold text-slate-800">{label}</p>
+        <div className="ow-section-header mt-10 border-t border-slate-100 pt-5 mb-2">
+            <p className="text-body-md">{label}</p>
         </div>
     );
 }
@@ -60,11 +60,11 @@ interface RowProps {
 function Row({label, values, winnerIndex}: RowProps) {
     return (
         <div className="ow-compare-row py-3">
-            <p className="text-xs text-slate-400 mb-1.5">{label}</p>
-            <div className="grid grid-cols-12">
+            <p className="text-label mb-1.5">{label}</p>
+            <div className="ow-compare-row-inner grid grid-cols-12">
                 {values.map((v, i) => (
                     <div key={i}
-                         className={`ow-compare-col-${i + 1} ${colSpan(values.length, i)} text-body-md flex items-center gap-1 ${winnerIndex === i ? 'text-green-600 font-semibold' : 'text-slate-800'}`}>
+                         className={`ow-compare-col ow-compare-col-${i + 1} ${colSpan(values.length, i)} text-body-md flex items-start gap-1 ${winnerIndex === i ? 'text-green-600 font-semibold' : 'text-slate-800'}`}>
                         {winnerIndex === i && <IconCircleCheckFilled size={14} className="shrink-0"/>}
                         {v}
                     </div>
@@ -169,10 +169,20 @@ export function CompareTable({cards, compareResult, intentMap = new Map()}: Prop
 
     return (
         <div className="ow-compare-table">
+            {/* Identity — visual, Card-driven */}
+            <SectionHeader label="Thông tin" />
+            <Row
+                label="Ngân hàng"
+                values={cards.map((c, i) => c
+                    ? <Link key={i} href={`/ngan-hang/${c.bank_id}`} className="hover:text-brand-blue transition-colors">{c.bank_data?.name ?? c.bank_id}</Link>
+                    : empty
+                )}
+            />
+            <Row label="Mạng lưới" values={networkValues} />
+            <Row label="Loại thẻ" values={types} />
             {/* Intents — visual, Card-driven */}
             {cards.some((c) => c?.intents?.length) && (
                 <>
-                    <SectionHeader label="Phù hợp với" />
                     <Row
                         label="Mục đích sử dụng"
                         values={cards.map((c) => {
@@ -207,38 +217,9 @@ export function CompareTable({cards, compareResult, intentMap = new Map()}: Prop
                 </>
             )}
 
-            {/* Identity — visual, Card-driven */}
-            <SectionHeader label="Thông tin" />
-            <Row
-                label="Ngân hàng"
-                values={cards.map((c, i) => c
-                    ? <Link key={i} href={`/ngan-hang/${c.bank_id}`} className="hover:text-brand-blue transition-colors">{c.bank_data?.name ?? c.bank_id}</Link>
-                    : empty
-                )}
-            />
-            <Row label="Mạng lưới" values={networkValues} />
-            <Row label="Loại thẻ" values={types} />
+            {/* Utility — visual, Card-driven */}
+            <Row label="Thanh toán không tiếp xúc" values={contactlessValues}/>
 
-            {/* Tổng kết banner */}
-            {hasWinner && (
-                <>
-                    <SectionHeader label="Tổng kết" />
-                    <div className="grid grid-cols-12 py-3 gap-x-4">
-                        {cards.map((c, i) => {
-                            const wins = winCounts[i] ?? 0;
-                            const isOverallWinner = wins === maxWins && wins > 0;
-                            return (
-                                <div key={c?.id ?? i} className={`ow-compare-col-${i + 1} ${colSpan(cards.length, i)} flex flex-col gap-1 p-3 rounded-lg ${isOverallWinner ? 'bg-green-50 border border-green-200' : 'bg-slate-50 border border-transparent'}`}>
-                                    <div className={`flex items-center gap-1 text-sm font-semibold ${isOverallWinner ? 'text-green-700' : 'text-slate-500'}`}>
-                                        {isOverallWinner && <IconCircleCheckFilled size={14} className="shrink-0" />}
-                                        {wins} tiêu chí tốt hơn
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </>
-            )}
 
             {/* Dynamic API sections */}
             {apiSections.map(sectionKey => (
@@ -257,10 +238,6 @@ export function CompareTable({cards, compareResult, intentMap = new Map()}: Prop
                     )}
                 </div>
             ))}
-
-            {/* Utility — visual, Card-driven */}
-            <SectionHeader label="Tiện ích" />
-            <Row label="Thanh toán không tiếp xúc" values={contactlessValues} />
         </div>
     );
 }
