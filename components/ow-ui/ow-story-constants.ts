@@ -21,3 +21,4 @@ export const DEMO_CARD_VERTICAL = {
         height: 386,
     },
 };
+

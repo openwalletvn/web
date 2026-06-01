@@ -9,7 +9,7 @@ const meta: Meta<typeof OwCardImage> = {
     parameters: {
         docs: {
             description: {
-                component: 'Displays a credit card image with responsive border-radius, optional 3D tilt on hover, LQIP blur placeholder, and shimmer overlay.',
+                component: 'Displays a credit card image with responsive border-radius, optional 3D tilt on hover, LQIP blur placeholder, and shimmer overlay. Accepts either a `card` object (resolves URL, dimensions, and LQIP automatically) or raw `src`/`alt`/`width`/`height` props.',
             },
         },
     },
