@@ -1,13 +1,13 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import type {Bank, Card} from '@/lib/api';
+import type {Bank} from '@/lib/api';
 import {getRelatedStatements} from '@/lib/card-dates';
-import {CardModel} from '@/lib/card-model';
+import type {CardModel} from '@/lib/card-model';
 import {cn} from "@/lib/utils";
 
 interface Props {
-    card: Card;
+    card: CardModel;
     bank: Bank | null;
 }
 
@@ -21,8 +21,11 @@ interface CycleInfo {
     dueDiff: number;    // days until due (negative = overdue)
 }
 export function CardDetailBillingCycle({ card }: Props) {
-    const isCreditCard = card.card_type.includes('credit') || card.card_type.includes('hybrid');
-    const hasData = card.interest_free_days != null && card.statement_date != null;
+    const cardTypes = card.getCardTypes();
+    const isCreditCard = cardTypes.includes('credit') || cardTypes.includes('hybrid');
+    const statementDate = card.getStatementDate();
+    const interestFreeDays = card.getInterestFreeDays();
+    const hasData = interestFreeDays != null && statementDate != null;
     const [info, setInfo] = useState<CycleInfo | null>(null);
 
     useEffect(() => {
@@ -30,12 +33,12 @@ export function CardDetailBillingCycle({ card }: Props) {
 
         const today = new Date();
         const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        const stmts = getRelatedStatements(tod, card.statement_date!, card.interest_free_days!);
+        const stmts = getRelatedStatements(tod, statementDate!, interestFreeDays!);
         const cycle = stmts.find((s) => s.due >= tod) ?? stmts[2];
 
         const msPerDay = 86_400_000;
         const closeDiff = Math.round((cycle.close.getTime() - tod.getTime()) / msPerDay);
-        const dueDiff = new CardModel(card).getNextDueDiff(undefined, today)!.dueDiff;
+        const dueDiff = card.getNextDueDiff(undefined, today)!.dueDiff;
 
         // today's position between close and due (clamped 0–100)
         const span = cycle.due.getTime() - cycle.close.getTime();
@@ -57,7 +60,7 @@ export function CardDetailBillingCycle({ card }: Props) {
             todayPct,
             dueDiff,
         });
-    }, [card.statement_date, card.interest_free_days]);
+    }, [statementDate, interestFreeDays]);
 
     if (!isCreditCard || !hasData) return null;
 
@@ -78,7 +81,7 @@ export function CardDetailBillingCycle({ card }: Props) {
 
                     <span
                         className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap font-semibold text-slate-700">
-                        <span className="text-numeral">{card.interest_free_days}</span>
+                        <span className="text-numeral">{interestFreeDays}</span>
                         <span className="text-base"> ngày miễn lãi</span>
                     </span>
                 </div>
@@ -97,7 +100,7 @@ export function CardDetailBillingCycle({ card }: Props) {
                     <p className="font-semibold text-slate-700">Chốt sao kê</p>
                     <p className="text-slate-700">
                         Ngày <span className="ow-cycle-statement-date text-numeral">
-                        {card.statement_date}
+                        {statementDate}
                         {info && <span className="text-slate-500">/{info.closeMonth}</span>}
                     </span>
                     </p>

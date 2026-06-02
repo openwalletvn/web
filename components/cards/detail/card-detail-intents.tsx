@@ -1,13 +1,14 @@
-import type { Card, Intent } from '@/lib/api';
+import type {Intent} from '@/lib/api';
 import { getIntents } from '@/lib/api';
+import type {CardModel} from '@/lib/card-model';
 import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
 
 interface Props {
- card: Card;
+ card: CardModel;
 }
 
 export async function CardDetailIntents({ card }: Props) {
- if (!card.intents?.length) return null;
+ if (!card.getIntents().length) return null;
 
  const allIntents = await getIntents().catch(() => [] as Intent[]);
  const intentMap = new Map(allIntents.map((i) => [i.slug, i]));

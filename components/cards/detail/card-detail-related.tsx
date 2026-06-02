@@ -1,13 +1,13 @@
-import type { Card } from '@/lib/api';
+import type {CardModel} from '@/lib/card-model';
 import { CardMasonry } from '@/components/cards/card-masonry';
 
 interface Props {
-    cards: Card[];
+    cards: CardModel[];
     currentCardId: string;
 }
 
 export function CardDetailRelated({ cards, currentCardId }: Props) {
-    const related = cards.filter((c) => c.id !== currentCardId);
+    const related = cards.filter((c) => c.getId() !== currentCardId);
     if (related.length === 0) return null;
 
     return (

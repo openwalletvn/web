@@ -237,7 +237,7 @@ export function CardDetailForm({
 
       {/* ── Left column: card image + uneditable API info ── */}
       <div className="space-y-5">
-        <OwCardImage card={card} />
+        <OwCardImage card={new CardModel(card)} />
 
         <div className="border border-dashed border-slate-200 rounded-sm">
           <div className="px-4 py-2.5 border-b border-dashed border-slate-100">

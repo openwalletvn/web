@@ -5,7 +5,7 @@ import Image from 'next/image';
 import {IconCreditCard} from '@tabler/icons-react';
 import {ShimmerLayer} from '@/components/phucbm/shimmer-layer';
 import {cn} from '@/lib/utils';
-import {type Card, getCardImageUrl} from '@/lib/api';
+import type {CardModel} from '@/lib/card-model';
 
 type RawProps = {
     src: string;
@@ -18,7 +18,7 @@ type RawProps = {
 };
 
 type CardProps = {
-    card: Card;
+    card: CardModel;
     src?: never;
     alt?: never;
     width?: never;
@@ -36,12 +36,13 @@ type Props = (RawProps | CardProps) & {
 export function OwCardImage(props: Props) {
     const {tilt = false, priority = false, className} = props;
 
-    const isVertical = props.card ? props.card.image?.orientation === 'vertical' : false;
-    const src = props.card ? getCardImageUrl(props.card) : props.src;
-    const alt = props.card ? props.card.name : props.alt;
-    const width = props.card ? (props.card.image?.width ?? (isVertical ? 2 : 16)) : props.width;
-    const height = props.card ? (props.card.image?.height ?? (isVertical ? 3 : 10)) : props.height;
-    const lqip = props.card ? props.card.image?.lqip : props.lqip;
+    const image = props.card ? props.card.getImage() : undefined;
+    const isVertical = image?.orientation === 'vertical';
+    const src = props.card ? props.card.getCardImageUrl() : props.src;
+    const alt = props.card ? props.card.getName() : props.alt;
+    const width = props.card ? (image?.width ?? (isVertical ? 2 : 16)) : props.width;
+    const height = props.card ? (image?.height ?? (isVertical ? 3 : 10)) : props.height;
+    const lqip = props.card ? image?.lqip : props.lqip;
     const containerClass = cn('w-full', className, isVertical ? props.classNameVertical : className);
 
     const containerRef = useRef<HTMLDivElement>(null);

@@ -1,4 +1,5 @@
-import type { Card, Bank, FeeEntry } from '@/lib/api';
+import type { Bank, FeeEntry } from '@/lib/api';
+import type {CardModel} from '@/lib/card-model';
 import { cn } from '@/lib/utils';
 import { FeeDisplay } from '../fee-display';
 
@@ -36,13 +37,13 @@ function FeeBox({
 }
 
 interface Props {
-    card: Card;
+    card: CardModel;
     bank: Bank | null;
 }
 
 export function CardDetailOtherFees({ card }: Props) {
-    if (!card.fees) return null;
-    const { fees } = card;
+    const fees = card.getFees();
+    if (!fees) return null;
 
     return (
         <div className="ow-card-detail-other-fees grid grid-cols-2 sm:grid-cols-4 gap-3">

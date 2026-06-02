@@ -8,6 +8,7 @@ import {cn} from '@/lib/utils';
 import type {SearchCard} from '@/lib/search-types';
 import type {Card, CompareResult} from '@/lib/api';
 import {compareCards, getCard} from '@/lib/api';
+import {CardModel} from '@/lib/card-model';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {CardSearchInput} from '@/components/compare/card-search-input';
 import {CompareTable} from '@/components/compare/compare-table';
@@ -102,7 +103,7 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange }: Comp
                                 {card ? (
                                     <>
                                         <Link href={`/the/${card.id}`} className="block shrink-0">
-                                            <OwCardImage card={card} tilt className="sm:h-[60px] h-[40px] w-auto" />
+                                            <OwCardImage card={new CardModel(card)} tilt className="sm:h-[60px] h-[40px] w-auto" />
                                         </Link>
                                         <Link href={`/the/${card.id}`} className="sm:text-sm text-xs font-semibold text-slate-900 hover:text-brand-red transition-colors line-clamp-2">
                                             {card.name}
@@ -126,11 +127,11 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange }: Comp
                                     <Link href={`/the/${card.id}`}>
                                         {card.image?.orientation === 'vertical' ? (
                                             <div className="sm:h-[200px] h-[120px] flex items-center">
-                                                <OwCardImage card={card} tilt className="h-full w-auto" />
+                                                <OwCardImage card={new CardModel(card)} tilt className="h-full w-auto" />
                                             </div>
                                         ) : (
                                             <div className="w-full sm:max-w-[200px] max-w-[100px]">
-                                                <OwCardImage card={card} tilt className="w-full" />
+                                                <OwCardImage card={new CardModel(card)} tilt className="w-full" />
                                             </div>
                                         )}
                                     </Link>

@@ -1,4 +1,5 @@
-import type {Bank, Card, FeeEntryWithWaiver, FeeWaiver} from '@/lib/api';
+import type {Bank, FeeEntryWithWaiver, FeeWaiver} from '@/lib/api';
+import type {CardModel} from '@/lib/card-model';
 import { cn } from '@/lib/utils';
 import { FeeDisplay } from '../fee-display';
 
@@ -39,13 +40,13 @@ function WaiverDisplay({ waiver }: { waiver: FeeWaiver }) {
 }
 
 interface Props {
-    card: Card;
+    card: CardModel;
     bank: Bank | null;
 }
 
 export function CardDetailFees({ card }: Props) {
-    if (!card.fees) return null;
-    const { fees } = card;
+    const fees = card.getFees();
+    if (!fees) return null;
     const annual = fees.annual as FeeEntryWithWaiver | undefined;
 
     return (

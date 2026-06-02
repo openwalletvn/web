@@ -1,9 +1,9 @@
-import type { Card } from '@/lib/api';
+import type {CardModel} from '@/lib/card-model';
 import { CardDisplay } from '@/components/cards/variants/card-display';
 import { cn } from '@/lib/utils';
 
 interface Props {
- cards: Card[];
+ cards: CardModel[];
  /** Tailwind grid-cols class — defaults to match CardDetailCompare */
  gridClassName?: string;
 }
@@ -19,7 +19,7 @@ export function CompareSuggestedCards({
  <h2 className="heading-3 mb-6">Có thể bạn muốn xem</h2>
  <div className={cn('grid', gridClassName, 'gap-6')}>
  {cards.map((card) => (
- <CardDisplay variant="tile" key={card.id} card={card} />
+ <CardDisplay variant="tile" key={card.getId()} card={card} />
  ))}
  </div>
  </div>

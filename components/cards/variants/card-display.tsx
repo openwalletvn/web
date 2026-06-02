@@ -4,8 +4,9 @@ import Link from 'next/link';
 import type {ReactNode} from 'react';
 import {cn} from '@/lib/utils';
 import {IconBuildingBank, IconExternalLink, IconScale} from '@tabler/icons-react';
-import type {Bank, Card} from '@/lib/api';
+import type {Bank} from '@/lib/api';
 import {getBankImageUrl, normalizeCardTypes} from '@/lib/api';
+import type {CardModel} from '@/lib/card-model';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
@@ -20,7 +21,7 @@ interface BadgeConfig {
 }
 
 interface BaseProps {
-    card: Card;
+    card: CardModel;
     bank?: Bank | null;
     badges?: BadgeConfig;
     className?: string;
@@ -53,7 +54,7 @@ interface InlineProps extends BaseProps {
 type Props = TileProps | RowProps | SlimProps | InlineProps;
 
 export function CardDisplay(props: Props) {
-    const { card, bank: bankProp, badges = {}, className } = props;
+    const {className} = props;
 
     if (props.variant === 'tile') {
         return <CardDisplayTile {...props} className={className} />;
@@ -68,10 +69,11 @@ export function CardDisplay(props: Props) {
 }
 
 function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showActions = true, className }: Omit<TileProps, 'variant'>) {
-    const bank = bankProp !== undefined ? bankProp : (card.bank_data ?? null);
-    const isVertical = card.image?.orientation === 'vertical';
+    const bank = bankProp !== undefined ? bankProp : (card.getBankData() ?? null);
+    const image = card.getImage();
+    const isVertical = image?.orientation === 'vertical';
     const { isInCompare, toggleCompare, isFull } = useCompareList();
-    const inCompare = isInCompare(card.id);
+    const inCompare = isInCompare(card.getId());
 
     const {
         network = true,
@@ -115,7 +117,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                     <div className="absolute left-1/2 top-1/2 w-[50%] h-[50%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full shadow-[0_0_100px_80px_var(--glow-color)]" />
                 }
                 <Link
-                    href={href ?? `/the/${card.id}`}
+                    href={href ?? `/the/${card.getId()}`}
                     aria-label={badge}
                     className="relative block group-hover:scale-105 transition-transform duration-300"
                 >
@@ -125,23 +127,23 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
 
             <div className="relative min-h-[80px]">
                 <div className="transition-opacity duration-150 group-hover:opacity-0 space-y-1">
-                    <p className="heading-6 text-base">{card.name}</p>
-                    {fee && card.fees?.annual != null && (
+                    <p className="heading-6 text-base">{card.getName()}</p>
+                    {fee && card.getFees()?.annual != null && (
                         <p className="text-sm text-slate-500">
-                            <OwAmount amount={card.fees.annual.amount} unit="vnd" period="year"/>
+                            <OwAmount amount={card.getFees()!.annual!.amount} unit="vnd" period="year"/>
                         </p>
                     )}
                     <OwBadges className="mt-1">
-                        {status && card.status === 'discontinued' && (
+                        {status && card.getStatus() === 'discontinued' && (
                             <OwBadge small colorHex="#d97706"
                                      className="border-dashed bg-amber-50 text-amber-600 border-amber-400">Dừng phát
                                 hành</OwBadge>
                         )}
-                        {network && card.card_network_data &&
-                            <OwBadge small variant="network" networkData={card.card_network_data}
-                                     tier={card.card_tier}/>}
-                        {type && normalizeCardTypes(card.card_type).map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
-                        {metal && card.is_metal && <OwBadge small variant="metal"/>}
+                        {network && card.getNetworkData() &&
+                            <OwBadge small variant="network" networkData={card.getNetworkData()!}
+                                     tier={card.getCardTier()}/>}
+                        {type && normalizeCardTypes(card.getCardTypes()).map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
+                        {metal && card.isMetal() && <OwBadge small variant="metal"/>}
                     </OwBadges>
                 </div>
 
@@ -149,7 +151,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                     <div className="absolute inset-0 flex items-center justify-start gap-3">
                         <div className="flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-150 group-hover:opacity-100 group-hover:translate-y-0">
                             <Link
-                                href={`/ngan-hang/${card.bank_id}`}
+                                href={`/ngan-hang/${card.getBankId()}`}
                                 className="flex items-center justify-center size-10 rounded-full bg-white border border-dashed border-slate-300 shadow-sm text-slate-600 hover:border-brand-blue hover:text-brand-blue transition-all overflow-hidden"
                             >
                                 {bank?.logo_url ? (
@@ -161,10 +163,10 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                             <span className="text-[10px] text-slate-500 text-center leading-tight">Xem ngân hàng</span>
                         </div>
 
-                        {card.card_link && (
+                        {card.getCardLink() && (
                             <div className="flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-150 delay-[80ms] group-hover:opacity-100 group-hover:translate-y-0">
                                 <a
-                                    href={card.card_link}
+                                    href={card.getCardLink()}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center justify-center size-10 rounded-full bg-white border border-dashed border-slate-300 shadow-sm text-slate-600 hover:border-brand-blue hover:text-brand-blue transition-all"
@@ -178,7 +180,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                         <div className="flex flex-col items-center gap-1 opacity-0 translate-y-1 transition-all duration-150 delay-[160ms] group-hover:opacity-100 group-hover:translate-y-0">
                             <button
                                 type="button"
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(card.id, { name: card.name, image_url: card.image?.url ?? null }); }}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(card.getId(), { name: card.getName(), image_url: image?.url ?? null }); }}
                                 disabled={isFull && !inCompare}
                                 className={cn('flex items-center justify-center size-10 rounded-full bg-white border border-dashed shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed', inCompare ? 'border-primary text-primary' : 'border-slate-300 text-slate-600 hover:border-brand-blue hover:text-brand-blue')}
                                 title={inCompare ? 'Bỏ so sánh' : 'So sánh'}
@@ -196,7 +198,8 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
 
 function CardDisplayRow({ card, bank, badges = {}, slot, className }: Omit<RowProps, 'variant'>) {
     const { network = true, type = true, metal = false, status = false } = badges;
-    const isVertical = card.image?.orientation === 'vertical';
+    const image = card.getImage();
+    const isVertical = image?.orientation === 'vertical';
 
     return (
         <div className={cn("ow-card-display flex items-center gap-3", className)}>
@@ -213,17 +216,17 @@ function CardDisplayRow({ card, bank, badges = {}, slot, className }: Omit<RowPr
             </div>
 
             <div className="flex-1 min-w-0">
-                <p className="font-medium leading-tight truncate text-sm text-slate-900">{card.name}</p>
+                <p className="font-medium leading-tight truncate text-sm text-slate-900">{card.getName()}</p>
                 <OwBadges className="mt-1">
-                    {status && card.status === 'discontinued' && (
+                    {status && card.getStatus() === 'discontinued' && (
                         <OwBadge small colorHex="#d97706"
                                  className="border-dashed bg-amber-50 text-amber-600 border-amber-400">Dừng phát
                             hành</OwBadge>
                     )}
-                    {network && card.card_network_data &&
-                        <OwBadge small variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
-                    {type && normalizeCardTypes(card.card_type).map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
-                    {metal && card.is_metal && <OwBadge small variant="metal"/>}
+                    {network && card.getNetworkData() &&
+                        <OwBadge small variant="network" networkData={card.getNetworkData()!} tier={card.getCardTier()}/>}
+                    {type && normalizeCardTypes(card.getCardTypes()).map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
+                    {metal && card.isMetal() && <OwBadge small variant="metal"/>}
                 </OwBadges>
             </div>
 
@@ -234,11 +237,12 @@ function CardDisplayRow({ card, bank, badges = {}, slot, className }: Omit<RowPr
 
 function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = true, className }: Omit<SlimProps, 'variant'>) {
     const { network = true, type = false, fee = false } = badges;
-    const isVertical = card.image?.orientation === 'vertical';
+    const image = card.getImage();
+    const isVertical = image?.orientation === 'vertical';
 
-    const feeLabel = card.fees?.annual == null
+    const feeLabel = card.getFees()?.annual == null
         ? null
-        : <OwAmount amount={card.fees.annual.amount} unit="vnd" textOnly period="year"/>;
+        : <OwAmount amount={card.getFees()!.annual!.amount} unit="vnd" textOnly period="year"/>;
 
     const content = (
         <>
@@ -256,21 +260,21 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
 
             <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-slate-800 leading-tight line-clamp-2 group-hover:text-brand-blue transition-colors">
-                    {card.name}
+                    {card.getName()}
                 </p>
                 {fee && feeLabel && (
                     <p className="text-[11px] text-slate-400 mt-0.5">{feeLabel}</p>
                 )}
                 <OwBadges className="mt-1">
-                    {card.status === 'discontinued' && (
+                    {card.getStatus() === 'discontinued' && (
                         <OwBadge small colorHex="#d97706"
                                  className="border-dashed bg-amber-50 text-amber-600 border-amber-400">Dừng phát
                             hành</OwBadge>
                     )}
-                    {network && card.card_network_data &&
-                        <OwBadge small variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
-                    {type && normalizeCardTypes(card.card_type).map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
-                    {card.is_metal && <OwBadge small variant="metal"/>}
+                    {network && card.getNetworkData() &&
+                        <OwBadge small variant="network" networkData={card.getNetworkData()!} tier={card.getCardTier()}/>}
+                    {type && normalizeCardTypes(card.getCardTypes()).map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
+                    {card.isMetal() && <OwBadge small variant="metal"/>}
                 </OwBadges>
             </div>
         </>
@@ -279,7 +283,7 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
     if (asLink) {
         return (
             <Link
-                href={`/the/${card.id}`}
+                href={`/the/${card.getId()}`}
                 className={cn("ow-card-display flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50/60 transition-colors group", className)}
             >
                 {content}
@@ -295,15 +299,15 @@ function CardDisplayInline({ card, badges = {}, showLogo = true, asLink = false,
 
     const content = (
         <span className="inline-flex items-center gap-2">
-            <span className="font-medium text-slate-800">{card.name}</span>
-            {network && card.card_network_data &&
-                <OwBadge variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
+            <span className="font-medium text-slate-800">{card.getName()}</span>
+            {network && card.getNetworkData() &&
+                <OwBadge variant="network" networkData={card.getNetworkData()!} tier={card.getCardTier()}/>}
         </span>
     );
 
     if (asLink) {
         return (
-            <Link href={`/the/${card.id}`} className={cn("ow-card-display hover:text-brand-blue transition-colors", className)}>
+            <Link href={`/the/${card.getId()}`} className={cn("ow-card-display hover:text-brand-blue transition-colors", className)}>
                 {content}
             </Link>
         );

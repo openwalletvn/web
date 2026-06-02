@@ -1,4 +1,5 @@
 import type {Card} from '@/lib/api';
+import {getCardImageUrl} from '@/lib/api';
 import {buildSlugRateMap, getRateDisplay} from './card-display-utils';
 import {
     getNextDueDate,
@@ -90,6 +91,86 @@ export class CardModel {
     /** Fee block, or `undefined` when not populated. */
     getFees(): Card['fees'] {
         return this.data.fees;
+    }
+
+    /** Card image metadata block, or `undefined`/`null` when not available. */
+    getImage(): Card['image'] {
+        return this.data.image;
+    }
+
+    /** Absolute URL to the card image, or empty string when unavailable. */
+    getCardImageUrl(): string {
+        return getCardImageUrl(this.data);
+    }
+
+    /** Card status (`'published'` | `'discontinued'` | `'draft'`), or `undefined`. */
+    getStatus(): Card['status'] {
+        return this.data.status;
+    }
+
+    /** Card tier slug (e.g. `'signature'`, `'platinum'`), or `undefined`. */
+    getCardTier(): Card['card_tier'] {
+        return this.data.card_tier;
+    }
+
+    /** Resolved card-tier data object, or `undefined` when not populated. */
+    getCardTierData(): Card['card_tier_data'] {
+        return this.data.card_tier_data;
+    }
+
+    /** Whether this is a metal card. */
+    isMetal(): boolean {
+        return this.data.is_metal === true;
+    }
+
+    /** External URL to the card's official page, or `undefined`. */
+    getCardLink(): string | undefined {
+        return this.data.card_link;
+    }
+
+    /** Bank ID string (e.g. `'bidv'`). */
+    getBankId(): string {
+        return this.data.bank_id;
+    }
+
+    /** Card's payment network (e.g. `'visa'`, `'mastercard'`). */
+    getCardNetwork(): Card['card_network'] {
+        return this.data.card_network;
+    }
+
+    /** Co-brand partner identifier, or `undefined` when none. */
+    getCoBrand(): Card['co_brand'] {
+        return this.data.co_brand;
+    }
+
+    /** Resolved co-brand data object, or `undefined` when not populated. */
+    getCoBrandData(): Card['co_brand_data'] {
+        return this.data.co_brand_data;
+    }
+
+    /** Whether this card targets business customers. */
+    isForBusiness(): boolean {
+        return this.data.for_business === true;
+    }
+
+    /** Editorial description in Vietnamese, or `undefined`. */
+    getDescription(): string | undefined {
+        return this.data.description;
+    }
+
+    /** Source reference array, or `undefined`. */
+    getSources(): Card['sources'] {
+        return this.data.sources;
+    }
+
+    /** ISO timestamp of last admin edit, or `undefined`. */
+    getLastModified(): string | null | undefined {
+        return this.data.last_modified;
+    }
+
+    /** Returns the underlying raw `Card` object. Use only at serialization/API boundaries. */
+    toRaw(): Card {
+        return this.data;
     }
 
     // ─── Display / computation methods ────────────────────────────────────────

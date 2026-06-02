@@ -1,13 +1,16 @@
-import type { Card, Bank } from '@/lib/api';
+import type {Bank} from '@/lib/api';
+import type {CardModel} from '@/lib/card-model';
 
 interface Props {
-    card: Card;
+    card: CardModel;
     bank: Bank | null;
 }
 
 export function CardDetailSources({ card }: Props) {
-    const hasSources = card.sources && card.sources.length > 0;
-    if (!hasSources && !card.card_link) return null;
+    const sources = card.getSources();
+    const cardLink = card.getCardLink();
+    const hasSources = sources && sources.length > 0;
+    if (!hasSources && !cardLink) return null;
 
     return (
         <div className="ow-card-detail-sources flex flex-col gap-2">
@@ -15,7 +18,7 @@ export function CardDetailSources({ card }: Props) {
                 Nguồn &amp; liên kết
             </p>
             <ul className="flex flex-col gap-1.5">
-                {card.sources?.map((src, i) => (
+                {sources?.map((src, i) => (
                     <li key={i}>
                         <a
                             href={src.url}
@@ -27,10 +30,10 @@ export function CardDetailSources({ card }: Props) {
                         </a>
                     </li>
                 ))}
-                {card.card_link && (
+                {cardLink && (
                     <li>
                         <a
-                            href={card.card_link}
+                            href={cardLink}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm text-slate-800 hover:text-brand-blue transition-colors"

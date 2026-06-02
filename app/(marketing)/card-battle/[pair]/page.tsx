@@ -3,6 +3,7 @@ import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
 // next-mdx-remote/rsc + lib/compare-mdx + content/so-sanh/ MDX files — unused, remove when cleaning up
 import {getCard, getComparePairs, getIntents, getRelatedCardsForMany} from '@/lib/api';
+import {CardModel} from '@/lib/card-model';
 import {buildComparePageMeta} from '@/lib/page-meta/compare';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
@@ -69,7 +70,7 @@ export default async function ComparePairPage({ params }: Props) {
             <IntentMapProvider intentMap={intentMap}>
                 <div className="ow-compare-wrapper mt-16">
                     <CompareSection defaultPair={pair} excludePair={pair} recordOnMount={pair}/>
-                    <CompareSuggestedCards cards={suggestedCards}/>
+                    <CompareSuggestedCards cards={suggestedCards.map(c => new CardModel(c))}/>
                 </div>
             </IntentMapProvider>
         </MarketingPageShell>

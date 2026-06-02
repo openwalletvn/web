@@ -1,4 +1,5 @@
 import {getCards, getRankedCards} from '@/lib/api';
+import {CardModel} from '@/lib/card-model';
 import {buildIntentCategoryMeta, type IntentCategoryConfig} from '@/lib/page-meta/intent-category';
 import {CardRankingTable} from '@/components/marketing/card-ranking-table';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
@@ -21,7 +22,7 @@ export async function PersonaPage({config}: { config: IntentCategoryConfig }) {
             <CardRankingTable initialRanked={initialRanked} personaSlug={config.personaSlug}
                               title={config.rankingTitle}/>
             <PersonaFAQ faqs={config.faqs}/>
-            <PersonaPoolCards poolCards={poolCards} excludeIds={rankedIds} excludeRanked={true}/>
+            <PersonaPoolCards poolCards={poolCards.map(c => new CardModel(c))} excludeIds={rankedIds} excludeRanked={true}/>
             <BrowsePersonas currentHref={config.url}/>
         </MarketingPageShell>
     );

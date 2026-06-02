@@ -1,5 +1,6 @@
 import * as React from 'react';
-import type {Card, CashbackBenefit, Intent, Merchant} from '@/lib/api';
+import type {CashbackBenefit, Intent, Merchant} from '@/lib/api';
+import type {CardModel} from '@/lib/card-model';
 import {getIntents, getMerchants} from '@/lib/api';
 import {OwCardCashbackRule} from '@/components/ow-ui/ow-card-cashback-rule';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
@@ -134,11 +135,11 @@ function CashbackSection({
 // ─── Main component (async server component) ─────────────────────────────────
 
 interface Props {
-    card: Card;
+    card: CardModel;
 }
 
 export async function CardDetailCashback({card}: Props) {
-    if (!card.cashback) return null;
+    if (!card.getCashback()) return null;
 
     const [intents, merchants] = await Promise.all([
         getIntents().catch(() => [] as Intent[]),
@@ -150,7 +151,7 @@ export async function CardDetailCashback({card}: Props) {
     return (
         <section className="ow-card-detail-cashback flex flex-col gap-4">
             <h2 className="text-label text-text-muted">Hoàn tiền</h2>
-            <CashbackSection cashback={card.cashback} intentMap={intentMap} merchantMap={merchantMap}/>
+            <CashbackSection cashback={card.getCashback()!} intentMap={intentMap} merchantMap={merchantMap}/>
         </section>
     );
 }

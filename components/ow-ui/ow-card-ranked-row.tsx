@@ -65,11 +65,12 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
     const {card, rank, rank_reason, rank_reason_type, tiebreaker_delta} = ranked;
     const highlighted = new Set(highlightedSlugs ?? []);
 
-    const catchallRules = card.cashback?.rules.filter(r => r.intents?.some(c => CATCHALL_SLUGS.has(c))) ?? [];
     const cardModel = new CardModel(card);
+    const cashbackData = cardModel.getCashback();
+    const catchallRules = cashbackData?.rules.filter(r => r.intents?.some(c => CATCHALL_SLUGS.has(c))) ?? [];
     const slugRateMap = cardModel.buildSlugRateMap();
     const cardIntents = intentMap
-        ? [...new Set(card.cashback?.rules.flatMap(r => [
+        ? [...new Set(cashbackData?.rules.flatMap(r => [
               ...(r.merchants ?? []),
               ...(r.intents ?? []).filter(c => !CATCHALL_SLUGS.has(c)),
           ]) ?? [])]
@@ -86,13 +87,14 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
     const activeBreakdown = breakdown?.filter(b => !b.cashback_expired);
     const showBreakdown = cashback > 0 && activeBreakdown && activeBreakdown.length >= 1;
     const rateDisplay = cashback > 0 && !showBreakdown ? cardModel.getRateDisplay(intentSlug) : null;
+    const cardTypes = cardModel.getCardTypes();
 
     return (
         <div className="ow-card-ranked-row grid grid-cols-12 gap-3 items-start">
             {/*col 1 — card image [2]*/}
             <div className="col-span-2">
-                <Link href={`/the/${card.id}`}>
-                    <OwCardImage card={card} className="w-full"/>
+                <Link href={`/the/${cardModel.getId()}`}>
+                    <OwCardImage card={cardModel} className="w-full"/>
                 </Link>
             </div>
 
@@ -117,17 +119,17 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
 
                 {/*card name + type*/}
                 <div className="flex items-center gap-1.5 min-w-0">
-                    <Link href={`/the/${card.id}`}
+                    <Link href={`/the/${cardModel.getId()}`}
                           className="text-body font-semibold truncate hover:underline text-black">
-                        {card.name}
+                        {cardModel.getName()}
                     </Link>
                 </div>
 
                 {/*intent badges*/}
                 {intentMap && (cardIntents.length > 0 || catchallRules.length > 0) && (
                     <OwBadges>
-                        {card.card_type && card.card_type.length > 0 && (
-                            <OwBadge small variant="card-type" cardTypes={card.card_type}/>
+                        {cardTypes.length > 0 && (
+                            <OwBadge small variant="card-type" cardTypes={cardTypes}/>
                         )}
                         {catchallRules.map((rule, i) => (
                             <OwBadge small key={i} colorHex={highlighted.size > 0 ? 'var(--color-primary)' : undefined}>
@@ -139,9 +141,9 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
                 )}
 
                 {/*min spend*/}
-                {card.cashback?.min_spend_per_period != null && (
+                {cashbackData?.min_spend_per_period != null && (
                     <p className="text-body-sm text-text-muted">
-                        Chi tối thiểu {card.cashback.min_spend_per_period.toLocaleString('vi-VN')}đ/tháng
+                        Chi tối thiểu {cashbackData.min_spend_per_period.toLocaleString('vi-VN')}đ/tháng
                     </p>
                 )}
 
@@ -181,8 +183,8 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
 
             {/*col 4 — annual fee [2]*/}
             <div className="col-span-2 flex flex-col items-end">
-                {card.fees?.annual != null && (
-                    <OwAmount amount={card.fees.annual.amount} unit="k" period="year"/>
+                {cardModel.getFees()?.annual != null && (
+                    <OwAmount amount={cardModel.getFees()!.annual!.amount} unit="k" period="year"/>
                 )}
             </div>
         </div>

@@ -1,7 +1,7 @@
 import {type Card} from '@/lib/api';
+import {CardModel} from '@/lib/card-model';
 import type {WalletCard} from '@/lib/db';
 import {cn} from '@/lib/utils';
-import {CardModel} from '@/lib/card-model';
 import {CardTimeline, CardTimelineSummary} from './card-timeline';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import React from "react";
@@ -82,7 +82,7 @@ export function PaymentRow({walletCard, catalogCard, variant}: {
                 {catalogCard ? (
                     // <img src={getCardImageUrl(catalogCard)} alt={catalogCard.name}
                     //      className="w-full h-full object-contain"/>
-                    <OwCardImage card={catalogCard}/>
+                    <OwCardImage card={new CardModel(catalogCard)}/>
                 ) : (
                     <div className="w-full h-full bg-slate-100 animate-pulse"/>
                 )}

@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import Link from 'next/link';
 import {cn} from '@/lib/utils';
 import {getBank, getCard, getCards, getRelatedCards} from '@/lib/api';
+import {CardModel} from '@/lib/card-model';
 import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -67,12 +68,17 @@ export default async function CardPage({ params }: Props) {
         getRelatedCards(card.id).catch(() => []),
     ]);
 
+    const cardModel = new CardModel(card);
     const { jsonLd, breadcrumbItems } = buildCardPageMeta(card, bank);
-    const isVertical = card.image?.orientation === 'vertical';
+    const image = cardModel.getImage();
+    const isVertical = image?.orientation === 'vertical';
 
-    const sameTypeCards = relatedCards.filter(
-        (c) => c.id !== card.id && c.card_type.some((t) => card.card_type.includes(t)),
-    );
+    const sameTypeCards = relatedCards
+        .filter((c) => c.id !== card.id && c.card_type.some((t) => card.card_type.includes(t)))
+        .map(c => new CardModel(c));
+    const compareCardModels = compareCards.map(c => new CardModel(c));
+
+    const description = cardModel.getDescription();
 
     return (
         <>
@@ -85,10 +91,10 @@ export default async function CardPage({ params }: Props) {
                     <div
                         className={cn(isVertical ? 'xl:col-span-2 md:col-span-3 col-span-12' : 'xl:col-span-3 md:col-span-4 col-span-12')}>
                         <div className={cn("lg:sticky lg:top-8", isVertical ? "sm:max-w-[300px] max-w-[240px] mx-auto" : "max-w-[360px]")}>
-                            <OwCardImage card={card} tilt priority/>
+                            <OwCardImage card={cardModel} tilt priority/>
                             <div className="mt-4 flex flex-col gap-2">
                                 <CompareButton
-                                    card={{id: card.id, name: card.name, image_url: card.image?.url ?? null}}/>
+                                    card={{id: card.id, name: card.name, image_url: image?.url ?? null}}/>
                                 {/*<AddToWalletButton card={card} />*/}
                                 {process.env.NODE_ENV === 'development' && (
                                     <a
@@ -107,28 +113,28 @@ export default async function CardPage({ params }: Props) {
                     {/* Right column: scrollable sections */}
                     <div
                         className={cn(isVertical ? 'xl:col-span-10 md:col-span-9 col-span-12' : 'xl:col-span-9 md:col-span-8 col-span-12', "flex flex-col gap-8 min-w-0")}>
-                        <CardDetailHeader card={card} bank={bank} />
-                        {card.description && (
+                        <CardDetailHeader card={cardModel} bank={bank} />
+                        {description && (
                             <section className="flex flex-col gap-4">
                                 <h2 className="text-label text-text-muted">Về thẻ này</h2>
-                                {card.description.split('\n\n').map((para, i) => (
+                                {description.split('\n\n').map((para, i) => (
                                     <p key={i} className="text-body-sm text-text-primary">{para}</p>
                                 ))}
                             </section>
                         )}
-                        <CardDetailBillingCycle card={card} bank={bank} />
-                        <CardDetailFees card={card} bank={bank} />
-                        <CardDetailOtherFees card={card} bank={bank} />
-                        <CardDetailIntents card={card} />
-                        <CardDetailCashback card={card}/>
-                        <CardDetailSources card={card} bank={bank} />
-                        <CardDetailLastModified card={card} bank={bank} />
+                        <CardDetailBillingCycle card={cardModel} bank={bank} />
+                        <CardDetailFees card={cardModel} bank={bank} />
+                        <CardDetailOtherFees card={cardModel} bank={bank} />
+                        <CardDetailIntents card={cardModel} />
+                        <CardDetailCashback card={cardModel}/>
+                        <CardDetailSources card={cardModel} bank={bank} />
+                        <CardDetailLastModified card={cardModel} bank={bank} />
                     </div>
                 </div>
 
                 <CardDetailCompare
                     currentCard={card}
-                    compareCards={compareCards}
+                    compareCards={compareCardModels}
                 />
                 <CardDetailRelated cards={sameTypeCards} currentCardId={card.id} />
             </div>

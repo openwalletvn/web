@@ -1,6 +1,7 @@
 import type {Metadata} from 'next';
 import {redirect} from 'next/navigation';
 import {getIntents, getRelatedCardsForMany} from '@/lib/api';
+import {CardModel} from '@/lib/card-model';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import {CompareSection} from '@/components/compare/compare-section';
 import {CompareSuggestedCards} from '@/components/compare/compare-suggested-cards';
@@ -42,7 +43,7 @@ export default async function ComparePage({
             <IntentMapProvider intentMap={intentMap}>
                 <CompareSection />
             </IntentMapProvider>
-            <CompareSuggestedCards cards={suggestedCards} />
+            <CompareSuggestedCards cards={suggestedCards.map(c => new CardModel(c))} />
         </MarketingPageShell>
     );
 }
