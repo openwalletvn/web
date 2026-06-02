@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react';
 import type {Card, CompareResult} from '@/lib/api';
-import {getNextDueDate} from '@/lib/card-dates';
+import {CardModel} from '@/lib/card-model';
 
 import {CompareRow} from './compare-row';
 import {CompareSectionTitle} from './compare-section-title';
@@ -19,7 +19,7 @@ export function CompareTable({cards, compareResult}: Props) {
     useEffect(() => {
         setDues(cards.map((c) => {
             if (!c) return null;
-            return getNextDueDate(c.statement_date, c.interest_free_days);
+            return new CardModel(c).getNextDueDate();
         }));
     }, [cards]); // eslint-disable-line react-hooks/exhaustive-deps
 

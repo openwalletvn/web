@@ -1,7 +1,7 @@
 import {type Card} from '@/lib/api';
 import type {WalletCard} from '@/lib/db';
 import {cn} from '@/lib/utils';
-import {getTimelineForCard, resolveStatementDay} from '@/lib/card-dates';
+import {CardModel} from '@/lib/card-model';
 import {CardTimeline, CardTimelineSummary} from './card-timeline';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import React from "react";
@@ -48,13 +48,8 @@ export function PaymentRow({walletCard, catalogCard, variant}: {
     const isToday = variant === 'today';
 
     // Build timeline for non-custom cards
-    const statementDay = resolveStatementDay(walletCard.statementDate, catalogCard?.statement_date);
-    const timeline = (
-        walletCard.paymentDueDateSource !== 'custom'
-        && statementDay != null
-        && catalogCard?.interest_free_days != null
-    )
-        ? getTimelineForCard(statementDay, catalogCard.interest_free_days, today)
+    const timeline = (walletCard.paymentDueDateSource !== 'custom' && catalogCard)
+        ? new CardModel(catalogCard).getTimeline(walletCard.statementDate, today)
         : null;
 
     // Days to the next event — mirrors the timeline summary

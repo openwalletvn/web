@@ -2,7 +2,7 @@
 
 import type {Card, Intent} from '@/lib/api';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
-import {buildSlugRateMap} from '@/lib/card-display-utils';
+import {CardModel} from '@/lib/card-model';
 import {useIntentMap} from '@/lib/intent-map-context';
 
 export interface IntentItem {
@@ -27,7 +27,7 @@ export function OwCardIntentBadges({card, intentMap: intentMapProp, intents, slu
 
     let resolved: IntentItem[];
     if (card) {
-        const rateMap = slugRateMap ?? buildSlugRateMap(card.cashback?.rules ?? []);
+        const rateMap = slugRateMap ?? new CardModel(card).buildSlugRateMap();
         resolved = (card.intents ?? [])
             .map(slug => intentMap.get(slug))
             .filter((i): i is Intent => i !== undefined)

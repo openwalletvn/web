@@ -2,7 +2,8 @@
 
 import {useEffect, useState} from 'react';
 import type {Bank, Card} from '@/lib/api';
-import {getNextDueDiff, getRelatedStatements} from '@/lib/card-dates';
+import {getRelatedStatements} from '@/lib/card-dates';
+import {CardModel} from '@/lib/card-model';
 import {cn} from "@/lib/utils";
 
 interface Props {
@@ -34,7 +35,7 @@ export function CardDetailBillingCycle({ card }: Props) {
 
         const msPerDay = 86_400_000;
         const closeDiff = Math.round((cycle.close.getTime() - tod.getTime()) / msPerDay);
-        const dueDiff = getNextDueDiff(card.statement_date, card.interest_free_days, today)!.dueDiff;
+        const dueDiff = new CardModel(card).getNextDueDiff(undefined, today)!.dueDiff;
 
         // today's position between close and due (clamped 0–100)
         const span = cycle.due.getTime() - cycle.close.getTime();

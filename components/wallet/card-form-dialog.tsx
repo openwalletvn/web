@@ -6,7 +6,8 @@ import { Dialog } from 'radix-ui';
 import { IconX, IconTrash, IconExternalLink, IconUnlink } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import { inputClass } from '@/lib/ui-constants';
-import { resolveStatementDay, getNextDueDate, formatDueDate } from '@/lib/card-dates';
+import {formatDueDate} from '@/lib/card-dates';
+import {CardModel} from '@/lib/card-model';
 import { addCard, updateCard, removeCard, hasCardWithSameCatalogId } from '@/lib/wallet';
 import { formatSiblingNames } from '@/lib/card-utils';
 import {
@@ -246,9 +247,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
 
   useEffect(() => {
     if (dueDateOverridden || !statementDate || !card.interest_free_days) return;
-    const resolvedDay = resolveStatementDay(parseInt(statementDate) || undefined, card.statement_date);
-    if (resolvedDay == null) return;
-    const computed = getNextDueDate(resolvedDay, card.interest_free_days);
+    const computed = new CardModel(card).getNextDueDate(parseInt(statementDate) || undefined);
     if (computed) { setPaymentDueDate(String(computed.getDate())); setDueDateSource('calculated'); }
   }, [statementDate, card.interest_free_days, dueDateOverridden]);
 
@@ -515,9 +514,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                   label="Ngày đề nghị thanh toán"
                   hint={(() => {
                     if (!statementDate || !card.interest_free_days) return undefined;
-                    const resolvedDay = resolveStatementDay(parseInt(statementDate) || undefined, card.statement_date);
-                    if (resolvedDay == null) return undefined;
-                    const computed = getNextDueDate(resolvedDay, card.interest_free_days);
+                    const computed = new CardModel(card).getNextDueDate(parseInt(statementDate) || undefined);
                     return computed ? `Tự tính: ${formatDueDate(computed)}` : undefined;
                   })()}
                 >

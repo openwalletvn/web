@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import type {CashbackRule, Intent} from '@/lib/api';
 import type {CashbackBreakdownItem, RankedCard} from '@/lib/card-ranker';
-import {buildSlugRateMap, CATCHALL_SLUGS, getRateDisplay} from '@/lib/card-display-utils';
+import {CATCHALL_SLUGS} from '@/lib/card-display-utils';
+import {CardModel} from '@/lib/card-model';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwRankBadge} from '@/components/ow-ui/ow-rank-badge';
 import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
@@ -65,7 +66,8 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
     const highlighted = new Set(highlightedSlugs ?? []);
 
     const catchallRules = card.cashback?.rules.filter(r => r.intents?.some(c => CATCHALL_SLUGS.has(c))) ?? [];
-    const slugRateMap = buildSlugRateMap(card.cashback?.rules ?? []);
+    const cardModel = new CardModel(card);
+    const slugRateMap = cardModel.buildSlugRateMap();
     const cardIntents = intentMap
         ? [...new Set(card.cashback?.rules.flatMap(r => [
               ...(r.merchants ?? []),
@@ -83,7 +85,7 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
     const {cashback, breakdown} = ranked.cashback_result;
     const activeBreakdown = breakdown?.filter(b => !b.cashback_expired);
     const showBreakdown = cashback > 0 && activeBreakdown && activeBreakdown.length >= 1;
-    const rateDisplay = cashback > 0 && !showBreakdown ? getRateDisplay(card, intentSlug) : null;
+    const rateDisplay = cashback > 0 && !showBreakdown ? cardModel.getRateDisplay(intentSlug) : null;
 
     return (
         <div className="ow-card-ranked-row grid grid-cols-12 gap-3 items-start">

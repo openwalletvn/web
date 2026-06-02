@@ -7,12 +7,8 @@ import { getBankImageUrl, type Bank, type Card } from '@/lib/api';
 import type { WalletCard } from '@/lib/db';
 import { buildReminderMessage } from '@/lib/reminder-message';
 import { createReminder, deleteReminder } from '@/lib/notify-api';
-import {
-  formatDueDate,
-  resolveStatementDay,
-  getRelatedStatements,
-  getNextDueDate,
-} from '@/lib/card-dates';
+import {formatDueDate, getRelatedStatements} from '@/lib/card-dates';
+import {CardModel} from '@/lib/card-model';
 import { Switch } from '@/components/ui/switch';
 import type { WalletDb } from '@/lib/db';
 import type { NotificationAdapter } from '@/lib/app-db';
@@ -43,17 +39,16 @@ export function ReminderCardRow({
   const notifyHour = adapter?.notifyHour ?? 8;
   const hourStr = notifyHour.toString().padStart(2, '0');
 
-  // Resolve statement day (user override → catalog default)
-  const statementDay = resolveStatementDay(walletCard.statementDate, catalogCard?.statement_date);
-
-  // Derive billing context from related statements
   const today = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); })();
+  const cardModel = catalogCard ? new CardModel(catalogCard) : null;
+  const statementDay = cardModel?.resolveStatementDay(walletCard.statementDate) ?? null;
+
   const stmts = (statementDay != null && catalogCard?.interest_free_days != null)
     ? getRelatedStatements(today, statementDay, catalogCard.interest_free_days)
     : null;
 
   const nextCloseDate = stmts?.find((s) => s.close > today)?.close ?? null;
-  const dueDateObj = getNextDueDate(statementDay, catalogCard?.interest_free_days, today);
+  const dueDateObj = cardModel?.getNextDueDate(walletCard.statementDate, today) ?? null;
 
   // Fire date for statement reminder: next close − daysBefore
   const stmtFireDate = nextCloseDate
