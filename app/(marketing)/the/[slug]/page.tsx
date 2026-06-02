@@ -70,15 +70,11 @@ export default async function CardPage({ params }: Props) {
 
     const cardModel = new CardModel(card);
     const { jsonLd, breadcrumbItems } = buildCardPageMeta(card, bank);
-    const image = cardModel.getImage();
-    const isVertical = image?.orientation === 'vertical';
+    const isVertical = card.image?.orientation === 'vertical';
 
-    const sameTypeCards = relatedCards
-        .filter((c) => c.id !== card.id && c.card_type.some((t) => card.card_type.includes(t)))
-        .map(c => new CardModel(c));
-    const compareCardModels = compareCards.map(c => new CardModel(c));
-
-    const description = cardModel.getDescription();
+    const sameTypeCards = relatedCards.filter(
+        (c) => c.id !== card.id && c.card_type.some((t) => card.card_type.includes(t)),
+    );
 
     return (
         <>
@@ -91,10 +87,10 @@ export default async function CardPage({ params }: Props) {
                     <div
                         className={cn(isVertical ? 'xl:col-span-2 md:col-span-3 col-span-12' : 'xl:col-span-3 md:col-span-4 col-span-12')}>
                         <div className={cn("lg:sticky lg:top-8", isVertical ? "sm:max-w-[300px] max-w-[240px] mx-auto" : "max-w-[360px]")}>
-                            <OwCardImage card={cardModel} tilt priority/>
+                            <OwCardImage card={card} tilt priority/>
                             <div className="mt-4 flex flex-col gap-2">
                                 <CompareButton
-                                    card={{id: card.id, name: card.name, image_url: image?.url ?? null}}/>
+                                    card={{id: card.id, name: card.name, image_url: card.image?.url ?? null}}/>
                                 {/*<AddToWalletButton card={card} />*/}
                                 {process.env.NODE_ENV === 'development' && (
                                     <a
@@ -114,15 +110,15 @@ export default async function CardPage({ params }: Props) {
                     <div
                         className={cn(isVertical ? 'xl:col-span-10 md:col-span-9 col-span-12' : 'xl:col-span-9 md:col-span-8 col-span-12', "flex flex-col gap-8 min-w-0")}>
                         <CardDetailHeader card={cardModel} bank={bank} />
-                        {description && (
+                        {card.description && (
                             <section className="flex flex-col gap-4">
                                 <h2 className="text-label text-text-muted">Về thẻ này</h2>
-                                {description.split('\n\n').map((para, i) => (
+                                {card.description.split('\n\n').map((para, i) => (
                                     <p key={i} className="text-body-sm text-text-primary">{para}</p>
                                 ))}
                             </section>
                         )}
-                        <CardDetailBillingCycle card={cardModel} bank={bank} />
+                        <CardDetailBillingCycle card={card} bank={bank} />
                         <CardDetailFees card={cardModel} bank={bank} />
                         <CardDetailOtherFees card={cardModel} bank={bank} />
                         <CardDetailIntents card={cardModel} />
@@ -134,7 +130,7 @@ export default async function CardPage({ params }: Props) {
 
                 <CardDetailCompare
                     currentCard={card}
-                    compareCards={compareCardModels}
+                    compareCards={compareCards}
                 />
                 <CardDetailRelated cards={sameTypeCards} currentCardId={card.id} />
             </div>

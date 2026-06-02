@@ -16,7 +16,7 @@ export async function CardDetailIntents({ card }: Props) {
  return (
  <section className="ow-card-detail-intents flex flex-col gap-3">
  <h2 className="text-label text-text-muted">Phù hợp với</h2>
- <OwCardIntentBadges card={card} intentMap={intentMap} highlighted/>
+ <OwCardIntentBadges card={card.toRaw()} intentMap={intentMap} highlighted/>
  </section>
  );
 }

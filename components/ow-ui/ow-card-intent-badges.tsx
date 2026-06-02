@@ -1,7 +1,7 @@
 'use client';
 
-import type {Intent} from '@/lib/api';
-import type {CardModel} from '@/lib/card-model';
+import type {Card, Intent} from '@/lib/api';
+import {CardModel} from '@/lib/card-model';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {useIntentMap} from '@/lib/intent-map-context';
 
@@ -13,7 +13,7 @@ export interface IntentItem {
 }
 
 interface Props {
-    card?: CardModel;
+    card?: Card;
     intentMap?: Map<string, Intent> | Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
     intents?: IntentItem[];
     slugRateMap?: Map<string, number>;
@@ -27,8 +27,9 @@ export function OwCardIntentBadges({card, intentMap: intentMapProp, intents, slu
 
     let resolved: IntentItem[];
     if (card) {
-        const rateMap = slugRateMap ?? card.buildSlugRateMap();
-        resolved = card.getIntents()
+        const model = new CardModel(card);
+        const rateMap = slugRateMap ?? model.buildSlugRateMap();
+        resolved = model.getIntents()
             .map(slug => intentMap.get(slug))
             .filter((i): i is Intent => i !== undefined)
             .map(i => ({slug: i.slug, icon: i.icon, label: i.label, rate: rateMap.get(i.slug)}));

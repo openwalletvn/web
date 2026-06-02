@@ -94,7 +94,7 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
             {/*col 1 — card image [2]*/}
             <div className="col-span-2">
                 <Link href={`/the/${cardModel.getId()}`}>
-                    <OwCardImage card={cardModel} className="w-full"/>
+                    <OwCardImage card={card} className="w-full"/>
                 </Link>
             </div>
 

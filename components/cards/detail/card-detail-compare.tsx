@@ -1,4 +1,4 @@
-import type {CardModel} from '@/lib/card-model';
+import type {RelatedCard} from '@/lib/api';
 // import {getTool} from '@/lib/tools';
 import {CardMasonry} from "@/components/cards/card-masonry";
 
@@ -8,7 +8,7 @@ const MAX_CARDS = 6;
 
 interface Props {
     currentCard: { id: string; name: string };
-    compareCards: CardModel[];
+    compareCards: RelatedCard[];
 }
 
 export function CardDetailCompare({ currentCard, compareCards }: Props) {

@@ -4,7 +4,6 @@ import {useSearchParams, useRouter, usePathname} from 'next/navigation';
 import {Suspense, useMemo, useState, useTransition} from 'react';
 import Link from 'next/link';
 import type {Bank, Card, CardSort, CardType} from '@/lib/api';
-import {CardModel} from '@/lib/card-model';
 import {ROUTES} from '@/lib/routes';
 import {FEE_BUCKETS} from '@/lib/fee-buckets';
 import {CardsFilter} from './cards-filter';
@@ -198,7 +197,7 @@ function CardsGridInner({
  return result;
  }, [cards, type, network, bankId, coBrand, contactless, fee, tier, sort]);
 
- const displayed = (limit ? filteredCards.slice(0, limit) : filteredCards).map(c => new CardModel(c));
+ const displayed = limit ? filteredCards.slice(0, limit) : filteredCards;
  const heading = title;
  const emptyMessage = noCardsLabel ?? 'Không tìm thấy thẻ nào.';
 

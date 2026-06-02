@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { getCards, type CardFilters } from '@/lib/api';
-import { CardModel } from '@/lib/card-model';
 import { CardMasonry } from './card-masonry';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/lib/routes';
@@ -28,8 +27,7 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
  cards = [...cards].sort((a, b) => (b.fees?.annual?.amount ?? 0) - (a.fees?.annual?.amount ?? 0));
  }
 
- const allModels = cards.map(c => new CardModel(c));
- const displayed = limit ? allModels.slice(0, limit) : allModels;
+ const displayed = limit ? cards.slice(0, limit) : cards;
  const heading = title !== undefined ? title : 'Thẻ';
 
  if (displayed.length === 0) {

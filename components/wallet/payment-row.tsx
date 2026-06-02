@@ -82,7 +82,7 @@ export function PaymentRow({walletCard, catalogCard, variant}: {
                 {catalogCard ? (
                     // <img src={getCardImageUrl(catalogCard)} alt={catalogCard.name}
                     //      className="w-full h-full object-contain"/>
-                    <OwCardImage card={new CardModel(catalogCard)}/>
+                    <OwCardImage card={catalogCard}/>
                 ) : (
                     <div className="w-full h-full bg-slate-100 animate-pulse"/>
                 )}

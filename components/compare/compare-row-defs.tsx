@@ -1,6 +1,5 @@
 import type {Card, CompareResult, CompareTableRow as ApiRow} from '@/lib/api';
 import {normalizeCardTypes} from '@/lib/api';
-import {CardModel} from '@/lib/card-model';
 import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
@@ -131,7 +130,7 @@ export const SECTION_DEFS: SectionDef[] = [
                 label: 'Lĩnh vực ưu đãi',
                 visible: (cards) => cards.some(c => !!c?.intents?.length),
                 getValues: (cards) => cards.map(c =>
-                    c?.intents?.length ? <OwCardIntentBadges card={new CardModel(c)} highlighted/> : empty
+                    c?.intents?.length ? <OwCardIntentBadges card={c} highlighted/> : empty
                 ),
                 getDescriptions: (_, ctx) => {
                     const apiRow = ctx.compareResult?.table.find(r => r.criterion === 'persona_coverage');

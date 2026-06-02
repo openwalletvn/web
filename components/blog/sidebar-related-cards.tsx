@@ -1,6 +1,5 @@
 import {getCard} from '@/lib/api';
 import type {Card} from '@/lib/api';
-import {CardModel} from '@/lib/card-model';
 import { CardDisplay } from '@/components/cards/variants/card-display';
 
 interface Props {
@@ -16,8 +15,7 @@ async function fetchCard(slug: string): Promise<Card | null> {
 }
 
 export async function SidebarRelatedCards({ cardSlugs }: Props) {
-  const raw = (await Promise.all(cardSlugs.map(fetchCard))).filter(Boolean) as Card[];
-  const cards = raw.map(c => new CardModel(c));
+  const cards = (await Promise.all(cardSlugs.map(fetchCard))).filter(Boolean) as Card[];
 
   if (cards.length === 0) return null;
 
@@ -28,7 +26,7 @@ export async function SidebarRelatedCards({ cardSlugs }: Props) {
       </div>
       <div className="flex flex-col">
         {cards.map((card, i) => (
-          <div key={card.getId()} className={i > 0 ? 'border-t border-dashed border-slate-100' : ''}>
+          <div key={card.id} className={i > 0 ? 'border-t border-dashed border-slate-100' : ''}>
             <CardDisplay variant="slim" card={card} showThumb badges={{ fee: true }} />
           </div>
         ))}

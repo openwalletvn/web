@@ -1,13 +1,13 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import type {Bank} from '@/lib/api';
+import type {Bank, Card} from '@/lib/api';
 import {getRelatedStatements} from '@/lib/card-dates';
-import type {CardModel} from '@/lib/card-model';
+import {CardModel} from '@/lib/card-model';
 import {cn} from "@/lib/utils";
 
 interface Props {
-    card: CardModel;
+    card: Card;
     bank: Bank | null;
 }
 
@@ -21,10 +21,11 @@ interface CycleInfo {
     dueDiff: number;    // days until due (negative = overdue)
 }
 export function CardDetailBillingCycle({ card }: Props) {
-    const cardTypes = card.getCardTypes();
+    const model = new CardModel(card);
+    const cardTypes = model.getCardTypes();
     const isCreditCard = cardTypes.includes('credit') || cardTypes.includes('hybrid');
-    const statementDate = card.getStatementDate();
-    const interestFreeDays = card.getInterestFreeDays();
+    const statementDate = model.getStatementDate();
+    const interestFreeDays = model.getInterestFreeDays();
     const hasData = interestFreeDays != null && statementDate != null;
     const [info, setInfo] = useState<CycleInfo | null>(null);
 
@@ -38,7 +39,7 @@ export function CardDetailBillingCycle({ card }: Props) {
 
         const msPerDay = 86_400_000;
         const closeDiff = Math.round((cycle.close.getTime() - tod.getTime()) / msPerDay);
-        const dueDiff = card.getNextDueDiff(undefined, today)!.dueDiff;
+        const dueDiff = model.getNextDueDiff(undefined, today)!.dueDiff;
 
         // today's position between close and due (clamped 0–100)
         const span = cycle.due.getTime() - cycle.close.getTime();

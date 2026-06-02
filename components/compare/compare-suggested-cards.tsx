@@ -21,10 +21,9 @@ export function CompareSuggestedCards({
  <div className="ow-compare-suggested-cards mt-16 pt-10 border-t border-slate-100">
  <h2 className="heading-3 mb-6">Có thể bạn muốn xem</h2>
  <div className={cn('grid', gridClassName, 'gap-6')}>
- {cards.map((card) => {
-  const model = new CardModel(card);
-  return <CardDisplay variant="tile" key={model.getId()} card={model} />;
- })}
+ {cards.map((card) => (
+ <CardDisplay variant="tile" key={card.id} card={card} />
+ ))}
  </div>
  </div>
  );
