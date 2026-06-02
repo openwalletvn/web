@@ -112,18 +112,18 @@ export default async function CardPage({ params }: Props) {
                         className={cn(isVertical ? 'xl:col-span-10 md:col-span-9 col-span-12' : 'xl:col-span-9 md:col-span-8 col-span-12', "flex flex-col gap-8 min-w-0")}>
                         <CardDetailHeader card={cardModel} bank={bank} />
                         <CardDetailRankBadges card={cardModel} />
+                        <CardDetailIntents card={cardModel}/>
                         {card.description && (
-                            <section className="flex flex-col gap-4">
-                                <h2 className="text-label text-text-muted">Về thẻ này</h2>
+                            <section className="flex flex-col gap-3">
+                                <h2 className="text-label">Giới thiệu</h2>
                                 {card.description.split('\n\n').map((para, i) => (
-                                    <p key={i} className="text-body-sm text-text-primary">{para}</p>
+                                    <p key={i} className="text-body-sm">{para}</p>
                                 ))}
                             </section>
                         )}
                         <CardDetailBillingCycle card={card} bank={bank} />
                         <CardDetailFees card={cardModel} bank={bank} />
                         <CardDetailOtherFees card={cardModel} bank={bank} />
-                        <CardDetailIntents card={cardModel} />
                         <CardDetailCashback card={cardModel}/>
                         <CardDetailSources card={cardModel} bank={bank} />
                         <CardDetailLastModified card={cardModel} bank={bank} />

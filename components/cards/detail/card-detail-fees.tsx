@@ -1,6 +1,6 @@
 import type {Bank, FeeEntry, FeeEntryWithWaiver, FeeWaiver} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
-import { OwAmount } from '@/components/ow-ui/ow-amount';
+import {OwAmount} from '@/components/ow-ui/ow-amount';
 
 function FeeValue({ entry }: { entry?: FeeEntry | null }) {
     if (!entry) return <span className="ow-amount text-body-md text-slate-400">—</span>;
@@ -56,7 +56,7 @@ export function CardDetailFees({ card }: Props) {
 
     return (
         <section className="ow-card-detail-fees flex flex-col gap-4">
-            <h2 className="text-label text-text-muted">Biểu phí</h2>
+            <h2 className="text-label">Biểu phí</h2>
 
             <div className="relative">
                 {/* Column labels */}

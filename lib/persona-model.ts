@@ -7,18 +7,19 @@ interface PersonaUIMeta {
     name: string;
     description: string;
     group: PersonaGroup;
+    href: string;
     theme?: PersonaTheme;
     available?: boolean;
 }
 
 const PERSONA_UI_META: Record<string, PersonaUIMeta> = {
-    shopee:    {name: 'Thẻ Shopee',       description: 'Thẻ ưu đãi Shopee',                  group: 'daily'},
-    groceries: {name: 'Thẻ Siêu thị',     description: 'Coopmart, Go, Lotte, AEON,...',       group: 'daily'},
-    digital:   {name: 'Dịch vụ số',       description: 'AI, Netflix, Spotify,...',            group: 'digital', theme: 'primary'},
-    business:  {name: 'Thẻ doanh nghiệp', description: 'Thẻ cho doanh nghiệp',               group: 'business', theme: 'black'},
-    traveler:  {name: 'Thẻ Du Lịch',      description: 'Vé máy bay, khách sạn, Agoda',       group: 'daily'},
-    commuter:  {name: 'Thẻ Di Chuyển',    description: 'Grab, Be, vận chuyển hàng ngày',     group: 'daily'},
-    family:    {name: 'Thẻ Gia Đình',     description: 'Siêu thị, học phí, y tế, bảo hiểm', group: 'daily'},
+    shopee:    {name: 'Thẻ Shopee',       description: 'Thẻ ưu đãi Shopee',                  group: 'daily',    href: '/the-theo-nhu-cau/shopee'},
+    groceries: {name: 'Thẻ Siêu thị',     description: 'Coopmart, Go, Lotte, AEON,...',       group: 'daily',    href: '/the-theo-nhu-cau/sieu-thi'},
+    digital:   {name: 'Dịch vụ số',       description: 'AI, Netflix, Spotify,...',            group: 'digital',  href: '/the-theo-nhu-cau/dich-vu-so',   theme: 'primary'},
+    business:  {name: 'Thẻ doanh nghiệp', description: 'Thẻ cho doanh nghiệp',               group: 'business', href: '/the-theo-nhu-cau/doanh-nghiep', theme: 'black'},
+    traveler:  {name: 'Thẻ Du Lịch',      description: 'Vé máy bay, khách sạn, Agoda',       group: 'daily',    href: '/the-theo-nhu-cau/du-lich'},
+    commuter:  {name: 'Thẻ Di Chuyển',    description: 'Grab, Be, vận chuyển hàng ngày',     group: 'daily',    href: '/the-theo-nhu-cau/di-chuyen'},
+    family:    {name: 'Thẻ Gia Đình',     description: 'Siêu thị, học phí, y tế, bảo hiểm', group: 'daily',    href: '/the-theo-nhu-cau/gia-dinh'},
 };
 
 export class PersonaModel {
@@ -116,9 +117,9 @@ export class PersonaModel {
         return this.ui?.available !== false;
     }
 
-    /** Canonical URL for this persona's page, e.g. /the-theo-nhu-cau/shopee. */
+    /** Canonical URL for this persona's page, e.g. /the-theo-nhu-cau/sieu-thi. */
     getHref(): string {
-        return `/the-theo-nhu-cau/${this._slug}`;
+        return this.ui?.href ?? `/the-theo-nhu-cau/${this._slug}`;
     }
 
     // ─── Computation methods ──────────────────────────────────────────────────
