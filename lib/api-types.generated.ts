@@ -774,8 +774,6 @@ export interface components {
                 /** @description "domestic" | "foreign" | ISO 3166-1 alpha-2 country code (e.g. "JP", "TH"). Absent = all geographies. */
                 geography?: string;
             };
-            /** @description Max number of intents/merchants this rule applies to per period. Use when the cardholder picks N intents each cycle (e.g. 1 = choose one). */
-            max_intents?: number;
             /** @description Spend-tier array for rules where rate/cap changes based on total monthly spend. Ordered ascending by min_spend. First entry must have min_spend: 0 (base tier). When present, algorithm uses tiers for rate/cap selection; rate/rate_max/cap/cap_max fields become display-only summaries. */
             tiers?: {
                 /** @description Minimum total monthly spend (VND) to activate this tier. Base tier must be 0. */
@@ -831,8 +829,6 @@ export interface components {
                     /** @description "domestic" | "foreign" | ISO 3166-1 alpha-2 country code (e.g. "JP", "TH"). Absent = all geographies. */
                     geography?: string;
                 };
-                /** @description Max number of intents/merchants this rule applies to per period. Use when the cardholder picks N intents each cycle (e.g. 1 = choose one). */
-                max_intents?: number;
                 /** @description Spend-tier array for rules where rate/cap changes based on total monthly spend. Ordered ascending by min_spend. First entry must have min_spend: 0 (base tier). When present, algorithm uses tiers for rate/cap selection; rate/rate_max/cap/cap_max fields become display-only summaries. */
                 tiers?: {
                     /** @description Minimum total monthly spend (VND) to activate this tier. Base tier must be 0. */
@@ -849,7 +845,9 @@ export interface components {
                 /** @description Free-text for unlock conditions, user-selectable mechanics, specific merchant names, or exclusions that don't fit structured fields. */
                 note?: string;
             }[];
-            /** @description True when rules are mutually exclusive benefit packages - cardholder picks ONE rule group at card issuance and that choice is permanent. Algorithm evaluates each rule independently against the full intent set and returns the max-scoring rule only (no summing, no remaining set). Use when: bank note says "chọn 1 trong N gói khi phát hành thẻ" and each rule covers non-overlapping categories with different rates. Real example: lpbank-jcb-ultimate (Gói Chăm sóc 15% vs Gói Trải nghiệm 10%). Different from max_intents (which picks N intents per cycle within one rule) - this is a one-time permanent package choice. */
+            /** @description Max number of rules the cardholder can activate per statement period. Engine picks the N highest-earning rules. Use when bank policy says "chọn N danh mục mỗi kỳ" (e.g. 1 = pick one category per cycle). Each selectable rule must be a separate entry. See msb-mdigi as reference. */
+            max_active_rules?: number;
+            /** @description True when rules are mutually exclusive benefit packages - cardholder picks ONE rule group at card issuance and that choice is permanent. Algorithm evaluates each rule independently against the full intent set and returns the max-scoring rule only (no summing, no remaining set). Use when: bank note says "chọn 1 trong N gói khi phát hành thẻ" and each rule covers non-overlapping categories with different rates. Real example: lpbank-jcb-ultimate (Gói Chăm sóc 15% vs Gói Trải nghiệm 10%). Different from max_active_rules (which picks N rules per cycle each statement period) - this is a one-time permanent package choice. */
             package_exclusive?: boolean;
             /** @description Overall cashback cap across all rules combined per period. Use the lower (guaranteed) value when tiered. */
             global_cap?: {
@@ -1210,8 +1208,6 @@ export interface components {
                         /** @description "domestic" | "foreign" | ISO 3166-1 alpha-2 country code (e.g. "JP", "TH"). Absent = all geographies. */
                         geography?: string;
                     };
-                    /** @description Max number of intents/merchants this rule applies to per period. Use when the cardholder picks N intents each cycle (e.g. 1 = choose one). */
-                    max_intents?: number;
                     /** @description Spend-tier array for rules where rate/cap changes based on total monthly spend. Ordered ascending by min_spend. First entry must have min_spend: 0 (base tier). When present, algorithm uses tiers for rate/cap selection; rate/rate_max/cap/cap_max fields become display-only summaries. */
                     tiers?: {
                         /** @description Minimum total monthly spend (VND) to activate this tier. Base tier must be 0. */
@@ -1228,7 +1224,9 @@ export interface components {
                     /** @description Free-text for unlock conditions, user-selectable mechanics, specific merchant names, or exclusions that don't fit structured fields. */
                     note?: string;
                 }[];
-                /** @description True when rules are mutually exclusive benefit packages - cardholder picks ONE rule group at card issuance and that choice is permanent. Algorithm evaluates each rule independently against the full intent set and returns the max-scoring rule only (no summing, no remaining set). Use when: bank note says "chọn 1 trong N gói khi phát hành thẻ" and each rule covers non-overlapping categories with different rates. Real example: lpbank-jcb-ultimate (Gói Chăm sóc 15% vs Gói Trải nghiệm 10%). Different from max_intents (which picks N intents per cycle within one rule) - this is a one-time permanent package choice. */
+                /** @description Max number of rules the cardholder can activate per statement period. Engine picks the N highest-earning rules. Use when bank policy says "chọn N danh mục mỗi kỳ" (e.g. 1 = pick one category per cycle). Each selectable rule must be a separate entry. See msb-mdigi as reference. */
+                max_active_rules?: number;
+                /** @description True when rules are mutually exclusive benefit packages - cardholder picks ONE rule group at card issuance and that choice is permanent. Algorithm evaluates each rule independently against the full intent set and returns the max-scoring rule only (no summing, no remaining set). Use when: bank note says "chọn 1 trong N gói khi phát hành thẻ" and each rule covers non-overlapping categories with different rates. Real example: lpbank-jcb-ultimate (Gói Chăm sóc 15% vs Gói Trải nghiệm 10%). Different from max_active_rules (which picks N rules per cycle each statement period) - this is a one-time permanent package choice. */
                 package_exclusive?: boolean;
                 /** @description Overall cashback cap across all rules combined per period. Use the lower (guaranteed) value when tiered. */
                 global_cap?: {
@@ -1585,7 +1583,7 @@ export interface operations {
                 /** @description Filter by co-brand partner identifier (comma-separated OR, e.g. "vietnam-airlines,grab") */
                 co_brand?: string;
                 /** @description Filter by spending intent slug (comma-separated OR, e.g. "shopee,lazada"). Returns cards whose intents[] array includes any of the given values. */
-                intent?: "shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books";
+                intent?: "shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "shopee-food" | "grab-food" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books";
                 /** @description Filter by contactless payment methods (comma-separated OR, e.g. "apple_pay,google_pay") */
                 contactless?: string;
                 /** @description Filter by card tier (comma-separated OR, e.g. "infinite,signature") */
@@ -1603,7 +1601,7 @@ export interface operations {
                 /** @description Atomic filter: card has ≥1 cashback rule with this geography scope. "unscoped" matches rules with no geography restriction. */
                 rule_geography?: "domestic" | "foreign" | "unscoped";
                 /** @description Atomic filter: card has ≥1 cashback rule targeting this intent slug (comma-separated OR, e.g. "digital,all"). */
-                rule_intent?: "shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books" | "all";
+                rule_intent?: "shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "shopee-food" | "grab-food" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books" | "all";
                 /** @description Filter by cashback benefit. "true" returns only cards with ≥1 cashback rule. "false" returns only cards with no cashback rules. */
                 has_cashback?: "true" | "false";
             };
@@ -1646,7 +1644,7 @@ export interface operations {
                      * @example shopee
                      * @enum {string}
                      */
-                    persona?: "shopee" | "groceries" | "digital" | "traveler" | "commuter" | "family" | "business";
+                    persona?: "shopee" | "groceries" | "digital" | "traveler" | "commuter" | "dining" | "family" | "business";
                     /** @description Restrict ranking pool to specific card IDs. */
                     cards?: string[];
                     /**
@@ -1655,7 +1653,7 @@ export interface operations {
                      *       "shopee"
                      *     ]
                      */
-                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
+                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "shopee-food" | "grab-food" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
                     /**
                      * @description Monthly spend in VND used to estimate cashback. Default 3,000,000.
                      * @example 3000000
@@ -1746,7 +1744,7 @@ export interface operations {
                      */
                     card_ids: string[];
                     /** @description Intent slugs for cashback estimation context. */
-                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
+                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "shopee-food" | "grab-food" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
                     /**
                      * @description Monthly spend in VND for cashback estimates. Default 3,000,000.
                      * @example 3000000
@@ -1922,7 +1920,7 @@ export interface operations {
             content: {
                 "application/json": {
                     /** @description Intent slugs to calculate for. Defaults to the card's own intents when omitted. */
-                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
+                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "shopee-food" | "grab-food" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
                     /**
                      * @description Total monthly spend in VND. Default 3,000,000.
                      * @example 3000000
@@ -2253,7 +2251,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @description Persona slug */
-                slug: "shopee" | "groceries" | "digital" | "traveler" | "commuter" | "family" | "business";
+                slug: "shopee" | "groceries" | "digital" | "traveler" | "commuter" | "dining" | "family" | "business";
             };
             cookie?: never;
         };
