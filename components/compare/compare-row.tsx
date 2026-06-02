@@ -4,6 +4,7 @@ import {cn} from "@/lib/utils";
 
 export interface CompareRowProps {
     label: string;
+    rowDescription?: string;
     values: React.ReactNode[];
     descriptions?: React.ReactNode[];
     winnerIndex?: number | null;
@@ -34,10 +35,11 @@ function CompareCell({value, desc, index, total, isWinner}: CompareCellProps) {
     );
 }
 
-export function CompareRow({label, values, descriptions, winnerIndex, id}: CompareRowProps) {
+export function CompareRow({label, rowDescription, values, descriptions, winnerIndex, id}: CompareRowProps) {
     return (
         <div id={id} className="ow-compare-row sm:py-6 py-3">
             <p className="text-label sm:mb-3 mb-1.5">{label}</p>
+            {rowDescription && <p className="text-body-sm text-neutral-400 sm:mb-3 mb-1.5">{rowDescription}</p>}
             <div className="ow-compare-row-inner grid grid-cols-12">
                 {values.map((v, i) => (
                     <CompareCell key={i} value={v} desc={descriptions?.[i]} index={i} total={values.length}

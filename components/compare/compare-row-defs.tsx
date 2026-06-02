@@ -19,6 +19,7 @@ export interface CompareContext {
 export interface StaticRowSpec {
     id: string;
     label: string;
+    rowDescription?: string;
     visible?: (cards: (Card | null)[], ctx: CompareContext) => boolean;
     getValues: (cards: (Card | null)[], ctx: CompareContext) => React.ReactNode[];
     getDescriptions?: (cards: (Card | null)[], ctx: CompareContext) => (React.ReactNode | null)[];
@@ -28,6 +29,7 @@ export interface StaticRowSpec {
 export interface CriterionRowSpec {
     criterion: string;
     label: string;
+    rowDescription?: string;
     getValue?: (value: number, unit: ApiRow['unit'], card: Card | null) => React.ReactNode;
     getDescription?: (value: number, unit: ApiRow['unit'], card: Card | null) => string | null;
 }
@@ -70,13 +72,26 @@ export const SECTION_DEFS: SectionDef[] = [
                 ),
             },
             {
-                id: 'row-mang-luoi',
+                id: 'row-network',
                 label: 'Mạng lưới thẻ',
                 getValues: (cards) => cards.map(c =>
                     c?.card_network_data
                         ? <OwBadge variant="network" networkData={c.card_network_data} tier={c.card_tier}/>
                         : empty
                 ),
+                getDescriptions: (_, ctx) => {
+                    const apiRow = ctx.compareResult?.table.find(r => r.criterion === 'network_rank');
+                    return ctx.cardIds.map(id => {
+                        const v = id != null && apiRow ? (apiRow.values[id] ?? null) : null;
+                        return v != null ? `Độ phổ biến: ${rank(v)}` : null;
+                    });
+                },
+                getWinnerIndex: (_, ctx) => {
+                    const winnerId = ctx.compareResult?.table.find(r => r.criterion === 'network_rank')?.winner ?? null;
+                    if (!winnerId) return null;
+                    const idx = ctx.cardIds.indexOf(winnerId);
+                    return idx === -1 ? null : idx;
+                },
             },
             {
                 id: 'row-loai-the',
@@ -92,6 +107,19 @@ export const SECTION_DEFS: SectionDef[] = [
                 getValues: (cards) => cards.map(c =>
                     c?.intents?.length ? <OwCardIntentBadges card={c} highlighted/> : empty
                 ),
+                getDescriptions: (_, ctx) => {
+                    const apiRow = ctx.compareResult?.table.find(r => r.criterion === 'persona_coverage');
+                    return ctx.cardIds.map(id => {
+                        const v = id != null && apiRow ? (apiRow.values[id] ?? null) : null;
+                        return v != null ? `Độ phủ: ${percent(v)}` : null;
+                    });
+                },
+                getWinnerIndex: (_, ctx) => {
+                    const winnerId = ctx.compareResult?.table.find(r => r.criterion === 'persona_coverage')?.winner ?? null;
+                    if (!winnerId) return null;
+                    const idx = ctx.cardIds.indexOf(winnerId);
+                    return idx === -1 ? null : idx;
+                },
             },
             {
                 id: 'row-thanh-toan-khong-tiep-xuc',
@@ -112,6 +140,7 @@ export const SECTION_DEFS: SectionDef[] = [
             {
                 criterion: 'cashback_per_month',
                 label: 'Cashback hàng tháng',
+                rowDescription: 'Số tiền hoàn tối ưu dựa trên thuật toán của OpenWallet',
                 getValue: (v) => <OwFeeAmount compact amount={v} period="period"/>,
                 getDescription: (v) => v === 0 ? 'Không có cashback' : null
             },
@@ -194,8 +223,6 @@ export const SECTION_DEFS: SectionDef[] = [
         section: 'scores',
         label: 'Điểm OpenWallet',
         rows: [
-            {criterion: 'network_rank', label: 'Độ phổ biến của mạng thẻ', getValue: (v) => rank(v)},
-            {criterion: 'persona_coverage', label: 'Độ phủ lĩnh vực ưu đãi', getValue: (v) => percent(v)},
             {criterion: 'card_score', label: 'Điểm tổng hợp', getValue: (v) => score(v)},
             {criterion: 'data_score', label: 'Độ đầy đủ dữ liệu', getValue: (v) => score(v)},
         ],
@@ -213,6 +240,7 @@ function resolveCriterionSpec(spec: CriterionRowSpec, cards: (Card | null)[], ct
     return {
         id: `row-${spec.criterion}`,
         label: spec.label,
+        rowDescription: spec.rowDescription,
         getValues: (_, c) => c.cardIds.map((id, i) => {
             const card = cards[i] ?? null;
             const v = id != null && apiRow ? (apiRow.values[id] ?? 0) : null;

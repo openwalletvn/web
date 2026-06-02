@@ -39,6 +39,7 @@ export function CompareTable({cards, compareResult}: Props) {
                                 key={row.id}
                                 id={row.id}
                                 label={row.label}
+                                rowDescription={row.rowDescription}
                                 values={row.getValues(cards, ctx)}
                                 descriptions={row.getDescriptions?.(cards, ctx)}
                                 winnerIndex={row.getWinnerIndex?.(cards, ctx)}
