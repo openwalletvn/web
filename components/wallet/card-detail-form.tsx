@@ -5,7 +5,7 @@ import { IconTrash, IconArrowForwardUp } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
 import { inputClass } from '@/lib/ui-constants';
 import {formatDueDate} from '@/lib/card-dates';
-import {CardModel} from '@/lib/card-model';
+import {CardModel, CARD_TYPE_LABELS} from '@/lib/card-model';
 import { addCard, updateCard, removeCard, hasCardWithSameCatalogId } from '@/lib/wallet';
 import { createCreditAccount } from '@/lib/credit-account';
 import { appDb } from '@/lib/app-db';
@@ -23,12 +23,6 @@ import { OwAmount } from '@/components/ow-ui/ow-amount';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const CARD_TYPE_LABELS: Record<string, string> = {
-  credit:  'Tín dụng',
-  debit:   'Ghi nợ',
-  hybrid:  'Hybrid',
-  prepaid: 'Trả trước',
-};
 
 const NETWORK_LABELS: Record<string, string> = {
   visa:       'Visa',
