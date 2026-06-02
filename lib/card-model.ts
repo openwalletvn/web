@@ -168,6 +168,11 @@ export class CardModel {
         return this.data.last_modified;
     }
 
+    /** Persona slugs this card matches, empty array when none. */
+    getMatchedPersonas(): string[] {
+        return this.data.matched_personas ?? [];
+    }
+
     /** Returns the underlying raw `Card` object. Use only at serialization/API boundaries. */
     toRaw(): Card {
         return this.data;

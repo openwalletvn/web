@@ -1303,6 +1303,10 @@ export interface components {
                 /** @description Additional lifestyle benefit notes in Vietnamese */
                 note?: string;
             };
+            /** @description Persona slugs this card matches. Computed at data generation time from persona filter rules. */
+            matched_personas?: string[];
+            /** @description Percentage of active personas this card matches (0–100). */
+            persona_coverage?: number;
         };
         Persona: {
             /** @description Unique identifier for the persona */
