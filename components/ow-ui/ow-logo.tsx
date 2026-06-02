@@ -25,7 +25,7 @@ export function OwLogo({variant = 'icon', color = 'black', className = '', href 
             src={src}
             alt="OpenWallet"
             {...intrinsic}
-            className="block w-[80px] h-auto"
+            className="block size-full object-contain"
         />
     );
 
