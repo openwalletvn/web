@@ -39,8 +39,8 @@ const nextConfig: NextConfig = {
       },
       // category paths — must be before generic /cards/:slug* rule
       { source: '/cards', destination: '/the', permanent: true },
-      { source: '/cards/credit', destination: '/the', permanent: true },
-      { source: '/cards/debit', destination: '/the', permanent: true },
+      { source: '/cards/credit', destination: '/loai-the/the-tin-dung', permanent: true },
+      { source: '/cards/debit', destination: '/loai-the/the-ghi-no', permanent: true },
       { source: '/cards/2in1', destination: '/the-2-trong-1', permanent: true },
       { source: '/cards/visa', destination: '/the', permanent: true },
       { source: '/cards/mastercard', destination: '/the', permanent: true },
@@ -56,6 +56,11 @@ const nextConfig: NextConfig = {
         destination: '/the/:slug*',
         permanent: true,
       },
+      // card type pages — old flat URLs redirect to new /loai-the/* structure
+      { source: '/the-tin-dung', destination: '/loai-the/the-tin-dung', permanent: true },
+      { source: '/the-ghi-no', destination: '/loai-the/the-ghi-no', permanent: true },
+      { source: '/the-hybrid', destination: '/loai-the/the-hybrid', permanent: true },
+      { source: '/cards/hybrid', destination: '/loai-the/the-hybrid', permanent: true },
       // persona pages — old flat URLs redirect to nested structure
       { source: '/the-shopee', destination: '/the-theo-nhu-cau/shopee', permanent: true },
       { source: '/the-sieu-thi', destination: '/the-theo-nhu-cau/sieu-thi', permanent: true },
