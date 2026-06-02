@@ -8,7 +8,7 @@ import type {Bank, Card} from '@/lib/api';
 import {getBankImageUrl, normalizeCardTypes} from '@/lib/api';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
-import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
+import {OwAmount} from '@/components/ow-ui/ow-amount';
 import {useCompareList} from '@/lib/use-compare-list';
 
 interface BadgeConfig {
@@ -128,7 +128,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                     <p className="heading-6 text-base">{card.name}</p>
                     {fee && card.fees?.annual != null && (
                         <p className="text-sm text-slate-500">
-                            <OwFeeAmount amount={card.fees.annual.amount} period="year"/>
+                            <OwAmount amount={card.fees.annual.amount} unit="vnd" period="year"/>
                         </p>
                     )}
                     <OwBadges className="mt-1">
@@ -238,7 +238,7 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
 
     const feeLabel = card.fees?.annual == null
         ? null
-        : <OwFeeAmount amount={card.fees.annual.amount} textOnly period="year"/>;
+        : <OwAmount amount={card.fees.annual.amount} unit="vnd" textOnly period="year"/>;
 
     const content = (
         <>

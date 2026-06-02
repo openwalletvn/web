@@ -19,7 +19,7 @@ import { MoveToWalletPicker } from './move-to-wallet-picker';
 import { useWalletDb, useActiveWallet } from '@/providers/wallet-db-provider';
 import { useLiveQuery } from 'dexie-react-hooks';
 import posthog from 'posthog-js';
-import { OwFeeAmount } from '@/components/ow-ui/ow-fee-amount';
+import { OwAmount } from '@/components/ow-ui/ow-amount';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -259,7 +259,7 @@ export function CardDetailForm({
               <ApiInfoRow
                 label="Phí thường niên"
                 value={
-                  <OwFeeAmount amount={card.fees.annual.amount} period="year"/>
+                  <OwAmount amount={card.fees.annual.amount} unit="vnd" period="year"/>
                 }
               />
             )}

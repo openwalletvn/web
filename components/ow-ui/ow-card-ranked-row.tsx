@@ -5,7 +5,7 @@ import {CATCHALL_SLUGS} from '@/lib/card-display-utils';
 import {CardModel} from '@/lib/card-model';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwRankBadge} from '@/components/ow-ui/ow-rank-badge';
-import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
+import {OwAmount} from '@/components/ow-ui/ow-amount';
 import {IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
@@ -176,13 +176,13 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
 
             {/*col 3 — cashback amount [2]*/}
             <div className="col-span-2 flex flex-col items-end">
-                <OwFeeAmount amount={ranked.cashback_result.cashback} compact period="period"/>
+                <OwAmount amount={ranked.cashback_result.cashback} unit="k" period="period"/>
             </div>
 
             {/*col 4 — annual fee [2]*/}
             <div className="col-span-2 flex flex-col items-end">
                 {card.fees?.annual != null && (
-                    <OwFeeAmount amount={card.fees.annual.amount} compact period="year"/>
+                    <OwAmount amount={card.fees.annual.amount} unit="k" period="year"/>
                 )}
             </div>
         </div>

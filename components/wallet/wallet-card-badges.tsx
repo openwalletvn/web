@@ -1,5 +1,5 @@
 import { DashedBadge } from '@/components/ui/dashed-badge';
-import { OwFeeAmount } from '@/components/ow-ui/ow-fee-amount';
+import { OwAmount } from '@/components/ow-ui/ow-amount';
 import type { WalletCard } from '@/lib/db';
 import type { Card } from '@/lib/api';
 import type { CreditBadge } from './wallet-card-row';
@@ -50,7 +50,7 @@ export function WalletCardBadges({
         catalogCard.fees.annual.amount === 0 ? (
           <DashedBadge variant="green">Miễn phí thường niên</DashedBadge>
         ) : (
-          <DashedBadge>PTN: <OwFeeAmount amount={catalogCard.fees.annual.amount} compact textOnly period="year"/></DashedBadge>
+          <DashedBadge>PTN: <OwAmount amount={catalogCard.fees.annual.amount} unit="k" textOnly period="year"/></DashedBadge>
         )
       )}
 

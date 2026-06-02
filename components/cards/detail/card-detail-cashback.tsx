@@ -2,7 +2,7 @@ import * as React from 'react';
 import type {Card, CashbackBenefit, Intent, Merchant} from '@/lib/api';
 import {getIntents, getMerchants} from '@/lib/api';
 import {OwCardCashbackRule} from '@/components/ow-ui/ow-card-cashback-rule';
-import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
+import {OwAmount} from '@/components/ow-ui/ow-amount';
 import {
     IconAlertCircle,
     IconInfoCircle,
@@ -105,7 +105,7 @@ function CashbackSection({
                     {cashback.min_spend_per_period && (
                         <FooterRow
                             label="Chi tiêu tối thiểu"
-                            value={<OwFeeAmount amount={cashback.min_spend_per_period} compact textOnly period="statementperiod"/>}
+                            value={<OwAmount amount={cashback.min_spend_per_period} unit="k" textOnly period="statementperiod"/>}
                         />
                     )}
                     {cashback.global_cap && (
@@ -114,7 +114,7 @@ function CashbackSection({
                             value={
                                 cashback.global_cap.amount === -1
                                     ? 'Hoàn không giới hạn'
-                                    : <>{cashback.global_cap_max ? <><OwFeeAmount amount={cashback.global_cap.amount} compact textOnly/> – <OwFeeAmount amount={cashback.global_cap_max.amount} compact textOnly period="period"/></> : <OwFeeAmount amount={cashback.global_cap.amount} compact textOnly period="period"/>}</>
+                                    : <>{cashback.global_cap_max ? <><OwAmount amount={cashback.global_cap.amount} unit="k" textOnly/> – <OwAmount amount={cashback.global_cap_max.amount} unit="k" textOnly period="period"/></> : <OwAmount amount={cashback.global_cap.amount} unit="k" textOnly period="period"/>}</>
                             }
                         />
                     )}

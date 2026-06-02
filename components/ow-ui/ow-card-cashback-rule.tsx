@@ -1,7 +1,7 @@
 import type {CashbackRule, Intent, Merchant, SpendTier} from '@/lib/api';
 import {cn} from '@/lib/utils';
 import {OwBadge} from '@/components/ow-ui/ow-badge';
-import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
+import {OwAmount} from '@/components/ow-ui/ow-amount';
 import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
 import {
     IconBuildingStore,
@@ -104,7 +104,7 @@ function TiersTable({tiers}: { tiers: SpendTier[] }) {
                         </td>
                         <td className="py-1 pr-3 font-semibold text-slate-900">{formatRate(tier.rate)}</td>
                         <td className="py-1 text-slate-700">
-                            {tier.cap != null ? <OwFeeAmount amount={tier.cap} compact textOnly/> : 'Không giới hạn'}
+                            {tier.cap != null ? <OwAmount amount={tier.cap} unit="k" textOnly/> : 'Không giới hạn'}
                         </td>
                     </tr>
                 ))}
@@ -132,7 +132,7 @@ function CategoryCaps({
                 return (
                     <div key={slug} className="flex items-center justify-between text-xs text-slate-700">
                         <span>{label}</span>
-                        <span className="font-medium"><OwFeeAmount amount={amount} compact textOnly/></span>
+                        <span className="font-medium"><OwAmount amount={amount} unit="k" textOnly/></span>
                     </div>
                 );
             })}
@@ -243,7 +243,7 @@ export function OwCardCashbackRule({rule, intentMap, merchantMap}: OwCardCashbac
                             <IconCurrencyDollar className="w-3.5 h-3.5 text-slate-400"/>
                             {rule.cap.amount === -1
                                 ? 'Hoàn không giới hạn'
-                                : <>Tối đa {rule.cap_max ? <><OwFeeAmount amount={rule.cap.amount} compact textOnly/> – <OwFeeAmount amount={rule.cap_max.amount} compact textOnly period="statementperiod"/></> : <OwFeeAmount amount={rule.cap.amount} compact textOnly period="statementperiod"/>}</>}
+                                : <>Tối đa {rule.cap_max ? <><OwAmount amount={rule.cap.amount} unit="k" textOnly/> – <OwAmount amount={rule.cap_max.amount} unit="k" textOnly period="statementperiod"/></> : <OwAmount amount={rule.cap.amount} unit="k" textOnly period="statementperiod"/>}</>}
                         </div>
                         {rule.cap.category_caps && (
                             <CategoryCaps categoryCaps={rule.cap.category_caps} intentMap={intentMap}/>
