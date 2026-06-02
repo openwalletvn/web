@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react';
 import type {Bank, Card} from '@/lib/api';
-import {getRelatedStatements} from '@/lib/card-dates';
+import {getNextDueDiff, getRelatedStatements} from '@/lib/card-dates';
 import {cn} from "@/lib/utils";
 
 interface Props {
@@ -19,14 +19,6 @@ interface CycleInfo {
     todayPct: number;   // 0–100, position of today between close and due
     dueDiff: number;    // days until due (negative = overdue)
 }
-
-function getTodayMarkerColor(dueDiff: number): string {
-    if (dueDiff < 0) return 'text-red-500';
-    if (dueDiff <= 3) return 'text-red-400';
-    if (dueDiff <= 7) return 'text-amber-400';
-    return 'text-slate-400';
-}
-
 export function CardDetailBillingCycle({ card }: Props) {
     const isCreditCard = card.card_type.includes('credit') || card.card_type.includes('hybrid');
     const hasData = card.interest_free_days != null && card.statement_date != null;
@@ -42,7 +34,7 @@ export function CardDetailBillingCycle({ card }: Props) {
 
         const msPerDay = 86_400_000;
         const closeDiff = Math.round((cycle.close.getTime() - tod.getTime()) / msPerDay);
-        const dueDiff = Math.round((cycle.due.getTime() - tod.getTime()) / msPerDay);
+        const dueDiff = getNextDueDiff(card.statement_date, card.interest_free_days, today)!.dueDiff;
 
         // today's position between close and due (clamped 0–100)
         const span = cycle.due.getTime() - cycle.close.getTime();
