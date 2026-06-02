@@ -63,7 +63,7 @@ export default function UpcomingPage() {
  const creditCards = useMemo(
  () => (walletCards ?? []).filter( // ?? [] handles undefined during loading
  (c) => c.status !== 'expired' && c.status !== 'canceled'
- && (c.cardType === 'credit' || c.cardType === '2in1'),
+ && (c.cardType === 'credit' || c.cardType === 'hybrid'),
  ),
  [walletCards],
  );

@@ -13,7 +13,7 @@ export function StatsWidget() {
   if (totalCards === 0) return null;
 
   const creditCardCount = walletCards?.filter(
-    (card) => card.cardType === 'credit' || card.cardType === '2in1',
+    (card) => card.cardType === 'credit' || card.cardType === 'hybrid',
   ).length ?? 0;
 
   const activeAccountIds = new Set(

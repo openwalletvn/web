@@ -25,7 +25,7 @@ import { OwFeeAmount } from '@/components/ow-ui/ow-fee-amount';
 const CARD_TYPE_LABELS: Record<string, string> = {
   credit:  'Tín dụng',
   debit:   'Ghi nợ',
-  '2in1':  '2 trong 1',
+  hybrid:  'Hybrid',
   prepaid: 'Trả trước',
 };
 
@@ -85,7 +85,7 @@ export function CardDetailForm({
   const db = useWalletDb();
   const activeWallet = useActiveWallet();
   const isEdit = !!walletCard;
-  const showCreditFields = card.card_type.includes('credit') || card.card_type.includes('2in1');
+  const showCreditFields = card.card_type.includes('credit') || card.card_type.includes('hybrid');
 
   const allWallets = useLiveQuery(() => appDb.wallets.toArray(), [], []);
   const otherWallets: AppWallet[] = (allWallets ?? []).filter((w) => w.id !== activeWallet.id);
@@ -164,7 +164,7 @@ export function CardDetailForm({
       }
 
       const cardType = card.card_type.includes('credit') ? 'credit'
-        : card.card_type.includes('2in1') ? '2in1'
+        : card.card_type.includes('hybrid') ? 'hybrid'
         : card.card_type.includes('debit') ? 'debit'
         : 'prepaid';
 

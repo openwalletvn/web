@@ -58,7 +58,7 @@ export function TypeSelect({ value, onChange }: TypeSelectProps) {
         <SelectItem value="credit">Tín dụng</SelectItem>
         <SelectItem value="debit">Ghi nợ</SelectItem>
         <SelectItem value="prepaid">Trả trước</SelectItem>
-        <SelectItem value="2in1">2-in-1</SelectItem>
+        <SelectItem value="hybrid">Hybrid</SelectItem>
       </SelectContent>
     </Select>
   );

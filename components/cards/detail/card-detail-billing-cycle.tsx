@@ -28,7 +28,7 @@ function getTodayMarkerColor(dueDiff: number): string {
 }
 
 export function CardDetailBillingCycle({ card }: Props) {
-    const isCreditCard = card.card_type.includes('credit') || card.card_type.includes('2in1');
+    const isCreditCard = card.card_type.includes('credit') || card.card_type.includes('hybrid');
     const hasData = card.interest_free_days != null && card.statement_date != null;
     const [info, setInfo] = useState<CycleInfo | null>(null);
 

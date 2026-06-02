@@ -66,7 +66,7 @@ const NETWORKS = [
     {id: 'unionpay' as const, name: 'UnionPay', logo_url: '/images/networks/unionpay.png'},
 ];
 
-const CARD_TYPES = ['credit', 'debit', 'prepaid', '2in1', 'co-branded', 'atm', 'transit'] as const;
+const CARD_TYPES = ['credit', 'debit', 'prepaid', 'hybrid', 'co-branded', 'atm', 'transit'] as const;
 
 const CONTACTLESS = [
     {id: 'apple-pay' as const, name: 'Apple Pay', logo_url: '/images/wallets/apple-pay.png', link: ''},

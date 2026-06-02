@@ -153,7 +153,7 @@ function ReassignSection({
 export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, onAfterDelete }: Props) {
   const db = useWalletDb();
   const isEdit = !!walletCard;
-  const showCreditFields = card.card_type.includes('credit') || card.card_type.includes('2in1');
+  const showCreditFields = card.card_type.includes('credit') || card.card_type.includes('hybrid');
 
   const [nickname, setNickname] = useState('');
   const [last4, setLast4] = useState('');
@@ -280,7 +280,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
         cardId: card.id,
         bankId: card.bank_id,
         cardType: card.card_type.includes('credit') ? 'credit'
-          : card.card_type.includes('2in1') ? '2in1'
+          : card.card_type.includes('hybrid') ? 'hybrid'
           : card.card_type.includes('debit') ? 'debit'
           : 'prepaid',
         nickname: nickname || undefined,

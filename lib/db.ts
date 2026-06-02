@@ -19,9 +19,9 @@ export interface WalletCard {
   id: string;
   cardId: string;           // references catalog card
   bankId: string;           // denormalized for quick lookup
-  cardType: string;         // 'credit' | '2in1' | 'debit' | 'prepaid'
+  cardType: string;         // 'credit' | 'hybrid' | 'debit' | 'prepaid'
   nickname?: string;
-  creditAccountId?: string; // set for credit/2in1 cards
+  creditAccountId?: string; // set for credit/hybrid cards
   isSupplementary?: boolean;
   last4?: string;
   issueDate?: string;       // MM/YY
@@ -64,5 +64,10 @@ export class WalletDb extends Dexie {
       creditAccounts: 'id, bankId',
       config: 'key',
     });
+    this.version(2).stores({}).upgrade(tx =>
+      tx.table('walletCards').toCollection().modify(card => {
+        if (card.cardType === '2in1') card.cardType = 'hybrid';
+      })
+    );
   }
 }

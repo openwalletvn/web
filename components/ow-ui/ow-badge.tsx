@@ -54,7 +54,7 @@ export const CARD_TYPE_LABELS: Record<CardType, string> = {
     credit: 'Thẻ tín dụng',
     debit: 'Thẻ ghi nợ',
     prepaid: 'Thẻ trả trước',
-    '2in1': 'Thẻ hybrid',
+    hybrid: 'Thẻ hybrid',
     'co-branded': 'Đồng thương hiệu',
     atm: 'ATM',
     transit: 'Transit',
@@ -65,14 +65,14 @@ type IconComponent = React.ComponentType<{size?: number; className?: string}>;
 const CARD_TYPE_ICON: Partial<Record<CardType, IconComponent>> = {
     credit: IconCreditCardFilled,
     debit: IconCashBanknoteFilled,
-    '2in1': IconYinYangFilled,
+    hybrid: IconYinYangFilled,
     transit: IconTrainFilled,
 };
 
 const CARD_TYPE_HEX: Partial<Record<CardType, string>> = {
     credit: '#3b82f6',
     debit: '#22c55e',
-    '2in1': '#8b5cf6',
+    hybrid: '#8b5cf6',
     transit: '#f97316',
 };
 
@@ -202,7 +202,7 @@ export function OwBadge(props: OwBadgeProps) {
     if (props.variant === 'card-type') {
         const {cardTypes, icon, children} = props;
         const cardType = cardTypes
-            ? (isHybridCard(cardTypes) ? '2in1' : cardTypes[0])
+            ? (isHybridCard(cardTypes) ? 'hybrid' : cardTypes[0])
             : props.cardType;
         const resolvedIcon = icon ?? (cardType ? CARD_TYPE_ICON[cardType] : undefined);
         const hex = cardType ? CARD_TYPE_HEX[cardType] : undefined;

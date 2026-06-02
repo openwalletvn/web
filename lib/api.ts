@@ -32,10 +32,10 @@ import type {
 } from './api-types.generated'
 
 export type CardNetwork = 'visa' | 'mastercard' | 'jcb' | 'napas' | 'amex' | 'unionpay';
-export type CardType = 'credit' | 'debit' | 'prepaid' | 'transit' | 'atm' | '2in1' | 'co-branded';
+export type CardType = 'credit' | 'debit' | 'prepaid' | 'transit' | 'atm' | 'hybrid' | 'co-branded';
 
 export function isHybridCard(types: CardType[]): boolean {
-    return types.includes('2in1') || (types.includes('credit') && types.includes('debit'));
+    return types.includes('hybrid') || (types.includes('credit') && types.includes('debit'));
 }
 
 export interface CardImage {
@@ -86,7 +86,7 @@ export interface CardFilters {
 export const SEGMENT_FILTERS: Record<string, Pick<CardFilters, 'type'>> = {
     credit:       { type: 'credit' },
     debit:        { type: 'debit' },
-    '2in1':       { type: '2in1' },
+    hybrid:       { type: 'hybrid' },
     'co-branded': { type: 'co-branded' },
 };
 
