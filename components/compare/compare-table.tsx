@@ -18,22 +18,22 @@ const VI_LABELS: Record<string, string> = {
     min_spend_hurdle: 'Chi tiêu tối thiểu',
     annual_fee: 'Thường niên',
     annual_supplementary_fee: 'Thẻ phụ',
-    issuance_fee: 'Phát hành',
-    cancellation_fee: 'Hủy thẻ',
-    foreign_fee: 'Ngoại tệ',
-    foreign_dcc_fee: 'Ngoại tệ DCC',
-    interest_free_days: 'Ngày miễn lãi',
-    network_rank: 'Độ phổ biến mạng',
-    persona_coverage: 'Phạm vi persona',
+    issuance_fee: 'Phí phát hành',
+    cancellation_fee: 'Phí huỷ thẻ',
+    foreign_fee: 'Phí chuyển đổi ngoại tệ',
+    foreign_dcc_fee: 'Phí xử lý giao dịch quốc tế bằng VNĐ (DDC)',
+    interest_free_days: 'Số ngày miễn lãi',
+    network_rank: 'Độ phổ biến của mạng thẻ',
+    persona_coverage: 'Độ phủ lĩnh vực ưu đãi',
     card_score: 'Điểm tổng hợp',
     data_score: 'Độ đầy đủ dữ liệu',
 };
 
 const SECTION_VI_LABELS: Record<string, string> = {
-    cashback: 'Cashback',
-    fees: 'Phí',
-    payment: 'Thanh toán',
-    scores: 'Điểm đánh giá',
+    cashback: 'Ưu đãi hoàn tiền',
+    fees: 'Biểu phí',
+    payment: 'Ngày và hạn thanh toán',
+    scores: 'Điểm OpenWallet',
 };
 
 interface Props {
@@ -141,18 +141,13 @@ export function CompareTable({cards, compareResult}: Props) {
         return rows.map(row => {
             const values = cardIds.map(id => {
                 const v = id != null ? (row.values[id] ?? 0) : null;
-                const desc = id != null ? (row.labels?.[id] ?? null) : null;
-                const formatted = v != null ? formatApiValue(v, row.unit) : empty;
-                return desc
-                    ? <span className="flex flex-col gap-0.5">{formatted}<span
-                        className="text-xs text-slate-400 font-normal">{desc}</span></span>
-                    : formatted;
+                return v != null ? formatApiValue(v, row.unit) : empty;
             });
             return (
                 <Row
                     key={row.criterion}
                     id={`row-${row.criterion}`}
-                    label={VI_LABELS[row.criterion] ?? row.label}
+                    label={VI_LABELS[row.criterion] ?? row.criterion}
                     values={values}
                     winnerIndex={winnerIndexOf(row.criterion)}
                 />

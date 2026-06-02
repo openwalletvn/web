@@ -400,13 +400,11 @@ export async function getRelatedCardsForMany(cardIds: string[]): Promise<Related
 
 export type CompareTableRow = {
     criterion: string;
-    label: string;
     section: string;
     unit: 'currency' | 'percent' | 'rank' | 'score' | null;
     higher_is_better: boolean;
     winner: string | null;
     values: Record<string, number>;
-    labels: Record<string, string>;
 };
 
 export type CompareCardEntry = {
