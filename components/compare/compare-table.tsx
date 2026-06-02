@@ -1,16 +1,28 @@
-import {IconCircleCheckFilled} from '@tabler/icons-react';
-import type {Card, CompareResult, CompareTableRow as ApiRow} from '@/lib/api';
-import {useIntentMap} from '@/lib/intent-map-context';
+'use client';
 
-import {CompareDueDateRow} from './compare-due-date-row';
+import {useEffect, useState} from 'react';
+import type {Card, CompareResult, CompareTableRow as ApiRow} from '@/lib/api';
+import {getRelatedStatements} from '@/lib/card-dates';
 import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
 import {formatFeePartsCompact} from '@/lib/utils';
 
-import {colSpan} from './compare-col-span';
+import {CompareRow} from './compare-row';
+import {CompareSectionTitle} from './compare-section-title';
 
 const empty = <span className="text-slate-300">—</span>;
+
+function getNextDue(card: Card): string {
+    if (!card.statement_date || !card.interest_free_days) return '—';
+    const today = new Date();
+    const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const stmts = getRelatedStatements(tod, card.statement_date, card.interest_free_days);
+    const cycle = stmts.find((s) => s.due >= tod) ?? stmts[2];
+    const day = cycle.due.getDate().toString().padStart(2, '0');
+    const month = (cycle.due.getMonth() + 1).toString().padStart(2, '0');
+    return `ngày ${day}/${month}`;
+}
 
 // VI labels for API criteria — fallback to API label if not mapped
 const VI_LABELS: Record<string, string> = {
@@ -43,37 +55,7 @@ interface Props {
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
-function SectionHeader({ label }: { label: string }) {
-    return (
-        <div className="ow-section-header mt-10 border-t border-slate-100 pt-5 mb-2">
-            <p className="text-body-md">{label}</p>
-        </div>
-    );
-}
 
-interface RowProps {
-    label: string;
-    values: React.ReactNode[];
-    winnerIndex?: number | null;
-    id?: string;
-}
-
-function Row({label, values, winnerIndex, id}: RowProps) {
-    return (
-        <div id={id} className="ow-compare-row sm:py-6 py-3">
-            <p className="text-label sm:mb-3 mb-1.5">{label}</p>
-            <div className="ow-compare-row-inner grid grid-cols-12">
-                {values.map((v, i) => (
-                    <div key={i}
-                         className={`ow-compare-col ow-compare-col-${i + 1} ${colSpan(values.length, i)} text-body-md flex items-start gap-1 ${winnerIndex === i ? 'text-green-600 font-semibold' : 'text-slate-800'}`}>
-                        {winnerIndex === i && <IconCircleCheckFilled size={14} className="shrink-0"/>}
-                        {v}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
 
 function formatApiValue(value: number, unit: ApiRow['unit']): React.ReactNode {
     if (unit === 'currency') {
@@ -90,7 +72,11 @@ function formatApiValue(value: number, unit: ApiRow['unit']): React.ReactNode {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function CompareTable({cards, compareResult}: Props) {
-    const intentMap = useIntentMap();
+    const [dues, setDues] = useState<(string | null)[]>(() => Array(cards.length).fill(null));
+
+    useEffect(() => {
+        setDues(cards.map((c) => c ? getNextDue(c) : '—'));
+    }, [cards]); // eslint-disable-line react-hooks/exhaustive-deps
     const cardIds = cards.map(c => c?.id ?? null);
 
     const winnerIndexOf = (criterion: string): number | null => {
@@ -144,7 +130,7 @@ export function CompareTable({cards, compareResult}: Props) {
                 return v != null ? formatApiValue(v, row.unit) : empty;
             });
             return (
-                <Row
+                <CompareRow
                     key={row.criterion}
                     id={`row-${row.criterion}`}
                     label={VI_LABELS[row.criterion] ?? row.criterion}
@@ -168,8 +154,8 @@ export function CompareTable({cards, compareResult}: Props) {
     return (
         <div className="ow-compare-table">
             {/* Identity — visual, Card-driven */}
-            <SectionHeader label="Thông tin" />
-            <Row
+            <CompareSectionTitle label="Thông tin" />
+            <CompareRow
                 id="row-ngan-hang"
                 label="Ngân hàng"
                 values={cards.map((c) => c?.bank_data
@@ -177,12 +163,12 @@ export function CompareTable({cards, compareResult}: Props) {
                     : empty
                 )}
             />
-            <Row id="row-mang-luoi" label="Mạng lưới thẻ" values={networkValues}/>
-            <Row id="row-loai-the" label="Loại thẻ" values={types}/>
+            <CompareRow id="row-mang-luoi" label="Mạng lưới thẻ" values={networkValues}/>
+            <CompareRow id="row-loai-the" label="Loại thẻ" values={types}/>
             {/* Intents — visual, Card-driven */}
             {cards.some((c) => c?.intents?.length) && (
                 <>
-                    <Row
+                    <CompareRow
                         id="row-linh-vuc-uu-dai"
                         label="Lĩnh vực ưu đãi"
                         values={cards.map((c) => {
@@ -194,7 +180,8 @@ export function CompareTable({cards, compareResult}: Props) {
             )}
 
             {/* Utility — visual, Card-driven */}
-            <Row id="row-thanh-toan-khong-tiep-xuc" label="Thanh toán không tiếp xúc" values={contactlessValues}/>
+            <CompareRow id="row-thanh-toan-khong-tiep-xuc" label="Thanh toán không tiếp xúc"
+                        values={contactlessValues}/>
 
 
             {/* Dynamic API sections */}
@@ -202,12 +189,21 @@ export function CompareTable({cards, compareResult}: Props) {
                 <div key={sectionKey}>
                     {sectionKey === 'payment' && !showPaymentSection ? null : (
                         <>
-                            <SectionHeader label={SECTION_VI_LABELS[sectionKey] ?? sectionKey}/>
+                            <CompareSectionTitle label={SECTION_VI_LABELS[sectionKey] ?? sectionKey}/>
                             {renderApiSection(sectionKey)}
                             {sectionKey === 'payment' && showPaymentSection && (
                                 <>
-                                    <Row id="row-ngay-sao-ke" label="Ngày sao kê" values={statements}/>
-                                    <CompareDueDateRow cards={cards}/>
+                                    <CompareRow id="row-ngay-sao-ke" label="Ngày sao kê" values={statements}/>
+                                    <CompareRow
+                                        id="row-ngay-den-han"
+                                        label="Ngày đến hạn dự kiến"
+                                        values={dues.map((due) => (
+                                            <span
+                                                className={due === '—' || due === null ? 'text-slate-300' : undefined}>
+                                                {due ?? '…'}
+                                            </span>
+                                        ))}
+                                    />
                                 </>
                             )}
                         </>
