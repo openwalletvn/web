@@ -19,6 +19,7 @@ import {CardDetailCompare} from '@/components/cards/detail/card-detail-compare';
 import {CardDetailCashback} from '@/components/cards/detail/card-detail-cashback';
 import {CardDetailIntents} from '@/components/cards/detail/card-detail-intents';
 import {CardDetailRankBadges} from '@/components/cards/detail/card-detail-rank-badges';
+import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 import {CompareButton} from '@/components/compare/compare-button';
 
 export async function generateStaticParams() {
@@ -92,17 +93,6 @@ export default async function CardPage({ params }: Props) {
                             <div className="mt-4 flex flex-col gap-2">
                                 <CompareButton
                                     card={{id: card.id, name: card.name, image_url: card.image?.url ?? null}}/>
-                                {/*<AddToWalletButton card={card} />*/}
-                                {process.env.NODE_ENV === 'development' && (
-                                    <a
-                                        href={`http://localhost:3004/#/cards/${card.id}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center justify-center px-4 py-2 border border-dashed border-orange-300 bg-orange-50 text-orange-700 rounded-sm hover:border-orange-400 hover:bg-orange-100 transition-colors text-sm font-medium w-full"
-                                    >
-                                        ✏ Edit
-                                    </a>
-                                )}
                             </div>
                         </div>
                     </div>
@@ -114,12 +104,11 @@ export default async function CardPage({ params }: Props) {
                         <CardDetailRankBadges card={cardModel} />
                         <CardDetailIntents card={cardModel}/>
                         {card.description && (
-                            <section className="flex flex-col gap-3">
-                                <h2 className="text-label">Giới thiệu</h2>
+                            <CardDetailSection title="Giới thiệu">
                                 {card.description.split('\n\n').map((para, i) => (
-                                    <p key={i} className="text-body-sm">{para}</p>
+                                    <p key={i} className="">{para}</p>
                                 ))}
-                            </section>
+                            </CardDetailSection>
                         )}
                         <CardDetailBillingCycle card={card} bank={bank} />
                         <CardDetailFees card={cardModel} bank={bank} />
@@ -130,10 +119,7 @@ export default async function CardPage({ params }: Props) {
                     </div>
                 </div>
 
-                <CardDetailCompare
-                    currentCard={card}
-                    compareCards={compareCards}
-                />
+                <CardDetailCompare currentCard={card} compareCards={compareCards}/>
                 <CardDetailRelated cards={sameTypeCards} currentCardId={card.id} />
             </div>
         <ChatContextSetter context={{

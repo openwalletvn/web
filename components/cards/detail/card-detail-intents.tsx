@@ -1,6 +1,7 @@
 import {getIntents} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
 import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
+import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 
 interface Props {
     card: CardModel;
@@ -13,9 +14,8 @@ export async function CardDetailIntents({ card }: Props) {
     const intentMap = new Map(allIntents.map((i) => [i.slug, i]));
 
     return (
-        <section className="ow-card-detail-intents flex flex-col gap-3">
-            <h2 className="text-label">Lĩnh vực ưu đãi</h2>
+        <CardDetailSection title="Lĩnh vực ưu đãi" className="ow-card-detail-intents">
             <OwCardIntentBadges card={card.toRaw()} intentMap={intentMap} highlighted/>
-        </section>
+        </CardDetailSection>
     );
 }

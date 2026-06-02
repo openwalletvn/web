@@ -43,8 +43,8 @@ export function Footer() {
 
                             {/* Link columns */}
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 flex-1">
-                                <LinkColumn heading="Danh mục" links={LINKS.categories}/>
                                 <LinkColumn heading="Công cụ" links={LINKS.tools}/>
+                                <LinkColumn heading="Danh mục" links={LINKS.categories}/>
                                 <LinkColumn heading="Pháp lý" links={LINKS.legal}/>
                             </div>
                         </div>

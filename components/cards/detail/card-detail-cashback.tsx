@@ -10,6 +10,7 @@ import {
     IconInfoCircle,
     IconPackages,
 } from '@tabler/icons-react';
+import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 
 // ─── Labels ──────────────────────────────────────────────────────────────────
 
@@ -150,9 +151,8 @@ export async function CardDetailCashback({card}: Props) {
     const merchantMap = new Map(merchants.map((m) => [m.slug, m]));
 
     return (
-        <section className="ow-card-detail-cashback flex flex-col gap-4">
-            <h2 className="text-label text-text-muted">Hoàn tiền</h2>
+        <CardDetailSection title="Hoàn tiền" titleClassName="text-text-muted" className="ow-card-detail-cashback gap-4">
             <CashbackSection cashback={card.getCashback()!} intentMap={intentMap} merchantMap={merchantMap}/>
-        </section>
+        </CardDetailSection>
     );
 }

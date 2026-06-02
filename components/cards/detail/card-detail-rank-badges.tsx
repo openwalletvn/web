@@ -3,6 +3,7 @@ import {getIntents, getPersonas, getRankedCards} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
 import {PersonaModel} from '@/lib/persona-model';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
+import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 
 interface RankBadge {
     slug: string;
@@ -64,8 +65,7 @@ export async function CardDetailRankBadges({card}: Props) {
     if (!badges.length) return null;
 
     return (
-        <div className="ow-card-detail-rank-badges flex flex-col flex-wrap gap-3">
-            <h2 className="text-label">Xếp hạng</h2>
+        <CardDetailSection title="Xếp hạng" className="ow-card-detail-rank-badges flex-wrap">
             <OwBadges>
                 {badges.map(({slug, label, href, rank, emoji}) => (
                     <OwBadge key={slug} colorHex="#E8321A" asChild>
@@ -78,6 +78,6 @@ export async function CardDetailRankBadges({card}: Props) {
                     </OwBadge>
                 ))}
             </OwBadges>
-        </div>
+        </CardDetailSection>
     );
 }

@@ -1,6 +1,7 @@
 import type {Bank, FeeEntry, FeeEntryWithWaiver, FeeWaiver} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
+import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 
 function FeeValue({ entry }: { entry?: FeeEntry | null }) {
     if (!entry) return <span className="ow-amount text-body-md text-slate-400">—</span>;
@@ -55,9 +56,7 @@ export function CardDetailFees({ card }: Props) {
     const annual = fees.annual as FeeEntryWithWaiver | undefined;
 
     return (
-        <section className="ow-card-detail-fees flex flex-col gap-4">
-            <h2 className="text-label">Biểu phí</h2>
-
+        <CardDetailSection title="Biểu phí" className="ow-card-detail-fees gap-4">
             <div className="relative">
                 {/* Column labels */}
                 <div className="grid grid-cols-3 mb-2">
@@ -114,6 +113,6 @@ export function CardDetailFees({ card }: Props) {
                     </div>
                 </div>
             </div>
-        </section>
+        </CardDetailSection>
     );
 }
