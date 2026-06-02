@@ -11,6 +11,7 @@ import {
   formatDueDate,
   resolveStatementDay,
   getRelatedStatements,
+  getNextDueDate,
 } from '@/lib/card-dates';
 import { Switch } from '@/components/ui/switch';
 import type { WalletDb } from '@/lib/db';
@@ -52,7 +53,7 @@ export function ReminderCardRow({
     : null;
 
   const nextCloseDate = stmts?.find((s) => s.close > today)?.close ?? null;
-  const dueDateObj = stmts?.find((s) => s.due >= today)?.due ?? null;
+  const dueDateObj = getNextDueDate(statementDay, catalogCard?.interest_free_days, today);
 
   // Fire date for statement reminder: next close − daysBefore
   const stmtFireDate = nextCloseDate

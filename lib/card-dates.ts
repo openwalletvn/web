@@ -23,6 +23,17 @@ export function formatDueDate(date: Date): string {
   return `ngày ${day}/${month}`;
 }
 
+/** Returns the next upcoming payment due Date for a card, or null if data is missing. */
+export function getNextDueDate(
+  statementDate: number | null | undefined,
+  interestFreeDays: number | null | undefined,
+  today: Date = new Date(),
+): Date | null {
+  if (statementDate == null || interestFreeDays == null) return null;
+  const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return getRelatedStatements(tod, statementDate, interestFreeDays).find((s) => s.due >= tod)?.due ?? null;
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /** A single billing cycle with its open, close, and payment due date. */

@@ -8,7 +8,7 @@ import { useWalletCatalog } from '@/hooks/use-wallet-catalog';
 import { PageContainer } from '@/components/ui/page-container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PaymentRow, getNextOccurrence } from '@/components/wallet/payment-row';
-import { resolveStatementDay, getRelatedStatements } from '@/lib/card-dates';
+import { resolveStatementDay, getNextDueDate } from '@/lib/card-dates';
 import { useWalletDb } from '@/providers/wallet-db-provider';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -84,10 +84,7 @@ export default function DashboardPage() {
  dueDate = new Date(today.getFullYear(), today.getMonth(), c.paymentDueDate);
  } else {
  const statementDay = resolveStatementDay(c.statementDate, catalogCards[c.cardId]?.statement_date);
- const interestFreeDays = catalogCards[c.cardId]?.interest_free_days;
- if (statementDay != null && interestFreeDays != null) {
- dueDate = getRelatedStatements(today, statementDay, interestFreeDays).find((s) => s.due >= today)?.due ?? null;
- }
+ dueDate = getNextDueDate(statementDay, catalogCards[c.cardId]?.interest_free_days, today);
  }
  if (!dueDate) return [];
  return [{ walletCard: c, date: getNextOccurrence(dueDate, today) }];

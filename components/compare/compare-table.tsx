@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react';
 import type {Card, CompareResult, CompareTableRow as ApiRow} from '@/lib/api';
-import {getRelatedStatements} from '@/lib/card-dates';
+import {formatDueDate, getNextDueDate} from '@/lib/card-dates';
 import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
@@ -12,17 +12,6 @@ import {CompareRow} from './compare-row';
 import {CompareSectionTitle} from './compare-section-title';
 
 const empty = <span className="text-slate-300">—</span>;
-
-function getNextDue(card: Card): string {
-    if (!card.statement_date || !card.interest_free_days) return '—';
-    const today = new Date();
-    const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const stmts = getRelatedStatements(tod, card.statement_date, card.interest_free_days);
-    const cycle = stmts.find((s) => s.due >= tod) ?? stmts[2];
-    const day = cycle.due.getDate().toString().padStart(2, '0');
-    const month = (cycle.due.getMonth() + 1).toString().padStart(2, '0');
-    return `ngày ${day}/${month}`;
-}
 
 // VI labels for API criteria — fallback to API label if not mapped
 const VI_LABELS: Record<string, string> = {
@@ -75,7 +64,11 @@ export function CompareTable({cards, compareResult}: Props) {
     const [dues, setDues] = useState<(string | null)[]>(() => Array(cards.length).fill(null));
 
     useEffect(() => {
-        setDues(cards.map((c) => c ? getNextDue(c) : '—'));
+        setDues(cards.map((c) => {
+            if (!c) return '—';
+            const due = getNextDueDate(c.statement_date, c.interest_free_days);
+            return due ? formatDueDate(due) : '—';
+        }));
     }, [cards]); // eslint-disable-line react-hooks/exhaustive-deps
     const cardIds = cards.map(c => c?.id ?? null);
 
@@ -145,11 +138,11 @@ export function CompareTable({cards, compareResult}: Props) {
     const apiSections = ['cashback', 'fees', 'payment', 'scores'].filter(s => rowsBySection.has(s));
 
     // Win counts per card
-    const winCounts = cardIds.map(id =>
-        id ? (compareResult?.table ?? []).filter(r => r.winner === id).length : 0
-    );
-    const maxWins = Math.max(...winCounts);
-    const hasWinner = compareResult && winCounts.some(w => w > 0);
+    // const winCounts = cardIds.map(id =>
+    //     id ? (compareResult?.table ?? []).filter(r => r.winner === id).length : 0
+    // );
+    // const maxWins = Math.max(...winCounts);
+    // const hasWinner = compareResult && winCounts.some(w => w > 0);
 
     return (
         <div className="ow-compare-table">
