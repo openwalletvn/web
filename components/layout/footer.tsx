@@ -18,6 +18,9 @@ const LINKS = {
         {label: 'Ngân hàng', href: ROUTES.banks},
         {label: 'Thẻ', href: ROUTES.cards},
         {label: 'Tin tức', href: ROUTES.blog},
+        {label: 'Thẻ tín dụng', href: ROUTES.cardTypePage('the-tin-dung')},
+        {label: 'Thẻ ghi nợ', href: ROUTES.cardTypePage('the-ghi-no')},
+        {label: 'Thẻ hybrid', href: ROUTES.cardTypePage('the-hybrid')},
     ],
     about: [
         {label: 'Về OpenWallet', href: '/ve-openwallet'},
