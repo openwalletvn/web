@@ -1011,8 +1011,8 @@ export interface components {
                 /** @description Rank within the network (1 = highest). Null if tier has no defined order for this network. */
                 rank: number | null;
             };
-            /** @description One or more card types (e.g. ["credit", "debit"] for 2-in-1 cards) */
-            card_type: ("credit" | "debit" | "prepaid" | "transit" | "atm" | "2in1" | "co-branded")[];
+            /** @description One or more card types. Hybrid (credit+debit) cards have ["credit", "debit", "hybrid"] — "hybrid" is auto-derived by the pipeline. */
+            card_type: ("credit" | "debit" | "prepaid" | "transit" | "atm" | "hybrid" | "co-branded")[];
             /** @description Co-brand partner identifier (e.g. "vietnam-airlines") */
             co_brand?: string;
             /** @description Full brand data, included when co_brand is set */
@@ -1573,7 +1573,7 @@ export interface operations {
                 /** @description Fuzzy text search across card name, id, and bank_id. Supports partial words, token reordering, and typos (e.g. "msb family", "vib plat", "msb card family"). Results are ranked by relevance. */
                 q?: string;
                 /** @description Filter by card type (comma-separated OR, e.g. "credit,debit"). "2in1" returns cards with both credit and debit types. "co-branded" returns cards that have a co-brand partner. */
-                type?: "credit" | "debit" | "prepaid" | "transit" | "atm" | "2in1" | "co-branded" | "2in1" | "co-branded";
+                type?: "credit" | "debit" | "prepaid" | "transit" | "atm" | "hybrid" | "co-branded" | "2in1" | "co-branded";
                 /** @description Filter by card network (comma-separated OR, e.g. "visa,mastercard") */
                 network?: "visa" | "mastercard" | "jcb" | "napas" | "amex" | "unionpay";
                 /** @description Filter by bank ID (comma-separated OR, e.g. "bidv,techcombank") */
