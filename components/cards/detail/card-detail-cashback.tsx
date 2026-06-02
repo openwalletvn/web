@@ -1,15 +1,11 @@
 import * as React from 'react';
 import type {CashbackBenefit, Merchant} from '@/lib/api';
+import {getIntents, getMerchants} from '@/lib/api';
 import {IntentModel} from '@/lib/intent-model';
 import type {CardModel} from '@/lib/card-model';
-import {getIntents, getMerchants} from '@/lib/api';
 import {OwCardCashbackRule} from '@/components/ow-ui/ow-card-cashback-rule';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
-import {
-    IconAlertCircle,
-    IconInfoCircle,
-    IconPackages,
-} from '@tabler/icons-react';
+import {IconAlertCircle, IconInfoCircle, IconPackages,} from '@tabler/icons-react';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 
 // ─── Labels ──────────────────────────────────────────────────────────────────
@@ -151,7 +147,7 @@ export async function CardDetailCashback({card}: Props) {
     const merchantMap = new Map(merchants.map((m) => [m.slug, m]));
 
     return (
-        <CardDetailSection title="Hoàn tiền" titleClassName="text-text-muted" className="ow-card-detail-cashback gap-4">
+        <CardDetailSection title="Hoàn tiền" className="ow-card-detail-cashback">
             <CashbackSection cashback={card.getCashback()!} intentMap={intentMap} merchantMap={merchantMap}/>
         </CardDetailSection>
     );
