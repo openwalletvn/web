@@ -163,12 +163,11 @@ export const Overview: Story = {
                     merchantMap={MERCHANT_MAP}
                 />
             </OwStorySection>
-            <OwStorySection title="max_intents selector">
+            <OwStorySection title="Multiple intents">
                 <OwCardCashbackRule
                     rule={{
                         rate: 0.05,
                         intents: ['dining', 'shopping', 'grab', 'shopee', 'digital'],
-                        max_intents: 3,
                         cap: {amount: 300000},
                     }}
                     intentMap={INTENT_MAP}

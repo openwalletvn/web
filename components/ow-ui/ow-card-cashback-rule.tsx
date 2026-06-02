@@ -205,9 +205,6 @@ export function OwCardCashbackRule({rule, intentMap, merchantMap}: OwCardCashbac
                         <div className="flex items-center gap-1.5 text-xs text-slate-600">
                             <IconCircleCheck className="w-3.5 h-3.5 text-green-600"/>
                             Danh mục áp dụng
-                            {rule.max_intents != null && (
-                                <span className="ml-1 text-slate-400">(chọn {rule.max_intents} mỗi kỳ)</span>
-                            )}
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                             {rule.intents.map((slug) => {

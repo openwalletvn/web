@@ -95,6 +95,15 @@ function CashbackSection({
                 </div>
             )}
 
+            {cashback.max_active_rules && (
+                <div className="flex items-start gap-2 px-3 py-2.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+                    <IconInfoCircle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-blue-500"/>
+                    <span>
+                        <strong>Chọn {cashback.max_active_rules} danh mục mỗi kỳ.</strong> Hệ thống tự động chọn các danh mục hoàn tiền cao nhất cho bạn.
+                    </span>
+                </div>
+            )}
+
             {sortedRules.map((rule, i) => (
                 <OwCardCashbackRule key={i} rule={rule} intentMap={intentMap} merchantMap={merchantMap}/>
             ))}
