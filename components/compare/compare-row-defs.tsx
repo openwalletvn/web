@@ -4,12 +4,13 @@ import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
 import {OwFeeAmount} from "@/components/ow-ui/ow-fee-amount";
+import {formatDueDate} from '@/lib/card-dates';
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
 export interface CompareContext {
     compareResult?: CompareResult | null;
-    dues: (string | null)[];
+    dues: (Date | null)[];
     cardIds: (string | null)[];
 }
 
@@ -168,23 +169,24 @@ export const SECTION_DEFS: SectionDef[] = [
                 criterion: 'interest_free_days',
                 label: 'Số ngày miễn lãi',
                 getValue: (v) => days(v),
-                getDescription: (v) => v === 0 ? 'Chưa có thông tin về ngày miễn lãi' : null
+                getDescription: (v) => v === 0 ? 'Chưa có dữ liệu' : null
             },
             {
                 id: 'row-ngay-sao-ke',
                 label: 'Ngày sao kê',
                 getValues: (cards) => cards.map(c =>
-                    c ? (c.statement_date ? `Ngày ${c.statement_date} hàng tháng` : '—') : empty
+                    c ? (c.statement_date ? `Ngày ${c.statement_date} hàng tháng` : 'Chưa có dữ liệu') : ''
                 ),
-            },
-            {
-                id: 'row-ngay-den-han',
-                label: 'Ngày đến hạn dự kiến',
-                getValues: (_, ctx) => ctx.dues.map(due => (
-                    <span className={due === '—' || due === null ? 'text-slate-300' : undefined}>
-                        {due ?? '…'}
-                    </span>
-                )),
+                getDescriptions: (_, ctx) => {
+                    const tod = new Date();
+                    tod.setHours(0, 0, 0, 0);
+                    return ctx.dues.map(due => {
+                        if (!due) return null;
+                        const diff = Math.round((due.getTime() - tod.getTime()) / 86_400_000);
+                        const diffLabel = diff === 0 ? 'hôm nay' : diff > 0 ? `còn ${diff} ngày` : 'đã qua hạn';
+                        return `Đến hạn: ${formatDueDate(due)} (${diffLabel})`;
+                    });
+                },
             },
         ],
     },

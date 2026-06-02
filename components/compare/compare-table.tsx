@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react';
 import type {Card, CompareResult} from '@/lib/api';
-import {formatDueDate, getNextDueDate} from '@/lib/card-dates';
+import {getNextDueDate} from '@/lib/card-dates';
 
 import {CompareRow} from './compare-row';
 import {CompareSectionTitle} from './compare-section-title';
@@ -14,13 +14,12 @@ interface Props {
 }
 
 export function CompareTable({cards, compareResult}: Props) {
-    const [dues, setDues] = useState<(string | null)[]>(() => Array(cards.length).fill(null));
+    const [dues, setDues] = useState<(Date | null)[]>(() => Array(cards.length).fill(null));
 
     useEffect(() => {
         setDues(cards.map((c) => {
-            if (!c) return '—';
-            const due = getNextDueDate(c.statement_date, c.interest_free_days);
-            return due ? formatDueDate(due) : '—';
+            if (!c) return null;
+            return getNextDueDate(c.statement_date, c.interest_free_days);
         }));
     }, [cards]); // eslint-disable-line react-hooks/exhaustive-deps
 
