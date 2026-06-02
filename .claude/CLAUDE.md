@@ -113,7 +113,7 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 | `/generate-images` | `commands/generate-images.md` | Add images to blog posts + Gemini prompts |
 | `/add-json-ld` | `commands/add-json-ld.md` | Add JSON-LD structured data to a page |
 | `/add-changelog` | `commands/add-changelog.md` | Add a changelog entry |
-| `/update-persona-content` | `commands/update-persona-content.md` | Update persona page intro + FAQs from live API data |
+| `/persona-page` | `commands/persona-page.md` | Create or update persona page (scaffold + intro + FAQs from live API data) |
 | `/create-story` | `commands/create-story.md` | Create Storybook story for a component |
 | `/add-ow-ui` | `commands/add-ow-ui.md` | Move component to `ow-ui/`, rename to `Ow*`, create story, report usages |
 | `/commit-all` | `commands/commit-all.md` | Stage + commit all changes in logical groups with conventional commit messages |

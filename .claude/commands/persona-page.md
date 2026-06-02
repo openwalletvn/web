@@ -1,16 +1,64 @@
-# Update Persona Page Content
+# Persona Page
 
-Updates `intro` and `faqs` in a persona page config with data-driven, SEO-optimized Vietnamese content.
+Create or update a `/the-theo-nhu-cau/<slug>` page with data-driven, SEO-optimized Vietnamese content.
 
 ## Usage
 
 ```
-/update-persona-content [persona-page-slug]
+/persona-page [slug]
 ```
 
-Example: `/update-persona-content sieu-thi`
+Example: `/persona-page sieu-thi`
 
-If no slug given, ask user which persona page to update.
+If no slug given, ask which persona page to create or update.
+
+## Step 0 — Detect mode
+
+Check if `app/(marketing)/(persona)/the-theo-nhu-cau/<slug>/page.tsx` exists.
+
+- **Exists** → UPDATE mode: skip to Step 1
+- **Missing** → CREATE mode: run Step 0A first, then continue from Step 1
+
+## Step 0A — Scaffold new page (CREATE mode only)
+
+1. Read `lib/persona-model.ts` to find the matching persona entry for the slug. Extract `personaSlug` (API slug, e.g. `groceries`) and display name.
+2. Create `app/(marketing)/(persona)/the-theo-nhu-cau/<slug>/page.tsx` using this template:
+
+```tsx
+import type {Metadata} from 'next';
+import {getCards} from '@/lib/api';
+import {generateIntentCategoryMetadata, type IntentCategoryConfig} from '@/lib/page-meta/intent-category';
+import {PersonaPage} from '../persona-page';
+
+const L = ({href, children}: {href: string; children: string}) => (
+    <a href={href} className="text-link">{children}</a>
+);
+
+const CONFIG: IntentCategoryConfig = {
+    title: '<Title>',
+    description: '<meta description — 1-2 sentences, SEO-optimized>',
+    url: '/the-theo-nhu-cau/<slug>',
+    personaSlug: '<personaSlug>',
+    rankingTitle: 'Xếp hạng thẻ theo cashback <category>',
+    intro: '<placeholder>',
+    faqs: [],
+    breadcrumbItems: [
+        {label: 'Trang chủ', href: '/'},
+        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: '<Title>'},
+    ],
+};
+
+export async function generateMetadata(): Promise<Metadata> {
+    return generateIntentCategoryMetadata(CONFIG, () => getCards({persona: CONFIG.personaSlug}));
+}
+
+export default function <PascalSlug>CardsPage() {
+    return <PersonaPage config={CONFIG}/>;
+}
+```
+
+Fill in `title`, `description`, `url`, `personaSlug`, `rankingTitle`, `breadcrumbItems` from known data. Leave `intro` and `faqs` as placeholders — they will be filled in Steps 5 and 6.
 
 ## Step 1 — Read the page
 
@@ -170,3 +218,5 @@ Show before/after of `intro` and `faqs` as readable diff. Wait for user approval
 ## Step 8 — Apply changes
 
 Edit only `intro` and `faqs` in the `CONFIG` object. Do not touch `title`, `description`, `url`, `personaSlug`, `rankingTitle`, or `breadcrumbItems`.
+
+In CREATE mode, also fill in the scaffold's `title`, `description`, `url`, `personaSlug`, `rankingTitle`, `breadcrumbItems` — these were placeholders from Step 0A.
