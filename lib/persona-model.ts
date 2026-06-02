@@ -33,6 +33,7 @@ const PERSONA_UI_META: Record<string, PersonaUIMeta> = {
     traveler: {name: 'Thẻ Du Lịch', description: 'Vé máy bay, khách sạn, Agoda', group: 'daily', slug: 'du-lich'},
     commuter: {name: 'Thẻ Di Chuyển', description: 'Grab, Be, vận chuyển hàng ngày', group: 'daily', slug: 'di-chuyen'},
     family: {name: 'Thẻ Gia Đình', description: 'Siêu thị, học phí, y tế, bảo hiểm', group: 'daily', slug: 'gia-dinh'},
+    dining: {name: 'Thẻ Ăn Uống', description: 'Nhà hàng, quán cà phê, Shopee Food, GrabFood', group: 'daily', slug: 'an-uong'},
 };
 
 export class PersonaModel {

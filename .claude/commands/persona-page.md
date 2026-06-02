@@ -97,7 +97,7 @@ Compute cashback earned (VND) at these spend levels: **5M, 8M, 10M, 20M, 30M, 50
 
 **Computation:**
 - If card has `tiers`: find highest `min_spend` ≤ actual spend, use that tier's `rate` and `cap`
-- `cashback = min(spend × rate, cap)` — if cap is null, no ceiling
+- `cashback = min(spend × rate, cap)` — if rule `cap` is null, treat as uncapped **for this rule only** (cards may still have a global monthly cap not in the rule data)
 - Rank cards by cashback descending per spend level
 
 Identify **crossover points** — spend levels where ranking changes. These are the most valuable insight for users.
@@ -107,7 +107,7 @@ Example output:
 5M:  Card A 300K > Card B 250K > Card C 200K
 8M:  Card B 400K > Card A 300K > Card C 300K   ← crossover at ~8M
 20M: Card B 700K > Card C 600K > Card A 300K
-30M: Card C 1500K (no cap) > Card B 900K > Card A 300K  ← crossover at 30M
+30M: Card C 1500K (no per-category cap) > Card B 900K > Card A 300K  ← crossover at 30M
 ```
 
 ## Step 5 — Write new intro
@@ -159,10 +159,10 @@ Question: "Chi khoảng [default_spend] tại [category] mỗi tháng, dùng th�
 
 Question: "Chi [high_spend] tại [category] mỗi tháng, thẻ nào hoàn nhiều nhất?"
 
-- `high_spend` = pick the most interesting crossover point from Step 3 analysis: 20M, 50M, or 100M — whichever is where rankings meaningfully flip or where no-cap cards start dominating
+- `high_spend` = pick the most interesting crossover point from Step 3 analysis: 20M, 50M, or 100M — whichever is where rankings meaningfully flip or where per-category uncapped cards start dominating
 - For personas with high-volume use cases (ads spend, resellers on Shopee, business purchases): use 50M or 100M as high_spend
-- Answer: name top 1-2 cards at this spend with links and actual cashback amounts. Note if a card has no cap so users understand why it dominates at high spend.
-- Example: "Chi 50 triệu/tháng, [Card C] không có trần hoàn nên đạt khoảng 1.500.000 VND, vượt xa [Card B] bị giới hạn ở 900.000 VND."
+- Answer: name top 1-2 cards at this spend with links and actual cashback amounts. Note if a card has no per-category cap so users understand why it dominates at high spend — but never claim the card has no cap at all (global monthly caps always exist).
+- Example: "Chi 50 triệu/tháng, [Card C] không ghi nhận trần theo danh mục nên đạt khoảng 1.500.000 VND theo dữ liệu hiện tại, vượt xa [Card B] bị giới hạn ở 900.000 VND. Xác nhận trần hoàn tổng thẻ với ngân hàng trước khi sử dụng."
 
 ### Q3 — Max cashback rate (REQUIRED)
 
@@ -176,7 +176,7 @@ Question: "Thẻ [category] nào hoàn tiền cao nhất hiện tại?"
 Question: "Mức hoàn tiền tối đa hàng tháng là bao nhiêu?"
 
 - State the range from data (e.g. 200.000-1.000.000 VND)
-- Name the card with the highest cap (or no cap) with a link
+- Name the card with the highest per-category cap with a link; if a card has no per-category cap in the data, say "không ghi nhận trần theo danh mục" — never say "không có trần hoàn"
 - Mention tiered cards if relevant
 
 ### Q5 — Free annual fee (REQUIRED)
@@ -197,6 +197,7 @@ Pick from these based on what the data actually supports:
 
 Rules:
 - No em dashes
+- **Never claim a card has no cap** — the API only stores per-category caps; every card has a global monthly cap. If `cap` is null in the rule data, say "không ghi nhận trần theo danh mục" or "không có trần danh mục trong dữ liệu hiện tại", never "không có trần hoàn" or "không giới hạn".
 - No superlatives ("tốt nhất", "số 1", "hàng đầu") as absolute claims — replace with "dựa theo dữ liệu của OpenWallet", "theo dữ liệu hiện tại", "trong pool thẻ chúng tôi tổng hợp"
 - Answers 1-3 sentences, self-contained
 - **Always name specific cards with links in Q1-Q5** — `<a href="/the/<id>" className="text-link">Name</a>`. Define a local `const L` component at the top of the page file.
