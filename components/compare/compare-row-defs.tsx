@@ -3,7 +3,7 @@ import {normalizeCardTypes} from '@/lib/api';
 import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
-import {formatFeePartsCompact} from '@/lib/utils';
+import {OwFeeAmount} from "@/components/ow-ui/ow-fee-amount";
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
@@ -26,6 +26,9 @@ export interface StaticRowSpec {
 
 export interface CriterionRowSpec {
     criterion: string;
+    label: string;
+    getValue?: (value: number, unit: ApiRow['unit'], card: Card | null) => React.ReactNode;
+    getDescription?: (value: number, unit: ApiRow['unit'], card: Card | null) => string | null;
 }
 
 export type RowSpec = StaticRowSpec | CriterionRowSpec;
@@ -44,69 +47,12 @@ const empty = <span className="text-slate-300">—</span>;
 const purelyDebit = (c: Card) => c.card_type.every(t => t === 'debit' || t === 'atm');
 const hasCredit = (cards: (Card | null)[]) => cards.some(c => c && !purelyDebit(c));
 
-export function formatApiValue(value: number, unit: ApiRow['unit']): React.ReactNode {
-    if (unit === 'currency') {
-        if (value === 0) return 'Miễn phí';
-        const {value: v, unit: u} = formatFeePartsCompact({amount: value, type: 'currency'});
-        return <>{v}{u}</>;
-    }
-    if (unit === 'percent') return value === 0 ? '0%' : `${value}%`;
-    if (unit === 'rank') return `#${value}`;
-    if (unit === 'score') return Number.isInteger(value) ? String(value) : value.toFixed(1);
-    return String(value);
-}
+const percent = (v: number) => v === 0 ? '0%' : `${v}%`;
+const rank = (v: number) => `#${v}`;
+const score = (v: number) => Number.isInteger(v) ? String(v) : v.toFixed(1);
+const days = (v: number) => `${v} ngày`;
 
-// ─── Criterion defs ───────────────────────────────────────────────────────────
-
-interface CriterionDef {
-    label: string;
-    getValue?: (value: number, unit: ApiRow['unit']) => React.ReactNode;
-    getDescription?: (value: number, unit: ApiRow['unit']) => string | null;
-}
-
-const CRITERION_DEFS: Record<string, CriterionDef> = {
-    cashback_per_month: {
-        label: 'Cashback hàng tháng',
-        getDescription: (value) => value === 0 ? 'Không có cashback' : null,
-    },
-    min_spend_hurdle: {
-        label: 'Chi tiêu tối thiểu',
-        getDescription: (value) => value === 0 ? 'Không yêu cầu chi tiêu tối thiểu' : null,
-    },
-    annual_fee: {
-        label: 'Thường niên',
-        getDescription: (value) => value === 0 ? 'Miễn phí thường niên' : null,
-    },
-    annual_supplementary_fee: {
-        label: 'Thẻ phụ',
-        getDescription: (value) => value === 0 ? 'Miễn phí thẻ phụ' : null,
-    },
-    issuance_fee: {
-        label: 'Phí phát hành',
-        getDescription: (value) => value === 0 ? 'Miễn phí phát hành' : null,
-    },
-    cancellation_fee: {
-        label: 'Phí huỷ thẻ',
-        getDescription: (value) => value === 0 ? 'Không mất phí huỷ thẻ' : null,
-    },
-    foreign_fee: {
-        label: 'Phí chuyển đổi ngoại tệ',
-        getDescription: (value) => value === 0 ? 'Không phí ngoại tệ' : null,
-    },
-    foreign_dcc_fee: {
-        label: 'Phí xử lý giao dịch quốc tế bằng VNĐ (DDC)',
-    },
-    interest_free_days: {
-        label: 'Số ngày miễn lãi',
-        getDescription: (value) => value === 0 ? 'Không có ngày miễn lãi' : `Lên đến ${value} ngày`,
-    },
-    network_rank: {label: 'Độ phổ biến của mạng thẻ'},
-    persona_coverage: {label: 'Độ phủ lĩnh vực ưu đãi'},
-    card_score: {label: 'Điểm tổng hợp'},
-    data_score: {label: 'Độ đầy đủ dữ liệu'},
-};
-
-// ─── Row spec array ───────────────────────────────────────────────────────────
+// ─── Section + row definitions ────────────────────────────────────────────────
 
 export const SECTION_DEFS: SectionDef[] = [
     {
@@ -162,20 +108,55 @@ export const SECTION_DEFS: SectionDef[] = [
         section: 'cashback',
         label: 'Ưu đãi hoàn tiền',
         rows: [
-            {criterion: 'cashback_per_month'},
-            {criterion: 'min_spend_hurdle'},
+            {
+                criterion: 'cashback_per_month',
+                label: 'Cashback hàng tháng',
+                getValue: (v) => <OwFeeAmount compact amount={v} period="period"/>,
+                getDescription: (v) => v === 0 ? 'Không có cashback' : null
+            },
+            {
+                criterion: 'min_spend_hurdle',
+                label: 'Chi tiêu tối thiểu để được hoàn tiền',
+                getValue: (v) => v === 0 ? "Hoàn cho mọi giao dịch hợp lệ" :
+                    <OwFeeAmount compact amount={v} period="period"/>,
+            },
         ],
     },
     {
         section: 'fees',
         label: 'Biểu phí',
         rows: [
-            {criterion: 'annual_fee'},
-            {criterion: 'annual_supplementary_fee'},
-            {criterion: 'issuance_fee'},
-            {criterion: 'cancellation_fee'},
-            {criterion: 'foreign_fee'},
-            {criterion: 'foreign_dcc_fee'},
+            {
+                criterion: 'annual_fee',
+                label: 'Thường niên',
+                getValue: (v) => v === 0 ? 'Miễn phí thường niên' : <OwFeeAmount compact amount={v} period="year"/>
+            },
+            {
+                criterion: 'annual_supplementary_fee',
+                label: 'Thẻ phụ',
+                getValue: (v) => v === 0 ? 'Miễn phí thẻ phụ' : <OwFeeAmount compact amount={v} period="year"/>,
+            },
+            {
+                criterion: 'issuance_fee',
+                label: 'Phí phát hành',
+                getValue: (v) => v === 0 ? 'Miễn phí phát hành' : <OwFeeAmount compact amount={v}/>,
+            },
+            {
+                criterion: 'cancellation_fee',
+                label: 'Phí huỷ thẻ',
+                getValue: (v) => v === 0 ? 'Không mất phí huỷ thẻ' : <OwFeeAmount compact amount={v}/>,
+            },
+            {
+                criterion: 'foreign_fee',
+                label: 'Phí chuyển đổi ngoại tệ',
+                getValue: (v) => percent(v),
+                getDescription: (v) => v === 0 ? 'Không phí ngoại tệ' : null
+            },
+            {
+                criterion: 'foreign_dcc_fee',
+                label: 'Phí xử lý giao dịch quốc tế bằng VNĐ (DDC)',
+                getValue: (v) => percent(v)
+            },
         ],
     },
     {
@@ -183,12 +164,17 @@ export const SECTION_DEFS: SectionDef[] = [
         label: 'Ngày và hạn thanh toán',
         visible: hasCredit,
         rows: [
-            {criterion: 'interest_free_days'},
+            {
+                criterion: 'interest_free_days',
+                label: 'Số ngày miễn lãi',
+                getValue: (v) => days(v),
+                getDescription: (v) => v === 0 ? 'Chưa có thông tin về ngày miễn lãi' : null
+            },
             {
                 id: 'row-ngay-sao-ke',
                 label: 'Ngày sao kê',
                 getValues: (cards) => cards.map(c =>
-                    c ? (c.statement_date ? `Ngày ${c.statement_date}` : '—') : empty
+                    c ? (c.statement_date ? `Ngày ${c.statement_date} hàng tháng` : '—') : empty
                 ),
             },
             {
@@ -206,34 +192,35 @@ export const SECTION_DEFS: SectionDef[] = [
         section: 'scores',
         label: 'Điểm OpenWallet',
         rows: [
-            {criterion: 'network_rank'},
-            {criterion: 'persona_coverage'},
-            {criterion: 'card_score'},
-            {criterion: 'data_score'},
+            {criterion: 'network_rank', label: 'Độ phổ biến của mạng thẻ', getValue: (v) => rank(v)},
+            {criterion: 'persona_coverage', label: 'Độ phủ lĩnh vực ưu đãi', getValue: (v) => percent(v)},
+            {criterion: 'card_score', label: 'Điểm tổng hợp', getValue: (v) => score(v)},
+            {criterion: 'data_score', label: 'Độ đầy đủ dữ liệu', getValue: (v) => score(v)},
         ],
     },
 ];
 
-// ─── Resolver: expand CriterionRowSpec → StaticRowSpec ───────────────────────
+// ─── Resolver ─────────────────────────────────────────────────────────────────
 
 function isCriterionSpec(spec: RowSpec): spec is CriterionRowSpec {
     return 'criterion' in spec;
 }
 
-function resolveCriterionSpec(spec: CriterionRowSpec, ctx: CompareContext): StaticRowSpec {
-    const def = CRITERION_DEFS[spec.criterion];
+function resolveCriterionSpec(spec: CriterionRowSpec, cards: (Card | null)[], ctx: CompareContext): StaticRowSpec {
     const apiRow = ctx.compareResult?.table.find(r => r.criterion === spec.criterion);
     return {
         id: `row-${spec.criterion}`,
-        label: def?.label ?? spec.criterion,
-        getValues: (_, c) => c.cardIds.map(id => {
+        label: spec.label,
+        getValues: (_, c) => c.cardIds.map((id, i) => {
+            const card = cards[i] ?? null;
             const v = id != null && apiRow ? (apiRow.values[id] ?? 0) : null;
             if (v == null) return empty;
-            return def?.getValue?.(v, apiRow!.unit) ?? formatApiValue(v, apiRow!.unit);
+            return spec.getValue?.(v, apiRow!.unit, card) ?? String(v);
         }),
-        getDescriptions: (_, c) => c.cardIds.map(id => {
+        getDescriptions: (_, c) => c.cardIds.map((id, i) => {
+            const card = cards[i] ?? null;
             const v = id != null && apiRow ? (apiRow.values[id] ?? 0) : null;
-            return v != null ? (def?.getDescription?.(v, apiRow!.unit) ?? null) : null;
+            return v != null ? (spec.getDescription?.(v, apiRow!.unit, card) ?? null) : null;
         }),
         getWinnerIndex: (_, c) => {
             const winnerId = c.compareResult?.table.find(r => r.criterion === spec.criterion)?.winner ?? null;
@@ -244,12 +231,8 @@ function resolveCriterionSpec(spec: CriterionRowSpec, ctx: CompareContext): Stat
     };
 }
 
-export function resolveSection(
-    section: SectionDef,
-    cards: (Card | null)[],
-    ctx: CompareContext,
-): StaticRowSpec[] {
+export function resolveSection(section: SectionDef, cards: (Card | null)[], ctx: CompareContext): StaticRowSpec[] {
     return section.rows
-        .map(spec => isCriterionSpec(spec) ? resolveCriterionSpec(spec, ctx) : spec)
+        .map(spec => isCriterionSpec(spec) ? resolveCriterionSpec(spec, cards, ctx) : spec)
         .filter(row => row.visible?.(cards, ctx) !== false);
 }
