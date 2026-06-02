@@ -1,9 +1,12 @@
-import type {CardModel} from '@/lib/card-model';
+'use client';
+
+import type {Card} from '@/lib/api';
+import {CardModel} from '@/lib/card-model';
 import { CardDisplay } from '@/components/cards/variants/card-display';
 import { cn } from '@/lib/utils';
 
 interface Props {
- cards: CardModel[];
+ cards: Card[];
  /** Tailwind grid-cols class — defaults to match CardDetailCompare */
  gridClassName?: string;
 }
@@ -18,9 +21,10 @@ export function CompareSuggestedCards({
  <div className="ow-compare-suggested-cards mt-16 pt-10 border-t border-slate-100">
  <h2 className="heading-3 mb-6">Có thể bạn muốn xem</h2>
  <div className={cn('grid', gridClassName, 'gap-6')}>
- {cards.map((card) => (
- <CardDisplay variant="tile" key={card.getId()} card={card} />
- ))}
+ {cards.map((card) => {
+  const model = new CardModel(card);
+  return <CardDisplay variant="tile" key={model.getId()} card={model} />;
+ })}
  </div>
  </div>
  );
