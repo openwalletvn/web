@@ -1,5 +1,7 @@
-import type {Card} from '@/lib/api';
+import * as React from 'react';
+import type {Card, CardType} from '@/lib/api';
 import {getCardImageUrl} from '@/lib/api';
+import {IconCashBanknoteFilled, IconCreditCardFilled, IconTrainFilled, IconYinYangFilled} from '@tabler/icons-react';
 import {buildSlugRateMap, getRateDisplay} from './card-display-utils';
 import {
     getNextDueDate,
@@ -8,6 +10,40 @@ import {
     resolveStatementDay,
     type TimelineResult,
 } from './card-dates';
+
+// ─── Card type config ─────────────────────────────────────────────────────────
+
+export type CardTypeIconComponent = React.ComponentType<{size?: number; className?: string}>;
+
+export const CARD_TYPE_LABELS: Record<CardType, string> = {
+    credit: 'Thẻ tín dụng',
+    debit: 'Thẻ ghi nợ',
+    prepaid: 'Thẻ trả trước',
+    hybrid: 'Thẻ hybrid',
+    'co-branded': 'Đồng thương hiệu',
+    atm: 'ATM',
+    transit: 'Transit',
+};
+
+export const CARD_TYPE_ICON: Partial<Record<CardType, CardTypeIconComponent>> = {
+    credit: IconCreditCardFilled,
+    debit: IconCashBanknoteFilled,
+    hybrid: IconYinYangFilled,
+    transit: IconTrainFilled,
+};
+
+export const CARD_TYPE_HEX: Partial<Record<CardType, string>> = {
+    credit: '#3b82f6',
+    debit: '#22c55e',
+    hybrid: '#8b5cf6',
+    transit: '#f97316',
+};
+
+export const CARD_TYPE_SLUGS: Partial<Record<CardType, string>> = {
+    credit: 'the-tin-dung',
+    debit: 'the-ghi-no',
+    hybrid: 'the-hybrid',
+};
 
 /**
  * Domain model for a catalog card. Wraps a plain `Card` API object and exposes
@@ -176,6 +212,20 @@ export class CardModel {
     /** Returns the underlying raw `Card` object. Use only at serialization/API boundaries. */
     toRaw(): Card {
         return this.data;
+    }
+
+    // ─── Static card-type helpers ─────────────────────────────────────────────
+
+    static getLabelForCardType(cardType: CardType): string {
+        return CARD_TYPE_LABELS[cardType] ?? cardType;
+    }
+
+    static getIconForCardType(cardType: CardType): CardTypeIconComponent | undefined {
+        return CARD_TYPE_ICON[cardType];
+    }
+
+    static getHexForCardType(cardType: CardType): string | undefined {
+        return CARD_TYPE_HEX[cardType];
     }
 
     // ─── Display / computation methods ────────────────────────────────────────
