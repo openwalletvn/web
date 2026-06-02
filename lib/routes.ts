@@ -5,6 +5,7 @@ export const ROUTES = {
     cards: '/the',
     banks: '/ngan-hang',
     blog: '/tin-tuc',
+    cardTypes: '/loai-the',
 
     // Tools
     cardBattle: '/card-battle',
@@ -36,6 +37,7 @@ export const ROUTES = {
     blogCategory: (category: string) => `/tin-tuc/category/${category}`,
     cardBattlePair: (pair: string) => `/card-battle/${pair}`,
     personaPage: (slug: string) => `/the-theo-nhu-cau/${slug}`,
+    cardTypePage: (slug: string) => `/loai-the/${slug}`,
     myCard: (walletCardId: string) => `/app/my-cards/detail?id=${walletCardId}`,
 } as const
 

@@ -5,6 +5,7 @@ export const SECTION_TITLES = {
     banks: 'Ngân Hàng',
     compare: 'So Sánh Thẻ',
     persona: 'Thẻ Theo Nhu Cầu',
+    cardTypes: 'Loại Thẻ',
 } as const;
 
 export function buildTitle(title: string, parent?: string): string {
