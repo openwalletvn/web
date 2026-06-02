@@ -43,13 +43,14 @@ app/
 
 | Path | Purpose |
 |------|---------|
-| `lib/api.ts` | REST client — all API fns + types |
-| `lib/page-meta/` | JSON-LD + OG metadata builders per page type |
+| `lib/api.ts` | REST client — all API fns + types. `getCards()` / `getCard()` return raw `Card`. |
+| `lib/card-model.ts` | `CardModel` — domain wrapper around `Card`. **SSOT for all card field access in display components.** Construct once at page/API boundary: `new CardModel(card)`. Pass `CardModel` down; never pass raw `Card` to display components. Use `cardModel.toRaw()` only at serialization/API boundaries (e.g. `lib/page-meta/`, `ChatContextSetter`). See `CardModel` getter list in the file for all available methods. |
+| `lib/page-meta/` | JSON-LD + OG metadata builders — accept raw `Card`, not `CardModel` |
 | `lib/mdx.ts` | Post parsing, queries, TOC extraction |
 | `lib/db.ts` | Dexie schema |
 | `lib/card-dates.ts` | Statement/due date computation (`getStatementObject`) |
 | `lib/cashback-calc.ts` | `calcCashback(card, spendProfile)` — estimates monthly cashback; handles rule ordering (specific-first), per-rule caps, min_spend gate, global cap. Rules with empty `categories[]` AND `merchants[]` score 0 (no implicit universal). |
-| `lib/card-ranker.ts` | `rankCards(cards, spendProfile)` — sort logic only (cashback desc → annual_fee asc → network_popularity asc). `DEFAULT_MONTHLY_SPEND = 3_000_000`. Used by `CardRankingTable` and `RecommendationFinder`. |
+| `lib/card-ranker.ts` | `rankCards(cards, spendProfile)` — sort logic only (cashback desc → annual_fee asc → network_popularity asc). `DEFAULT_MONTHLY_SPEND = 3_000_000`. `RankedCard.card` is still raw `Card` — `ow-card-ranked-row` wraps to `CardModel` internally. |
 | `components/marketing/card-ranking-table.tsx` | `getRateDisplay(card, intentSlug?)` — resolves display rate from `card.cashback.rules` filtered by intent slug (merchant or category match). Returns exact rate (e.g. `"8%"`) or range (`"3%–5%"`) for tiered/multi-rule. Falls back to API `actual_rate` when no rules match. **Do not use `actual_rate` directly** — it is a blended value when the spend profile spans multiple rules. |
 | `lib/use-search.ts` | Fuse.js search hook |
 | `content/posts/` | Blog MDX files (`<slug>.mdx`) |
