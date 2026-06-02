@@ -38,6 +38,13 @@ export function isHybridCard(types: CardType[]): boolean {
     return types.includes('hybrid') || (types.includes('credit') && types.includes('debit'));
 }
 
+export function normalizeCardTypes(types: CardType[]): CardType[] {
+    if (isHybridCard(types)) {
+        return ['hybrid', ...types.filter(t => t !== 'credit' && t !== 'debit' && t !== 'hybrid')];
+    }
+    return [...new Set(types)];
+}
+
 export interface CardImage {
     url: string;
     width: number | null;

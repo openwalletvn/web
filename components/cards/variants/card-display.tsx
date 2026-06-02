@@ -5,7 +5,7 @@ import type {ReactNode} from 'react';
 import {cn} from '@/lib/utils';
 import {IconBuildingBank, IconExternalLink, IconScale} from '@tabler/icons-react';
 import type {Bank, Card} from '@/lib/api';
-import {getBankImageUrl} from '@/lib/api';
+import {getBankImageUrl, normalizeCardTypes} from '@/lib/api';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwFeeAmount} from '@/components/ow-ui/ow-fee-amount';
@@ -140,7 +140,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                         {network && card.card_network_data &&
                             <OwBadge small variant="network" networkData={card.card_network_data}
                                      tier={card.card_tier}/>}
-                        {type && card.card_type.map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
+                        {type && normalizeCardTypes(card.card_type).map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
                         {metal && card.is_metal && <OwBadge small variant="metal"/>}
                     </OwBadges>
                 </div>
@@ -222,7 +222,7 @@ function CardDisplayRow({ card, bank, badges = {}, slot, className }: Omit<RowPr
                     )}
                     {network && card.card_network_data &&
                         <OwBadge small variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
-                    {type && card.card_type.map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
+                    {type && normalizeCardTypes(card.card_type).map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
                     {metal && card.is_metal && <OwBadge small variant="metal"/>}
                 </OwBadges>
             </div>
@@ -269,7 +269,7 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
                     )}
                     {network && card.card_network_data &&
                         <OwBadge small variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
-                    {type && card.card_type.map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
+                    {type && normalizeCardTypes(card.card_type).map(t => <OwBadge small key={t} variant="card-type" cardType={t}/>)}
                     {card.is_metal && <OwBadge small variant="metal"/>}
                 </OwBadges>
             </div>

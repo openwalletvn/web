@@ -1,4 +1,5 @@
 import type {Bank, Card} from '@/lib/api';
+import {normalizeCardTypes} from '@/lib/api';
 import {CoBrandDisplay} from '@/components/cards/co-brand-display';
 import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
@@ -23,7 +24,7 @@ export function CardDetailHeader({ card, bank }: Props) {
                 )}
                 <OwBadges>
                     {card.card_network_data && <OwBadge variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
-                    {card.card_type.map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}
+                    {normalizeCardTypes(card.card_type).map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}
                     {card.contactless_methods_data && card.contactless_methods_data.length > 0 && (
                         <>
                             {card.contactless_methods_data.map((method) => (
