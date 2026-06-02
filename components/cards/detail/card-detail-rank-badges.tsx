@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import {getPersonas, getRankedCards} from '@/lib/api';
+import {getIntents, getPersonas, getRankedCards} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
 import {PersonaModel} from '@/lib/persona-model';
 import {OwBadge} from '@/components/ow-ui/ow-badge';
@@ -20,7 +20,11 @@ export async function CardDetailRankBadges({card}: Props) {
     const matchedPersonas = card.getMatchedPersonas();
     if (!matchedPersonas.length) return null;
 
-    const personas = await getPersonas().catch(() => []);
+    const [personas, intents] = await Promise.all([
+        getPersonas().catch(() => []),
+        getIntents().catch(() => []),
+    ]);
+    const intentIconMap = new Map(intents.map((i) => [i.slug, i.icon]));
 
     const results = await Promise.allSettled(
         matchedPersonas.map(async (slug): Promise<RankBadge | null> => {
@@ -43,7 +47,7 @@ export async function CardDetailRankBadges({card}: Props) {
                 label: persona.getDisplayLabel(),
                 href: persona.getHref(),
                 rank: position + 1,
-                emoji: persona.getEmoji()
+                emoji: persona.getEmoji(intentIconMap)
             };
         }),
     );
@@ -65,9 +69,9 @@ export async function CardDetailRankBadges({card}: Props) {
                 <OwBadge key={slug} colorHex="#E8321A" asChild>
                     <Link href={href}>Top
                         <span className="font-bold">#{rank}</span>
-                        trong
+                        trong lĩnh vực
                         <span>{label}</span>
-                        {emoji}
+                        <span className="inline-flex gap-1">{emoji.map((e, i) => <span key={i}>{e}</span>)}</span>
                     </Link>
                 </OwBadge>
             ))}
