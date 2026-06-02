@@ -18,6 +18,7 @@ import {CardDetailRelated} from '@/components/cards/detail/card-detail-related';
 import {CardDetailCompare} from '@/components/cards/detail/card-detail-compare';
 import {CardDetailCashback} from '@/components/cards/detail/card-detail-cashback';
 import {CardDetailIntents} from '@/components/cards/detail/card-detail-intents';
+import {CardDetailRankBadges} from '@/components/cards/detail/card-detail-rank-badges';
 import {CompareButton} from '@/components/compare/compare-button';
 
 export async function generateStaticParams() {
@@ -110,6 +111,7 @@ export default async function CardPage({ params }: Props) {
                     <div
                         className={cn(isVertical ? 'xl:col-span-10 md:col-span-9 col-span-12' : 'xl:col-span-9 md:col-span-8 col-span-12', "flex flex-col gap-8 min-w-0")}>
                         <CardDetailHeader card={cardModel} bank={bank} />
+                        <CardDetailRankBadges card={cardModel} />
                         {card.description && (
                             <section className="flex flex-col gap-4">
                                 <h2 className="text-label text-text-muted">Về thẻ này</h2>
