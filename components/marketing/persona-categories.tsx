@@ -1,17 +1,18 @@
-import {CARD_CATEGORIES, type CardCategory} from '@/lib/card-categories';
+import {PersonaModel} from '@/lib/persona-model';
 import {OwButton} from '@/components/ow-ui/ow-button';
 
-function CategoryLink({cat}: {cat: CardCategory}) {
-    if (cat.available === false) {
-        return <span className="text-text-muted cursor-not-allowed">{cat.name} ({cat.description})</span>;
+function CategoryLink({persona}: {persona: PersonaModel}) {
+    if (!persona.isAvailable()) {
+        return <span className="text-text-muted cursor-not-allowed">{persona.getName()} ({persona.getDescription()})</span>;
     }
-    return <a href={cat.href}>{cat.name} ({cat.description})</a>;
+    return <a href={persona.getHref()}>{persona.getName()} ({persona.getDescription()})</a>;
 }
 
 export function PersonaCategories() {
-    const daily = CARD_CATEGORIES.filter((c) => c.group === 'daily');
-    const digital = CARD_CATEGORIES.filter((c) => c.group === 'digital');
-    const business = CARD_CATEGORIES.filter((c) => c.group === 'business');
+    const all = PersonaModel.all();
+    const daily = all.filter((p) => p.getGroup() === 'daily');
+    const digital = all.filter((p) => p.getGroup() === 'digital');
+    const business = all.filter((p) => p.getGroup() === 'business');
 
     return (
         <section className="ow-persona-categories ow-container lg:py-32 py-16 relative z-20">
@@ -21,28 +22,28 @@ export function PersonaCategories() {
                 <div className="bg-white md:rounded-xl rounded-lg p-6 flex flex-col gap-3">
                     <h3>Tiêu dùng hàng ngày</h3>
                     <ul className="list-disc list-inside space-y-1">
-                        {daily.map((cat) => (
-                            <li key={cat.slug}>
-                                <CategoryLink cat={cat}/>
+                        {daily.map((persona) => (
+                            <li key={persona.getSlug()}>
+                                <CategoryLink persona={persona}/>
                             </li>
                         ))}
                     </ul>
                 </div>
 
                 <div className="flex flex-col gap-4">
-                    {digital.map((cat) => (
-                        <div key={cat.slug} className="md:rounded-xl rounded-lg p-6 flex flex-col gap-3 flex-1 bg-primary text-white">
-                            <h3>{cat.name}</h3>
+                    {digital.map((persona) => (
+                        <div key={persona.getSlug()} className="md:rounded-xl rounded-lg p-6 flex flex-col gap-3 flex-1 bg-primary text-white">
+                            <h3>{persona.getName()}</h3>
                             <ul className="list-disc list-inside space-y-1">
-                                <li><CategoryLink cat={cat}/></li>
+                                <li><CategoryLink persona={persona}/></li>
                             </ul>
                         </div>
                     ))}
-                    {business.map((cat) => (
-                        <div key={cat.slug} className="bg-black text-white md:rounded-xl rounded-lg p-6 flex flex-col gap-3 flex-1">
-                            <h3>{cat.name}</h3>
+                    {business.map((persona) => (
+                        <div key={persona.getSlug()} className="bg-black text-white md:rounded-xl rounded-lg p-6 flex flex-col gap-3 flex-1">
+                            <h3>{persona.getName()}</h3>
                             <ul className="list-disc list-inside space-y-1">
-                                <li><CategoryLink cat={cat}/></li>
+                                <li><CategoryLink persona={persona}/></li>
                             </ul>
                         </div>
                     ))}

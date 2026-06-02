@@ -1,8 +1,8 @@
 import { CommandGroup, CommandItem } from '@/components/ui/command';
 import { IconClock, IconX, IconArrowRight } from '@tabler/icons-react';
-import { CARD_CATEGORIES } from '@/lib/card-categories';
+import {PersonaModel} from '@/lib/persona-model';
 
-const QUICK_LINKS = CARD_CATEGORIES.map((c) => ({ label: c.name, url: c.href }));
+const QUICK_LINKS = PersonaModel.all().map((p) => ({label: p.getName(), url: p.getHref()}));
 
 interface SearchEmptyStateProps {
   recentSearches: string[];

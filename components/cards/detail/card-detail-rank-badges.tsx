@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import {getPersonas, getRankedCards} from '@/lib/api';
-import {CARD_CATEGORIES} from '@/lib/card-categories';
 import type {CardModel} from '@/lib/card-model';
+import {PersonaModel} from '@/lib/persona-model';
 import {OwBadge} from '@/components/ow-ui/ow-badge';
 
 interface RankBadge {
@@ -9,6 +9,7 @@ interface RankBadge {
     label: string;
     href: string;
     rank: number;
+    emoji: string[];
 }
 
 interface Props {
@@ -20,24 +21,30 @@ export async function CardDetailRankBadges({card}: Props) {
     if (!matchedPersonas.length) return null;
 
     const personas = await getPersonas().catch(() => []);
-    const categoryMap = Object.fromEntries(CARD_CATEGORIES.map((c) => [c.slug, c]));
 
     const results = await Promise.allSettled(
         matchedPersonas.map(async (slug): Promise<RankBadge | null> => {
-            const persona = personas.find((p) => p.slug === slug);
-            const category = categoryMap[slug];
-            if (!persona || !category) return null;
+            const raw = personas.find((p) => p.slug === slug);
+            if (!raw) return null;
+            const persona = new PersonaModel(raw);
+            if (!persona.isKnown()) return null;
 
             const ranked = await getRankedCards({
                 persona: slug,
-                intents: persona.rank_intents ?? [],
+                intents: persona.getRankIntents(),
                 limit: 20,
             });
 
             const position = ranked.findIndex((r) => r.card.id === card.getId());
             if (position === -1) return null;
 
-            return {slug, label: persona.labelVi ?? persona.label, href: category.href, rank: position + 1};
+            return {
+                slug,
+                label: persona.getDisplayLabel(),
+                href: persona.getHref(),
+                rank: position + 1,
+                emoji: persona.getEmoji()
+            };
         }),
     );
 
@@ -54,12 +61,13 @@ export async function CardDetailRankBadges({card}: Props) {
 
     return (
         <div className="ow-card-detail-rank-badges flex flex-wrap gap-2">
-            {badges.map(({slug, label, href, rank}) => (
+            {badges.map(({slug, label, href, rank, emoji}) => (
                 <OwBadge key={slug} colorHex="#E8321A" asChild>
                     <Link href={href}>Top
                         <span className="font-bold">#{rank}</span>
                         trong
                         <span>{label}</span>
+                        {emoji}
                     </Link>
                 </OwBadge>
             ))}

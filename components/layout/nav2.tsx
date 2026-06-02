@@ -5,7 +5,7 @@ import {usePathname} from 'next/navigation';
 import {cn} from '@/lib/utils';
 import {TOOLS} from '@/lib/tools';
 import {ROUTES} from '@/lib/routes';
-import {CARD_CATEGORIES} from '@/lib/card-categories';
+import {PersonaModel} from '@/lib/persona-model';
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -15,7 +15,7 @@ import {
     NavigationMenuLink,
 } from '@/components/ui/navigation-menu';
 
-const PERSONA_ITEMS = CARD_CATEGORIES.slice(0, 6);
+const PERSONA_ITEMS = PersonaModel.all().slice(0, 6);
 
 const textStyle: React.CSSProperties = {
     fontFamily: "'Inter Tight', sans-serif",
@@ -86,18 +86,18 @@ export function Nav2() {
                                 Thẻ theo nhu cầu
                             </p>
                             <ul className="grid grid-cols-2 gap-1 mb-3">
-                                {PERSONA_ITEMS.map((item) => (
-                                    <li key={item.slug}>
+                                {PERSONA_ITEMS.map((persona) => (
+                                    <li key={persona.getSlug()}>
                                         <NavigationMenuLink asChild>
                                             <Link
-                                                href={item.href}
+                                                href={persona.getHref()}
                                                 className={cn(
                                                     'block px-3 py-2 rounded-md text-sm font-medium transition-colors',
                                                     'text-slate-700 hover:text-brand-red hover:bg-slate-50',
-                                                    pathname.startsWith(item.href) && 'text-brand-red bg-slate-50'
+                                                    pathname.startsWith(persona.getHref()) && 'text-brand-red bg-slate-50'
                                                 )}
                                             >
-                                                {item.name}
+                                                {persona.getName()}
                                             </Link>
                                         </NavigationMenuLink>
                                     </li>

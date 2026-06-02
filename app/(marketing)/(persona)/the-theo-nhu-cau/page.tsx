@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {getPersonas} from '@/lib/api';
-import {CARD_CATEGORIES} from '@/lib/card-categories';
+import {PersonaModel} from '@/lib/persona-model';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
         title: META.title,
         description: META.description,
         url: META.url,
-        items: CARD_CATEGORIES.map((c) => ({name: c.name, url: c.href})),
+        items: PersonaModel.all().map((p) => ({name: p.getName(), url: p.getHref()})),
         breadcrumbItems: BREADCRUMB_ITEMS,
     });
     return metadata;
@@ -32,19 +32,17 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function PersonaHubPage() {
     const personas = await getPersonas().catch(() => []);
 
-    const categoryMap = Object.fromEntries(CARD_CATEGORIES.map((c) => [c.slug, c]));
-
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
         title: META.title,
         description: META.description,
         url: META.url,
-        items: CARD_CATEGORIES.map((c) => ({name: c.name, url: c.href})),
+        items: PersonaModel.all().map((p) => ({name: p.getName(), url: p.getHref()})),
         breadcrumbItems: BREADCRUMB_ITEMS,
     });
 
     const items = personas
-        .map((p) => ({persona: p, category: categoryMap[p.slug]}))
-        .filter((item) => item.category);
+        .map((p) => new PersonaModel(p))
+        .filter((p) => p.isKnown());
 
     return (
         <MarketingPageShell
@@ -61,14 +59,14 @@ export default async function PersonaHubPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {items.map(({persona, category}) => (
+                    {items.map((persona) => (
                         <Link
-                            key={persona.slug}
-                            href={category.href}
+                            key={persona.getSlug()}
+                            href={persona.getHref()}
                             className="bg-white rounded-xl border p-5 flex flex-col gap-2 hover:shadow-md transition-shadow"
                         >
-                            <span className="font-semibold text-base">{persona.labelVi ?? persona.label}</span>
-                            <span className="text-text-muted text-sm">{category.description}</span>
+                            <span className="font-semibold text-base">{persona.getDisplayLabel()}</span>
+                            <span className="text-text-muted text-sm">{persona.getDescription()}</span>
                         </Link>
                     ))}
                 </div>

@@ -9,9 +9,9 @@ import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/
 import {cn} from '@/lib/utils';
 import {ROUTES} from '@/lib/routes';
 import {TOOLS} from '@/lib/tools';
-import {CARD_CATEGORIES} from '@/lib/card-categories';
+import {PersonaModel} from '@/lib/persona-model';
 
-const PERSONA_ITEMS = CARD_CATEGORIES.slice(0, 6);
+const PERSONA_ITEMS = PersonaModel.all().slice(0, 6);
 
 const PLAIN_LINKS = [
     {label: 'Ngân hàng', href: ROUTES.banks},
@@ -66,19 +66,19 @@ export function MobileNav() {
                                 <p className="px-2 pt-1 text-xs font-semibold text-slate-400 uppercase tracking-widest">
                                     Thẻ theo nhu cầu
                                 </p>
-                                {PERSONA_ITEMS.map((item) => (
+                                {PERSONA_ITEMS.map((persona) => (
                                     <Link
-                                        key={item.slug}
-                                        href={item.href}
+                                        key={persona.getSlug()}
+                                        href={persona.getHref()}
                                         onClick={close}
                                         className={cn(
                                             'px-2 py-1.5 rounded-md text-sm transition-colors',
-                                            pathname.startsWith(item.href)
+                                            pathname.startsWith(persona.getHref())
                                                 ? 'text-brand-red'
                                                 : 'text-slate-700 hover:text-brand-red'
                                         )}
                                     >
-                                        {item.name}
+                                        {persona.getName()}
                                     </Link>
                                 ))}
                                 <Link
