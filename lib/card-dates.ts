@@ -34,6 +34,19 @@ export function getNextDueDate(
   return getRelatedStatements(tod, statementDate, interestFreeDays).find((s) => s.due >= tod)?.due ?? null;
 }
 
+/** Returns the next due date and days until it (negative = overdue), or null if data is missing. */
+export function getNextDueDiff(
+  statementDate: number | null | undefined,
+  interestFreeDays: number | null | undefined,
+  today: Date = new Date(),
+): { dueDate: Date; dueDiff: number } | null {
+  const dueDate = getNextDueDate(statementDate, interestFreeDays, today);
+  if (!dueDate) return null;
+  const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const dueDiff = Math.round((dueDate.getTime() - tod.getTime()) / 86_400_000);
+  return { dueDate, dueDiff };
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /** A single billing cycle with its open, close, and payment due date. */
