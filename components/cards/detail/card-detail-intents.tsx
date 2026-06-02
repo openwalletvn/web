@@ -10,7 +10,7 @@ interface Props {
 export async function CardDetailIntents({ card }: Props) {
  if (!card.getIntents().length) return null;
 
- const allIntents = await getIntents().catch(() => [] as Intent[]);
+ const allIntents = await getIntents().catch(() => []);
  const intentMap = new Map(allIntents.map((i) => [i.slug, i]));
 
  return (

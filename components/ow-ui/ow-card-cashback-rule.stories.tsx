@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/nextjs-vite';
-import type {Intent, Merchant} from '@/lib/api';
+import type {Merchant} from '@/lib/api';
+import {IntentModel} from '@/lib/intent-model';
 import {OwCardCashbackRule} from './ow-card-cashback-rule';
 import {OwStories, OwStorySection} from './ow-story-section';
 
@@ -21,13 +22,13 @@ type Story = StoryObj<typeof OwCardCashbackRule>;
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const INTENT_MAP = new Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>([
-    ['dining', {slug: 'dining', label: 'Ăn uống', icon: '🍜'}],
-    ['shopping', {slug: 'shopping', label: 'Mua sắm', icon: '👗'}],
-    ['grab', {slug: 'grab', label: 'Grab', icon: '🚗'}],
-    ['shopee', {slug: 'shopee', label: 'Shopee', icon: '🛍️'}],
-    ['digital', {slug: 'digital', label: 'Dịch vụ số', icon: '📱'}],
-    ['travel', {slug: 'travel', label: 'Du lịch', icon: '🌏'}],
+const INTENT_MAP = IntentModel.toMap([
+    {slug: 'dining', label: 'Ăn uống', icon: '🍜', channel: 'both', merchants: [], groups: [], co_brands: []},
+    {slug: 'shopping', label: 'Mua sắm', icon: '👗', channel: 'both', merchants: [], groups: [], co_brands: []},
+    {slug: 'grab', label: 'Grab', icon: '🚗', channel: 'both', merchants: [], groups: [], co_brands: []},
+    {slug: 'shopee', label: 'Shopee', icon: '🛍️', channel: 'online', merchants: [], groups: [], co_brands: []},
+    {slug: 'digital', label: 'Dịch vụ số', icon: '📱', channel: 'online', merchants: [], groups: [], co_brands: []},
+    {slug: 'travel', label: 'Du lịch', icon: '🌏', channel: 'both', merchants: [], groups: [], co_brands: []},
 ]);
 
 const MERCHANT_MAP = new Map<string, Merchant>([

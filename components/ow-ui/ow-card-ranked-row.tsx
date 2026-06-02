@@ -76,7 +76,7 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
           ]) ?? [])]
             .map(slug => {
                 const intent = intentMap.get(slug);
-                return intent ? {...intent, rate: slugRateMap.get(slug)} : undefined;
+                return intent ? {slug: intent.slug, icon: intent.icon, label: intent.label, rate: slugRateMap.get(slug)} : undefined;
             })
             .filter((i): i is NonNullable<typeof i> => !!i)
         : [];

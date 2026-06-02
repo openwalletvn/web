@@ -1,4 +1,5 @@
-import type {CashbackRule, Intent, Merchant, SpendTier} from '@/lib/api';
+import type {CashbackRule, Merchant, SpendTier} from '@/lib/api';
+import {IntentModel} from '@/lib/intent-model';
 import {cn} from '@/lib/utils';
 import {OwBadge} from '@/components/ow-ui/ow-badge';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
@@ -119,7 +120,7 @@ function CategoryCaps({
                           intentMap,
                       }: {
     categoryCaps: Record<string, number>;
-    intentMap: Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
+    intentMap: Map<string, IntentModel>;
 }) {
     const entries = Object.entries(categoryCaps);
     if (entries.length === 0) return null;
@@ -128,7 +129,7 @@ function CategoryCaps({
             <p className="text-xs text-slate-500">Trần riêng theo danh mục:</p>
             {entries.map(([slug, amount]) => {
                 const cat = intentMap.get(slug);
-                const label = cat ? `${cat.icon} ${cat.label}` : slug;
+                const label = cat ? `${cat.getIcon()} ${cat.getLabel()}` : slug;
                 return (
                     <div key={slug} className="flex items-center justify-between text-xs text-slate-700">
                         <span>{label}</span>
@@ -144,7 +145,7 @@ function CategoryCaps({
 
 export interface OwCardCashbackRuleProps {
     rule: CashbackRule;
-    intentMap: Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
+    intentMap: Map<string, IntentModel>;
     merchantMap: Map<string, Merchant>;
 }
 
@@ -212,8 +213,8 @@ export function OwCardCashbackRule({rule, intentMap, merchantMap}: OwCardCashbac
                             {rule.intents.map((slug) => {
                                 const cat = intentMap.get(slug);
                                 return (
-                                    <OwBadge key={slug} variant="intent" slug={slug} emoji={cat?.icon ?? '🏷️'}
-                                             label={cat?.label ?? slug}
+                                    <OwBadge key={slug} variant="intent" slug={slug} emoji={cat?.getIcon() ?? '🏷️'}
+                                             label={cat?.getLabel() ?? slug}
                                              small/>
                                 );
                             })}

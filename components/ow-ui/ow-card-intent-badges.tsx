@@ -1,6 +1,7 @@
 'use client';
 
 import type {Card, Intent} from '@/lib/api';
+import {IntentModel} from '@/lib/intent-model';
 import {CardModel} from '@/lib/card-model';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {useIntentMap} from '@/lib/intent-map-context';
@@ -14,7 +15,7 @@ export interface IntentItem {
 
 interface Props {
     card?: Card;
-    intentMap?: Map<string, Intent> | Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
+    intentMap?: Map<string, Intent>;
     intents?: IntentItem[];
     slugRateMap?: Map<string, number>;
     highlighted?: boolean | Set<string>;
