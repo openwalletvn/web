@@ -174,13 +174,13 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
 
             {/*col 3 — cashback amount [2]*/}
             <div className="col-span-2 flex flex-col items-end">
-                <OwFeeAmount amount={ranked.cashback_result.cashback} compact period="kỳ"/>
+                <OwFeeAmount amount={ranked.cashback_result.cashback} compact period="period"/>
             </div>
 
             {/*col 4 — annual fee [2]*/}
             <div className="col-span-2 flex flex-col items-end">
                 {card.fees?.annual != null && (
-                    <OwFeeAmount amount={card.fees.annual.amount} compact/>
+                    <OwFeeAmount amount={card.fees.annual.amount} compact period="year"/>
                 )}
             </div>
         </div>

@@ -105,7 +105,7 @@ function CashbackSection({
                     {cashback.min_spend_per_period && (
                         <FooterRow
                             label="Chi tiêu tối thiểu"
-                            value={<OwFeeAmount amount={cashback.min_spend_per_period} compact textOnly period="kỳ sao kê"/>}
+                            value={<OwFeeAmount amount={cashback.min_spend_per_period} compact textOnly period="statementperiod"/>}
                         />
                     )}
                     {cashback.global_cap && (
@@ -114,7 +114,7 @@ function CashbackSection({
                             value={
                                 cashback.global_cap.amount === -1
                                     ? 'Hoàn không giới hạn'
-                                    : <>{cashback.global_cap_max ? <><OwFeeAmount amount={cashback.global_cap.amount} compact textOnly period=""/> – <OwFeeAmount amount={cashback.global_cap_max.amount} compact textOnly period="kỳ"/></> : <OwFeeAmount amount={cashback.global_cap.amount} compact textOnly period="kỳ"/>}</>
+                                    : <>{cashback.global_cap_max ? <><OwFeeAmount amount={cashback.global_cap.amount} compact textOnly/> – <OwFeeAmount amount={cashback.global_cap_max.amount} compact textOnly period="period"/></> : <OwFeeAmount amount={cashback.global_cap.amount} compact textOnly period="period"/>}</>
                             }
                         />
                     )}

@@ -1,9 +1,23 @@
 import * as React from 'react';
 
+type PeriodKey = 'year' | 'month' | 'period' | 'statementperiod';
+
+const PERIOD_LABELS: Record<PeriodKey, string> = {
+    year: 'năm',
+    month: 'tháng',
+    period: 'kỳ',
+    statementperiod: 'kỳ sao kê',
+};
+
+function resolvePeriod(period: PeriodKey | string | null | undefined): string | null {
+    if (!period) return null;
+    return PERIOD_LABELS[period as PeriodKey] ?? period;
+}
+
 interface Props {
     amount: number;
     type?: 'currency' | 'rate';
-    period?: 'năm' | 'tháng' | 'kỳ' | string;
+    period?: PeriodKey | string | null;
     compact?: boolean;
     textOnly?: boolean;
 }
@@ -18,8 +32,9 @@ function formatAmount(amount: number, type: 'currency' | 'rate', compact: boolea
     return {value: amount.toLocaleString('vi-VN'), unit: 'đ'};
 }
 
-export function OwFeeAmount({amount, type = 'currency', period = 'năm', compact = false, textOnly = false}: Props) {
+export function OwFeeAmount({amount, type = 'currency', period, compact = false, textOnly = false}: Props) {
     const {value, unit} = formatAmount(amount, type, compact);
+    const resolvedPeriod = resolvePeriod(period);
 
     if (amount === 0) {
         return <span className={textOnly ? 'ow-fee-amount' : 'ow-fee-amount text-body-md text-slate-800'}>{value}</span>;
@@ -29,7 +44,7 @@ export function OwFeeAmount({amount, type = 'currency', period = 'năm', compact
         <span className={textOnly ? 'ow-fee-amount' : 'ow-fee-amount text-body-md text-slate-800'}>
             {value}
             {unit && <span className={textOnly ? undefined : 'text-slate-500'}>{unit}</span>}
-            {type !== 'rate' && period && <span className={textOnly ? undefined : 'text-xs text-slate-400'}>/{period}</span>}
+            {type !== 'rate' && resolvedPeriod && <span className={textOnly ? undefined : 'text-xs text-slate-400'}>/{resolvedPeriod}</span>}
         </span>
     );
 }

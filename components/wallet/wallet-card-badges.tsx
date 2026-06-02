@@ -50,7 +50,7 @@ export function WalletCardBadges({
         catalogCard.fees.annual.amount === 0 ? (
           <DashedBadge variant="green">Miễn phí thường niên</DashedBadge>
         ) : (
-          <DashedBadge>PTN: <OwFeeAmount amount={catalogCard.fees.annual.amount} compact textOnly/></DashedBadge>
+          <DashedBadge>PTN: <OwFeeAmount amount={catalogCard.fees.annual.amount} compact textOnly period="year"/></DashedBadge>
         )
       )}
 

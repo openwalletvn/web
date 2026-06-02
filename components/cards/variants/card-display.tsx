@@ -128,7 +128,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                     <p className="heading-6 text-base">{card.name}</p>
                     {fee && card.fees?.annual != null && (
                         <p className="text-sm text-slate-500">
-                            <OwFeeAmount amount={card.fees.annual.amount}/>
+                            <OwFeeAmount amount={card.fees.annual.amount} period="year"/>
                         </p>
                     )}
                     <OwBadges className="mt-1">
@@ -238,7 +238,7 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
 
     const feeLabel = card.fees?.annual == null
         ? null
-        : <OwFeeAmount amount={card.fees.annual.amount} textOnly/>;
+        : <OwFeeAmount amount={card.fees.annual.amount} textOnly period="year"/>;
 
     const content = (
         <>

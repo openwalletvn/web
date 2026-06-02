@@ -104,7 +104,7 @@ function TiersTable({tiers}: { tiers: SpendTier[] }) {
                         </td>
                         <td className="py-1 pr-3 font-semibold text-slate-900">{formatRate(tier.rate)}</td>
                         <td className="py-1 text-slate-700">
-                            {tier.cap != null ? <OwFeeAmount amount={tier.cap} compact textOnly period=""/> : 'Không giới hạn'}
+                            {tier.cap != null ? <OwFeeAmount amount={tier.cap} compact textOnly/> : 'Không giới hạn'}
                         </td>
                     </tr>
                 ))}
@@ -132,7 +132,7 @@ function CategoryCaps({
                 return (
                     <div key={slug} className="flex items-center justify-between text-xs text-slate-700">
                         <span>{label}</span>
-                        <span className="font-medium"><OwFeeAmount amount={amount} compact textOnly period=""/></span>
+                        <span className="font-medium"><OwFeeAmount amount={amount} compact textOnly/></span>
                     </div>
                 );
             })}
@@ -243,7 +243,7 @@ export function OwCardCashbackRule({rule, intentMap, merchantMap}: OwCardCashbac
                             <IconCurrencyDollar className="w-3.5 h-3.5 text-slate-400"/>
                             {rule.cap.amount === -1
                                 ? 'Hoàn không giới hạn'
-                                : <>Tối đa {rule.cap_max ? <><OwFeeAmount amount={rule.cap.amount} compact textOnly period=""/> – <OwFeeAmount amount={rule.cap_max.amount} compact textOnly period="kỳ sao kê"/></> : <OwFeeAmount amount={rule.cap.amount} compact textOnly period="kỳ sao kê"/>}</>}
+                                : <>Tối đa {rule.cap_max ? <><OwFeeAmount amount={rule.cap.amount} compact textOnly/> – <OwFeeAmount amount={rule.cap_max.amount} compact textOnly period="statementperiod"/></> : <OwFeeAmount amount={rule.cap.amount} compact textOnly period="statementperiod"/>}</>}
                         </div>
                         {rule.cap.category_caps && (
                             <CategoryCaps categoryCaps={rule.cap.category_caps} intentMap={intentMap}/>

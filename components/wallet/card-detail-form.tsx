@@ -260,7 +260,7 @@ export function CardDetailForm({
               <ApiInfoRow
                 label="Phí thường niên"
                 value={
-                  <OwFeeAmount amount={card.fees.annual.amount}/>
+                  <OwFeeAmount amount={card.fees.annual.amount} period="year"/>
                 }
               />
             )}
