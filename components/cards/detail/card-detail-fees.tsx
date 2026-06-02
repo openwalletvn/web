@@ -1,7 +1,12 @@
-import type {Bank, FeeEntryWithWaiver, FeeWaiver} from '@/lib/api';
+import type {Bank, FeeEntry, FeeEntryWithWaiver, FeeWaiver} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
-import { cn } from '@/lib/utils';
-import { FeeDisplay } from '../fee-display';
+import { OwAmount } from '@/components/ow-ui/ow-amount';
+
+function FeeValue({ entry }: { entry?: FeeEntry | null }) {
+    if (!entry) return <span className="ow-amount text-body-md text-slate-400">—</span>;
+    if (entry.amount === 0) return <span className="ow-amount text-body-md text-green-600">Miễn phí</span>;
+    return <OwAmount amount={entry.amount} unit={entry.type === 'currency' ? 'vnd' : 'percent'} />;
+}
 
 function NoteLines({ note }: { note: string }) {
     const lines = note.split('|').map((l) => l.trim()).filter(Boolean);
@@ -75,7 +80,7 @@ export function CardDetailFees({ card }: Props) {
                 <div className="grid grid-cols-3 gap-x-4">
                     {/* Col 1: Phát hành */}
                     <div className="flex flex-col items-start gap-1">
-                        <FeeDisplay entry={fees.issuance} />
+                        <FeeValue entry={fees.issuance} />
                         {fees.issuance?.note && <NoteLines note={fees.issuance.note} />}
                     </div>
 
@@ -83,14 +88,14 @@ export function CardDetailFees({ card }: Props) {
                     <div className="flex flex-col items-center text-center gap-1">
                         {annual ? (
                             <>
-                                <FeeDisplay entry={annual} />
+                                <FeeValue entry={annual} />
                                 {annual.first_year && (
                                     <WaiverDisplay waiver={annual.first_year} />
                                 )}
                                 {annual.note && <NoteLines note={annual.note} />}
                             </>
                         ) : (
-                            <FeeDisplay entry={null} />
+                            <FeeValue entry={null} />
                         )}
                     </div>
 
@@ -98,13 +103,13 @@ export function CardDetailFees({ card }: Props) {
                     <div className="flex flex-col items-end text-right gap-1">
                         {annual ? (
                             <>
-                                <FeeDisplay entry={annual} />
+                                <FeeValue entry={annual} />
                                 {annual.subsequent_years && (
                                     <WaiverDisplay waiver={annual.subsequent_years} />
                                 )}
                             </>
                         ) : (
-                            <FeeDisplay entry={null} />
+                            <FeeValue entry={null} />
                         )}
                     </div>
                 </div>

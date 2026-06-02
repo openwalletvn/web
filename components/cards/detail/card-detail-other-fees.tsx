@@ -1,7 +1,6 @@
-import type { Bank, FeeEntry } from '@/lib/api';
+import type {Bank, FeeEntry} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
-import { cn } from '@/lib/utils';
-import { FeeDisplay } from '../fee-display';
+import {OwAmount} from '@/components/ow-ui/ow-amount';
 
 function NoteLines({ note }: { note: string }) {
     const lines = note.split('|').map((l) => l.trim()).filter(Boolean);
@@ -14,19 +13,22 @@ function NoteLines({ note }: { note: string }) {
     );
 }
 
+function FeeValue({entry}: { entry?: FeeEntry | null }) {
+    if (!entry) return <span className="ow-amount text-body-md text-slate-400">—</span>;
+    if (entry.amount === 0) return <span className="ow-amount text-body-md text-green-600">Miễn phí</span>;
+    return <OwAmount amount={entry.amount} unit={entry.type === 'currency' ? 'vnd' : 'percent'}/>;
+}
+
 function FeeBox({
     label,
     entry,
-    red,
 }: {
     label: string;
     entry?: FeeEntry | null;
-    red?: boolean;
 }) {
-    const free = entry && entry.amount === 0;
     return (
         <div className="border border-slate-200 rounded-lg px-4 py-4 flex flex-col items-center text-center gap-1">
-            <FeeDisplay entry={entry} className={red && entry && entry.amount > 0 ? 'text-brand-red' : undefined} />
+            <FeeValue entry={entry}/>
             <p className="text-xs text-slate-700 mt-0.5">{label}</p>
             {entry?.note && <NoteLines note={entry.note} />}
             {!entry && (
@@ -54,7 +56,6 @@ export function CardDetailOtherFees({ card }: Props) {
             <FeeBox
                 label="Phí hủy thẻ"
                 entry={fees.cancellation}
-                red
             />
             <FeeBox
                 label="Ngoại tệ"
