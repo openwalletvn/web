@@ -1495,6 +1495,43 @@ export interface components {
                 };
             };
         };
+        /** @description Cashback engine output for a spend profile. by_intent is keyed by intent slug; by_card is keyed by card ID. */
+        SpendProfileResult: {
+            total_spend?: number;
+            total_cashback?: number;
+            /** @description Blended cashback rate = total_cashback / total_spend. */
+            effective_rate?: number;
+            by_intent?: {
+                [key: string]: {
+                    intent?: string;
+                    budget?: number;
+                    best_card_id?: string;
+                    best_rule_key?: string;
+                    rate?: number;
+                    cashback?: number;
+                    optimal_spend?: number;
+                    alternatives?: {
+                        card_id?: string;
+                        rule_key?: string;
+                        rate?: number;
+                        cashback?: number;
+                    }[];
+                };
+            };
+            by_card?: {
+                [key: string]: {
+                    card_id?: string;
+                    spend?: number;
+                    cashback?: number;
+                    intents?: string[];
+                    breakdown?: Record<string, never>[];
+                    notes?: string[];
+                };
+            };
+            /** @description Detailed per-rule status report. */
+            rule_report?: Record<string, never>[];
+            suggestions?: string[];
+        };
     };
     responses: never;
     parameters: never;
@@ -1701,6 +1738,8 @@ export interface operations {
                                 /** @description Cashback minus prorated annual fee (monthly). */
                                 net_benefit?: number;
                             };
+                            /** @description Full cashback engine result scoped to this card only, using the same intents and spend as the ranking request. Same shape as POST /cashback response data. null when the engine errored for this card. */
+                            cashback_breakdown?: components["schemas"]["SpendProfileResult"] | null;
                         }[];
                         meta?: {
                             /** @description Total cards before limit */
@@ -2147,42 +2186,7 @@ export interface operations {
                 content: {
                     "application/json": {
                         success?: boolean;
-                        data?: {
-                            total_spend?: number;
-                            total_cashback?: number;
-                            /** @description Blended cashback rate = total_cashback / total_spend. */
-                            effective_rate?: number;
-                            by_intent?: {
-                                [key: string]: {
-                                    intent?: string;
-                                    budget?: number;
-                                    best_card_id?: string;
-                                    best_rule_key?: string;
-                                    rate?: number;
-                                    cashback?: number;
-                                    optimal_spend?: number;
-                                    alternatives?: {
-                                        card_id?: string;
-                                        rule_key?: string;
-                                        rate?: number;
-                                        cashback?: number;
-                                    }[];
-                                };
-                            };
-                            by_card?: {
-                                [key: string]: {
-                                    card_id?: string;
-                                    spend?: number;
-                                    cashback?: number;
-                                    intents?: string[];
-                                    breakdown?: Record<string, never>[];
-                                    notes?: string[];
-                                };
-                            };
-                            /** @description Detailed per-rule status report. */
-                            rule_report?: Record<string, never>[];
-                            suggestions?: string[];
-                        };
+                        data?: components["schemas"]["SpendProfileResult"];
                     };
                 };
             };
