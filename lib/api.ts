@@ -419,7 +419,6 @@ export type CompareCardEntry = {
     card_name: string;
     bank_id: string;
     network: string;
-    cashback_breakdown: unknown[];
     cashback_reason?: string;
     intents_used: string[];
 };
@@ -443,5 +442,46 @@ export async function compareCards(
     });
     const json = (await res.json()) as { success: boolean; data: CompareResult };
     if (!json.success) throw new Error('Failed to compare cards');
+    return json.data;
+}
+
+export type CashbackByIntent = {
+    intent?: string;
+    budget?: number;
+    best_card_id?: string;
+    rate?: number;
+    cashback?: number;
+    optimal_spend?: number;
+};
+
+export type CashbackByCard = {
+    card_id?: string;
+    spend?: number;
+    cashback?: number;
+    intents?: string[];
+    notes?: string[];
+};
+
+export type CashbackResult = {
+    total_spend?: number;
+    total_cashback?: number;
+    effective_rate?: number;
+    by_intent?: Record<string, CashbackByIntent>;
+    by_card?: Record<string, CashbackByCard>;
+    suggestions?: string[];
+};
+
+export async function postCashback(params: {
+    total_spend?: number;
+    intents?: string[];
+    cards?: string[];
+}): Promise<CashbackResult> {
+    const res = await apiFetch('/api/v1/cashback', {
+        method: 'POST',
+        body: JSON.stringify(params),
+        headers: { 'Content-Type': 'application/json' },
+    });
+    const json = (await res.json()) as { success: boolean; data: CashbackResult };
+    if (!json.success) throw new Error('Failed to compute cashback');
     return json.data;
 }

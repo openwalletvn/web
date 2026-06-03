@@ -1,24 +1,5 @@
 import type { Card } from '@/lib/api';
 
-export type IntentBreakdownItem = {
-    intent: string;
-    cashback: number;
-    is_capped: boolean;
-};
-
-export type CashbackBreakdownItem = {
-    cashback: number;
-    spend?: number;
-    rate: number;
-    rate_max?: number;
-    intents?: string[];
-    merchants?: string[];
-    is_catchall: boolean;
-    matched_intents?: string[];
-    intent_breakdown?: IntentBreakdownItem[];
-    cashback_expired?: boolean;
-};
-
 export type RankedCard = {
     card: Card;
     rank: number;
@@ -27,7 +8,6 @@ export type RankedCard = {
     tiebreaker_delta?: number;
     cashback_result: {
         cashback: number;
-        breakdown?: CashbackBreakdownItem[];
-        cashback_expired?: boolean;
+        net_benefit?: number;
     };
 };
