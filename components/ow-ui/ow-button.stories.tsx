@@ -9,7 +9,7 @@ const meta: Meta<typeof OwButton> = {
     parameters: {
         docs: {
             description: {
-                component: 'Brand button component. Supports `default` and `primary` colors, `sm` and `md` sizes. Use `active` for toggled-on state, `disabled` for unavailable.',
+                component: 'Brand button component. Supports `default` and `outline` colors, `sm`, `md`, and `full` sizes. Use `active` for toggled-on state, `disabled` for unavailable.',
             },
         },
     },
@@ -30,28 +30,34 @@ type Story = StoryObj<typeof OwButton>;
 export const Overview: Story = {
     render: () => (
         <OwStories>
-            <OwStorySection title="Default / Primary">
+            <OwStorySection title="Default / Outline">
                 <div className="flex flex-wrap items-center gap-4">
                     <OwButton color="default" size="md">Xem tất cả thẻ</OwButton>
-                    <OwButton color="primary" size="md">Tìm thẻ phù hợp</OwButton>
+                    <OwButton color="outline" size="md">Tìm thẻ phù hợp</OwButton>
                 </div>
             </OwStorySection>
             <OwStorySection title="Small">
                 <div className="flex flex-wrap items-center gap-4">
                     <OwButton color="default" size="sm">Xem thêm</OwButton>
-                    <OwButton color="primary" size="sm">So sánh ngay</OwButton>
+                    <OwButton color="outline" size="sm">So sánh ngay</OwButton>
                 </div>
             </OwStorySection>
             <OwStorySection title="Active">
                 <div className="flex flex-wrap items-center gap-4">
                     <OwButton color="default" size="md" active>Đã chọn</OwButton>
-                    <OwButton color="primary" size="sm" active>Đang so sánh</OwButton>
+                    <OwButton color="outline" size="sm" active>Đang so sánh</OwButton>
+                </div>
+            </OwStorySection>
+            <OwStorySection title="Full">
+                <div className="flex flex-col gap-4 w-full max-w-sm">
+                    <OwButton color="default" size="full">Xem tất cả thẻ</OwButton>
+                    <OwButton color="outline" size="full">Tìm thẻ phù hợp</OwButton>
                 </div>
             </OwStorySection>
             <OwStorySection title="Disabled">
                 <div className="flex flex-wrap items-center gap-4">
                     <OwButton color="default" size="md" disabled>Không khả dụng</OwButton>
-                    <OwButton color="primary" size="sm" disabled>Đã đủ 3 thẻ</OwButton>
+                    <OwButton color="outline" size="sm" disabled>Đã đủ 3 thẻ</OwButton>
                 </div>
             </OwStorySection>
         </OwStories>
@@ -62,20 +68,20 @@ export const Overview: Story = {
 
 export const Default: Story = {};
 
-export const Primary: Story = {
-    args: {color: 'primary'},
+export const Outline: Story = {
+    args: {color: 'outline'},
 };
 
 export const Small: Story = {
     args: {size: 'sm'},
 };
 
-export const SmallPrimary: Story = {
-    args: {color: 'primary', size: 'sm'},
+export const SmallOutline: Story = {
+    args: {color: 'outline', size: 'sm'},
 };
 
 export const Active: Story = {
-    args: {color: 'primary', active: true, children: 'Đang so sánh'},
+    args: {color: 'outline', active: true, children: 'Đang so sánh'},
 };
 
 export const ActiveDefault: Story = {
@@ -86,6 +92,14 @@ export const Disabled: Story = {
     args: {disabled: true},
 };
 
-export const DisabledPrimary: Story = {
-    args: {color: 'primary', disabled: true},
+export const DisabledOutline: Story = {
+    args: {color: 'outline', disabled: true},
+};
+
+export const Full: Story = {
+    args: {size: 'full'},
+};
+
+export const FullOutline: Story = {
+    args: {color: 'outline', size: 'full'},
 };

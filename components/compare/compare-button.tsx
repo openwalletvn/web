@@ -27,7 +27,7 @@ export function CompareButton({card}: Props) {
 
     return (
         <OwButton
-            color="primary"
+            color="outline"
             size="sm"
             active={inList}
             disabled={disabled}
