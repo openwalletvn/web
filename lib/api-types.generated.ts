@@ -143,26 +143,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cards/{id}/cashback": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Calculate cashback for a card
-         * @description Computes cashback for a specific card given a monthly spend amount and optional intent list. Returns per-rule breakdown, intent-level detail (when category caps apply), and advisory notes (e.g. when optimal spend falls below min_spend_per_period).
-         */
-        post: operations["calcCardCashback"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/contactless": {
         parameters: {
             query?: never;
@@ -297,6 +277,26 @@ export interface paths {
         get: operations["getComparePairs"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cashback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Compute cashback for a spend profile
+         * @description Computes cashback allocation across one or more cards. Pass `cards: [id]` for single-card detail, multiple IDs to compare a subset, or omit `cards` entirely to evaluate all cards. Returns per-intent best card, per-card allocation with breakdown, and a rule-level report.
+         */
+        post: operations["postCashback"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1700,8 +1700,6 @@ export interface operations {
                                 cashback?: number;
                                 /** @description Cashback minus prorated annual fee (monthly). */
                                 net_benefit?: number;
-                                /** @description Per-rule cashback breakdown. */
-                                breakdown?: Record<string, never>[];
                             };
                         }[];
                         meta?: {
@@ -1770,13 +1768,12 @@ export interface operations {
                             intents_context?: string[] | null;
                             /** @description Intent slugs shared by all compared cards. */
                             intent_overlap: string[];
-                            /** @description Per-card metadata and cashback breakdown. */
+                            /** @description Per-card metadata. */
                             cards: {
                                 card_id: string;
                                 card_name: string;
                                 bank_id: string;
                                 network: string;
-                                cashback_breakdown: Record<string, never>[];
                                 cashback_reason?: string | null;
                                 intents_used: string[];
                             }[];
@@ -1896,106 +1893,6 @@ export interface operations {
                         };
                     };
                 };
-            };
-            /** @description Card not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    calcCardCashback: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Card ID */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    /** @description Intent slugs to calculate for. Defaults to the card's own intents when omitted. */
-                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "shopee-food" | "grab-food" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
-                    /**
-                     * @description Total monthly spend in VND. Default 3,000,000.
-                     * @example 3000000
-                     */
-                    monthly_spend?: number;
-                    /** @description Explicit per-intent spend in VND (e.g. {"dining": 2000000, "travel": 1000000}). Overrides monthly_spend and intents when provided. */
-                    spend_profile?: {
-                        [key: string]: number;
-                    };
-                };
-            };
-        };
-        responses: {
-            /** @description Success */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        success?: boolean;
-                        data?: {
-                            card_id: string;
-                            intents: string[];
-                            monthly_spend: number;
-                            /** @enum {string} */
-                            spend_mode: "sequential" | "maximize";
-                            /** @description Cashback computation result. */
-                            cashback: {
-                                /** @description Total cashback in VND after all caps applied. */
-                                cashback: number;
-                                /** @description Effective cashback rate as a percentage (e.g. 4.5 = 4.5%). */
-                                actualRate: number;
-                                /** @description Spend at which cashback is maximized for the top rule (0 = uncapped). */
-                                optimalSpend: number;
-                                /** @description Per-rule cashback breakdown. Matched rules appear first; unmatched intents are appended as zero-cashback rows (rate: 0, cashback: 0) so consumers see the full spend picture. */
-                                breakdown: {
-                                    cashback: number;
-                                    spend: number;
-                                    rate: number;
-                                    intents?: string[] | null;
-                                    merchants?: string[] | null;
-                                    is_catchall: boolean;
-                                    /** @description True when this rule is outside its valid_from/valid_until window. Cashback is 0; spend is not consumed. */
-                                    cashback_expired?: boolean;
-                                    matched_intents?: string[];
-                                    /** @description Per-intent cashback split within this rule. Only present when the rule has category_caps. */
-                                    intent_breakdown?: {
-                                        intent: string;
-                                        cashback: number;
-                                        spend: number;
-                                        /** @description True when this intent hit its per-category subcap. */
-                                        is_capped: boolean;
-                                    }[] | null;
-                                }[];
-                                /** @description Explanation for zero or package-selected cashback. */
-                                reason?: {
-                                    /** @enum {string} */
-                                    reason_type: "no_rules" | "min_spend_not_met" | "no_matching_intents" | "package_selected";
-                                    /** @description Human-readable explanation. */
-                                    reason: string;
-                                } | null;
-                                /** @description Advisory notes for the consumer. Fires when optimal cashback spend across all rules is less than min_spend_per_period - informing the consumer that some spend must go to non-cashback categories to meet the monthly minimum. */
-                                notes?: string[] | null;
-                            };
-                        };
-                    };
-                };
-            };
-            /** @description Bad request - no intents on card and none provided in body */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Card not found */
             404: {
@@ -2216,6 +2113,85 @@ export interface operations {
                         };
                     };
                 };
+            };
+        };
+    };
+    postCashback: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /**
+                     * @description Total monthly spend in VND to distribute across cards.
+                     * @example 3000000
+                     */
+                    total_spend?: number;
+                    /** @description Intent slug strings. Plain slug (e.g. "dining") distributes total_spend evenly. Slug with amount (e.g. "dining:2000000") sets explicit per-intent spend. */
+                    intents?: ("shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "shopee-food" | "grab-food" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books")[];
+                    /** @description Card IDs to evaluate. Pass one ID for single-card detail, multiple for subset comparison. Omit to evaluate all cards. */
+                    cards?: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description Success */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success?: boolean;
+                        data?: {
+                            total_spend?: number;
+                            total_cashback?: number;
+                            /** @description Blended cashback rate = total_cashback / total_spend. */
+                            effective_rate?: number;
+                            by_intent?: {
+                                [key: string]: {
+                                    intent?: string;
+                                    budget?: number;
+                                    best_card_id?: string;
+                                    best_rule_key?: string;
+                                    rate?: number;
+                                    cashback?: number;
+                                    optimal_spend?: number;
+                                    alternatives?: {
+                                        card_id?: string;
+                                        rule_key?: string;
+                                        rate?: number;
+                                        cashback?: number;
+                                    }[];
+                                };
+                            };
+                            by_card?: {
+                                [key: string]: {
+                                    card_id?: string;
+                                    spend?: number;
+                                    cashback?: number;
+                                    intents?: string[];
+                                    breakdown?: Record<string, never>[];
+                                    notes?: string[];
+                                };
+                            };
+                            /** @description Detailed per-rule status report. */
+                            rule_report?: Record<string, never>[];
+                            suggestions?: string[];
+                        };
+                    };
+                };
+            };
+            /** @description Invalid request body */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
