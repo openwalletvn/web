@@ -2,15 +2,14 @@
 import * as React from 'react';
 import type {CashbackResult} from '@/lib/api';
 import {IconAlertTriangle, IconLoader2, IconSparkles} from '@tabler/icons-react';
+import {OwRangeSlider} from '@/components/ow-ui/ow-range-slider';
+import {OwAmount, formatOwAmount} from '@/components/ow-ui/ow-amount';
 
-const SPEND_STEPS = [1_000_000, 2_000_000, 3_000_000, 5_000_000, 7_000_000, 10_000_000, 15_000_000, 20_000_000];
-const DEFAULT_STEP = 2;
+const SPEND_MIN = 500_000;
+const SPEND_MAX = 20_000_000;
+const SPEND_STEP = 500_000;
+const SPEND_DEFAULT = 3_000_000;
 
-function fmtVnd(n: number): string {
-    if (n >= 1_000_000) return `${Math.round(n / 100_000) / 10}tr`;
-    if (n >= 1_000) return `${Math.round(n / 1_000)}k`;
-    return `${n}đ`;
-}
 
 function fmtPct(n: number): string {
     return `${Math.round(n * 10000) / 100}%`;
@@ -25,13 +24,12 @@ interface Props {
 }
 
 export function CashbackCalculator({cardId, cardIntents, intentMap}: Props) {
-    const [stepIdx, setStepIdx] = React.useState(DEFAULT_STEP);
+    const [totalSpend, setTotalSpend] = React.useState(SPEND_DEFAULT);
     const [selected, setSelected] = React.useState<Set<string>>(new Set(cardIntents));
     const [result, setResult] = React.useState<CashbackResult | null>(null);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState(false);
 
-    const totalSpend = SPEND_STEPS[stepIdx];
     const intents = [...selected];
 
     React.useEffect(() => {
@@ -93,18 +91,17 @@ export function CashbackCalculator({cardId, cardIntents, intentMap}: Props) {
                     <span>Chi tiêu / tháng</span>
                     <span className="font-semibold text-black">{totalSpend.toLocaleString('vi-VN')}đ</span>
                 </div>
-                <input
-                    type="range"
-                    min={0}
-                    max={SPEND_STEPS.length - 1}
-                    step={1}
-                    value={stepIdx}
-                    onChange={e => setStepIdx(Number(e.target.value))}
-                    className="w-full accent-red-500"
+                <OwRangeSlider
+                    min={SPEND_MIN}
+                    max={SPEND_MAX}
+                    step={SPEND_STEP}
+                    value={totalSpend}
+                    onChange={setTotalSpend}
+                    formatTooltip={v => formatOwAmount(v, 'k')}
                 />
                 <div className="flex justify-between text-[10px] text-text-muted/60">
-                    <span>{fmtVnd(SPEND_STEPS[0])}</span>
-                    <span>{fmtVnd(SPEND_STEPS[SPEND_STEPS.length - 1])}</span>
+                    <OwAmount amount={SPEND_MIN} unit="k" textOnly/>
+                    <OwAmount amount={SPEND_MAX} unit="k" textOnly/>
                 </div>
             </div>
 
@@ -170,7 +167,7 @@ export function CashbackCalculator({cardId, cardIntents, intentMap}: Props) {
                                                 <span>{meta?.label ?? slug}</span>
                                             </span>
                                             <span className="text-slate-700">
-                                                {v.budget != null && <span className="text-text-muted mr-1">{fmtVnd(v.budget)} →</span>}
+                                                {v.budget != null && <span className="text-text-muted mr-1"><OwAmount amount={v.budget} unit="k" textOnly/> →</span>}
                                                 <span className="font-medium">{(v.cashback ?? 0).toLocaleString('vi-VN')}đ</span>
                                                 {v.rate != null && <span className="text-text-muted ml-1">({fmtPct(v.rate)})</span>}
                                             </span>

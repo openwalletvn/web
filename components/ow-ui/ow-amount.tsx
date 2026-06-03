@@ -38,6 +38,12 @@ function formatAmount(amount: number, unit: UnitKey | undefined): { value: strin
     return {value: amount.toLocaleString('vi-VN'), suffix: null};
 }
 
+export function formatOwAmount(amount: number, unit?: UnitKey, period?: PeriodKey | string | null): string {
+    const {value, suffix} = formatAmount(amount, unit);
+    const resolvedPeriod = resolvePeriod(period);
+    return `${value}${suffix ?? ''}${resolvedPeriod ? `/${resolvedPeriod}` : ''}`;
+}
+
 export function OwAmount({amount, unit, period, textOnly = false, large = false}: Props) {
     const {value, suffix} = formatAmount(amount, unit);
     const resolvedPeriod = resolvePeriod(period);

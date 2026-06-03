@@ -1,6 +1,6 @@
 'use client';
 
-import {Slider} from 'radix-ui';
+import {Slider, Tooltip} from 'radix-ui';
 import {cn} from '@/lib/utils';
 import {OwLogo} from '@/components/ow-ui/ow-logo';
 
@@ -12,9 +12,19 @@ export interface OwRangeSliderProps {
     onChange: (value: number) => void;
     disabled?: boolean;
     className?: string;
+    formatTooltip?: (value: number) => string;
 }
 
-export function OwRangeSlider({min = 0, max = 100, step = 1, value, onChange, disabled, className}: OwRangeSliderProps) {
+export function OwRangeSlider({min = 0, max = 100, step = 1, value, onChange, disabled, className, formatTooltip}: OwRangeSliderProps) {
+    const thumb = (
+        <Slider.Thumb
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-primary shadow-sm outline-none cursor-grab active:cursor-grabbing hover:bg-primary/90 hover:shadow-md active:scale-95 focus-visible:ring-2 focus-visible:ring-primary/40 transition-all duration-150"
+            aria-label="Chi tiêu hàng tháng"
+        >
+            <OwLogo variant="icon" href={null} className="w-5 h-5 [&_img]:brightness-0 [&_img]:invert"/>
+        </Slider.Thumb>
+    );
+
     return (
         <Slider.Root
             className={cn('ow-range-slider relative flex items-center w-full h-5 select-none touch-none', className)}
@@ -28,12 +38,23 @@ export function OwRangeSlider({min = 0, max = 100, step = 1, value, onChange, di
             <Slider.Track className="relative grow h-[6px] rounded-full bg-border">
                 <Slider.Range className="absolute h-full rounded-full bg-primary"/>
             </Slider.Track>
-            <Slider.Thumb
-                className="flex items-center justify-center w-8 h-8 rounded-full bg-primary shadow-sm outline-none cursor-grab active:cursor-grabbing hover:bg-primary/90 hover:shadow-md active:scale-95 focus-visible:ring-2 focus-visible:ring-primary/40 transition-all duration-150"
-                aria-label="Chi tiêu hàng tháng"
-            >
-                <OwLogo variant="icon" href={null} className="w-5 h-5 [&_img]:brightness-0 [&_img]:invert"/>
-            </Slider.Thumb>
+            {formatTooltip ? (
+                <Tooltip.Provider>
+                    <Tooltip.Root open>
+                        <Tooltip.Trigger asChild>{thumb}</Tooltip.Trigger>
+                        <Tooltip.Portal>
+                            <Tooltip.Content
+                                side="top"
+                                sideOffset={6}
+                                className="px-2 py-0.5 rounded bg-primary text-white text-xs font-semibold shadow-sm select-none"
+                            >
+                                {formatTooltip(value)}
+                                <Tooltip.Arrow className="fill-primary"/>
+                            </Tooltip.Content>
+                        </Tooltip.Portal>
+                    </Tooltip.Root>
+                </Tooltip.Provider>
+            ) : thumb}
         </Slider.Root>
     );
 }
