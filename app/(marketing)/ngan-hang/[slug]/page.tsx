@@ -4,11 +4,11 @@ import Link from 'next/link';
 import {cn} from '@/lib/utils';
 import {getBank, getBankImageUrl, getBanks, getCards} from '@/lib/api';
 import {ChatContextSetter} from '@/components/chat/chat-context-setter';
-import {Breadcrumbs} from '@/components/layout/breadcrumbs';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {NetworkDistributionBar} from '@/components/shared/network-distribution-bar';
 import {buildBankPageMeta} from '@/lib/page-meta/bank';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
+import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 export async function generateStaticParams() {
     try {
@@ -45,12 +45,10 @@ export default async function BankPage({params}: Props) {
         bank = await getBank(slug);
     } catch {
         return (
-            <div className="flex items-center justify-center py-32 px-4">
-                <div className="text-center">
-                    <p className="heading-3 mb-4">Không tìm thấy ngân hàng</p>
-                    <Link href="/ngan-hang" className="text-brand-red hover:underline">← Quay lại Ngân hàng</Link>
-                </div>
-            </div>
+            <MarketingPageShell title="Không tìm thấy" breadcrumbItems={[{label: 'Trang chủ', href: '/'}, {label: 'Ngân hàng', href: '/ngan-hang'}, {label: 'Không tìm thấy'}]}>
+                <p className="heading-3 mb-4">Không tìm thấy ngân hàng</p>
+                <Link href="/ngan-hang" className="text-brand-red hover:underline">← Quay lại Ngân hàng</Link>
+            </MarketingPageShell>
         );
     }
 
@@ -70,10 +68,8 @@ export default async function BankPage({params}: Props) {
 
     return (
         <>
-        <div className="px-4 py-12">
-            <div className="ow-container space-y-16">
-                <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}/>
-                <Breadcrumbs items={breadcrumbItems}/>
+        <MarketingPageShell breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
+            <div className="space-y-16">
 
                 {/* Bank Identity */}
                 <div className="flex items-start gap-12">
@@ -156,7 +152,7 @@ export default async function BankPage({params}: Props) {
                                title={`Thẻ doanh nghiệp (${businessCards.length})`}/>
                 )}
             </div>
-        </div>
+        </MarketingPageShell>
         <ChatContextSetter context={{
             type: 'bank',
             bankId: bank.id,
