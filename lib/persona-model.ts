@@ -249,8 +249,10 @@ export class PersonaModel {
     }
 
     getEmoji(): string[] {
-        return this.getRankIntents()
-            .map(slug => INTENT_ICON[slug])
-            .filter((icon): icon is string => icon !== undefined);
+        return [...new Set(
+            this.getRankIntents()
+                .map(slug => INTENT_ICON[slug])
+                .filter((icon): icon is string => icon !== undefined)
+        )];
     }
 }

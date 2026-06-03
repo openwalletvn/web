@@ -2,12 +2,11 @@ import Link from 'next/link';
 import type {CashbackRule, Intent} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
 import {CATCHALL_SLUGS} from '@/lib/card-display-utils';
-import {IconAlertTriangle} from '@tabler/icons-react';
+import {IconAlertTriangle, IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
 import {CardModel} from '@/lib/card-model';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwRankBadge} from '@/components/ow-ui/ow-rank-badge';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
-import {IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
 
