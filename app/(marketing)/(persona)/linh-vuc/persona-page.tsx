@@ -6,6 +6,8 @@ import {BrowsePersonas} from '@/components/marketing/browse-categories';
 import {PersonaPoolCards} from '@/components/marketing/persona-pool-cards';
 import {PersonaFAQ, PersonaIntro} from '@/components/marketing/category-seo-section';
 
+export const revalidate = 3600;
+
 export async function PersonaPage({config}: { config: IntentCategoryConfig }) {
     const [poolCards, initialRanked] = await Promise.all([
         getCards({persona: config.personaSlug}),

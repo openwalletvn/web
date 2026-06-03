@@ -8,6 +8,8 @@ import Link from 'next/link';
 import {OwButton} from '@/components/ow-ui/ow-button';
 import {OwWobbleCard} from '@/components/ow-ui/ow-wobble-card';
 
+export const revalidate = 3600;
+
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
     {label: 'Lĩnh vực'},

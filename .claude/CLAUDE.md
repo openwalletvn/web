@@ -30,6 +30,16 @@ When asked to "edit local api repo" → work in `../api`. "edit local mcp repo" 
 3. **Vietnamese-first** — UI/content targets Vietnamese users. Technical terms stay English.
 4. **SEO-first** — every public page has JSON-LD, OG metadata, sitemap entries.
 
+## ISR revalidation (required for all marketing pages)
+
+Every `app/(marketing)/**/page.tsx` that calls any API fetch **must** export:
+
+```ts
+export const revalidate = 3600;
+```
+
+Without this, pages are pure dynamic SSR — every request hits the API live. On Vercel, a slow or cold API response causes a function timeout → error page. With `revalidate`, Vercel pre-renders at build time and serves cached HTML, revalidating in the background. Reload-fixes-it is the symptom of a missing `revalidate`.
+
 ## Breadcrumbs
 
 Every marketing page **must** include breadcrumb JSON-LD via `buildBreadcrumbJsonLd()` from `lib/page-meta/breadcrumb.ts`. Pass `breadcrumbItems` into the page's `<JsonLd>` component.

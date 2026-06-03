@@ -7,6 +7,8 @@ import {ROUTES} from '@/lib/routes';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import {BANK_GROUP_LABELS, BANK_GROUP_ORDER} from '@/lib/bank-groups';
 
+export const revalidate = 3600;
+
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
     {label: 'Ngân hàng'},

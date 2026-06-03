@@ -6,6 +6,8 @@ import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {ROUTES} from '@/lib/routes';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 
+export const revalidate = 3600;
+
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
     {label: 'Thẻ'},

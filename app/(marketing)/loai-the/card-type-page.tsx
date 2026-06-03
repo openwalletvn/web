@@ -7,6 +7,8 @@ import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import {ROUTES} from '@/lib/routes';
 
+export const revalidate = 3600;
+
 export interface CardTypePageConfig {
     type: CardType;
     slug: string;

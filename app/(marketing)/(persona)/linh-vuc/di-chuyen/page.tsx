@@ -3,6 +3,8 @@ import {getCards} from '@/lib/api';
 import {generateIntentCategoryMetadata, type IntentCategoryConfig} from '@/lib/page-meta/intent-category';
 import {PersonaPage} from '../persona-page';
 
+export const revalidate = 3600;
+
 const L = ({href, children}: {href: string; children: string}) => (
     <a href={href} className="text-link">{children}</a>
 );

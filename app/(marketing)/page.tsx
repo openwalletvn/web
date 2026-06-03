@@ -14,6 +14,8 @@ import {PersonaCategories} from '@/components/marketing/persona-categories';
 import {GradientShader} from "@/components/shared/gradient-shader";
 import {CardMatchFinder} from '@/components/match/card-match-finder';
 
+export const revalidate = 3600;
+
 export default async function HomePage() {
     const [banks, cards, personas, intents] = await Promise.all([
         getBanks().catch(() => []),

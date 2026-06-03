@@ -22,6 +22,8 @@ import {CardDetailRankBadges} from '@/components/cards/detail/card-detail-rank-b
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 import {CompareButton} from '@/components/compare/compare-button';
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
     try {
         const cards = await getCards();

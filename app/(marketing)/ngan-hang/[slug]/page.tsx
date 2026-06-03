@@ -10,6 +10,8 @@ import {buildBankPageMeta} from '@/lib/page-meta/bank';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
     try {
         const banks = await getBanks();

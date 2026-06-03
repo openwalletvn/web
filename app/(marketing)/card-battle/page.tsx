@@ -8,6 +8,8 @@ import {getTool} from '@/lib/tools';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {IntentMapProvider} from '@/lib/intent-map-context';
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
     title: buildTitle(SECTION_TITLES.compare),
 };

@@ -3,6 +3,8 @@ import {getCards} from '@/lib/api';
 import {generateIntentCategoryMetadata, type IntentCategoryConfig} from '@/lib/page-meta/intent-category';
 import {PersonaPage} from '../persona-page';
 
+export const revalidate = 3600;
+
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Doanh Nghiệp',
     description: 'So sánh thẻ tín dụng và ghi nợ dành cho doanh nghiệp, hộ kinh doanh tại Việt Nam. Tìm thẻ công ty phù hợp với quy mô và nhu cầu chi tiêu.',
