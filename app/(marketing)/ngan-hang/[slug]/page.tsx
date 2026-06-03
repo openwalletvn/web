@@ -61,8 +61,10 @@ export default async function BankPage({params}: Props) {
 
     const {jsonLd, breadcrumbItems} = buildBankPageMeta(bank, cards);
 
-    const creditCards = cards.filter((c) => c.card_type.includes('credit'));
-    const debitCards = cards.filter((c) => c.card_type.includes('debit'));
+    const hybridCards = cards.filter((c) => c.card_type.includes('hybrid'));
+    const hybridIds = new Set(hybridCards.map((c) => c.id));
+    const creditCards = cards.filter((c) => c.card_type.includes('credit') && !hybridIds.has(c.id));
+    const debitCards = cards.filter((c) => c.card_type.includes('debit') && !hybridIds.has(c.id));
     const cobrandCards = cards.filter((c) => c.co_brand && c.co_brand !== '');
     const businessCards = cards.filter((c) => c.for_business === true);
 
@@ -110,13 +112,14 @@ export default async function BankPage({params}: Props) {
                         const maxFee = bank.stats?.max_annual_fee;
                         const statsItems: { label: string; value: string }[] = [
                             {label: 'Tổng số thẻ', value: String(cards.length)},
-                            {label: 'Tín dụng', value: String(creditCards.length)},
-                            {label: 'Ghi nợ', value: String(debitCards.length)},
+                            ...(creditCards.length > 0 ? [{label: 'Tín dụng', value: String(creditCards.length)}] : []),
+                            ...(debitCards.length > 0 ? [{label: 'Ghi nợ', value: String(debitCards.length)}] : []),
+                            ...(hybridCards.length > 0 ? [{label: 'Hybrid', value: String(hybridCards.length)}] : []),
                             ...(maxFee && maxFee > 0
                                 ? [{label: 'Phí thường niên tối đa', value: `${maxFee.toLocaleString('vi-VN')}đ`}]
                                 : []),
                         ];
-                        const gridClass = statsItems.length === 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3';
+                        const gridClass = statsItems.length <= 3 ? `grid-cols-${statsItems.length}` : 'grid-cols-2 sm:grid-cols-4';
                         return (
                             <div className={cn('grid', gridClass, 'gap-3')}>
                                 {statsItems.map(({label, value}) => (
@@ -137,6 +140,10 @@ export default async function BankPage({params}: Props) {
 
                 {debitCards.length > 0 && (
                     <CardsGrid cards={debitCards} banks={banks} title={`Thẻ ghi nợ (${debitCards.length})`}/>
+                )}
+
+                {hybridCards.length > 0 && (
+                    <CardsGrid cards={hybridCards} banks={banks} title={`Thẻ hybrid (${hybridCards.length})`}/>
                 )}
 
                 {cobrandCards.length > 0 && (
