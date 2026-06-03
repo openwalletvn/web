@@ -93,7 +93,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
 
     return (
         <div
-            className={cn("ow-card-display flex flex-col gap-2 group relative cursor-pointer", className)}
+            className={cn("ow-card-display flex flex-col sm:gap-4 gap-3 group relative cursor-pointer", className)}
             style={{
                 // @ts-ignore
                 '--glow-color': bank?.brand_color ? hexToRgba(bank.brand_color, 0.45) : 'rgba(0,0,0,0.45)',
@@ -129,11 +129,14 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                 <div className="transition-opacity duration-150 group-hover:opacity-0 space-y-1">
                     <p className="heading-6 text-base">{card.name}</p>
                     {fee && card.fees?.annual != null && (
-                        <p className="text-sm text-slate-500">
+                        <p className="">
+                            {card.fees.annual.amount > 0 ?
                             <OwAmount amount={card.fees.annual.amount} unit="vnd" period="year"/>
+                                : <span className="text-green-500 text-sm">Miễn phí thường niên</span>
+                            }
                         </p>
                     )}
-                    <OwBadges className="mt-1">
+                    <OwBadges className="mt-2">
                         {status && card.status === 'discontinued' && (
                             <OwBadge small variant="discontinued"/>
                         )}

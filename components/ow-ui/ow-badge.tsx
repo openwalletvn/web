@@ -185,7 +185,7 @@ export function OwBadge(props: OwBadgeProps) {
                   className={cn(BASE_CLS, sizeCls, smallCls,
                       'border-dashed bg-amber-50 border-amber-400 text-amber-600',
                       className)}>
-                🚫 Dừng phát hành
+                💤 Dừng phát hành
             </span>
         );
     }
