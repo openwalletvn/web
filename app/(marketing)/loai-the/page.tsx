@@ -1,10 +1,10 @@
 import type {Metadata} from 'next';
-import Link from 'next/link';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import {ROUTES} from '@/lib/routes';
 import {CARD_TYPE_LABELS, CARD_TYPE_HEX, CARD_TYPE_ICON, CARD_TYPE_SLUGS} from '@/lib/card-model';
+import {OwWobbleCard} from '@/components/ow-ui/ow-wobble-card';
 import type {CardType} from '@/lib/api';
 
 const CARD_TYPE_DESCRIPTIONS: Partial<Record<CardType, string>> = {
@@ -62,19 +62,15 @@ export default function CardTypesPage() {
             jsonLd={jsonLd}
         >
             <section className="ow-card-types-page flex flex-col gap-10">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="ow-card-types-page-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {ITEMS.map(({type, label, description, href, hex, Icon}) => (
-                        <Link
-                            key={type}
-                            href={href}
-                            className="bg-white rounded-xl border p-5 flex flex-col gap-2 hover:shadow-md transition-shadow"
-                        >
-                            <span className="flex items-center gap-2 font-semibold text-base">
-                                {Icon && <span style={{color: hex}}><Icon size={18}/></span>}
+                        <OwWobbleCard key={type} brandColor={hex} href={href}>
+                            <span className="flex items-center gap-2 font-semibold text-base text-white">
+                                {Icon && <Icon size={18}/>}
                                 {label}
                             </span>
-                            <span className="text-text-muted text-sm">{description}</span>
-                        </Link>
+                            <span className="text-white/70 text-sm">{description}</span>
+                        </OwWobbleCard>
                     ))}
                 </div>
             </section>
