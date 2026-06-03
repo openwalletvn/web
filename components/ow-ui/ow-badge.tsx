@@ -245,7 +245,10 @@ export function OwBadge(props: OwBadgeProps) {
         const {personaData} = props;
         const model = new PersonaModel(personaData);
         const hex = model.getColor();
-        const style = hex ? colorVars(hex, active ? 0.2 : 0.1, active ? 0.5 : 0.3) : {};
+        const style = hex ? {
+            ...colorVars(hex, active ? 1 : 0.1, active ? 1 : 0.3),
+            ...(active ? {'--badge-color': 'white'} as React.CSSProperties : {}),
+        } : {};
         const colorCls = hex ? COLOR_CLS : 'bg-bg-muted border-border text-text-muted';
         return (
             <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} style={style}
@@ -293,5 +296,5 @@ export function OwBadge(props: OwBadgeProps) {
 // ─── Wrapper ──────────────────────────────────────────────────────────────────
 
 export function OwBadges({children, className}: {children: React.ReactNode; className?: string}) {
-    return <div className={cn('ow-badges flex flex-wrap items-center gap-2 has-[.ow-badge-small]:gap-1', className)}>{children}</div>;
+    return <div className={cn('ow-badges flex flex-wrap items-center sm:gap-2 gap-1 has-[.ow-badge-small]:gap-1', className)}>{children}</div>;
 }
