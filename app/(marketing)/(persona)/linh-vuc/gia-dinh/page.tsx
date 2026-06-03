@@ -10,7 +10,7 @@ const L = ({href, children}: {href: string; children: string}) => (
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Gia Đình',
     description: 'So sánh thẻ ngân hàng phù hợp cho chi tiêu gia đình tại Việt Nam: siêu thị, giáo dục, y tế, bảo hiểm. Tìm thẻ hoàn tiền cao nhất cho các khoản chi thiết yếu.',
-    url: '/the-theo-nhu-cau/gia-dinh',
+    url: '/linh-vuc/gia-dinh',
     personaSlug: 'family',
     rankingTitle: 'Xếp hạng thẻ theo ưu đãi gia đình',
     intro: 'Trang tổng hợp thẻ gia đình tốt nhất tại Việt Nam, so sánh cashback cho chi tiêu y tế, giáo dục, bảo hiểm và siêu thị trong cùng một thẻ. Mức hoàn tiền trong danh sách dao động từ 1% đến 15% tùy danh mục và điều kiện áp dụng. Khác với thẻ chuyên biệt một danh mục, phần lớn thẻ trong nhóm này không yêu cầu chi tiêu tối thiểu để kích hoạt cashback, và trần hoàn dao động từ 300.000 đến 1.000.000 VND mỗi kỳ sao kê. Bảng xếp hạng dưới đây giúp bạn so sánh số tiền hoàn thực tế theo mức chi tiêu gia đình hàng tháng để chọn thẻ phù hợp nhất.',
@@ -53,7 +53,7 @@ const CONFIG: IntentCategoryConfig = {
     ],
     breadcrumbItems: [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Lĩnh vực', href: '/linh-vuc'},
         {label: 'Thẻ Gia Đình'},
     ],
 };

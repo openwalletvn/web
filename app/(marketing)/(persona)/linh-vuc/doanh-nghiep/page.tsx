@@ -6,7 +6,7 @@ import {PersonaPage} from '../persona-page';
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Doanh Nghiệp',
     description: 'So sánh thẻ tín dụng và ghi nợ dành cho doanh nghiệp, hộ kinh doanh tại Việt Nam. Tìm thẻ công ty phù hợp với quy mô và nhu cầu chi tiêu.',
-    url: '/the-theo-nhu-cau/doanh-nghiep',
+    url: '/linh-vuc/doanh-nghiep',
     personaSlug: 'business',
     rankingTitle: 'Xếp hạng thẻ doanh nghiệp',
     intro: 'Thẻ ngân hàng dành riêng cho doanh nghiệp khác thẻ cá nhân ở hạn mức, điều kiện mở thẻ và khả năng quản lý chi tiêu nhóm. Doanh nghiệp vừa và nhỏ có thể mở từ 1 thẻ, trong khi công ty lớn thường phát hành thẻ phụ cho từng bộ phận. OpenWallet tổng hợp thẻ doanh nghiệp từ các ngân hàng Việt Nam, bao gồm hạn mức, phí thường niên và điều kiện mở thẻ cho hộ kinh doanh và công ty TNHH/cổ phần.',
@@ -18,7 +18,7 @@ const CONFIG: IntentCategoryConfig = {
     ],
     breadcrumbItems: [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Lĩnh vực', href: '/linh-vuc'},
         {label: 'Thẻ Doanh Nghiệp'},
     ],
 };

@@ -82,10 +82,10 @@ export const MENU: NavItem[] = [
             {
                 title: 'OpenWallet Picks',
                 items: [
-                    {label: 'Thẻ ưu đãi Shopee', href: '/the-theo-nhu-cau/shopee'},
+                    {label: 'Thẻ ưu đãi Shopee', href: '/linh-vuc/shopee'},
                     {label: 'Thẻ kim loại', href: '/the-kim-loai'},
                     {label: 'Thẻ cao cấp', href: '/the-tin-dung-cao-cap'},
-                    {label: 'Thẻ doanh nghiệp', href: '/the-theo-nhu-cau/doanh-nghiep'},
+                    {label: 'Thẻ doanh nghiệp', href: '/linh-vuc/doanh-nghiep'},
                 ],
             },
         ],

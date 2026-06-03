@@ -1,6 +1,6 @@
 # Persona Page
 
-Create or update a `/the-theo-nhu-cau/<slug>` page with data-driven, SEO-optimized Vietnamese content.
+Create or update a `/linh-vuc/<slug>` page with data-driven, SEO-optimized Vietnamese content.
 
 ## Usage
 
@@ -14,7 +14,7 @@ If no slug given, ask which persona page to create or update.
 
 ## Step 0 — Detect mode
 
-Check if `app/(marketing)/(persona)/the-theo-nhu-cau/<slug>/page.tsx` exists.
+Check if `app/(marketing)/(persona)/linh-vuc/<slug>/page.tsx` exists.
 
 - **Exists** → UPDATE mode: skip to Step 1
 - **Missing** → CREATE mode: run Step 0A first, then continue from Step 1
@@ -22,7 +22,7 @@ Check if `app/(marketing)/(persona)/the-theo-nhu-cau/<slug>/page.tsx` exists.
 ## Step 0A — Scaffold new page (CREATE mode only)
 
 1. Read `lib/persona-model.ts` to find the matching persona entry for the slug. Extract `personaSlug` (API slug, e.g. `groceries`) and display name.
-2. Create `app/(marketing)/(persona)/the-theo-nhu-cau/<slug>/page.tsx` using this template:
+2. Create `app/(marketing)/(persona)/linh-vuc/<slug>/page.tsx` using this template:
 
 ```tsx
 import type {Metadata} from 'next';
@@ -37,14 +37,14 @@ const L = ({href, children}: {href: string; children: string}) => (
 const CONFIG: IntentCategoryConfig = {
     title: '<Title>',
     description: '<meta description — 1-2 sentences, SEO-optimized>',
-    url: '/the-theo-nhu-cau/<slug>',
+    url: '/linh-vuc/<slug>',
     personaSlug: '<personaSlug>',
     rankingTitle: 'Xếp hạng thẻ theo cashback <category>',
     intro: '<placeholder>',
     faqs: [],
     breadcrumbItems: [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Lĩnh vực', href: '/linh-vuc'},
         {label: '<Title>'},
     ],
 };
@@ -62,7 +62,7 @@ Fill in `title`, `description`, `url`, `personaSlug`, `rankingTitle`, `breadcrum
 
 ## Step 1 — Read the page
 
-Read `app/(marketing)/(persona)/the-theo-nhu-cau/<slug>/page.tsx`. Extract:
+Read `app/(marketing)/(persona)/linh-vuc/<slug>/page.tsx`. Extract:
 - `personaSlug` (e.g. `groceries`)
 - `title` (e.g. `Thẻ Siêu Thị`)
 - Current `intro` and `faqs`

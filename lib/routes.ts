@@ -36,7 +36,7 @@ export const ROUTES = {
     blogTag: (tag: string) => `/tin-tuc/tag/${tag}`,
     blogCategory: (category: string) => `/tin-tuc/category/${category}`,
     cardBattlePair: (pair: string) => `/card-battle/${pair}`,
-    personaPage: (slug: string) => `/the-theo-nhu-cau/${slug}`,
+    personaPage: (slug: string) => `/linh-vuc/${slug}`,
     cardTypePage: (slug: string) => `/loai-the/${slug}`,
     myCard: (walletCardId: string) => `/app/my-cards/detail?id=${walletCardId}`,
 } as const

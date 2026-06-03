@@ -10,7 +10,7 @@ const L = ({href, children}: {href: string; children: string}) => (
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Siêu Thị',
     description: 'So sánh thẻ tín dụng và ghi nợ có cashback khi mua sắm tại Coopmart, Go!, Lotte Mart, AEON. Tìm thẻ hoàn tiền siêu thị tốt nhất tại Việt Nam.',
-    url: '/the-theo-nhu-cau/sieu-thi',
+    url: '/linh-vuc/sieu-thi',
     personaSlug: 'groceries',
     rankingTitle: 'Xếp hạng thẻ theo cashback siêu thị',
     intro: 'Trang so sánh thẻ hoàn tiền siêu thị tốt nhất tại Việt Nam, tổng hợp các thẻ tín dụng có ưu đãi cashback khi mua sắm tại các chuỗi siêu thị lớn như Coopmart, Go!, Lotte Mart và AEON. Mức hoàn tiền trong danh sách dao động từ 1% đến 20% tùy thẻ và điều kiện áp dụng. Hầu hết thẻ có trần hoàn từ 300.000 đến 1.000.000 VND mỗi tháng, một số yêu cầu chi tiêu tối thiểu mỗi kỳ sao kê mới được kích hoạt cashback, và một số có cơ chế bậc chi tiêu giúp mức hoàn tăng theo doanh số. Bảng xếp hạng dưới đây giúp bạn so sánh mức hoàn thực tế theo ngân sách chi tiêu siêu thị hàng tháng của mình.',
@@ -52,7 +52,7 @@ const CONFIG: IntentCategoryConfig = {
     ],
     breadcrumbItems: [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Lĩnh vực', href: '/linh-vuc'},
         {label: 'Thẻ Siêu Thị'},
     ],
 };

@@ -10,7 +10,7 @@ const L = ({href, children}: {href: string; children: string}) => (
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Dịch Vụ Số',
     description: 'So sánh thẻ thanh toán dịch vụ số quốc tế tại Việt Nam: ChatGPT, Claude, Netflix, Spotify. Tìm thẻ ít bị từ chối, phí ngoại tệ thấp. Xếp hạng tự động theo thực tế.',
-    url: '/the-theo-nhu-cau/dich-vu-so',
+    url: '/linh-vuc/dich-vu-so',
     personaSlug: 'digital',
     rankingTitle: 'Xếp hạng thẻ theo cashback dịch vụ số',
     intro: 'Trang so sánh thẻ hoàn tiền dịch vụ số tốt nhất tại Việt Nam tổng hợp các thẻ có cashback khi thanh toán ChatGPT Plus, Claude, Netflix, Spotify và các nền tảng số quốc tế định kỳ. Mức hoàn tiền dao động từ 3% đến 20%, nhưng các thẻ có tỷ lệ cao nhất thường đi kèm trần hoàn rất thấp, có thể bị đạt chỉ sau 500.000 đến 1,5 triệu đồng chi tiêu mỗi tháng. Đặc điểm chung của danh mục này là không yêu cầu chi tiêu tối thiểu, nhưng trần hoàn theo tháng quyết định số tiền thực nhận nhiều hơn tỷ lệ phần trăm. Bảng xếp hạng dưới đây tính toán số tiền hoàn theo từng mức chi để bạn chọn thẻ phù hợp với ngân sách đăng ký dịch vụ số hàng tháng.',
@@ -52,7 +52,7 @@ const CONFIG: IntentCategoryConfig = {
     ],
     breadcrumbItems: [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Lĩnh vực', href: '/linh-vuc'},
         {label: 'Thẻ Dịch Vụ Số'},
     ],
 };

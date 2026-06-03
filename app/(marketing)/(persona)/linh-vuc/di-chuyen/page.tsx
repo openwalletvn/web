@@ -10,7 +10,7 @@ const L = ({href, children}: {href: string; children: string}) => (
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Di Chuyển',
     description: 'So sánh thẻ ngân hàng hoàn tiền khi đi Grab, Be và di chuyển hàng ngày tại Việt Nam. Xếp hạng tự động theo cashback vận chuyển thực tế.',
-    url: '/the-theo-nhu-cau/di-chuyen',
+    url: '/linh-vuc/di-chuyen',
     personaSlug: 'commuter',
     rankingTitle: 'Xếp hạng thẻ theo cashback di chuyển',
     intro: 'Trang tổng hợp thẻ hoàn tiền di chuyển tại Việt Nam, so sánh các thẻ tín dụng có cashback cho Grab, Be và dịch vụ vận chuyển, theo dữ liệu hiện tại của OpenWallet. Mức hoàn tiền trong pool dao động từ 0,1% đến 20% tùy thẻ và điều kiện áp dụng. Hầu hết thẻ có trần hoàn cố định theo tháng, thường từ 200.000 đến 1.000.000 VND, nên tỷ lệ hoàn cao không đồng nghĩa với số tiền thực nhận nhiều hơn ở mọi mức chi tiêu. Bảng xếp hạng dưới đây giúp bạn so sánh cashback thực tế theo mức chi tiêu di chuyển của mình để chọn thẻ phù hợp. Hãy kiểm tra chính sách của ngân hàng để có thông tin chính xác nhất trước khi đăng ký.',
@@ -53,7 +53,7 @@ const CONFIG: IntentCategoryConfig = {
     ],
     breadcrumbItems: [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Lĩnh vực', href: '/linh-vuc'},
         {label: 'Thẻ Di Chuyển'},
     ],
 };

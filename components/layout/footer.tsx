@@ -34,7 +34,7 @@ const LINKS = {
         ...['shopee', 'groceries', 'family', 'commuter', 'traveler', 'digital']
             .map(slug => new PersonaModel(slug))
             .map(p => ({label: p.getName(), href: p.getHref()})),
-        {label: 'Tất cả lĩnh vực', href: '/the-theo-nhu-cau'},
+        {label: 'Tất cả lĩnh vực', href: '/linh-vuc'},
     ],
 };
 
@@ -61,7 +61,7 @@ export function Footer() {
                             {/* Link columns */}
                             <div className="md:col-span-10 col-span-12 grid grid-cols-12 gap-x-4 gap-y-8">
                                 <div className="sm:col-span-4 col-span-6 flex flex-col gap-8">
-                                    <LinkColumn heading="Thẻ theo nhu cầu" links={LINKS.personas}/>
+                                    <LinkColumn heading="Lĩnh vực" links={LINKS.personas}/>
                                     <LinkColumn heading="Loại thẻ" links={LINKS.cardTypes}/>
                                 </div>
                                 <div className="sm:col-span-4 col-span-6 flex flex-col gap-8">

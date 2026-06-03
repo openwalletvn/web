@@ -10,7 +10,7 @@ const L = ({href, children}: {href: string; children: string}) => (
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Shopee',
     description: 'So sánh thẻ tín dụng và ghi nợ có cashback Shopee từ các ngân hàng Việt Nam. Xếp hạng tự động theo tỷ lệ hoàn tiền thực tế, phí thường niên và điều kiện áp dụng.',
-    url: '/the-theo-nhu-cau/shopee',
+    url: '/linh-vuc/shopee',
     personaSlug: 'shopee',
     rankingTitle: 'Xếp hạng thẻ hoàn tiền Shopee tốt nhất',
     intro: 'Trang so sánh thẻ hoàn tiền Shopee tốt nhất tại Việt Nam, tổng hợp các thẻ tín dụng có ưu đãi cashback khi mua sắm trên sàn thương mại điện tử lớn nhất Việt Nam. Mức hoàn tiền trong danh sách dao động từ 1% đến 10% tùy thẻ và điều kiện áp dụng. Một số thẻ yêu cầu chi tiêu tối thiểu mỗi tháng mới được kích hoạt cashback, trong khi một số thẻ khác áp dụng ngay từ giao dịch đầu tiên mà không có điều kiện. Bảng xếp hạng dưới đây giúp bạn so sánh mức hoàn thực tế theo ngân sách chi tiêu Shopee của mình.',
@@ -52,7 +52,7 @@ const CONFIG: IntentCategoryConfig = {
     ],
     breadcrumbItems: [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Lĩnh vực', href: '/linh-vuc'},
         {label: 'Thẻ Shopee'},
     ],
 };

@@ -37,7 +37,7 @@ const triggerClass = cn(
 export function Nav2() {
     const pathname = usePathname();
     const toolsActive = TOOLS.some((t) => pathname.startsWith(t.href));
-    const cardsActive = pathname.startsWith(ROUTES.cards) || pathname.startsWith('/the-theo-nhu-cau');
+    const cardsActive = pathname.startsWith(ROUTES.cards) || pathname.startsWith('/linh-vuc');
 
     const plainLinkClass = (active: boolean) =>
         cn(
@@ -83,7 +83,7 @@ export function Nav2() {
                     <NavigationMenuContent className="left-1/2 -translate-x-1/2">
                         <div className="w-[320px] p-4">
                             <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3 px-1">
-                                Thẻ theo nhu cầu
+                                Lĩnh vực
                             </p>
                             <ul className="grid grid-cols-2 gap-1 mb-3">
                                 {PERSONA_ITEMS.map((persona) => (
@@ -105,7 +105,7 @@ export function Nav2() {
                             </ul>
                             <NavigationMenuLink asChild>
                                 <Link
-                                    href="/the-theo-nhu-cau"
+                                    href="/linh-vuc"
                                     className="flex items-center justify-center w-full px-3 py-2 rounded-md text-sm font-semibold text-brand-red border border-brand-red/30 hover:bg-brand-red/5 transition-colors"
                                 >
                                     Xem tất cả nhu cầu →

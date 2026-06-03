@@ -16,7 +16,7 @@ export function PersonaCategories() {
 
     return (
         <section className="ow-persona-categories ow-container lg:py-32 py-16 relative z-20">
-            <h2><a href="/the-theo-nhu-cau">Thẻ theo nhu cầu</a></h2>
+            <h2><a href="/linh-vuc">Lĩnh vực</a></h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:mt-10 mt-6">
                 <div className="bg-white md:rounded-xl rounded-lg p-6 flex flex-col gap-3">
@@ -51,7 +51,7 @@ export function PersonaCategories() {
             </div>
 
             <div className="flex justify-center md:mt-10 mt-6">
-                <OwButton asChild><a href="/the-theo-nhu-cau">Xem tất cả thẻ theo nhu cầu</a></OwButton>
+                <OwButton asChild><a href="/linh-vuc">Xem tất cả thẻ theo nhu cầu</a></OwButton>
             </div>
         </section>
     );

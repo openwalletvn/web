@@ -9,13 +9,13 @@ import {OwButton} from '@/components/ow-ui/ow-button';
 
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
-    {label: 'Thẻ theo nhu cầu'},
+    {label: 'Lĩnh vực'},
 ];
 
 const META = {
     title: buildTitle(SECTION_TITLES.persona),
     description: 'Danh sách thẻ ngân hàng phân loại theo nhu cầu sử dụng: Shopee, siêu thị, du lịch, di chuyển, dịch vụ số, gia đình, doanh nghiệp. Xếp hạng tự động bằng thuật toán.',
-    url: '/the-theo-nhu-cau',
+    url: '/linh-vuc',
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -42,11 +42,11 @@ export default async function PersonaHubPage() {
 
     const items = personas
         .map((p) => new PersonaModel(p))
-        .filter((p) => p.isKnown());
+        .filter((p) => p.isKnown() && !p.isHidden());
 
     return (
         <MarketingPageShell
-            title="Thẻ theo nhu cầu"
+            title="Lĩnh vực"
             description="Tìm thẻ ngân hàng phù hợp với nhu cầu của bạn, từ mua sắm online đến du lịch hay chi tiêu gia đình."
             breadcrumbItems={breadcrumbItems}
             jsonLd={jsonLd}
@@ -58,7 +58,7 @@ export default async function PersonaHubPage() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="ow-persona-hub-page-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {items.map((persona) => (
                         <Link
                             key={persona.getSlug()}

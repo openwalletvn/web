@@ -24,7 +24,7 @@ export function MobileNav() {
     const [open, setOpen] = useState(false);
     const close = () => setOpen(false);
 
-    const cardsActive = pathname.startsWith(ROUTES.cards) || pathname.startsWith('/the-theo-nhu-cau');
+    const cardsActive = pathname.startsWith(ROUTES.cards) || pathname.startsWith('/linh-vuc');
     const toolsActive = TOOLS.some((t) => pathname.startsWith(t.href));
 
     return (
@@ -64,7 +64,7 @@ export function MobileNav() {
                         <CollapsibleContent>
                             <div className="mt-1 ml-3 flex flex-col gap-1">
                                 <p className="px-2 pt-1 text-xs font-semibold text-slate-400 uppercase tracking-widest">
-                                    Thẻ theo nhu cầu
+                                    Lĩnh vực
                                 </p>
                                 {PERSONA_ITEMS.map((persona) => (
                                     <Link
@@ -82,7 +82,7 @@ export function MobileNav() {
                                     </Link>
                                 ))}
                                 <Link
-                                    href="/the-theo-nhu-cau"
+                                    href="/linh-vuc"
                                     onClick={close}
                                     className="px-2 py-1.5 text-sm font-semibold text-brand-red hover:underline"
                                 >

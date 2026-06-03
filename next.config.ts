@@ -62,13 +62,16 @@ const nextConfig: NextConfig = {
       { source: '/the-hybrid', destination: '/loai-the/the-hybrid', permanent: true },
       { source: '/cards/hybrid', destination: '/loai-the/the-hybrid', permanent: true },
       // persona pages — old flat URLs redirect to nested structure
-      { source: '/the-shopee', destination: '/the-theo-nhu-cau/shopee', permanent: true },
-      { source: '/the-sieu-thi', destination: '/the-theo-nhu-cau/sieu-thi', permanent: true },
-      { source: '/the-chi-tieu-dich-vu-so', destination: '/the-theo-nhu-cau/dich-vu-so', permanent: true },
-      { source: '/the-danh-cho-giao-duc', destination: '/the-theo-nhu-cau/gia-dinh', permanent: true },
-      { source: '/the-danh-cho-y-te', destination: '/the-theo-nhu-cau/gia-dinh', permanent: true },
-      { source: '/the-danh-cho-bao-hiem', destination: '/the-theo-nhu-cau/gia-dinh', permanent: true },
-      { source: '/the-doanh-nghiep', destination: '/the-theo-nhu-cau/doanh-nghiep', permanent: true },
+      { source: '/the-shopee', destination: '/linh-vuc/shopee', permanent: true },
+      { source: '/the-sieu-thi', destination: '/linh-vuc/sieu-thi', permanent: true },
+      { source: '/the-chi-tieu-dich-vu-so', destination: '/linh-vuc/dich-vu-so', permanent: true },
+      { source: '/the-danh-cho-giao-duc', destination: '/linh-vuc/gia-dinh', permanent: true },
+      { source: '/the-danh-cho-y-te', destination: '/linh-vuc/gia-dinh', permanent: true },
+      { source: '/the-danh-cho-bao-hiem', destination: '/linh-vuc/gia-dinh', permanent: true },
+      { source: '/the-doanh-nghiep', destination: '/linh-vuc/doanh-nghiep', permanent: true },
+      // route rename redirect
+      { source: '/the-theo-nhu-cau', destination: '/linh-vuc', permanent: true },
+      { source: '/the-theo-nhu-cau/:path*', destination: '/linh-vuc/:path*', permanent: true },
       { source: '/banks', destination: '/ngan-hang', permanent: true },
       {
         source: '/banks/:slug*',

@@ -11,6 +11,7 @@ interface PersonaUIMeta {
     slug: string;
     theme?: PersonaTheme;
     available?: boolean;
+    hidden?: boolean;
 }
 
 const PERSONA_UI_META: Record<string, PersonaUIMeta> = {
@@ -28,7 +29,8 @@ const PERSONA_UI_META: Record<string, PersonaUIMeta> = {
         description: 'Thẻ cho doanh nghiệp',
         group: 'business',
         slug: 'doanh-nghiep',
-        theme: 'black'
+        theme: 'black',
+        hidden: true,
     },
     traveler: {name: 'Thẻ Du Lịch', description: 'Vé máy bay, khách sạn, Agoda', group: 'daily', slug: 'du-lich'},
     commuter: {name: 'Thẻ Di Chuyển', description: 'Grab, Be, vận chuyển hàng ngày', group: 'daily', slug: 'di-chuyen'},
@@ -51,8 +53,15 @@ export class PersonaModel {
 
     // ─── Static helpers ───────────────────────────────────────────────────────
 
-    /** All known personas in display order. Use instead of CARD_CATEGORIES. */
+    /** All visible personas in display order (excludes hidden). Use instead of CARD_CATEGORIES. */
     static all(): PersonaModel[] {
+        return Object.entries(PERSONA_UI_META)
+            .filter(([, meta]) => !meta.hidden)
+            .map(([slug]) => new PersonaModel(slug));
+    }
+
+    /** All personas including hidden ones. */
+    static allIncludingHidden(): PersonaModel[] {
         return Object.keys(PERSONA_UI_META).map(slug => new PersonaModel(slug));
     }
 
@@ -131,7 +140,12 @@ export class PersonaModel {
         return this.ui?.available !== false;
     }
 
-    /** Canonical URL for this persona's page, e.g. /the-theo-nhu-cau/sieu-thi. */
+    /** True when persona is hidden from all listings. */
+    isHidden(): boolean {
+        return this.ui?.hidden === true;
+    }
+
+    /** Canonical URL for this persona's page, e.g. /linh-vuc/sieu-thi. */
     getHref(): string {
         return ROUTES.personaPage(this.ui?.slug ?? this._slug);
     }

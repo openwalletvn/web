@@ -10,7 +10,7 @@ const L = ({href, children}: {href: string; children: string}) => (
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Ăn Uống',
     description: 'So sánh thẻ tín dụng hoàn tiền khi ăn uống tại nhà hàng, quán cà phê và đặt đồ ăn qua Shopee Food, GrabFood. Tìm thẻ cashback ăn uống phù hợp theo mức chi tiêu hàng tháng.',
-    url: '/the-theo-nhu-cau/an-uong',
+    url: '/linh-vuc/an-uong',
     personaSlug: 'dining',
     rankingTitle: 'Xếp hạng thẻ theo cashback ăn uống',
     intro: 'Trang so sánh thẻ hoàn tiền ăn uống tổng hợp các thẻ tín dụng có cashback khi chi tiêu tại nhà hàng, quán cà phê, và đặt đồ ăn qua ứng dụng như Shopee Food hoặc GrabFood, theo dữ liệu hiện tại của OpenWallet. Mức hoàn trong danh sách dao động từ 2% đến 20% tùy thẻ và điều kiện áp dụng. Một số thẻ có trần hoàn theo danh mục, trong khi một số khác áp dụng trần chung toàn thẻ mỗi tháng. Bảng xếp hạng dưới đây giúp bạn so sánh số tiền hoàn thực tế theo ngân sách ăn uống hàng tháng để chọn thẻ phù hợp nhất với thói quen của mình. Hãy kiểm tra chính sách cụ thể của ngân hàng để có thông tin chính xác nhất trước khi đăng ký.',
@@ -52,7 +52,7 @@ const CONFIG: IntentCategoryConfig = {
     ],
     breadcrumbItems: [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Lĩnh vực', href: '/linh-vuc'},
         {label: 'Thẻ Ăn Uống'},
     ],
 };

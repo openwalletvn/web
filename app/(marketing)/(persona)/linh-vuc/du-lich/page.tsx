@@ -10,7 +10,7 @@ function L({href, children}: {href: string; children: React.ReactNode}) {
 const CONFIG: IntentCategoryConfig = {
     title: 'Thẻ Du Lịch',
     description: 'So sánh thẻ ngân hàng tốt nhất cho du lịch tại Việt Nam: hoàn tiền vé máy bay, khách sạn, miễn phí phòng chờ sân bay, không tính phí ngoại tệ. Xếp hạng tự động theo ưu đãi thực tế.',
-    url: '/the-theo-nhu-cau/du-lich',
+    url: '/linh-vuc/du-lich',
     personaSlug: 'traveler',
     rankingTitle: 'Xếp hạng thẻ theo ưu đãi du lịch',
     intro: 'Trang này so sánh thẻ du lịch tốt nhất tại Việt Nam, từ thẻ hoàn tiền vé máy bay, khách sạn đến thẻ cashback cho mọi giao dịch phân loại du lịch. Tỷ lệ hoàn trong danh sách dao động từ 0,1% đến 20%, tùy theo danh mục chi tiêu và điều kiện từng thẻ. Phần lớn thẻ có trần hoàn tháng từ 300.000 đến 800.000 VND, nhưng một số thẻ không giới hạn hoàn tiền, phù hợp hơn cho người chi tiêu du lịch lớn và đều đặn. Bảng xếp hạng dưới đây giúp bạn so sánh số tiền hoàn thực tế tại các mức chi tiêu khác nhau để chọn thẻ phù hợp với lịch trình và ngân sách của bạn.',
@@ -52,7 +52,7 @@ const CONFIG: IntentCategoryConfig = {
     ],
     breadcrumbItems: [
         {label: 'Trang chủ', href: '/'},
-        {label: 'Thẻ theo nhu cầu', href: '/the-theo-nhu-cau'},
+        {label: 'Lĩnh vực', href: '/linh-vuc'},
         {label: 'Thẻ Du Lịch'},
     ],
 };
