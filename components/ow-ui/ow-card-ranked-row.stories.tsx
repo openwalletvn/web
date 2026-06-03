@@ -42,7 +42,7 @@ const baseRanked: RankedCard = {
     rank_reason: 'Hoàn tiền cao nhất trong danh mục ăn uống',
     rank_reason_type: 'higher_cashback',
     tiebreaker_delta: undefined,
-    cashback_result: {cashback: 150000, breakdown: []},
+    cashback_result: {cashback: 150000},
 };
 
 const intentMap = new Map([
@@ -79,27 +79,20 @@ const rows: Array<{label: string; ranked: RankedCard; intentMap?: typeof intentM
         intentSlug: 'dining',
     },
     {
-        label: 'vertical · paid fee · cashback breakdown · reason shown',
+        label: 'vertical · paid fee · reason shown',
         ranked: {
             card: verticalCard,
             rank: 1,
             rank_reason: 'Miễn phí thường niên, tiết kiệm hơn thẻ tương đương',
             rank_reason_type: 'lower_annual_fee',
             tiebreaker_delta: undefined,
-            cashback_result: {
-                cashback: 195000,
-                breakdown: [
-                    {intents: ['travel'], matched_intents: ['travel'], merchants: [], rate: 0.03, spend: 3000000, cashback: 90000, is_catchall: false},
-                    {intents: ['all-online'], matched_intents: ['all-online'], merchants: [], rate: 0.02, spend: 2000000, cashback: 40000, is_catchall: true},
-                    {intents: ['all-spend'], matched_intents: ['all-spend'], merchants: [], rate: 0.005, spend: 5000000, cashback: 65000, is_catchall: true},
-                ],
-            },
+            cashback_result: {cashback: 195000},
         },
         intentMap,
     },
     {
         label: 'zero cashback',
-        ranked: {...baseRanked, rank: 1, cashback_result: {cashback: 0, breakdown: []}},
+        ranked: {...baseRanked, rank: 1, cashback_result: {cashback: 0}},
     },
 ];
 
@@ -176,21 +169,14 @@ export const RankReasonHiddenForHigherCashback: Story = {
 // ─── Cashback display variants ────────────────────────────────────────────────
 
 export const ZeroCashback: Story = {
-    args: {ranked: {...baseRanked, cashback_result: {cashback: 0, breakdown: []}}},
+    args: {ranked: {...baseRanked, cashback_result: {cashback: 0}}},
 };
 
-export const WithBreakdown: Story = {
+export const WithCashback: Story = {
     args: {
         ranked: {
             ...baseRanked,
-            cashback_result: {
-                cashback: 195000,
-                breakdown: [
-                    {intents: ['dining'], matched_intents: ['dining'], merchants: [], rate: 0.05, spend: 2000000, cashback: 100000, is_catchall: false},
-                    {intents: ['shopping'], matched_intents: ['shopping'], merchants: [], rate: 0.05, spend: 1000000, cashback: 50000, is_catchall: false},
-                    {intents: ['all-spend'], matched_intents: ['all-spend'], merchants: [], rate: 0.01, spend: 4500000, cashback: 45000, is_catchall: true},
-                ],
-            },
+            cashback_result: {cashback: 195000},
         },
         intentMap,
     },

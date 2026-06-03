@@ -7,6 +7,7 @@ import {OwCardCashbackRule} from '@/components/ow-ui/ow-card-cashback-rule';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
 import {IconAlertCircle, IconInfoCircle, IconPackages,} from '@tabler/icons-react';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
+import {CashbackCalculator} from '@/components/cards/detail/cashback-calculator';
 
 // ─── Labels ──────────────────────────────────────────────────────────────────
 
@@ -155,9 +156,20 @@ export async function CardDetailCashback({card}: Props) {
     const intentMap = IntentModel.toMap(intents);
     const merchantMap = new Map(merchants.map((m) => [m.slug, m]));
 
+    const cardIntents = card.getIntents();
+
     return (
         <CardDetailSection title="Hoàn tiền" className="ow-card-detail-cashback">
             <CashbackSection cashback={card.getCashback()!} intentMap={intentMap} merchantMap={merchantMap}/>
+            {cardIntents.length > 0 && (
+                <CashbackCalculator
+                    cardId={card.getId()}
+                    cardIntents={cardIntents}
+                    intentMap={Object.fromEntries(
+                        [...intentMap.entries()].map(([k, v]) => [k, {label: v.getLabel(), icon: v.getIcon()}])
+                    )}
+                />
+            )}
         </CardDetailSection>
     );
 }

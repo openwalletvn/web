@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type {CashbackRule, Intent} from '@/lib/api';
-import type {CashbackBreakdownItem, RankedCard} from '@/lib/card-ranker';
+import type {RankedCard} from '@/lib/card-ranker';
 import {CATCHALL_SLUGS} from '@/lib/card-display-utils';
 import {CardModel} from '@/lib/card-model';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
@@ -35,26 +35,6 @@ function resolveLabel(slug: string, intentMap?: IntentMap): string {
     return intentMap?.get(slug)?.label ?? slug;
 }
 
-function breakdownLabel(item: CashbackBreakdownItem, intentMap?: IntentMap): string {
-    if (item.is_catchall) return 'Chi tiêu khác';
-    const slugs = [...(item.matched_intents ?? item.intents ?? []), ...(item.merchants ?? [])];
-    return slugs.map(s => resolveLabel(s, intentMap)).join(' · ') || 'Hoàn tiền';
-}
-
-function IntentBreakdown({item, intentMap}: { item: CashbackBreakdownItem; intentMap?: IntentMap }) {
-    const {intent_breakdown} = item;
-    if (!intent_breakdown || intent_breakdown.length <= 1) return null;
-    return (
-        <span className="text-[10px] text-text-muted/70 max-w-[200px] leading-3">
-            {intent_breakdown.map((b, i) => (
-                <span key={b.intent}>
-                    {i > 0 && ' + '}
-                    {resolveLabel(b.intent, intentMap)}: {b.cashback.toLocaleString('vi-VN')}đ{b.is_capped ? ' (tối đa)' : ''}
-                </span>
-            ))}
-        </span>
-    );
-}
 
 export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug}: {
     ranked: RankedCard;
@@ -83,10 +63,8 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
 
     const showReason = rank_reason && rank_reason_type !== 'higher_cashback';
 
-    const {cashback, breakdown} = ranked.cashback_result;
-    const activeBreakdown = breakdown?.filter(b => !b.cashback_expired);
-    const showBreakdown = cashback > 0 && activeBreakdown && activeBreakdown.length >= 1;
-    const rateDisplay = cashback > 0 && !showBreakdown ? cardModel.getRateDisplay(intentSlug) : null;
+    const {cashback} = ranked.cashback_result;
+    const rateDisplay = cashback > 0 ? cardModel.getRateDisplay(intentSlug) : null;
     const cardTypes = cardModel.getCardTypes();
 
     return (
@@ -158,22 +136,9 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
                 {/*cashback display*/}
                 {cashback === 0 ? (
                     <span className="text-body-sm text-text-muted">Đang cập nhật thông tin ưu đãi</span>
-                ) : (
-                    <div className="ow-cashback-display flex flex-col items-start gap-0.5">
-                        {showBreakdown ? (
-                            activeBreakdown!.map((item, i) => (
-                                <div key={i} className="flex flex-col items-start sm:items-end">
-                                    <span className="text-[11px] text-text-muted max-w-[200px] leading-3">
-                                        {breakdownLabel(item, intentMap)} · {fmtRate(item.rate)}{item.spend ? ` · ${item.spend.toLocaleString('vi-VN')}đ` : ''}: {item.cashback.toLocaleString('vi-VN')}đ
-                                    </span>
-                                    <IntentBreakdown item={item} intentMap={intentMap}/>
-                                </div>
-                            ))
-                        ) : rateDisplay ? (
-                            <span className="text-body-sm text-text-muted">Hoàn {rateDisplay}/kỳ</span>
-                        ) : null}
-                    </div>
-                )}
+                ) : rateDisplay ? (
+                    <span className="text-body-sm text-text-muted">Hoàn {rateDisplay}/kỳ</span>
+                ) : null}
             </div>
 
             {/*col 3 — cashback amount [2]*/}
