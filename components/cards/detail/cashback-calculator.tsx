@@ -1,40 +1,89 @@
 'use client';
 import * as React from 'react';
-import type {CashbackResult} from '@/lib/api';
-import {IconAlertTriangle, IconLoader2, IconSparkles} from '@tabler/icons-react';
+import type {CashbackBenefit, CashbackResult, Merchant} from '@/lib/api';
+import {IconAlertTriangle, IconLoader2} from '@tabler/icons-react';
 import {OwRangeSlider} from '@/components/ow-ui/ow-range-slider';
 import {OwAmount, formatOwAmount} from '@/components/ow-ui/ow-amount';
-import {OwBadge} from '@/components/ow-ui/ow-badge';
+import {OwCardCashbackRule} from '@/components/ow-ui/ow-card-cashback-rule';
+import {IntentModel} from '@/lib/intent-model';
+import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
+
+export type SerializedIntentMap = Record<string, {label: string; icon: string}>;
+export type SerializedMerchantMap = Record<string, {label: string; slug: string}>;
 
 const SPEND_MIN = 500_000;
 const SPEND_MAX = 20_000_000;
 const SPEND_STEP = 500_000;
 const SPEND_DEFAULT = 3_000_000;
 
-
 function fmtPct(n: number): string {
     return `${Math.round(n * 10000) / 100}%`;
 }
 
-type IntentMeta = { label: string; icon: string };
-
 interface Props {
     cardId: string;
-    cardIntents: string[];
-    intentMap: Record<string, IntentMeta>;
+    cashback: CashbackBenefit;
+    intentMap: SerializedIntentMap;
+    merchantMap: SerializedMerchantMap;
 }
 
-export function CashbackCalculator({cardId, cardIntents, intentMap}: Props) {
+export function CashbackCalculator({cardId, cashback, intentMap, merchantMap}: Props) {
+    const intentModelMap = React.useMemo(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        () => new Map(Object.entries(intentMap).map(([k, v]) => [k, new IntentModel({slug: k, label: v.label, icon: v.icon} as any)])),
+        [intentMap],
+    );
+    const merchantModelMap = React.useMemo(
+        () => new Map(Object.entries(merchantMap).map(([k, v]) => [k, v as Merchant])),
+        [merchantMap],
+    );
+    const rules = cashback.rules ?? [];
+    const maxActiveRules = cashback.max_active_rules;
+
+    const initialSelected = React.useMemo(() => {
+        if (maxActiveRules) {
+            return new Set([0]);
+        }
+        return new Set(rules.map((_, i) => i));
+    }, []);
+
+    const [selected, setSelected] = React.useState<Set<number>>(initialSelected);
     const [totalSpend, setTotalSpend] = React.useState(SPEND_DEFAULT);
-    const [selected, setSelected] = React.useState<Set<string>>(new Set(cardIntents));
     const [result, setResult] = React.useState<CashbackResult | null>(null);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState(false);
 
-    const intents = [...selected];
+    const toggleRule = (idx: number) => {
+        setSelected(prev => {
+            const next = new Set(prev);
+            if (maxActiveRules) {
+                return new Set([idx]);
+            }
+            if (next.has(idx)) {
+                if (next.size === 1) return prev;
+                next.delete(idx);
+            } else {
+                next.add(idx);
+            }
+            return next;
+        });
+    };
+
+    const selectedIntents = React.useMemo(() => {
+        const slugs = new Set<string>();
+        for (const idx of selected) {
+            const rule = rules[idx];
+            if (!rule) continue;
+            for (const s of rule.intents ?? []) {
+                if (!CATCHALL_SLUGS.has(s)) slugs.add(s);
+            }
+            for (const m of rule.merchants ?? []) slugs.add(m);
+        }
+        return [...slugs];
+    }, [selected, rules]);
 
     React.useEffect(() => {
-        if (intents.length === 0) {
+        if (selectedIntents.length === 0) {
             setResult(null);
             return;
         }
@@ -44,7 +93,7 @@ export function CashbackCalculator({cardId, cardIntents, intentMap}: Props) {
         fetch('/api/cashback', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({total_spend: totalSpend, intents, cards: [cardId]}),
+            body: JSON.stringify({total_spend: totalSpend, intents: selectedIntents, cards: [cardId]}),
         })
             .then(r => r.json())
             .then(json => {
@@ -60,34 +109,56 @@ export function CashbackCalculator({cardId, cardIntents, intentMap}: Props) {
                 }
             });
         return () => { cancelled = true; };
-    }, [totalSpend, intents.join(','), cardId]);
-
-    const toggleIntent = (slug: string) => {
-        setSelected(prev => {
-            const next = new Set(prev);
-            if (next.has(slug)) next.delete(slug);
-            else next.add(slug);
-            return next;
-        });
-    };
+    }, [totalSpend, selectedIntents.join(','), cardId]);
 
     const cardData = result?.by_card?.[cardId];
     const totalCashback = cardData?.cashback ?? result?.total_cashback ?? 0;
     const effectiveRate = result?.effective_rate ?? 0;
 
-    const byIntentEntries = result?.by_intent
-        ? Object.entries(result.by_intent).filter(([, v]) => v.best_card_id === cardId)
-        : [];
+    const byIntentMap = result?.by_intent ?? {};
+
+    const getRuleEstimate = (idx: number): number | null => {
+        if (!result || !selected.has(idx)) return null;
+        const rule = rules[idx];
+        if (!rule) return null;
+        const ruleIntents = [...(rule.intents ?? []).filter(s => !CATCHALL_SLUGS.has(s)), ...(rule.merchants ?? [])];
+        if (ruleIntents.length === 0) {
+            return cardData?.cashback ?? null;
+        }
+        let sum = 0;
+        for (const slug of ruleIntents) {
+            const entry = byIntentMap[slug];
+            if (entry?.best_card_id === cardId) sum += entry.cashback ?? 0;
+        }
+        return sum > 0 ? sum : (cardData?.cashback ?? null);
+    };
 
     const notes = cardData?.notes ?? [];
     const suggestions = result?.suggestions ?? [];
 
     return (
-        <div className="ow-cashback-calculator border border-dashed border-slate-200 rounded-lg p-4 flex flex-col gap-4 mt-1">
-            <p className="text-label text-sm">Thử nghiệm hoàn tiền</p>
+        <div className="ow-cashback-calculator flex flex-col gap-3 mt-2">
+            {maxActiveRules && (
+                <p className="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded px-3 py-2">
+                    Chọn {maxActiveRules === 1 ? '1 nhóm ưu đãi' : `tối đa ${maxActiveRules} nhóm`} mỗi kỳ sao kê
+                </p>
+            )}
+
+            {rules.map((rule, idx) => (
+                <OwCardCashbackRule
+                    key={idx}
+                    rule={rule}
+                    intentMap={intentModelMap}
+                    merchantMap={merchantModelMap}
+                    selectable
+                    selected={selected.has(idx)}
+                    onToggle={() => toggleRule(idx)}
+                    estimatedCashback={getRuleEstimate(idx)}
+                />
+            ))}
 
             {/* Spend slider */}
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 pt-1">
                 <div className="flex items-center justify-between text-xs text-text-muted">
                     <span>Chi tiêu / tháng</span>
                     <span className="font-semibold text-black">{totalSpend.toLocaleString('vi-VN')}đ</span>
@@ -106,27 +177,8 @@ export function CashbackCalculator({cardId, cardIntents, intentMap}: Props) {
                 </div>
             </div>
 
-            {/* Intent chips */}
-            <div className="flex flex-wrap gap-1.5">
-                {cardIntents.map(slug => {
-                    const meta = intentMap[slug];
-                    return (
-                        <OwBadge
-                            key={slug}
-                            variant="intent"
-                            slug={slug}
-                            emoji={meta?.icon ?? ''}
-                            label={meta?.label ?? slug}
-                            active={selected.has(slug)}
-                            small
-                            onClick={() => toggleIntent(slug)}
-                        />
-                    );
-                })}
-            </div>
-
             {/* Result */}
-            <div className="rounded-lg bg-slate-50 border border-slate-100 p-3 flex flex-col gap-2 min-h-[80px]">
+            <div className="rounded-lg bg-slate-50 border border-slate-100 p-3 flex flex-col gap-2 min-h-[52px]">
                 {loading && (
                     <div className="flex items-center gap-2 text-xs text-text-muted">
                         <IconLoader2 size={14} className="animate-spin"/>
@@ -154,40 +206,16 @@ export function CashbackCalculator({cardId, cardIntents, intentMap}: Props) {
                                 <span className="text-xs font-semibold text-emerald-600">{fmtPct(effectiveRate)}</span>
                             </div>
                         )}
-                        {byIntentEntries.length > 0 && (
-                            <div className="pt-1.5 border-t border-slate-200 flex flex-col gap-1">
-                                {byIntentEntries.map(([slug, v]) => {
-                                    const meta = intentMap[slug];
-                                    return (
-                                        <div key={slug} className="flex items-center justify-between text-xs">
-                                            <span className="text-text-muted flex items-center gap-1">
-                                                {meta?.icon && <span>{meta.icon}</span>}
-                                                <span>{meta?.label ?? slug}</span>
-                                            </span>
-                                            <span className="text-slate-700">
-                                                {v.budget != null && <span className="text-text-muted mr-1"><OwAmount amount={v.budget} unit="k" textOnly/> →</span>}
-                                                <span className="font-medium">{(v.cashback ?? 0).toLocaleString('vi-VN')}đ</span>
-                                                {v.rate != null && <span className="text-text-muted ml-1">({fmtPct(v.rate)})</span>}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-                        {totalCashback === 0 && intents.length > 0 && (
-                            <p className="text-xs text-text-muted">Không có hoàn tiền cho danh mục đã chọn</p>
-                        )}
                     </>
                 )}
-                {!loading && !error && !result && intents.length === 0 && (
-                    <p className="text-xs text-text-muted">Chọn ít nhất một danh mục</p>
+                {!loading && !error && !result && selectedIntents.length === 0 && (
+                    <p className="text-xs text-text-muted">Chọn ít nhất một nhóm ưu đãi</p>
                 )}
             </div>
 
-            {/* Notes + suggestions */}
             {[...notes, ...suggestions].map((msg, i) => (
                 <div key={i} className="flex items-start gap-1.5 text-xs text-amber-700">
-                    <IconSparkles size={13} className="mt-0.5 shrink-0 text-amber-400"/>
+                    <span className="mt-0.5 shrink-0 text-amber-400">✦</span>
                     <span>{msg}</span>
                 </div>
             ))}

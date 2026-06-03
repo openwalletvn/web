@@ -281,3 +281,30 @@ export const WithMerchants: Story = {
         />
     ),
 };
+
+export const SelectableSelected: Story = {
+    render: () => (
+        <OwCardCashbackRule
+            rule={{rate: 0.2, intents: ['dining'], cap: {amount: 300000}}}
+            intentMap={INTENT_MAP}
+            merchantMap={MERCHANT_MAP}
+            selectable
+            selected
+            estimatedCashback={240000}
+            onToggle={() => {}}
+        />
+    ),
+};
+
+export const SelectableDeselected: Story = {
+    render: () => (
+        <OwCardCashbackRule
+            rule={{rate: 0.2, intents: ['travel'], cap: {amount: 300000}}}
+            intentMap={INTENT_MAP}
+            merchantMap={MERCHANT_MAP}
+            selectable
+            selected={false}
+            onToggle={() => {}}
+        />
+    ),
+};

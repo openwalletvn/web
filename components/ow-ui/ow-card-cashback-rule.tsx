@@ -147,9 +147,13 @@ export interface OwCardCashbackRuleProps {
     rule: CashbackRule;
     intentMap: Map<string, IntentModel>;
     merchantMap: Map<string, Merchant>;
+    selectable?: boolean;
+    selected?: boolean;
+    onToggle?: () => void;
+    estimatedCashback?: number | null;
 }
 
-export function OwCardCashbackRule({rule, intentMap, merchantMap}: OwCardCashbackRuleProps) {
+export function OwCardCashbackRule({rule, intentMap, merchantMap, selectable, selected, onToggle, estimatedCashback}: OwCardCashbackRuleProps) {
     const rateLabel = rule.rate_max
         ? `${formatRate(rule.rate)} – ${formatRate(rule.rate_max)}`
         : formatRate(rule.rate);
@@ -161,14 +165,24 @@ export function OwCardCashbackRule({rule, intentMap, merchantMap}: OwCardCashbac
         (rule.valid_until != null && rule.valid_until < today) ||
         (rule.valid_from != null && rule.valid_from > today);
 
+    const isDeselected = selectable && !selected;
+
     return (
         <div
-            className={cn('ow-card-cashback-rule rounded-lg flex gap-3 border-dashed border border-slate-300 p-4 w-full hover:bg-slate-50 transition-colors', isExpired && 'opacity-50')}>
+            onClick={selectable ? onToggle : undefined}
+            className={cn(
+                'ow-card-cashback-rule rounded-lg flex gap-3 border-dashed border border-slate-300 p-4 w-full transition-colors',
+                selectable ? 'cursor-pointer select-none' : '',
+                selectable && selected ? 'bg-emerald-50 border-emerald-300' : '',
+                selectable && !selected ? 'opacity-40 hover:opacity-70' : 'hover:bg-slate-50',
+                isExpired && 'opacity-50',
+            )}>
             <IconCirclePercentage className="w-4 h-4 min-w-4 text-slate-500 translate-y-0.5 shrink-0"/>
 
             <div className="space-y-3 w-full">
-                {/* Rate + scope badges */}
-                <div className="flex flex-wrap items-start gap-2">
+                {/* Rate + estimated cashback */}
+                <div className="flex items-start justify-between gap-2">
+                    <div className="flex flex-wrap items-start gap-2">
                     <p className="text-sm font-semibold text-slate-900">
                         {rateLabel}
                         {isCatchAll && (
@@ -182,6 +196,12 @@ export function OwCardCashbackRule({rule, intentMap, merchantMap}: OwCardCashbac
                         </span>
                     )}
                     {rule.scope && <ScopeBadges scope={rule.scope}/>}
+                    </div>
+                    {estimatedCashback != null && (
+                        <span className="text-sm font-bold text-emerald-700 whitespace-nowrap shrink-0">
+                            ~ {estimatedCashback.toLocaleString('vi-VN')}đ
+                        </span>
+                    )}
                 </div>
 
                 {/* Validity window */}

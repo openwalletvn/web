@@ -3,11 +3,10 @@ import type {CashbackBenefit, Merchant} from '@/lib/api';
 import {getIntents, getMerchants} from '@/lib/api';
 import {IntentModel} from '@/lib/intent-model';
 import type {CardModel} from '@/lib/card-model';
-import {OwCardCashbackRule} from '@/components/ow-ui/ow-card-cashback-rule';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
 import {IconAlertCircle, IconInfoCircle, IconPackages,} from '@tabler/icons-react';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
-import {CashbackCalculator} from '@/components/cards/detail/cashback-calculator';
+import {CashbackCalculator, type SerializedIntentMap, type SerializedMerchantMap} from '@/components/cards/detail/cashback-calculator';
 
 // ─── Labels ──────────────────────────────────────────────────────────────────
 
@@ -40,10 +39,6 @@ function CashbackSection({
 }) {
     const hasFooter =
         cashback.min_spend_per_period || cashback.global_cap || cashback.redemption || cashback.note;
-
-    const sortedRules = [...cashback.rules].sort(
-        (a, b) => (b.rate_max ?? b.rate) - (a.rate_max ?? a.rate),
-    );
 
     const fmtIsoDate = (iso: string) => {
         const [y, m, d] = iso.split('-');
@@ -96,19 +91,6 @@ function CashbackSection({
                 </div>
             )}
 
-            {cashback.max_active_rules && (
-                <div className="flex items-start gap-2 px-3 py-2.5 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
-                    <IconInfoCircle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-blue-500"/>
-                    <span>
-                        <strong>Chọn {cashback.max_active_rules} danh mục mỗi kỳ.</strong> Hệ thống tự động chọn các danh mục hoàn tiền cao nhất cho bạn.
-                    </span>
-                </div>
-            )}
-
-            {sortedRules.map((rule, i) => (
-                <OwCardCashbackRule key={i} rule={rule} intentMap={intentMap} merchantMap={merchantMap}/>
-            ))}
-
             {hasFooter && (
                 <div className="pt-2 border-t border-dashed border-slate-200 space-y-2">
                     {cashback.min_spend_per_period && (
@@ -156,18 +138,15 @@ export async function CardDetailCashback({card}: Props) {
     const intentMap = IntentModel.toMap(intents);
     const merchantMap = new Map(merchants.map((m) => [m.slug, m]));
 
-    const cardIntents = card.getIntents();
-
     return (
         <CardDetailSection title="Hoàn tiền" className="ow-card-detail-cashback">
             <CashbackSection cashback={card.getCashback()!} intentMap={intentMap} merchantMap={merchantMap}/>
-            {cardIntents.length > 0 && (
+            {card.getCashbackRules().length > 0 && (
                 <CashbackCalculator
                     cardId={card.getId()}
-                    cardIntents={cardIntents}
-                    intentMap={Object.fromEntries(
-                        [...intentMap.entries()].map(([k, v]) => [k, {label: v.getLabel(), icon: v.getIcon()}])
-                    )}
+                    cashback={card.getCashback()!}
+                    intentMap={Object.fromEntries([...intentMap.entries()].map(([k, v]) => [k, {label: v.getLabel(), icon: v.getIcon()}])) as SerializedIntentMap}
+                    merchantMap={Object.fromEntries([...merchantMap.entries()].map(([k, v]) => [k, {label: v.label ?? k, slug: v.slug}])) as SerializedMerchantMap}
                 />
             )}
         </CardDetailSection>
