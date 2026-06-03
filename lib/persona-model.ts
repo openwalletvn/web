@@ -1,6 +1,28 @@
+import * as React from 'react';
+import {
+    IconBriefcase,
+    IconCar,
+    IconDeviceLaptop,
+    IconHomeHeart,
+    IconPlane,
+    IconShoppingBag,
+    IconShoppingCart,
+    IconToolsKitchen2,
+} from '@tabler/icons-react';
 import type {Persona} from '@/lib/api';
 import {ROUTES} from '@/lib/routes';
 import {INTENT_ICON} from '@/lib/intent-model';
+
+const PERSONA_ICON_MAP: Record<string, React.ElementType> = {
+    'shopping-bag': IconShoppingBag,
+    'shopping-cart': IconShoppingCart,
+    'device-laptop': IconDeviceLaptop,
+    'briefcase': IconBriefcase,
+    'plane': IconPlane,
+    'car': IconCar,
+    'home-heart': IconHomeHeart,
+    'tools-kitchen-2': IconToolsKitchen2,
+};
 
 export type PersonaGroup = 'daily' | 'digital' | 'business';
 export type PersonaTheme = 'primary' | 'black';
@@ -86,6 +108,13 @@ const PERSONA_UI_META: Record<string, PersonaUIMeta> = {
         icon: 'tools-kitchen-2'
     },
 };
+
+export function PersonaIcon({slug, size = 14, className}: {slug: string; size?: number; className?: string}) {
+    const iconKey = PERSONA_UI_META[slug]?.icon;
+    const Icon = iconKey ? PERSONA_ICON_MAP[iconKey] : undefined;
+    if (!Icon) return null;
+    return React.createElement(Icon, {size, className});
+}
 
 export class PersonaModel {
     private readonly data?: Persona;

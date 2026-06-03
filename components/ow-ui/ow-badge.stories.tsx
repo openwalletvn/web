@@ -68,6 +68,16 @@ const NETWORKS = [
 
 const CARD_TYPES = ['credit', 'debit', 'prepaid', 'hybrid', 'co-branded', 'atm', 'transit'] as const;
 
+const PERSONAS = [
+    {slug: 'shopee',    label: 'Shopee',        labelVi: 'Shopee',          rank_intents: ['shopee'],   filter: {}},
+    {slug: 'groceries', label: 'Groceries',     labelVi: 'Siêu thị',        rank_intents: ['groceries'], filter: {}},
+    {slug: 'digital',   label: 'Digital',       labelVi: 'Dịch vụ số',      rank_intents: ['digital'],  filter: {}},
+    {slug: 'traveler',  label: 'Traveler',      labelVi: 'Du lịch',         rank_intents: ['travel'],   filter: {}},
+    {slug: 'commuter',  label: 'Commuter',      labelVi: 'Di chuyển',       rank_intents: ['grab'],     filter: {}},
+    {slug: 'family',    label: 'Family',        labelVi: 'Gia đình',        rank_intents: ['groceries'], filter: {}},
+    {slug: 'dining',    label: 'Dining',        labelVi: 'Ăn uống',         rank_intents: ['dining'],   filter: {}},
+];
+
 const CONTACTLESS = [
     {id: 'apple-pay' as const, name: 'Apple Pay', logo_url: '/images/wallets/apple-pay.png', link: ''},
     {id: 'google-pay' as const, name: 'Google Pay', logo_url: '/images/wallets/google-pay.png', link: ''},
@@ -151,11 +161,31 @@ export const Overview: Story = {
                     <OwBadge small variant="network" networkData={NETWORKS[0]}/>
                     <OwBadge small variant="contactless" contactlessData={CONTACTLESS[0]}/>
                     <OwBadge small variant="card-type" cardType="credit"/>
+                    <OwBadge small variant="persona" personaData={PERSONAS[0]}/>
                     <OwBadge small variant="metal"/>
                     <OwBadge small variant="discontinued"/>
                     <OwBadge small>Default small</OwBadge>
                     <OwBadge small active>Active small</OwBadge>
                     <OwBadge small colorHex="#f97316">Custom small</OwBadge>
+                </OwBadges>
+            </OwStorySection>
+            <OwStorySection title="Persona">
+                <OwBadges>
+                    {PERSONAS.map(p => <OwBadge key={p.slug} variant="persona" personaData={p}/>)}
+                </OwBadges>
+            </OwStorySection>
+            <OwStorySection title="Persona — active">
+                <OwBadges>
+                    {PERSONAS.map(p => <OwBadge key={p.slug} variant="persona" personaData={p} active/>)}
+                </OwBadges>
+            </OwStorySection>
+            <OwStorySection title="Persona — interactive (asChild button)">
+                <OwBadges>
+                    {PERSONAS.map(p => (
+                        <OwBadge key={p.slug} variant="persona" personaData={p} asChild>
+                            <button onClick={() => alert(p.slug)}/>
+                        </OwBadge>
+                    ))}
                 </OwBadges>
             </OwStorySection>
             <OwStorySection title="Interactive — asChild (default variant only)">
@@ -249,4 +279,16 @@ export const Discontinued: Story = {
 
 export const SmallDiscontinued: Story = {
     args: {small: true, variant: 'discontinued'},
+};
+
+export const Persona: Story = {
+    args: {variant: 'persona', personaData: PERSONAS[0]},
+};
+
+export const PersonaActive: Story = {
+    args: {variant: 'persona', personaData: PERSONAS[0], active: true},
+};
+
+export const SmallPersona: Story = {
+    args: {small: true, variant: 'persona', personaData: PERSONAS[0]},
 };

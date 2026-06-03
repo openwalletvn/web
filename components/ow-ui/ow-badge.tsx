@@ -1,11 +1,19 @@
 import * as React from 'react';
 import {Slot as SlotPrimitive} from 'radix-ui';
+const {Slottable} = SlotPrimitive;
 import {cn, hexToRgba} from '@/lib/utils';
-import type {CardType, Contactless, Network} from '@/lib/api';
+import type {CardType, Contactless, Network, Persona} from '@/lib/api';
 import {getNetworkImageUrl, getWalletImageUrl, isHybridCard} from '@/lib/api';
-import {CARD_TYPE_HEX, CARD_TYPE_ICON, CARD_TYPE_LABELS, CARD_TYPE_SLUGS, type CardTypeIconComponent} from '@/lib/card-model';
+import {
+    CARD_TYPE_HEX,
+    CARD_TYPE_ICON,
+    CARD_TYPE_LABELS,
+    CARD_TYPE_SLUGS,
+    type CardTypeIconComponent
+} from '@/lib/card-model';
 import {ROUTES} from '@/lib/routes';
 import {INTENT_HEX} from '@/lib/intent-model';
+import {PersonaIcon, PersonaModel} from '@/lib/persona-model';
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
@@ -50,6 +58,58 @@ const SIZE_CLS = {
     small: 'min-h-[22px] px-2 py-0.5 text-xs',
 };
 
+// ─── Shell ────────────────────────────────────────────────────────────────────
+
+type ShellProps = {
+    asChild?: boolean;
+    slotChild?: React.ReactElement;
+    active?: boolean;
+    small?: boolean;
+    style?: React.CSSProperties;
+    className?: string;
+    onClick?: React.MouseEventHandler;
+    href?: string;
+    children: React.ReactNode;
+};
+
+function BadgeShell({
+                        asChild = false,
+                        slotChild,
+                        active = false,
+                        small = false,
+                        style,
+                        className,
+                        onClick,
+                        href,
+                        children
+                    }: ShellProps) {
+    const sizeCls = SIZE_CLS[small ? 'small' : 'default'];
+    const smallCls = small ? 'ow-badge-small' : '';
+    const sharedProps = {
+        'data-active': active,
+        style,
+        onClick,
+        className: cn(BASE_CLS, sizeCls, smallCls, className),
+    };
+
+    if (asChild && slotChild) {
+        // Merge onto caller's element; badge content rendered as siblings via Slottable
+        return (
+            <SlotPrimitive.Root {...sharedProps}>
+                {children}
+                <Slottable>{slotChild}</Slottable>
+            </SlotPrimitive.Root>
+        );
+    }
+
+    const Comp = href ? 'a' : 'span';
+    return (
+        <Comp {...sharedProps} href={href}>
+            {children}
+        </Comp>
+    );
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type BaseProps = {
@@ -86,6 +146,11 @@ export type OwBadgeProps =
         variant: 'contactless';
         contactlessData: Pick<Contactless, 'id' | 'name' | 'logo_url'>;
     })
+    | (BaseProps & {
+    variant: 'persona';
+    personaData: Persona;
+    children?: React.ReactNode;
+})
     | (BaseProps & { variant: 'discontinued' })
     | (BaseProps & { variant: 'metal' })
     | (BaseProps & {
@@ -98,8 +163,7 @@ export type OwBadgeProps =
 
 export function OwBadge(props: OwBadgeProps) {
     const {active = false, asChild = false, className, onClick, small = false} = props;
-    const sizeCls = SIZE_CLS[small ? 'small' : 'default'];
-    const smallCls = small ? 'ow-badge-small' : '';
+    const slotChild = asChild && 'children' in props ? props.children as React.ReactElement : undefined;
 
     if (props.variant === 'intent') {
         const {slug, emoji, label, rate, highlighted = false, colorHex} = props;
@@ -110,10 +174,10 @@ export function OwBadge(props: OwBadgeProps) {
             ? ` ${(rate * 100).toFixed(rate * 100 % 1 === 0 ? 0 : 1)}%`
             : '';
         return (
-            <span data-active={active} style={style} onClick={onClick}
-                  className={cn(BASE_CLS, sizeCls, smallCls, colorCls, className)}>
+            <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} style={style}
+                        className={cn(colorCls, className)} onClick={onClick}>
                 {emoji} {label}{rateStr}
-            </span>
+            </BadgeShell>
         );
     }
 
@@ -123,12 +187,12 @@ export function OwBadge(props: OwBadgeProps) {
         const imgHeight = NETWORK_IMG_HEIGHTS[networkData.id] ?? 14;
         const style = colorVars(hex, active ? 0.2 : 0.1, active ? 0.5 : 0.3);
         return (
-            <span data-active={active} style={style} onClick={onClick}
-                  className={cn(BASE_CLS, sizeCls, smallCls, COLOR_CLS, className)}>
+            <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} style={style}
+                        className={cn(COLOR_CLS, className)} onClick={onClick}>
                 <img src={getNetworkImageUrl(networkData.logo_url)} alt={networkData.name}
                      style={{height: imgHeight}} className="object-contain"/>
                 {tier && <span className="uppercase font-display tracking-wider text-xs">{tier}</span>}
-            </span>
+            </BadgeShell>
         );
     }
 
@@ -136,14 +200,14 @@ export function OwBadge(props: OwBadgeProps) {
         const {contactlessData} = props;
         const style = {
             ...colorVars('#64748b', active ? 0.2 : 0.08, active ? 0.5 : 0.2),
-            '--badge-color': '#475569'
+            '--badge-color': '#475569',
         } as React.CSSProperties;
         return (
-            <span data-active={active} style={style} onClick={onClick}
-                  className={cn(BASE_CLS, sizeCls, smallCls, COLOR_CLS, className)}>
+            <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} style={style}
+                        className={cn(COLOR_CLS, className)} onClick={onClick}>
                 <img src={getWalletImageUrl(contactlessData.logo_url)} alt={contactlessData.name}
                      style={{height: small ? 12 : 16}} className="object-contain mix-blend-multiply dark:mix-blend-screen"/>
-            </span>
+            </BadgeShell>
         );
     }
 
@@ -157,7 +221,6 @@ export function OwBadge(props: OwBadgeProps) {
         const style = hex && !active ? colorVars(hex, 0.1, 0.3) : {};
         const typeSlug = cardType ? CARD_TYPE_SLUGS[cardType] : undefined;
         const href = typeSlug ? ROUTES.cardTypePage(typeSlug) : undefined;
-        const Comp = href ? 'a' : 'span';
         const renderIcon = () => {
             if (!resolvedIcon) return null;
             if (typeof resolvedIcon === 'string') return <span>{resolvedIcon}</span>;
@@ -165,56 +228,65 @@ export function OwBadge(props: OwBadgeProps) {
             return <Icon size={14}/>;
         };
         return (
-            <Comp data-active={active} style={style} onClick={onClick}
-                  href={href}
-                  className={cn(BASE_CLS, sizeCls, smallCls,
-                      active && 'bg-primary border-primary text-white',
-                      !active && hex && COLOR_CLS,
-                      !active && !hex && 'bg-[#EDEFEC] border-[#D3D3D3] text-foreground',
-                      !active && !hex && '[&:is(button,a)]:hover:border-primary',
-                      className)}>
+            <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} style={style} href={href}
+                        className={cn(
+                            active && 'bg-primary border-primary text-white',
+                            !active && hex && COLOR_CLS,
+                            !active && !hex && 'bg-[#EDEFEC] border-[#D3D3D3] text-foreground',
+                            !active && !hex && '[&:is(button,a)]:hover:border-primary',
+                            className)} onClick={onClick}>
                 {renderIcon()}
-                {cardType ? (CARD_TYPE_LABELS[cardType] ?? cardType) : children}
-            </Comp>
+                {cardType ? (CARD_TYPE_LABELS[cardType] ?? cardType) : (!asChild && children)}
+            </BadgeShell>
+        );
+    }
+
+    if (props.variant === 'persona') {
+        const {personaData} = props;
+        const model = new PersonaModel(personaData);
+        const hex = model.getColor();
+        const style = hex ? colorVars(hex, active ? 0.2 : 0.1, active ? 0.5 : 0.3) : {};
+        const colorCls = hex ? COLOR_CLS : 'bg-bg-muted border-border text-text-muted';
+        return (
+            <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} style={style}
+                        className={cn(colorCls, className)} onClick={onClick}>
+                <PersonaIcon slug={personaData.slug} size={14}/>
+                {model.getDisplayLabel()}
+            </BadgeShell>
         );
     }
 
     if (props.variant === 'discontinued') {
         return (
-            <span data-active={active} onClick={onClick}
-                  className={cn(BASE_CLS, sizeCls, smallCls,
-                      'border-dashed bg-amber-50 border-amber-400 text-amber-600',
-                      className)}>
+            <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} onClick={onClick}
+                        className={cn('border-dashed bg-amber-50 border-amber-400 text-amber-600', className)}>
                 💤 Dừng phát hành
-            </span>
+            </BadgeShell>
         );
     }
 
     if (props.variant === 'metal') {
         return (
-            <span data-active={active} onClick={onClick}
-                  className={cn(BASE_CLS, sizeCls, smallCls,
-                      'bg-gradient-to-r from-slate-200 via-white to-slate-300 border-slate-300 text-slate-600',
-                      className)}>
+            <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} onClick={onClick}
+                        className={cn('bg-gradient-to-r from-slate-200 via-white to-slate-300 border-slate-300 text-slate-600', className)}>
                 <span className="uppercase font-display tracking-wider text-xs">Thẻ kim loại</span>
-            </span>
+            </BadgeShell>
         );
     }
 
-    // default — generic badge with optional colorHex or active state; supports asChild
-    const Comp = asChild ? SlotPrimitive.Root : 'span';
+    // default
     const {colorHex, children} = props as Extract<OwBadgeProps, {variant?: never}>;
     const style = colorHex ? colorVars(colorHex, active ? 0.2 : 0.1, active ? 0.5 : 0.3) : {};
     return (
-        <Comp data-active={active} style={style} onClick={onClick}
-              className={cn(BASE_CLS, sizeCls, smallCls,
-                  colorHex && COLOR_CLS,
-                  !colorHex && active && 'bg-primary border-primary text-white',
-                  !colorHex && !active && 'bg-[#EDEFEC] border-[#D3D3D3] text-foreground',
-                  !colorHex && '[&:is(button,a)]:hover:bg-primary/10 [&:is(button,a)]:hover:border-primary [&:is(button,a)]:hover:text-primary',
-                  className)}>
-            {children}
-        </Comp>
+        <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} style={style} onClick={onClick}
+                    className={cn(
+                        colorHex && COLOR_CLS,
+                        !colorHex && active && 'bg-primary border-primary text-white',
+                        !colorHex && !active && 'bg-[#EDEFEC] border-[#D3D3D3] text-foreground',
+                        !colorHex && '[&:is(button,a)]:hover:bg-primary/10 [&:is(button,a)]:hover:border-primary [&:is(button,a)]:hover:text-primary',
+                        className)}>
+            {!asChild && children}
+        </BadgeShell>
     );
 }
 

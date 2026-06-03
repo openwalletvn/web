@@ -5,9 +5,10 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {getTool} from '@/lib/tools';
 import type {Intent, Persona} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
-import {OwBadge} from '@/components/ow-ui/ow-badge';
+import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {OwCardRankedRow} from '@/components/ow-ui/ow-card-ranked-row';
 import {cn} from "@/lib/utils";
+import {OwRangeSlider} from '@/components/ow-ui/ow-range-slider';
 
 const STORAGE_KEY = 'ow-rec-prefs';
 const cardMatchHref = getTool('Card Match').href;
@@ -140,15 +141,14 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                         {/* Step 1: Persona */}
                         <div>
                             <h2 className="text-body-lg text-text-muted mb-4">Bạn hay chi tiêu ở đâu?</h2>
-                            <div className="flex flex-wrap gap-2">
+                            <OwBadges>
                                 {personas.map(p => (
-                                    <OwBadge key={p.slug} active={activePersona === p.slug} asChild>
-                                        <button onClick={() => setActivePersona(p.slug)}>
-                                            {p.labelVi || p.label}
-                                        </button>
+                                    <OwBadge key={p.slug} variant="persona" personaData={p}
+                                             active={activePersona === p.slug} asChild>
+                                        <button onClick={() => setActivePersona(p.slug)}/>
                                     </OwBadge>
                                 ))}
-                            </div>
+                            </OwBadges>
                         </div>
 
                         {/* Step 2: Sort by */}
@@ -170,14 +170,12 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                                 <h2 className="text-body-lg text-text-muted">Chi tiêu hàng tháng</h2>
                                 <span className="text-body font-semibold">{monthlySpend}tr</span>
                             </div>
-                            <input
-                                type="range"
+                            <OwRangeSlider
                                 min={0}
                                 max={SPEND_STEPS.length - 1}
                                 step={1}
                                 value={spendStepIdx}
-                                onChange={e => setSpendStepIdx(Number(e.target.value))}
-                                className="w-full accent-red-500"
+                                onChange={setSpendStepIdx}
                             />
                             <div className="flex justify-between text-[10px] text-text-muted/60 mt-1">
                                 <span>{SPEND_STEPS[0]}tr</span>
