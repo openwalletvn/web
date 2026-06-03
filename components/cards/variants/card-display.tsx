@@ -135,9 +135,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                     )}
                     <OwBadges className="mt-1">
                         {status && card.status === 'discontinued' && (
-                            <OwBadge small colorHex="#d97706"
-                                     className="border-dashed bg-amber-50 text-amber-600 border-amber-400">Dừng phát
-                                hành</OwBadge>
+                            <OwBadge small variant="discontinued"/>
                         )}
                         {network && card.card_network_data &&
                             <OwBadge small variant="network" networkData={card.card_network_data}
@@ -218,9 +216,7 @@ function CardDisplayRow({ card, bank, badges = {}, slot, className }: Omit<RowPr
                 <p className="font-medium leading-tight truncate text-sm text-slate-900">{card.name}</p>
                 <OwBadges className="mt-1">
                     {status && card.status === 'discontinued' && (
-                        <OwBadge small colorHex="#d97706"
-                                 className="border-dashed bg-amber-50 text-amber-600 border-amber-400">Dừng phát
-                            hành</OwBadge>
+                        <OwBadge small variant="discontinued"/>
                     )}
                     {network && card.card_network_data &&
                         <OwBadge small variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}
@@ -265,9 +261,7 @@ function CardDisplaySlim({ card, bank, badges = {}, showThumb = false, asLink = 
                 )}
                 <OwBadges className="mt-1">
                     {card.status === 'discontinued' && (
-                        <OwBadge small colorHex="#d97706"
-                                 className="border-dashed bg-amber-50 text-amber-600 border-amber-400">Dừng phát
-                            hành</OwBadge>
+                        <OwBadge small variant="discontinued"/>
                     )}
                     {network && card.card_network_data &&
                         <OwBadge small variant="network" networkData={card.card_network_data} tier={card.card_tier}/>}

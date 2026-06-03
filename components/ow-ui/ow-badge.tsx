@@ -86,6 +86,7 @@ export type OwBadgeProps =
         variant: 'contactless';
         contactlessData: Pick<Contactless, 'id' | 'name' | 'logo_url'>;
     })
+    | (BaseProps & { variant: 'discontinued' })
     | (BaseProps & { variant: 'metal' })
     | (BaseProps & {
         variant?: never;
@@ -175,6 +176,17 @@ export function OwBadge(props: OwBadgeProps) {
                 {renderIcon()}
                 {cardType ? (CARD_TYPE_LABELS[cardType] ?? cardType) : children}
             </Comp>
+        );
+    }
+
+    if (props.variant === 'discontinued') {
+        return (
+            <span data-active={active} onClick={onClick}
+                  className={cn(BASE_CLS, sizeCls, smallCls,
+                      'border-dashed bg-amber-50 border-amber-400 text-amber-600',
+                      className)}>
+                🚫 Dừng phát hành
+            </span>
         );
     }
 

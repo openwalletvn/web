@@ -13,7 +13,7 @@ const meta: Meta<typeof OwBadge> = {
                 component: [
                     'Single primitive for all badge and chip UI. Replaces `OwChip`, `OwCardBadge`, and `OwIntentBadge`.',
                     '',
-                    '**Variants:** `intent` | `network` | `contactless` | `card-type` | `metal` | _(default)_',
+                    '**Variants:** `intent` | `network` | `contactless` | `card-type` | `metal` | `discontinued` | _(default)_',
                     '',
                     'All variants support `active` and `asChild` for interactive use:',
                     '',
@@ -139,6 +139,12 @@ export const Overview: Story = {
                     <OwBadge small variant="metal"/>
                 </OwBadges>
             </OwStorySection>
+            <OwStorySection title="Discontinued">
+                <OwBadges>
+                    <OwBadge variant="discontinued"/>
+                    <OwBadge small variant="discontinued"/>
+                </OwBadges>
+            </OwStorySection>
             <OwStorySection title="Small — all variants">
                 <OwBadges>
                     <OwBadge small variant="intent" slug="dining" emoji="🍜" label="Ăn uống" rate={0.03}/>
@@ -146,6 +152,7 @@ export const Overview: Story = {
                     <OwBadge small variant="contactless" contactlessData={CONTACTLESS[0]}/>
                     <OwBadge small variant="card-type" cardType="credit"/>
                     <OwBadge small variant="metal"/>
+                    <OwBadge small variant="discontinued"/>
                     <OwBadge small>Default small</OwBadge>
                     <OwBadge small active>Active small</OwBadge>
                     <OwBadge small colorHex="#f97316">Custom small</OwBadge>
@@ -234,4 +241,12 @@ export const Metal: Story = {
 
 export const SmallMetal: Story = {
     args: {small: true, variant: 'metal'},
+};
+
+export const Discontinued: Story = {
+    args: {variant: 'discontinued'},
+};
+
+export const SmallDiscontinued: Story = {
+    args: {small: true, variant: 'discontinued'},
 };

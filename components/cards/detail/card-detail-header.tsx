@@ -23,9 +23,7 @@ export function CardDetailHeader({ card, bank }: Props) {
 
             <div className="flex flex-wrap gap-1.5">
                 {card.getStatus() === 'discontinued' && (
-                    <span className="px-1.5 py-0.5 border border-dashed border-amber-400 text-amber-600 bg-amber-50 text-[11px]">
-                        Dừng phát hành
-                    </span>
+                    <OwBadge small variant="discontinued"/>
                 )}
                 <OwBadges>
                     {card.getNetworkData() && <OwBadge variant="network" networkData={card.getNetworkData()!} tier={card.getCardTier()}/>}
