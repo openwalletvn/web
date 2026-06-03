@@ -1,4 +1,5 @@
 import type {Meta, StoryObj} from '@storybook/nextjs-vite';
+import Link from 'next/link';
 import {OwWobbleCard} from './ow-wobble-card';
 import {OwStories, OwStorySection} from './ow-story-section';
 
@@ -10,17 +11,21 @@ const meta: Meta<typeof OwWobbleCard> = {
         docs: {
             description: {
                 component: [
-                    'Wobble card with brand color background. Wraps the `WobbleCard` primitive.',
+                    'Wobble card with brand color background. Wraps the internal `WobbleCard` primitive.',
                     '',
                     '**Props:**',
                     '- `brandColor` — hex color for card background tint (default: `#e1795d`)',
-                    '- `href` — makes the card a clickable link',
+                    '- `asChild` — merge wobble card onto child element (e.g. `<Link>`)',
+                    '- `containerClassName` — extra classes on outer container (for bento grid sizing)',
+                    '- `className` — extra classes on inner content wrapper',
                     '- `renderCondition` — pass `false` to hide the card entirely',
                     '',
                     '```tsx',
-                    '<OwWobbleCard brandColor="#e1795d" href="/linh-vuc/shopee">',
-                    '  <span className="font-semibold">Shopee</span>',
-                    '  <span className="text-sm">Hoàn tiền cao nhất cho Shopee</span>',
+                    '<OwWobbleCard brandColor="#e1795d" asChild>',
+                    '  <Link href="/linh-vuc/shopee">',
+                    '    <span className="font-semibold">Shopee</span>',
+                    '    <span className="text-sm">Hoàn tiền cao nhất cho Shopee</span>',
+                    '  </Link>',
                     '</OwWobbleCard>',
                     '```',
                 ].join('\n'),
@@ -59,11 +64,13 @@ export const Overview: Story = {
                     </OwWobbleCard>
                 </div>
             </OwStorySection>
-            <OwStorySection title="With href (clickable)">
+            <OwStorySection title="With asChild + Link (clickable)">
                 <div className="grid grid-cols-3 gap-4">
-                    <OwWobbleCard brandColor="#a855f7" href="/linh-vuc/shopee">
-                        <span className="font-semibold text-white">🛍️ Shopee</span>
-                        <span className="text-sm text-white/70">Click me</span>
+                    <OwWobbleCard brandColor="#a855f7" asChild>
+                        <Link href="/linh-vuc/shopee">
+                            <span className="font-semibold text-white">🛍️ Shopee</span>
+                            <span className="text-sm text-white/70">Click me</span>
+                        </Link>
                     </OwWobbleCard>
                 </div>
             </OwStorySection>
@@ -84,10 +91,69 @@ export const Default: Story = {
     },
 };
 
-export const WithHref: Story = {
-    args: {
-        brandColor: '#3b82f6',
-        href: '/linh-vuc/shopee',
-        children: <><span className="font-semibold text-white">🛍️ Shopee</span><span className="text-sm text-white/70">Hoàn tiền cao nhất cho Shopee</span></>,
-    },
+export const BentoGrid: Story = {
+    render: () => (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto w-full">
+            <OwWobbleCard
+                brandColor="#be185d"
+                containerClassName="col-span-1 lg:col-span-2 h-full min-h-[500px] lg:min-h-[300px]"
+                className=""
+            >
+                <div className="max-w-xs">
+                    <h2 className="text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
+                        Gippity AI powers the entire universe
+                    </h2>
+                    <p className="mt-4 text-left text-base/6 text-neutral-200">
+                        With over 100,000 monthly active bot users, Gippity AI is the most popular AI platform for developers.
+                    </p>
+                </div>
+                <img
+                    src="/linear.webp"
+                    width={500}
+                    height={500}
+                    alt="linear demo image"
+                    className="absolute -right-4 lg:-right-[40%] grayscale filter -bottom-10 object-contain rounded-2xl"
+                />
+            </OwWobbleCard>
+            <OwWobbleCard containerClassName="col-span-1 min-h-[300px]">
+                <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
+                    No shirt, no shoes, no weapons.
+                </h2>
+                <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
+                    If someone yells "stop!", goes limp, or taps out, the fight is over.
+                </p>
+            </OwWobbleCard>
+            <OwWobbleCard
+                brandColor="#1e40af"
+                containerClassName="col-span-1 lg:col-span-3 min-h-[500px] lg:min-h-[600px] xl:min-h-[300px]"
+            >
+                <div className="max-w-sm">
+                    <h2 className="max-w-sm md:max-w-lg text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
+                        Signup for blazing-fast cutting-edge state of the art Gippity AI wrapper today!
+                    </h2>
+                    <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
+                        With over 100,000 monthly active bot users, Gippity AI is the most popular AI platform for developers.
+                    </p>
+                </div>
+                <img
+                    src="/linear.webp"
+                    width={500}
+                    height={500}
+                    alt="linear demo image"
+                    className="absolute -right-10 md:-right-[40%] lg:-right-[20%] -bottom-10 object-contain rounded-2xl"
+                />
+            </OwWobbleCard>
+        </div>
+    ),
+};
+
+export const WithLink: Story = {
+    render: () => (
+        <OwWobbleCard brandColor="#3b82f6" asChild>
+            <Link href="/linh-vuc/shopee">
+                <span className="font-semibold text-white">🛍️ Shopee</span>
+                <span className="text-sm text-white/70">Hoàn tiền cao nhất cho Shopee</span>
+            </Link>
+        </OwWobbleCard>
+    ),
 };
