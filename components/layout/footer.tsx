@@ -18,9 +18,12 @@ const LINKS = {
         {label: 'Ngân hàng', href: ROUTES.banks},
         {label: 'Thẻ', href: ROUTES.cards},
         {label: 'Tin tức', href: ROUTES.blog},
+    ],
+    cardTypes: [
         {label: 'Thẻ tín dụng', href: ROUTES.cardTypePage('the-tin-dung')},
         {label: 'Thẻ ghi nợ', href: ROUTES.cardTypePage('the-ghi-no')},
         {label: 'Thẻ hybrid', href: ROUTES.cardTypePage('the-hybrid')},
+        {label: 'Tất cả loại thẻ', href: '/loai-the'},
     ],
     about: [
         {label: 'Về OpenWallet', href: '/ve-openwallet'},
@@ -58,11 +61,12 @@ export function Footer() {
                             {/* Link columns */}
                             <div className="md:col-span-10 col-span-12 grid grid-cols-12 gap-x-4 gap-y-8">
                                 <div className="sm:col-span-4 col-span-6 flex flex-col gap-8">
-                                    <LinkColumn heading="Danh mục" links={LINKS.directories}/>
-                                    <LinkColumn heading="Công cụ" links={LINKS.tools}/>
+                                    <LinkColumn heading="Thẻ theo nhu cầu" links={LINKS.personas}/>
+                                    <LinkColumn heading="Loại thẻ" links={LINKS.cardTypes}/>
                                 </div>
                                 <div className="sm:col-span-4 col-span-6 flex flex-col gap-8">
-                                    <LinkColumn heading="Thẻ theo nhu cầu" links={LINKS.personas}/>
+                                    <LinkColumn heading="Danh mục" links={LINKS.directories}/>
+                                    <LinkColumn heading="Công cụ" links={LINKS.tools}/>
                                 </div>
                                 <div className="sm:col-span-4 col-span-12 flex flex-col gap-8">
                                     <LinkColumn heading="Về chúng tôi" links={LINKS.about}/>
