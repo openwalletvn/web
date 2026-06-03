@@ -1,5 +1,6 @@
 import type {Persona} from '@/lib/api';
 import {ROUTES} from '@/lib/routes';
+import {INTENT_ICON} from '@/lib/intent-model';
 
 export type PersonaGroup = 'daily' | 'digital' | 'business';
 export type PersonaTheme = 'primary' | 'black';
@@ -12,17 +13,35 @@ interface PersonaUIMeta {
     theme?: PersonaTheme;
     available?: boolean;
     hidden?: boolean;
+    color: string;
+    icon: string;
 }
 
 const PERSONA_UI_META: Record<string, PersonaUIMeta> = {
-    shopee: {name: 'Thẻ Shopee', description: 'Thẻ ưu đãi Shopee', group: 'daily', slug: 'shopee'},
-    groceries: {name: 'Thẻ Siêu thị', description: 'Coopmart, Go, Lotte, AEON,...', group: 'daily', slug: 'sieu-thi'},
+    shopee: {
+        name: 'Thẻ Shopee',
+        description: 'Thẻ ưu đãi Shopee',
+        group: 'daily',
+        slug: 'shopee',
+        color: '#ee4d2d',
+        icon: 'shopping-bag'
+    },
+    groceries: {
+        name: 'Thẻ Siêu thị',
+        description: 'Coopmart, Go, Lotte, AEON,...',
+        group: 'daily',
+        slug: 'sieu-thi',
+        color: '#22c55e',
+        icon: 'shopping-cart'
+    },
     digital: {
         name: 'Dịch vụ số',
         description: 'AI, Netflix, Spotify,...',
         group: 'digital',
         slug: 'dich-vu-so',
-        theme: 'primary'
+        theme: 'primary',
+        color: '#6366f1',
+        icon: 'device-laptop',
     },
     business: {
         name: 'Thẻ doanh nghiệp',
@@ -31,11 +50,41 @@ const PERSONA_UI_META: Record<string, PersonaUIMeta> = {
         slug: 'doanh-nghiep',
         theme: 'black',
         hidden: true,
+        color: '#1e293b',
+        icon: 'briefcase',
     },
-    traveler: {name: 'Thẻ Du Lịch', description: 'Vé máy bay, khách sạn, Agoda', group: 'daily', slug: 'du-lich'},
-    commuter: {name: 'Thẻ Di Chuyển', description: 'Grab, Be, vận chuyển hàng ngày', group: 'daily', slug: 'di-chuyen'},
-    family: {name: 'Thẻ Gia Đình', description: 'Siêu thị, học phí, y tế, bảo hiểm', group: 'daily', slug: 'gia-dinh'},
-    dining: {name: 'Thẻ Ăn Uống', description: 'Nhà hàng, quán cà phê, Shopee Food, GrabFood', group: 'daily', slug: 'an-uong'},
+    traveler: {
+        name: 'Thẻ Du Lịch',
+        description: 'Vé máy bay, khách sạn, Agoda',
+        group: 'daily',
+        slug: 'du-lich',
+        color: '#0ea5e9',
+        icon: 'plane'
+    },
+    commuter: {
+        name: 'Thẻ Di Chuyển',
+        description: 'Grab, Be, vận chuyển hàng ngày',
+        group: 'daily',
+        slug: 'di-chuyen',
+        color: '#f59e0b',
+        icon: 'car'
+    },
+    family: {
+        name: 'Thẻ Gia Đình',
+        description: 'Siêu thị, học phí, y tế, bảo hiểm',
+        group: 'daily',
+        slug: 'gia-dinh',
+        color: '#ec4899',
+        icon: 'home-heart'
+    },
+    dining: {
+        name: 'Thẻ Ăn Uống',
+        description: 'Nhà hàng, quán cà phê, Shopee Food, GrabFood',
+        group: 'daily',
+        slug: 'an-uong',
+        color: '#f97316',
+        icon: 'tools-kitchen-2'
+    },
 };
 
 export class PersonaModel {
@@ -135,6 +184,16 @@ export class PersonaModel {
         return this.ui?.theme;
     }
 
+    /** Hex color for UI display. */
+    getColor(): string | undefined {
+        return this.ui?.color;
+    }
+
+    /** Tabler icon name (kebab-case) for UI display. */
+    getIcon(): string | undefined {
+        return this.ui?.icon;
+    }
+
     /** False when the persona page is not yet available. */
     isAvailable(): boolean {
         return this.ui?.available !== false;
@@ -160,13 +219,9 @@ export class PersonaModel {
         return this.getCobrands().length > 0;
     }
 
-    /**
-     * Returns emoji icons for all rank_intents present in the provided map.
-     * Build the map once: `new Map(intents.map(i => [i.slug, i.icon]))`.
-     */
-    getEmoji(intentIconMap: Map<string, string>): string[] {
+    getEmoji(): string[] {
         return this.getRankIntents()
-            .map(slug => intentIconMap.get(slug))
+            .map(slug => INTENT_ICON[slug])
             .filter((icon): icon is string => icon !== undefined);
     }
 }

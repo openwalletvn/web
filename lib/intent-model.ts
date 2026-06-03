@@ -18,6 +18,22 @@ export const INTENT_HEX: Record<string, string> = {
     pets: '#f59e0b',
 };
 
+export const INTENT_ICON: Record<string, string> = {
+    shopee: '🛍️', lazada: '📦', 'tiktok-shop': '🎵', tiki: '📘', ecommerce: '🛒',
+    grab: '🚗', transport: '🚌',
+    dining: '🍜',
+    'vietnam-airlines': '✈️', 'bamboo-airways': '🟢', agoda: '🌏', travel: '🌏',
+    groceries: '🛒',
+    shopping: '👗', fashion: '👗', books: '📚',
+    digital: '📱', ads: '📣', telecom: '📞',
+    cinema: '🎬', entertainment: '🎉',
+    health: '🏥',
+    insurance: '🛡️',
+    education: '📚',
+    golf: '⛳',
+    pets: '🐾',
+};
+
 export class IntentModel {
     constructor(private readonly data: Intent) {}
 

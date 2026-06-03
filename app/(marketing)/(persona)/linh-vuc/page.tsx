@@ -61,9 +61,10 @@ export default async function PersonaHubPage() {
 
                 <div className="ow-persona-hub-page-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {items.map((persona) => (
-                        <OwWobbleCard key={persona.getSlug()} asChild>
+                        <OwWobbleCard key={persona.getSlug()} brandColor={persona.getColor()} asChild>
                             <Link href={persona.getHref()}>
-                                <span className="font-semibold text-base text-white">{persona.getDisplayLabel()}</span>
+                                <span className="heading-5 text-white">{persona.getDisplayLabel()}</span>
+                                <span className="inline-flex gap-1">{persona.getEmoji().map((e, i) => <span key={i}>{e}</span>)}</span>
                                 <span className="text-white/70 text-sm">{persona.getDescription()}</span>
                             </Link>
                         </OwWobbleCard>

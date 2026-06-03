@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import {getIntents, getPersonas, getRankedCards} from '@/lib/api';
+import {getPersonas, getRankedCards} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
 import {PersonaModel} from '@/lib/persona-model';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
@@ -21,11 +21,7 @@ export async function CardDetailRankBadges({card}: Props) {
     const matchedPersonas = card.getMatchedPersonas();
     if (!matchedPersonas.length) return null;
 
-    const [personas, intents] = await Promise.all([
-        getPersonas().catch(() => []),
-        getIntents().catch(() => []),
-    ]);
-    const intentIconMap = new Map(intents.map((i) => [i.slug, i.icon]));
+    const personas = await getPersonas().catch(() => []);
 
     const results = await Promise.allSettled(
         matchedPersonas.map(async (slug): Promise<RankBadge | null> => {
@@ -48,7 +44,7 @@ export async function CardDetailRankBadges({card}: Props) {
                 label: persona.getDisplayLabel(),
                 href: persona.getHref(),
                 rank: position + 1,
-                emoji: persona.getEmoji(intentIconMap)
+                emoji: persona.getEmoji()
             };
         }),
     );
