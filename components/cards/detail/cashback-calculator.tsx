@@ -4,6 +4,7 @@ import type {CashbackResult} from '@/lib/api';
 import {IconAlertTriangle, IconLoader2, IconSparkles} from '@tabler/icons-react';
 import {OwRangeSlider} from '@/components/ow-ui/ow-range-slider';
 import {OwAmount, formatOwAmount} from '@/components/ow-ui/ow-amount';
+import {OwBadge} from '@/components/ow-ui/ow-badge';
 
 const SPEND_MIN = 500_000;
 const SPEND_MAX = 20_000_000;
@@ -109,20 +110,17 @@ export function CashbackCalculator({cardId, cardIntents, intentMap}: Props) {
             <div className="flex flex-wrap gap-1.5">
                 {cardIntents.map(slug => {
                     const meta = intentMap[slug];
-                    const active = selected.has(slug);
                     return (
-                        <button
+                        <OwBadge
                             key={slug}
+                            variant="intent"
+                            slug={slug}
+                            emoji={meta?.icon ?? ''}
+                            label={meta?.label ?? slug}
+                            active={selected.has(slug)}
+                            small
                             onClick={() => toggleIntent(slug)}
-                            className={`flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs transition-colors ${
-                                active
-                                    ? 'bg-red-50 border-red-300 text-red-700'
-                                    : 'bg-white border-slate-200 text-slate-400'
-                            }`}
-                        >
-                            {meta?.icon && <span>{meta.icon}</span>}
-                            <span>{meta?.label ?? slug}</span>
-                        </button>
+                        />
                     );
                 })}
             </div>

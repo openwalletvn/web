@@ -102,7 +102,7 @@ function BadgeShell({
         );
     }
 
-    const Comp = href ? 'a' : 'span';
+    const Comp = href ? 'a' : onClick ? 'button' : 'span';
     return (
         <Comp {...sharedProps} href={href}>
             {children}
@@ -168,7 +168,10 @@ export function OwBadge(props: OwBadgeProps) {
     if (props.variant === 'intent') {
         const {slug, emoji, label, rate, highlighted = false, colorHex} = props;
         const hex = colorHex ?? INTENT_HEX[slug] ?? null;
-        const style = hex ? colorVars(hex, highlighted ? 0.2 : 0.1, highlighted ? 0.5 : 0.3) : {};
+        const style = hex ? {
+            ...colorVars(hex, active ? 1 : highlighted ? 0.2 : 0.1, active ? 1 : highlighted ? 0.5 : 0.3),
+            ...(active ? {'--badge-color': 'white'} as React.CSSProperties : {}),
+        } : {};
         const colorCls = hex ? COLOR_CLS : 'bg-bg-muted border-border text-text-muted opacity-50';
         const rateStr = rate !== undefined
             ? ` ${(rate * 100).toFixed(rate * 100 % 1 === 0 ? 0 : 1)}%`
