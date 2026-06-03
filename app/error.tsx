@@ -73,9 +73,17 @@ export default function ErrorPage({
       ) : (
         <>
           <h2 className="heading-3 mb-3">Đã xảy ra lỗi</h2>
-          <p className="text-body-sm mb-10 max-w-sm text-[var(--color-text-muted)]">
+          <p className="text-body-sm mb-6 max-w-sm text-[var(--color-text-muted)]">
             Đã có lỗi xảy ra khi tải trang này. Vui lòng thử lại hoặc quay về trang chủ.
           </p>
+          <div className="mb-10 w-full max-w-md rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-left">
+            {error.message && (
+              <p className="font-mono text-xs text-[var(--color-text-muted)] break-all mb-1">{error.message}</p>
+            )}
+            {error.digest && (
+              <p className="font-mono text-xs text-[var(--color-text-muted)] opacity-60">digest: {error.digest}</p>
+            )}
+          </div>
         </>
       )}
 
