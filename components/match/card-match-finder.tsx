@@ -12,10 +12,13 @@ import {cn} from "@/lib/utils";
 const STORAGE_KEY = 'ow-rec-prefs';
 const cardMatchHref = getTool('Card Match').href;
 
+const SPEND_STEPS = [1, 2, 3, 5, 7, 10, 15, 20];
+const DEFAULT_STEP_IDX = 2;
+
 interface CardMatchPrefs {
     persona: string | null;
     rankBy: 'cashback' | 'annual_fee';
-    monthlySpend: number;
+    spendStepIdx: number;
 }
 
 function readPrefs(): CardMatchPrefs | null {
@@ -47,9 +50,8 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
     const isFinderPage = pathname === cardMatchHref;
 
     const [activePersona, setActivePersona] = useState<string | null>(null);
-    const [activeIntents, setActiveIntents] = useState<string[]>([]);
     const [rankBy, setRankBy] = useState<'cashback' | 'annual_fee'>('cashback');
-    const [monthlySpend, setMonthlySpend] = useState(5);
+    const [spendStepIdx, setSpendStepIdx] = useState(DEFAULT_STEP_IDX);
     const [initialized, setInitialized] = useState(false);
     const [ranked, setRanked] = useState<RankedCard[]>([]);
     const [loading, setLoading] = useState(false);
@@ -64,15 +66,16 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
             setActivePersona(urlPersona);
             if (urlRankBy === 'annual_fee') setRankBy('annual_fee');
             if (urlSpend) {
-                const s = parseInt(urlSpend, 10);
-                if (!isNaN(s) && s > 0) setMonthlySpend(s);
+                const spendVal = parseInt(urlSpend, 10);
+                const idx = SPEND_STEPS.indexOf(spendVal);
+                if (idx !== -1) setSpendStepIdx(idx);
             }
         } else {
             const prefs = readPrefs();
             if (prefs?.persona) {
                 setActivePersona(prefs.persona);
                 setRankBy(prefs.rankBy ?? 'cashback');
-                if (prefs.monthlySpend) setMonthlySpend(prefs.monthlySpend);
+                if (prefs.spendStepIdx != null) setSpendStepIdx(prefs.spendStepIdx);
             } else if (personas.length > 0) {
                 setActivePersona(personas[0].slug);
             }
@@ -83,18 +86,17 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
     // Sync URL + localStorage
     useEffect(() => {
         if (!initialized) return;
-        writePrefs({persona: activePersona, rankBy, monthlySpend});
+        writePrefs({persona: activePersona, rankBy, spendStepIdx});
         if (isFinderPage && activePersona) {
             const p: Record<string, string> = {persona: activePersona};
             if (rankBy !== 'cashback') p.sort_by = rankBy;
-            if (monthlySpend !== 5) p.spend = String(monthlySpend);
+            if (spendStepIdx !== DEFAULT_STEP_IDX) p.spend = String(SPEND_STEPS[spendStepIdx]);
             router.replace(`${cardMatchHref}?${new URLSearchParams(p).toString()}`, {scroll: false});
         }
-    }, [activePersona, rankBy, monthlySpend, initialized, isFinderPage, router]);
+    }, [activePersona, rankBy, spendStepIdx, initialized, isFinderPage, router]);
 
     useEffect(() => {
-        if (!initialized) return;
-        if (!activePersona) return;
+        if (!initialized || !activePersona) return;
         setLoading(true);
         const t = setTimeout(async () => {
             try {
@@ -103,11 +105,9 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         persona: activePersona,
-                        intents: activeIntents.length > 0 ? activeIntents : undefined,
                         limit,
-                        for_business: false,
                         sort_by: rankBy,
-                        monthly_spend: monthlySpend * 1_000_000,
+                        monthly_spend: SPEND_STEPS[spendStepIdx] * 1_000_000,
                     }),
                 });
                 const json = await res.json();
@@ -117,17 +117,12 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
             }
         }, 200);
         return () => clearTimeout(t);
-    }, [activePersona, activeIntents, rankBy, monthlySpend, initialized, limit]);
+    }, [activePersona, rankBy, spendStepIdx, initialized, limit]);
 
     const personaObj = personas.find(p => p.slug === activePersona);
-    const personaIntents = intents.filter(i => personaObj?.rank_intents?.includes(i.slug));
     const intentMap = new Map(intents.map(i => [i.slug, i]));
-
-    const toggleIntent = (slug: string) => {
-        setActiveIntents(prev =>
-            prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
-        );
-    };
+    const primaryIntentSlug = personaObj?.rank_intents?.[0];
+    const monthlySpend = SPEND_STEPS[spendStepIdx];
 
     const withCashback = ranked.filter(r => r.cashback_result.cashback > 0);
 
@@ -141,48 +136,52 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                     "lg:col-span-5",
                     loading ? 'pointer-events-none opacity-60' : ''
                 )}>
-                    <div className="sticky top-12">
+                    <div className="sticky top-12 flex flex-col gap-8">
                         {/* Step 1: Persona */}
-                        <div className="mb-6">
+                        <div>
                             <h2 className="text-body-lg text-text-muted mb-4">Bạn hay chi tiêu ở đâu?</h2>
                             <div className="flex flex-wrap gap-2">
                                 {personas.map(p => (
                                     <OwBadge key={p.slug} active={activePersona === p.slug} asChild>
-                                        <button onClick={() => { setActivePersona(p.slug); setActiveIntents([]); }}>
+                                        <button onClick={() => setActivePersona(p.slug)}>
                                             {p.labelVi || p.label}
                                         </button>
                                     </OwBadge>
                                 ))}
                             </div>
-
-                            {personaIntents.length > 0 && (
-                                <div className="flex mt-5">
-                                    <div className="flex flex-wrap gap-2">
-                                        {personaIntents.map(intent => (
-                                            <OwBadge
-                                                key={intent.slug}
-                                                // active={activeIntents.includes(intent.slug)}
-                                                // onClick={() => toggleIntent(intent.slug)}
-                                                small
-                                            >
-                                                {intent.icon} {intent.label}
-                                            </OwBadge>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
-                        {/* Step 2: Monthly spend */}
+                        {/* Step 2: Sort by */}
                         <div>
-                            <h2 className="text-body-lg text-text-muted mb-4">Chi tiêu hàng tháng khoảng bao
-                                nhiêu?</h2>
+                            <h2 className="text-body-lg text-text-muted mb-4">Ưu tiên tiêu chí nào?</h2>
                             <div className="flex flex-wrap gap-2">
-                                {[1, 3, 5, 10, 20, 50, 100].map(v => (
-                                    <OwBadge key={v} active={monthlySpend === v} asChild>
-                                        <button onClick={() => setMonthlySpend(v)}>{v}tr</button>
-                                    </OwBadge>
-                                ))}
+                                <OwBadge active={rankBy === 'cashback'} asChild>
+                                    <button onClick={() => setRankBy('cashback')}>Hoàn tiền cao nhất</button>
+                                </OwBadge>
+                                <OwBadge active={rankBy === 'annual_fee'} asChild>
+                                    <button onClick={() => setRankBy('annual_fee')}>Phí thấp nhất</button>
+                                </OwBadge>
+                            </div>
+                        </div>
+
+                        {/* Step 3: Monthly spend */}
+                        <div>
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-body-lg text-text-muted">Chi tiêu hàng tháng</h2>
+                                <span className="text-body font-semibold">{monthlySpend}tr</span>
+                            </div>
+                            <input
+                                type="range"
+                                min={0}
+                                max={SPEND_STEPS.length - 1}
+                                step={1}
+                                value={spendStepIdx}
+                                onChange={e => setSpendStepIdx(Number(e.target.value))}
+                                className="w-full accent-red-500"
+                            />
+                            <div className="flex justify-between text-[10px] text-text-muted/60 mt-1">
+                                <span>{SPEND_STEPS[0]}tr</span>
+                                <span>{SPEND_STEPS[SPEND_STEPS.length - 1]}tr</span>
                             </div>
                         </div>
                     </div>
@@ -190,16 +189,8 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
 
                 {/* Right: results */}
                 <div className="lg:col-span-7">
-                    <div className="flex items-center flex-wrap justify-between mb-4 gap-3">
+                    <div className="flex items-center mb-4">
                         <p className="text-label text-text-muted">KẾT QUẢ ĐỀ XUẤT</p>
-                        <div className="flex flex-wrap gap-1">
-                            <OwBadge active={rankBy === 'cashback'} asChild>
-                                <button onClick={() => setRankBy('cashback')}>Hoàn tiền cao nhất</button>
-                            </OwBadge>
-                            <OwBadge active={rankBy === 'annual_fee'} asChild>
-                                <button onClick={() => setRankBy('annual_fee')}>Phí thấp nhất</button>
-                            </OwBadge>
-                        </div>
                     </div>
 
                     {!activePersona ? (
@@ -222,12 +213,13 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                         <p className="text-body-sm text-text-muted">Không tìm thấy thẻ phù hợp.</p>
                     ) : (
                         <div className={cn('flex flex-col gap-6 transition-opacity duration-200', loading ? 'opacity-50' : '')}>
-                            {ranked.map(r => (
+                            {withCashback.map(r => (
                                 <OwCardRankedRow
                                     key={r.card.id}
                                     ranked={r}
                                     intentMap={intentMap}
-                                    highlightedSlugs={activeIntents.length > 0 ? activeIntents : personaObj?.rank_intents}
+                                    highlightedSlugs={personaObj?.rank_intents}
+                                    intentSlug={primaryIntentSlug}
                                 />
                             ))}
                         </div>

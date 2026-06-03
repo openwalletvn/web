@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type {CashbackRule, Intent} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
 import {CATCHALL_SLUGS} from '@/lib/card-display-utils';
+import {IconAlertTriangle} from '@tabler/icons-react';
 import {CardModel} from '@/lib/card-model';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwRankBadge} from '@/components/ow-ui/ow-rank-badge';
@@ -66,6 +67,14 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
     const {cashback} = ranked.cashback_result;
     const rateDisplay = cashback > 0 ? cardModel.getRateDisplay(intentSlug) : null;
     const cardTypes = cardModel.getCardTypes();
+
+    const breakdown = ranked.cashback_breakdown;
+    const byIntentEntries = breakdown?.by_intent
+        ? Object.entries(breakdown.by_intent).filter(([, v]) => (v.cashback ?? 0) > 0)
+        : [];
+    const cardNotes = breakdown?.by_card?.[card.id]?.notes ?? [];
+    const suggestions = breakdown?.suggestions ?? [];
+    const showBreakdown = cashback > 0 && byIntentEntries.length > 0;
 
     return (
         <div className="ow-card-ranked-row grid grid-cols-12 gap-3 items-start">
@@ -136,6 +145,31 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
                 {/*cashback display*/}
                 {cashback === 0 ? (
                     <span className="text-body-sm text-text-muted">Đang cập nhật thông tin ưu đãi</span>
+                ) : showBreakdown ? (
+                    <div className="flex flex-col gap-0.5">
+                        {byIntentEntries.map(([slug, v]) => {
+                            const intent = intentMap?.get(slug);
+                            return (
+                                <span key={slug} className="text-[11px] text-text-muted leading-4">
+                                    {intent?.icon && <span className="mr-0.5">{intent.icon}</span>}
+                                    <span>{intent?.label ?? slug}</span>
+                                    {v.budget != null && (
+                                        <span className="text-text-muted/60"> {(v.budget / 1_000_000).toFixed(0)}tr →</span>
+                                    )}
+                                    <span className="font-medium text-slate-700"> {(v.cashback ?? 0).toLocaleString('vi-VN')}đ</span>
+                                    {v.rate != null && (
+                                        <span className="text-text-muted/60"> ({Math.round(v.rate * 10000) / 100}%)</span>
+                                    )}
+                                </span>
+                            );
+                        })}
+                        {[...cardNotes, ...suggestions].slice(0, 1).map((msg, i) => (
+                            <span key={i} className="flex items-center gap-1 text-[10px] text-amber-600 leading-4">
+                                <IconAlertTriangle size={10} className="shrink-0"/>
+                                {msg}
+                            </span>
+                        ))}
+                    </div>
                 ) : rateDisplay ? (
                     <span className="text-body-sm text-text-muted">Hoàn {rateDisplay}/kỳ</span>
                 ) : null}

@@ -182,6 +182,26 @@ export const WithCashback: Story = {
     },
 };
 
+export const WithBreakdown: Story = {
+    args: {
+        ranked: {
+            ...baseRanked,
+            cashback_result: {cashback: 195000},
+            cashback_breakdown: {
+                total_cashback: 195000,
+                effective_rate: 0.065,
+                by_intent: {
+                    dining: {budget: 2_000_000, rate: 0.05, cashback: 100_000},
+                    shopping: {budget: 1_000_000, rate: 0.05, cashback: 50_000},
+                    travel: {budget: 900_000, rate: 0.05, cashback: 45_000},
+                },
+                by_card: {'msb-visa-platinum': {notes: ['Chi tiêu tối thiểu chưa đủ để hoàn tiền tối đa']}},
+            },
+        },
+        intentMap,
+    },
+};
+
 // ─── Annual fee variants ──────────────────────────────────────────────────────
 
 export const PaidAnnualFee: Story = {

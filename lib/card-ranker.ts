@@ -1,4 +1,4 @@
-import type { Card } from '@/lib/api';
+import type { Card, CashbackResult } from '@/lib/api';
 
 export type RankedCard = {
     card: Card;
@@ -10,4 +10,5 @@ export type RankedCard = {
         cashback: number;
         net_benefit?: number;
     };
+    cashback_breakdown?: CashbackResult | null;
 };
