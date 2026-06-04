@@ -10,6 +10,7 @@ import {mdxComponents} from '@/components/blog/mdx-components';
 import {remarkAutoLink} from '@/lib/remark-auto-link';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {buildTitle} from '@/lib/page-meta/title';
+import {fmtIsoDate} from '@/lib/utils';
 
 export const metadata: Metadata = {
     title: buildTitle('Changelog'),
@@ -25,10 +26,6 @@ export const metadata: Metadata = {
     },
 };
 
-function formatDate(dateStr: string): string {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'});
-}
 
 export default function ChangelogPage() {
     const entries = getAllChangelogs();
@@ -69,7 +66,7 @@ export default function ChangelogPage() {
                                             dateTime={entry.date}
                                             className="text-sm font-mono text-slate-400"
                                         >
-                                            {formatDate(entry.date)}
+                                            {fmtIsoDate(entry.date)}
                                         </time>
                                     </div>
 
@@ -80,7 +77,7 @@ export default function ChangelogPage() {
                                             dateTime={entry.date}
                                             className="block lg:hidden text-sm font-mono text-slate-400 mb-2"
                                         >
-                                            {formatDate(entry.date)}
+                                            {fmtIsoDate(entry.date)}
                                         </time>
 
                                         <h4 id={entryId} className="mb-4 group">

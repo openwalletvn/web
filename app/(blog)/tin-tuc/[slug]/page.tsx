@@ -12,6 +12,7 @@ import {mdxComponents} from '@/components/blog/mdx-components';
 import {remarkAutoLink} from '@/lib/remark-auto-link';
 import remarkGfm from 'remark-gfm';
 import {buildBlogPostPageMeta} from '@/lib/page-meta/blog-post';
+import {fmtIsoDateLong} from '@/lib/utils';
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -89,20 +90,12 @@ export default async function BlogPostPage({params}: Props) {
                                     )}
                                     <div className="flex flex-col gap-0.5">
                                         <time className="text-body-sm text-text-muted" dateTime={frontmatter.date}>
-                                            {new Date(frontmatter.date).toLocaleDateString('vi-VN', {
-                                                day: 'numeric',
-                                                month: 'long',
-                                                year: 'numeric',
-                                            })}
+                                            {fmtIsoDateLong(frontmatter.date)}
                                         </time>
                                         {frontmatter.updated && frontmatter.updated !== frontmatter.date && (
                                             <time className="text-body-sm text-text-subtle" dateTime={frontmatter.updated}>
                                                 Cập nhật:{' '}
-                                                {new Date(frontmatter.updated).toLocaleDateString('vi-VN', {
-                                                    day: 'numeric',
-                                                    month: 'long',
-                                                    year: 'numeric',
-                                                })}
+                                                {fmtIsoDateLong(frontmatter.updated)}
                                             </time>
                                         )}
                                     </div>

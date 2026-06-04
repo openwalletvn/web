@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Post } from '@/lib/mdx';
 import { AiBadge } from './ai-badge';
+import { fmtIsoDateLong } from '@/lib/utils';
 
 interface Props {
   post: Post;
@@ -43,20 +44,12 @@ export function PostCard({ post }: Props) {
           <span className="flex items-baseline gap-1">
             <span className="text-body-sm text-text-subtle">Cập nhật</span>
             <time className="text-body-sm text-text-subtle" dateTime={frontmatter.updated}>
-              {new Date(frontmatter.updated).toLocaleDateString('vi-VN', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
+              {fmtIsoDateLong(frontmatter.updated)}
             </time>
           </span>
         ) : (
           <time className="text-body-sm text-text-subtle" dateTime={frontmatter.date}>
-            {new Date(frontmatter.date).toLocaleDateString('vi-VN', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            })}
+            {fmtIsoDateLong(frontmatter.date)}
           </time>
         )}
 

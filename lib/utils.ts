@@ -5,6 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function fmtIsoDate(iso: string): string {
+    const [y, m, d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+}
+
+export function fmtIsoDateLong(iso: string): string {
+    return new Date(iso).toLocaleDateString('vi-VN', {day: 'numeric', month: 'long', year: 'numeric'});
+}
+
 export function hexToRgba(hex: string, alpha: number): string {
     const h = hex.replace('#', '');
     const r = parseInt(h.slice(0, 2), 16);

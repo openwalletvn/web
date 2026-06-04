@@ -3,7 +3,7 @@
 import {useState} from 'react';
 import {IconChevronDown} from '@tabler/icons-react';
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/ui/collapsible';
-import {cn} from '@/lib/utils';
+import {cn, fmtIsoDate} from '@/lib/utils';
 
 interface ChangelogTocItem {
     id: string;
@@ -15,10 +15,6 @@ interface Props {
     items: ChangelogTocItem[];
 }
 
-function formatDate(dateStr: string): string {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'});
-}
 
 export function ChangelogToc({items}: Props) {
     const [open, setOpen] = useState(true);
@@ -44,7 +40,7 @@ export function ChangelogToc({items}: Props) {
                                 href={`#${item.id}`}
                                 className="block py-1 text-xs leading-snug text-slate-500 hover:text-slate-900 transition-colors"
                             >
-                                <span className="font-mono text-slate-400 mr-1.5">{formatDate(item.date)}</span>
+                                <span className="font-mono text-slate-400 mr-1.5">{fmtIsoDate(item.date)}</span>
                                 {item.title}
                             </a>
                         ))}
