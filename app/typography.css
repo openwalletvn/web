@@ -149,13 +149,6 @@
         line-height: 100%;
     }
 
-    .text-numeral-sm {
-        font-family: var(--font-body), sans-serif;
-        font-size: 20px;
-        font-weight: 700;
-        line-height: 100%;
-    }
-
     .text-link {
         color: #EF3C23;
         text-decoration: underline;
