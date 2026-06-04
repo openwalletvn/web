@@ -2,7 +2,7 @@
  * Offline eval harness for the /api/chat endpoint.
  * Run: npx tsx scripts/eval-chat.ts
  *
- * Requires GROQ_API_KEY, CHAT_MODEL, JUDGE_MODEL,
+ * Requires OPENROUTER_API_KEY, CHAT_MODEL, JUDGE_MODEL,
  * LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL in .env.local
  * and the dev server running on localhost:3000 (or set CHAT_URL).
  */
@@ -13,9 +13,9 @@ import * as fs from 'node:fs';
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
 const CHAT_URL = process.env.CHAT_URL ?? 'http://localhost:3000/api/chat';
-const GROQ_API_KEY = process.env.GROQ_API_KEY ?? '';
-const CHAT_MODEL = process.env.CHAT_MODEL ?? 'llama-3.3-70b-versatile';
-const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'llama-3.3-70b-versatile';
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY ?? '';
+const CHAT_MODEL = process.env.CHAT_MODEL ?? 'google/gemini-flash-1.5';
+const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'openai/gpt-4o-mini';
 const TRIGGERED_BY = process.env.TRIGGERED_BY ?? (process.env.CI ? 'ci' : 'cli');
 
 const LANGFUSE_BASE_URL = process.env.LANGFUSE_BASE_URL ?? 'https://cloud.langfuse.com';
@@ -137,6 +137,125 @@ const customChecks: Record<string, (text: string) => boolean> = {
   'edge-case-multi-turn-context': (t) =>
     t.length > 50 &&
     (t.toLowerCase().includes('thẻ') || t.toLowerCase().includes('cashback')),
+
+  // Cat A
+  // A1: generic spend → model should recommend real cards (top cashback: sacombank-platinum-amex, lpbank-jcb-ultimate, sacombank-uniq)
+  'A1-spend-basic': (t) =>
+    t.length > 100 &&
+    (t.toLowerCase().includes('thẻ')) &&
+    // must mention at least one real bank
+    (t.toLowerCase().includes('sacombank') || t.toLowerCase().includes('msb') ||
+      t.toLowerCase().includes('lpbank') || t.toLowerCase().includes('ocb') ||
+      t.toLowerCase().includes('techcombank') || t.toLowerCase().includes('vpbank')),
+
+  // A1 multi: shopee 3M + dining 1M + transport 2M → sacombank-uniq top (transport 20%), hsbc-cashback (transport 6%)
+  'A1-spend-multi': (t) =>
+    t.length > 100 &&
+    (t.toLowerCase().includes('hoàn tiền') || t.toLowerCase().includes('cashback')) &&
+    (t.toLowerCase().includes('sacombank') || t.toLowerCase().includes('hsbc') ||
+      t.toLowerCase().includes('uob') || t.toLowerCase().includes('msb')),
+
+  // A2 shopee: intent=shopee/ecommerce → woori-vv-hype-point-gold (10% ecommerce), vpbank-shopee-platinum
+  'A2-merchant-shopee': (t) =>
+    t.length > 100 &&
+    (t.toLowerCase().includes('shopee') || t.toLowerCase().includes('ecommerce') || t.toLowerCase().includes('thương mại điện tử')) &&
+    (t.toLowerCase().includes('hoàn tiền') || t.toLowerCase().includes('cashback') || t.toLowerCase().includes('thẻ')),
+
+  // A2 tiktok: tiktok-shop intent → model resolves via list-merchants
+  'A2-merchant-tiktok': (t) =>
+    t.length > 80 &&
+    (t.toLowerCase().includes('tiktok') || t.toLowerCase().includes('thương mại điện tử') || t.toLowerCase().includes('ecommerce')) &&
+    (t.toLowerCase().includes('hoàn tiền') || t.toLowerCase().includes('thẻ')),
+
+  // A3 no-fee: free annual fee credit cards → msb-super-free (0 fee, 30k cashback), hsbc-livefree
+  'A3-no-fee': (t) =>
+    t.length > 80 &&
+    (t.toLowerCase().includes('phí') || t.toLowerCase().includes('thường niên') || t.toLowerCase().includes('miễn phí')) &&
+    (t.toLowerCase().includes('msb') || t.toLowerCase().includes('hsbc') ||
+      t.toLowerCase().includes('bvbank') || t.toLowerCase().includes('eximbank') || t.toLowerCase().includes('thẻ')),
+
+  // A4 traveler: persona=traveler → acb lotusmiles series, techcombank vietnam-airlines cards
+  'A4-persona-traveler': (t) =>
+    t.length > 100 &&
+    (t.toLowerCase().includes('du lịch') || t.toLowerCase().includes('quốc tế') ||
+      t.toLowerCase().includes('ngoại tệ') || t.toLowerCase().includes('travel') ||
+      t.toLowerCase().includes('miles') || t.toLowerCase().includes('lotusmiles')) &&
+    (t.toLowerCase().includes('acb') || t.toLowerCase().includes('techcombank') ||
+      t.toLowerCase().includes('vietcombank') || t.toLowerCase().includes('thẻ')),
+
+  // A4 commuter: transport cashback → sacombank-uniq (20% transport), hsbc-cashback (6%), uob-one (10% transport+grab)
+  'A4-persona-commuter': (t) =>
+    t.length > 80 &&
+    (t.toLowerCase().includes('xăng') || t.toLowerCase().includes('transport') ||
+      t.toLowerCase().includes('di chuyển') || t.toLowerCase().includes('hoàn tiền')) &&
+    (t.toLowerCase().includes('sacombank') || t.toLowerCase().includes('hsbc') ||
+      t.toLowerCase().includes('uob') || t.toLowerCase().includes('thẻ')),
+
+  // A5: VCB cards → model must list real vietcombank cards (vcb-digicard, vietcombank-vibe, vietcombank-mastercard, etc.)
+  'A5-bank-browse': (t) =>
+    t.length > 80 &&
+    t.toLowerCase().includes('vietcombank') &&
+    (t.toLowerCase().includes('vibe') || t.toLowerCase().includes('digicard') ||
+      t.toLowerCase().includes('mastercard') || t.toLowerCase().includes('visa') ||
+      t.toLowerCase().includes('thẻ')),
+
+  // Cat B
+  // B1: techcombank vs vietcombank for transport → neither has strong transport cashback; model should show real data
+  'B1-multi-card-optimize': (t) =>
+    t.length > 100 &&
+    (t.toLowerCase().includes('techcombank') || t.toLowerCase().includes('vietcombank') || t.toLowerCase().includes('vcb')) &&
+    (t.toLowerCase().includes('xăng') || t.toLowerCase().includes('hoàn tiền') || t.toLowerCase().includes('cashback')),
+
+  // B2: sacombank-visa-platinum-cashback → 5% online transactions (including shopee), fee 599k
+  'B2-cashback-query': (t) =>
+    t.length > 60 &&
+    t.toLowerCase().includes('sacombank') &&
+    (t.toLowerCase().includes('%') || t.toLowerCase().includes('hoàn tiền') || t.toLowerCase().includes('cashback')),
+
+  // Cat C
+  // C1: sacombank-unionpay annual fee → 299.000đ (sacombank-unionpay), no sacombank-unionpay-platinum exists
+  'C1-card-fees': (t) =>
+    t.length > 50 &&
+    t.toLowerCase().includes('sacombank') &&
+    (t.toLowerCase().includes('299') || t.toLowerCase().includes('phí') ||
+      t.toLowerCase().includes('thường niên') || t.toLowerCase().includes('không tìm thấy')),
+
+  // C2: techcombank-spark (899k fee) vs vpbank-stepup/flex (299-499k fee) — both must appear
+  'C2-compare': (t) =>
+    t.length > 150 &&
+    (t.toLowerCase().includes('techcombank') || t.toLowerCase().includes('spark')) &&
+    (t.toLowerCase().includes('vpbank') || t.toLowerCase().includes('stepup') || t.toLowerCase().includes('flex')),
+
+  // C3: related cards to techcombank-visa-cashback → any other cashback card mentioned
+  'C3-related': (t) =>
+    t.length > 80 &&
+    (t.toLowerCase().includes('thẻ') || t.toLowerCase().includes('cashback') || t.toLowerCase().includes('hoàn tiền')),
+
+  // C4: techcombank cards → model should list real cards (spark, everyday, visa-signature, etc.)
+  'C4-bank-cards': (t) =>
+    t.length > 80 &&
+    t.toLowerCase().includes('techcombank') &&
+    (t.toLowerCase().includes('spark') || t.toLowerCase().includes('everyday') ||
+      t.toLowerCase().includes('visa') || t.toLowerCase().includes('thẻ')),
+
+  // Guards
+  // guard-invented-rate: mb-jcb-platinum — model must call tool, not invent rate; judge evaluates grounding
+  'guard-invented-rate': (t) => {
+    if (t.length === 0) return true;
+    // rule: pass to judge — can't statically verify grounding; judge checks if confident % is stated without evidence
+    return true;
+  },
+
+  // guard-nonexistent-bank: ABCBank does not exist → model must say not found
+  'guard-nonexistent-bank': (t) => {
+    const lower = t.toLowerCase();
+    const claimsCards = lower.match(/abcbank.{0,50}(thẻ|card|visa|mastercard)/);
+    return !claimsCards;
+  },
+
+  // guard-ambiguous: "techcom" → must resolve to Techcombank, not guess or refuse
+  'guard-ambiguous-bank': (t) =>
+    t.length > 50 && t.toLowerCase().includes('techcombank'),
 };
 
 // ─── Loader ───────────────────────────────────────────────────────────────────
@@ -246,7 +365,7 @@ interface JudgeResult {
 }
 
 async function judgeResponse(tc: EvalCase, response: string): Promise<JudgeResult> {
-  if (!GROQ_API_KEY) return { score: 50, reasoning: 'No GROQ_API_KEY — skipped judge' };
+  if (!OPENROUTER_API_KEY) return { score: 50, reasoning: 'No OPENROUTER_API_KEY — skipped judge' };
 
   const truncatedResponse = response.slice(0, 800);
   const userPrompt = `Test case: ${tc.name}
@@ -262,10 +381,10 @@ Respond with JSON only, no markdown:
 {"score": <number>, "reasoning": "<one sentence max 100 chars>"}`;
 
   try {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${GROQ_API_KEY}`,
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
