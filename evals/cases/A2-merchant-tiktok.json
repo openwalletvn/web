@@ -1,0 +1,12 @@
+{
+  "id": "A2-merchant-tiktok",
+  "name": "A2: recommend card for TikTok Shop spending",
+  "description": "User mentions TikTok Shop. Model should resolve merchant via list-merchants then rank.",
+  "message": "Tôi hay mua hàng trên TikTok Shop, dùng thẻ nào để hoàn tiền nhiều nhất?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions 'tiktok' or 'hoàn tiền' or 'cashback' AND mentions a card or bank AND length > 80"
+  },
+  "tags": ["cat-a", "merchant", "tiktok", "rank"]
+}

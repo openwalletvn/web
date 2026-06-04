@@ -1,0 +1,12 @@
+{
+  "id": "C3-related",
+  "name": "C3: find cards similar to a named card",
+  "description": "User asks for cards similar to a card they mention by name. Model should resolve card then call related-cards.",
+  "message": "Có thẻ tín dụng nào tương tự thẻ Techcombank Visa Cashback không?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions at least one specific card name other than techcombank AND length > 80"
+  },
+  "tags": ["cat-c", "related-cards"]
+}

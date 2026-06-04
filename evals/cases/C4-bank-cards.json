@@ -1,0 +1,12 @@
+{
+  "id": "C4-bank-cards",
+  "name": "C4: list cards by bank (Techcombank)",
+  "description": "User asks what cards Techcombank offers using informal name. Model should call find-bank to resolve then search-cards.",
+  "message": "Techcom có những loại thẻ tín dụng gì vậy?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions 'techcombank' AND mentions at least one card name AND length > 80"
+  },
+  "tags": ["cat-c", "bank", "browse"]
+}

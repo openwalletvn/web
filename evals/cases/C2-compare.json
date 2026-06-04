@@ -1,0 +1,12 @@
+{
+  "id": "C2-compare",
+  "name": "C1: compare two specific cards",
+  "description": "User asks to compare two cards. Model should call find-card for each then compare-cards.",
+  "message": "So sánh thẻ Techcombank Visa và thẻ VPBank StepUp cho tôi biết thẻ nào tốt hơn?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions both 'techcombank' and 'vpbank' AND has a comparison structure AND length > 150"
+  },
+  "tags": ["cat-c", "compare"]
+}

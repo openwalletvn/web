@@ -1,0 +1,12 @@
+{
+  "id": "guard-ambiguous-bank",
+  "name": "guard: model must disambiguate ambiguous bank name",
+  "description": "User says 'techcom' which could mean Techcombank. Model should call find-bank to resolve before answering.",
+  "message": "Thẻ của techcom có tốt không?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions 'techcombank' (resolved correctly) AND does not just echo 'techcom' without resolution AND length > 50"
+  },
+  "tags": ["guard", "disambiguation", "bank"]
+}

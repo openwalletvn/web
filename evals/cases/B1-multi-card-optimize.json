@@ -1,0 +1,12 @@
+{
+  "id": "B1-multi-card-optimize",
+  "name": "B1: optimize spending across multiple owned cards",
+  "description": "User has 2 cards and asks which to use for a category. Model should call find-card for each, then cashback-card to compare.",
+  "message": "Tôi có thẻ Techcombank Visa và thẻ VCB Mastercard. Nên dùng thẻ nào để mua xăng hoàn tiền nhiều hơn?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions both 'techcombank' and 'vcb' or 'vietcombank' AND mentions 'xăng' AND gives a recommendation AND length > 100"
+  },
+  "tags": ["cat-b", "optimize", "multi-card", "cashback"]
+}

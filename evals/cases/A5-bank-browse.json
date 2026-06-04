@@ -1,0 +1,12 @@
+{
+  "id": "A5-bank-browse",
+  "name": "A5: list cards by bank (VCB)",
+  "description": "User asks what cards a specific bank offers. Model should call find-bank then search-cards.",
+  "message": "Vietcombank có những thẻ tín dụng gì?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions 'vietcombank' or 'vcb' AND mentions at least one card name AND length > 80"
+  },
+  "tags": ["cat-a", "bank", "browse"]
+}

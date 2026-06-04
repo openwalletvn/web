@@ -1,0 +1,12 @@
+{
+  "id": "C1-card-fees",
+  "name": "C1: card fee inquiry",
+  "description": "User asks about annual fee for Sacombank UnionPay. Real data: sacombank-unionpay = 299.000đ. No 'Platinum' variant exists — model should find the closest match or say not found.",
+  "message": "Phí thường niên của thẻ Sacombank UnionPay là bao nhiêu?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions 'sacombank' AND mentions '299' or 'phí thường niên' AND does not invent a fee amount without calling tool"
+  },
+  "tags": ["cat-c", "card-detail", "fees"]
+}
