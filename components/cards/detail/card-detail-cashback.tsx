@@ -1,10 +1,11 @@
 import * as React from 'react';
-import type {CashbackBenefit, Merchant} from '@/lib/api';
+import type {Merchant} from '@/lib/api';
 import {getIntents, getMerchants} from '@/lib/api';
 import {IntentModel} from '@/lib/intent-model';
 import type {CardModel} from '@/lib/card-model';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
-import {IconAlertCircle, IconInfoCircle, IconPackages,} from '@tabler/icons-react';
+import {IconInfoCircle} from '@tabler/icons-react';
+import {OwAlert} from '@/components/ow-ui/ow-alert';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 import {fmtIsoDate, fmtIsoDateLifespan} from '@/lib/utils';
 import {
@@ -27,8 +28,8 @@ function FooterRow({label, value}: { label: string; value: React.ReactNode }) {
     return (
         <div className="flex items-start gap-2 text-xs text-slate-600">
             <IconInfoCircle className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0"/>
-            <span className="w-40 shrink-0 text-slate-500">{label}</span>
-            <span className="text-slate-800">{value}</span>
+            <span className="w-40 shrink-0 text-caption">{label}</span>
+            <span className="">{value}</span>
         </div>
     );
 }
@@ -76,25 +77,20 @@ export async function CardDetailCashback({card}: Props) {
             <div className="bg-white px-4 py-6 rounded-lg">
                 <div className="space-y-3">
                     {cashback.cashback_expired && (
-                        <div className="flex items-start gap-2 px-3 py-2.5 bg-red-50 border border-red-200 rounded text-xs text-red-800">
-                            <IconAlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-red-500"/>
-                            <span>
-                                <strong>Chương trình hoàn tiền đã kết thúc{expiredDateRange}.</strong> Thông tin bên dưới chỉ mang tính tham khảo.
-                            </span>
-                        </div>
+                        <OwAlert variant="error">
+                            <strong>Chương trình hoàn tiền đã kết thúc{expiredDateRange}.</strong> Thông tin bên dưới
+                            chỉ mang tính tham khảo.
+                        </OwAlert>
                     )}
 
                     {cashback.package_exclusive && (
-                        <div className="flex items-start gap-2 px-3 py-2.5 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
-                            <IconPackages className="w-3.5 h-3.5 mt-0.5 shrink-0 text-amber-600"/>
-                            <span>
-                                <strong>Chọn 1 gói khi phát hành thẻ.</strong> Mỗi gói áp dụng độc lập — không cộng dồn.
-                            </span>
-                        </div>
+                        <OwAlert variant="package">
+                            <strong>Chọn 1 gói khi phát hành thẻ.</strong> Mỗi gói áp dụng độc lập, không cộng dồn.
+                        </OwAlert>
                     )}
 
                     {hasFooter && (
-                        <div className="pt-2 border-t border-dashed border-slate-200 space-y-2">
+                        <div className="ow-card-detail-cashback-summary space-y-2">
                             {cashback.min_spend_per_period && (
                                 <FooterRow
                                     label="Chi tiêu tối thiểu"

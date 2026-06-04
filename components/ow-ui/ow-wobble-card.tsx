@@ -68,7 +68,7 @@ const WobbleCard = ({
 
 const Noise = () => (
     <div
-        className="absolute inset-0 w-full h-full scale-[1.2] transform opacity-10 [mask-image:radial-gradient(#fff,transparent,75%)]"
+        className="pointer-events-none absolute inset-0 w-full h-full scale-[1.2] transform opacity-10 [mask-image:radial-gradient(#fff,transparent,75%)]"
         style={{backgroundImage: "url(/noise.webp)", backgroundSize: "30%"}}
     />
 );
@@ -80,32 +80,34 @@ type OwWobbleCardProps = {
     children?: React.ReactNode;
     renderCondition?: boolean | null;
     asChild?: boolean;
-    containerClassName?: string;
     className?: string;
+    containerClassName?: string;
 };
 
-const INNER_CLASS = "flex flex-col justify-center items-center text-center gap-4 z-20 relative w-full h-full";
-
-export function OwWobbleCard({children, brandColor = "#e1795d", renderCondition, asChild, containerClassName, className}: OwWobbleCardProps) {
+export function OwWobbleCard({
+                                 children,
+                                 brandColor = "#e1795d",
+                                 renderCondition,
+                                 asChild,
+                                 className,
+                                 containerClassName,
+                             }: OwWobbleCardProps) {
     if (typeof renderCondition === "boolean" && !renderCondition) return null;
 
     const cardStyle = brandColor ? {backgroundColor: hexToRgba(brandColor, 0.9)} : undefined;
 
     if (asChild) {
         const child = React.Children.only(children) as React.ReactElement<React.HTMLAttributes<HTMLElement>>;
-        const merged = React.cloneElement(child, {
-            className: [INNER_CLASS, child.props.className].filter(Boolean).join(" "),
+        children = React.cloneElement(child, {
+            className: [child.props.className].filter(Boolean).join(" "),
         });
-        return (
-            <WobbleCard containerClassName={cn("ow-wobble-card col-span-1 h-full", containerClassName)} className={cn("p-8", className)} style={cardStyle}>
-                {merged}
-            </WobbleCard>
-        );
     }
 
     return (
-        <WobbleCard containerClassName={cn("ow-wobble-card col-span-1 h-full", containerClassName)} className={cn("p-8", className)} style={cardStyle}>
-            <div className={INNER_CLASS}>{children}</div>
+        <WobbleCard containerClassName={cn("ow-wobble-card col-span-1 h-full", containerClassName)}
+                    className={cn("flex flex-col justify-center items-center text-center gap-4 z-20 relative w-full h-full p-8", className)}
+                    style={cardStyle}>
+            {children}
         </WobbleCard>
     );
 }

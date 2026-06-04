@@ -1,7 +1,7 @@
 import type {Bank, FeeEntry} from '@/lib/api';
 import {BankModel} from '@/lib/bank-model';
 import type {CardModel} from '@/lib/card-model';
-import {formatOwAmount} from '@/components/ow-ui/ow-amount';
+import {OwAmount} from '@/components/ow-ui/ow-amount';
 import {OwWobbleCard} from '@/components/ow-ui/ow-wobble-card';
 
 function NoteLines({ note }: { note: string }) {
@@ -15,13 +15,6 @@ function NoteLines({ note }: { note: string }) {
     );
 }
 
-function FeeValue({entry}: { entry?: FeeEntry | null }) {
-    if (!entry) return null;
-    if (entry.amount === 0) return <span className="text-body-md text-green-300">Miễn phí</span>;
-    return <span
-        className="heading-5 text-white">{formatOwAmount(entry.amount, entry.type === 'currency' ? 'vnd' : 'percent')}</span>;
-}
-
 function FeeBox({
     label,
     entry,
@@ -32,11 +25,9 @@ function FeeBox({
     brandColor?: string;
 }) {
     return (
-        <OwWobbleCard brandColor={brandColor} className="py-6 px-2 min-h-[100px] text-white">
-            <FeeValue entry={entry}/>
-            {!entry && (
-                <p className="text-xs text-white/80 mt-0.5">Chưa có thông tin</p>
-            )}
+        <OwWobbleCard brandColor={brandColor} className="min-h-[100px] text-white flex flex-col text-center gap-1">
+            {entry && <OwAmount medium amount={entry.amount} unit={entry.type === 'currency' ? 'vnd' : 'percent'}/>}
+            {!entry && <OwAmount null medium/>}
             <p className="text-label text-white mt-0.5">{label}</p>
             {entry?.note && <NoteLines note={entry.note} />}
         </OwWobbleCard>

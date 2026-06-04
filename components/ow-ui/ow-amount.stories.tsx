@@ -50,6 +50,13 @@ export const Overview: Story = {
             <OwStorySection title="Large (no unit)">
                 <OwAmount amount={500000} large/>
             </OwStorySection>
+            <OwStorySection title="Null variant">
+                <OwAmount null/>
+                <OwAmount null unit="percent"/>
+                <OwAmount null unit="vnd" period="year"/>
+                <OwAmount null unit="k" period="month"/>
+                <OwAmount nullLabel="Chưa có" unit="vnd" period="year"/>
+            </OwStorySection>
             <OwStorySection title="Text only — no style classes">
                 <OwAmount amount={399000} unit="vnd" period="year" textOnly/>
                 <OwAmount amount={0} textOnly/>
@@ -113,4 +120,12 @@ export const TextOnlyFree: Story = {
 
 export const TextOnlyCompact: Story = {
     render: () => <OwAmount amount={1500000} unit="k" period="year" textOnly/>,
+};
+
+export const Null: Story = {
+    render: () => <OwAmount null unit="percent"/>,
+};
+
+export const NullVndAnnual: Story = {
+    render: () => <OwAmount null unit="vnd" period="year"/>,
 };

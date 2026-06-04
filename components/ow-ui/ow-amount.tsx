@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {cn} from '@/lib/utils';
+import {cn} from "@/lib/utils";
 
 type PeriodKey = 'year' | 'month' | 'period' |'day'| 'statementperiod';
 
@@ -19,13 +19,15 @@ function resolvePeriod(period: PeriodKey | string | null | undefined): string | 
 type UnitKey = 'vnd' | 'k' | 'percent';
 
 interface Props {
-    amount: number;
+    amount?: number;
     unit?: UnitKey;
     period?: PeriodKey | string | null;
     textOnly?: boolean;
     large?: boolean;
     medium?: boolean;
     zeroLabel?: string;
+    null?: boolean;
+    nullLabel?: string;
 }
 
 function formatAmount(amount: number, unit: UnitKey | undefined): { value: string; suffix: string | null } {
@@ -40,28 +42,37 @@ function formatAmount(amount: number, unit: UnitKey | undefined): { value: strin
     return {value: amount.toLocaleString('vi-VN'), suffix: null};
 }
 
-export function formatOwAmount(amount: number, unit?: UnitKey, period?: PeriodKey | string | null, zeroLabel?: string): string {
+export function formatOwAmount(amount: number | undefined, unit?: UnitKey, period?: PeriodKey | string | null, zeroLabel?: string): string {
+    if (amount === undefined) return 'n/a';
     if (amount === 0 && (unit === 'vnd' || unit === 'k')) return zeroLabel ?? 'Miễn phí';
     const {value, suffix} = formatAmount(amount, unit);
     const resolvedPeriod = resolvePeriod(period);
     return `${value}${suffix ?? ''}${resolvedPeriod ? `/${resolvedPeriod}` : ''}`;
 }
 
-function resolveClassName(textOnly: boolean, large: boolean, medium: boolean): string {
-    if (textOnly) return 'ow-amount';
-    if (large) return 'ow-amount sm:heading-2 heading-4';
-    if (medium) return 'ow-amount heading-5';
-    return 'ow-amount text-body-md text-slate-800';
-}
 
-export function OwAmount({amount, unit, period, textOnly = false, large = false, medium = false, zeroLabel}: Props) {
-    if (amount === 0 && (unit === 'vnd' || unit === 'k')) {
-        const label = zeroLabel ?? 'Miễn phí';
-        return <span className={resolveClassName(textOnly, large, medium)}>{label}</span>;
+export function OwAmount({
+                             amount,
+                             unit,
+                             period,
+                             textOnly = false,
+                             large = false,
+                             medium = false,
+                             zeroLabel,
+                             null: isNull,
+                             nullLabel = '~'
+                         }: Props) {
+    const showNull = isNull || amount === undefined;
+    const className = cn("ow-amount", large && "sm:heading-2 heading-4", medium && "sm:heading-5 heading-4");
+
+    if (!showNull && amount === 0 && (unit === 'vnd' || unit === 'k')) {
+        return <span className={className}>{zeroLabel ?? 'Miễn phí'}</span>;
     }
-    const {value, suffix} = formatAmount(amount, unit);
+
+    const {value, suffix} = showNull
+        ? {value: nullLabel, suffix: unit === 'percent' ? '%' : unit === 'vnd' ? 'đ' : null}
+        : formatAmount(amount!, unit);
     const resolvedPeriod = resolvePeriod(period);
-    const className = resolveClassName(textOnly, large, medium);
 
     return (
         <span className={className}>

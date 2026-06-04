@@ -16,8 +16,8 @@ const meta: Meta<typeof OwWobbleCard> = {
                     '**Props:**',
                     '- `brandColor` — hex color for card background tint (default: `#e1795d`)',
                     '- `asChild` — merge wobble card onto child element (e.g. `<Link>`)',
-                    '- `containerClassName` — extra classes on outer container (for bento grid sizing)',
-                    '- `className` — extra classes on inner content wrapper',
+                    '- `className` — extra classes on outer container (for bento grid sizing)',
+                    '- `contentClass` — extra classes on inner content wrapper',
                     '- `renderCondition` — pass `false` to hide the card entirely',
                     '',
                     '```tsx',
@@ -96,8 +96,7 @@ export const BentoGrid: Story = {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto w-full">
             <OwWobbleCard
                 brandColor="#be185d"
-                containerClassName="col-span-1 lg:col-span-2 h-full min-h-[500px] lg:min-h-[300px]"
-                className=""
+                className="col-span-1 lg:col-span-2 h-full min-h-[500px] lg:min-h-[300px]"
             >
                 <div className="max-w-xs">
                     <h2 className="text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
@@ -115,7 +114,7 @@ export const BentoGrid: Story = {
                     className="absolute -right-4 lg:-right-[40%] grayscale filter -bottom-10 object-contain rounded-2xl"
                 />
             </OwWobbleCard>
-            <OwWobbleCard containerClassName="col-span-1 min-h-[300px]">
+            <OwWobbleCard className="col-span-1 min-h-[300px]">
                 <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
                     No shirt, no shoes, no weapons.
                 </h2>
@@ -125,7 +124,7 @@ export const BentoGrid: Story = {
             </OwWobbleCard>
             <OwWobbleCard
                 brandColor="#1e40af"
-                containerClassName="col-span-1 lg:col-span-3 min-h-[500px] lg:min-h-[600px] xl:min-h-[300px]"
+                className="col-span-1 lg:col-span-3 min-h-[500px] lg:min-h-[600px] xl:min-h-[300px]"
             >
                 <div className="max-w-sm">
                     <h2 className="max-w-sm md:max-w-lg text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">

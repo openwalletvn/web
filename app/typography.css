@@ -136,6 +136,11 @@
         letter-spacing: 1px;
         text-transform: uppercase;
     }
+    .text-caption {
+        font-family:var(--font-body), sans-serif;
+        font-size:14px;
+        line-height:130%;
+    }
 
     .text-numeral {
         font-family: var(--font-body), sans-serif;
