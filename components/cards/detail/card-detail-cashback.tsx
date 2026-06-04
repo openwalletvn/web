@@ -6,7 +6,7 @@ import type {CardModel} from '@/lib/card-model';
 import {OwAmount} from '@/components/ow-ui/ow-amount';
 import {IconAlertCircle, IconInfoCircle, IconPackages,} from '@tabler/icons-react';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
-import {fmtIsoDate} from '@/lib/utils';
+import {fmtIsoDate, fmtIsoDateLifespan} from '@/lib/utils';
 import {
     CashbackCalculator,
     type SerializedIntentMap,
@@ -54,18 +54,6 @@ export async function CardDetailCashback({card}: Props) {
     const hasFooter =
         cashback.min_spend_per_period || cashback.global_cap || cashback.redemption || cashback.note;
 
-    const fmtLifespan = (from: string, until: string): string => {
-        const [fy, fm, fd] = from.split('-').map(Number);
-        const [uy, um, ud] = until.split('-').map(Number);
-        let months = (uy - fy) * 12 + (um - fm) + (ud >= fd ? 0 : -1);
-        const years = Math.floor(months / 12);
-        months = months % 12;
-        const parts: string[] = [];
-        if (years > 0) parts.push(`${years} năm`);
-        if (months > 0) parts.push(`${months} tháng`);
-        return parts.length ? ` · ${parts.join(' ')}` : '';
-    };
-
     const allFrom = cashback.rules.map((r) => r.valid_from).filter(Boolean) as string[];
     const allUntil = cashback.rules.map((r) => r.valid_until).filter(Boolean) as string[];
     const programFrom = allFrom.length ? allFrom.reduce((a, b) => (a < b ? a : b)) : null;
@@ -73,7 +61,7 @@ export async function CardDetailCashback({card}: Props) {
 
     const expiredDateRange =
         programFrom && programUntil
-            ? ` (${fmtIsoDate(programFrom)} – ${fmtIsoDate(programUntil)}${fmtLifespan(programFrom, programUntil)})`
+            ? ` (${fmtIsoDate(programFrom)} – ${fmtIsoDate(programUntil)}${fmtIsoDateLifespan(programFrom, programUntil)})`
             : programUntil
                 ? ` (đến ${fmtIsoDate(programUntil)})`
                 : programFrom
