@@ -24,7 +24,7 @@ jobs:
       - run: npx tsx scripts/eval-chat.ts
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          CHAT_MODEL: ${{ vars.CHAT_MODEL || 'llama-3.3-70b-versatile' }}
-          JUDGE_MODEL: ${{ vars.JUDGE_MODEL || 'llama-3.3-70b-versatile' }}
+          EVAL_CHAT_MODEL: ${{ vars.EVAL_CHAT_MODEL || 'llama-3.3-70b-versatile' }}
+          EVAL_JUDGE_MODEL: ${{ vars.EVAL_JUDGE_MODEL || 'llama-3.3-70b-versatile' }}
           CHAT_URL: ${{ inputs.chat_url || 'https://openwallet.vn/api/chat' }}
           GITHUB_TOKEN: ${{ secrets.EVALS_GITHUB_TOKEN }}

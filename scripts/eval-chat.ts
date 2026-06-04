@@ -2,7 +2,7 @@
  * Offline eval harness for the /api/chat endpoint.
  * Run: npx tsx scripts/eval-chat.ts
  *
- * Requires OPENROUTER_API_KEY, CHAT_MODEL, JUDGE_MODEL,
+ * Requires OPENROUTER_API_KEY, EVAL_CHAT_MODEL, EVAL_JUDGE_MODEL,
  * LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL in .env.local
  * and the dev server running on localhost:3000 (or set CHAT_URL).
  */
@@ -14,8 +14,8 @@ dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
 const CHAT_URL = process.env.CHAT_URL ?? 'http://localhost:3000/api/chat';
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY ?? '';
-const CHAT_MODEL = process.env.CHAT_MODEL ?? 'google/gemini-flash-1.5';
-const JUDGE_MODEL = process.env.JUDGE_MODEL ?? 'openai/gpt-4o-mini';
+const EVAL_CHAT_MODEL = process.env.EVAL_CHAT_MODEL ?? 'google/gemini-flash-1.5';
+const EVAL_JUDGE_MODEL = process.env.EVAL_JUDGE_MODEL ?? 'openai/gpt-4o-mini';
 const TRIGGERED_BY = process.env.TRIGGERED_BY ?? (process.env.CI ? 'ci' : 'cli');
 
 const LANGFUSE_BASE_URL = process.env.LANGFUSE_BASE_URL ?? 'https://cloud.langfuse.com';
@@ -63,7 +63,7 @@ interface EvalResult {
   prompt_version: number;
   triggered_by: string;
   model: string;
-  judge_model: string;
+  EVAL_JUDGE_MODEL: string;
   test_id: string;
   test_name: string;
   tags: string[];
@@ -388,7 +388,7 @@ Respond with JSON only, no markdown:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: JUDGE_MODEL,
+        model: EVAL_JUDGE_MODEL,
         messages: [
           { role: 'system', content: 'You are an eval judge. Respond with valid JSON only, no markdown fences.' },
           { role: 'user', content: userPrompt },
@@ -455,7 +455,7 @@ async function pushToLangfuse(results: EvalResult[]): Promise<void> {
           test_id: r.test_id,
           test_name: r.test_name,
           model: r.model,
-          judge_model: r.judge_model,
+          EVAL_JUDGE_MODEL: r.EVAL_JUDGE_MODEL,
           rule_pass: r.rule_pass,
           latency_ms: r.latency_ms,
           triggered_by: r.triggered_by,
@@ -521,7 +521,7 @@ async function runEval() {
   console.log(`\nEval run: ${runId}`);
   console.log(`Prompt version: ${promptVersion}`);
   console.log(`Triggered by: ${TRIGGERED_BY}`);
-  console.log(`Chat model: ${CHAT_MODEL} | Judge model: ${JUDGE_MODEL}`);
+  console.log(`Chat model: ${EVAL_CHAT_MODEL} | Judge model: ${EVAL_JUDGE_MODEL}`);
   console.log(`Running ${TEST_CASES.length} eval cases${filterNote} against ${CHAT_URL}\n`);
 
   const results: EvalResult[] = [];
@@ -552,8 +552,8 @@ async function runEval() {
         run_id: runId,
         prompt_version: promptVersion,
         triggered_by: TRIGGERED_BY,
-        model: CHAT_MODEL,
-        judge_model: JUDGE_MODEL,
+        model: EVAL_CHAT_MODEL,
+        EVAL_JUDGE_MODEL: EVAL_JUDGE_MODEL,
         test_id: tc.id,
         test_name: tc.name,
         tags: tc.tags,
@@ -584,8 +584,8 @@ async function runEval() {
         run_id: runId,
         prompt_version: promptVersion,
         triggered_by: TRIGGERED_BY,
-        model: CHAT_MODEL,
-        judge_model: JUDGE_MODEL,
+        model: EVAL_CHAT_MODEL,
+        EVAL_JUDGE_MODEL: EVAL_JUDGE_MODEL,
         test_id: tc.id,
         test_name: tc.name,
         tags: tc.tags,
