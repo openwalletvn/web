@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type {Bank} from '@/lib/api';
-import {getBankImageUrl} from '@/lib/api';
+import {BankModel} from '@/lib/bank-model';
 import {cn} from '@/lib/utils';
 
 interface Props {
@@ -12,12 +12,13 @@ interface Props {
     className?: string;
 }
 
-export function OwBankImage({bank, href, className}: Props) {
-    const url = getBankImageUrl(bank.logo_url);
+export function OwBankImage({bank: bankRaw, href, className}: Props) {
+    const bank = new BankModel(bankRaw);
+    const url = bank.getLogoUrl();
     const content = (
         <Image
             src={url}
-            alt={bank.name}
+            alt={bankRaw.name}
             width={120}
             height={24}
             className={cn("object-contain size-full mix-blend-multiply dark:mix-blend-screen")}

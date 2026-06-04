@@ -3,7 +3,6 @@ import Link from 'next/link';
 import {cn} from '@/lib/utils';
 import {getBank, getCard, getCards, getRelatedCards} from '@/lib/api';
 import {CardModel} from '@/lib/card-model';
-import {BankModel} from '@/lib/bank-model';
 import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -73,9 +72,8 @@ export default async function CardPage({ params }: Props) {
         getRelatedCards(card.id).catch(() => []),
     ]);
 
-    const bank = rawBank ? new BankModel(rawBank) : null;
     const cardModel = new CardModel(card);
-    const { jsonLd, breadcrumbItems } = buildCardPageMeta(card, bank);
+    const { jsonLd, breadcrumbItems } = buildCardPageMeta(card, rawBank);
     const isVertical = card.image?.orientation === 'vertical';
 
     const sameTypeCards = relatedCards.filter(
@@ -104,7 +102,7 @@ export default async function CardPage({ params }: Props) {
                     {/* Right column: scrollable sections */}
                     <div
                         className={cn(isVertical ? 'xl:col-span-10 md:col-span-9 col-span-12' : 'xl:col-span-9 md:col-span-8 col-span-12', "flex flex-col gap-8 min-w-0")}>
-                        <CardDetailHeader card={cardModel} bank={bank} />
+                        <CardDetailHeader card={cardModel} bank={rawBank} />
                         <CardDetailRankBadges card={cardModel} />
                         <CardDetailIntents card={cardModel}/>
                         {card.description && (
@@ -114,14 +112,14 @@ export default async function CardPage({ params }: Props) {
                                 ))}
                             </CardDetailSection>
                         )}
-                        <CardDetailBillingCycle card={card} bank={bank} />
-                        <CardDetailFees card={cardModel} bank={bank} />
-                        <CardDetailOtherFees card={cardModel} bank={bank} />
+                        <CardDetailBillingCycle card={card} bank={rawBank} />
+                        <CardDetailFees card={cardModel} bank={rawBank} />
+                        <CardDetailOtherFees card={cardModel} bank={rawBank} />
                         <CardDetailCashback card={cardModel}/>
                         <CardDetailSection title="Nguồn & liên kết" className="ow-card-detail-sources">
                             <OwSourceList sources={cardModel.getSources()} />
                         </CardDetailSection>
-                        <CardDetailLastModified card={cardModel} bank={bank} />
+                        <CardDetailLastModified card={cardModel} bank={rawBank} />
                     </div>
                 </div>
 

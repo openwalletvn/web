@@ -4,8 +4,10 @@ import Link from 'next/link';
 import type {ReactNode} from 'react';
 import {cn} from '@/lib/utils';
 import {IconBuildingBank, IconExternalLink, IconScale} from '@tabler/icons-react';
-import type {Bank, Card} from '@/lib/api';
-import {getBankImageUrl, normalizeCardTypes} from '@/lib/api';
+import type {Card} from '@/lib/api';
+import {normalizeCardTypes} from '@/lib/api';
+import type {Bank} from '@/lib/api';
+import {BankModel} from '@/lib/bank-model';
 import {CardModel} from '@/lib/card-model';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
@@ -70,7 +72,8 @@ export function CardDisplay(props: Props) {
 
 function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showActions = true, className }: Omit<TileProps, 'variant'>) {
     const model = new CardModel(card);
-    const bank = bankProp !== undefined ? bankProp : (card.bank_data ?? null);
+    const bankRaw = bankProp !== undefined ? bankProp : (card.bank_data ?? null);
+    const bank = bankRaw ? new BankModel(bankRaw) : null;
     const isVertical = card.image?.orientation === 'vertical';
     const { isInCompare, toggleCompare, isFull } = useCompareList();
     const inCompare = isInCompare(card.id);
@@ -96,7 +99,7 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
             className={cn("ow-card-display flex flex-col sm:gap-4 gap-3 group relative cursor-pointer", className)}
             style={{
                 // @ts-ignore
-                '--glow-color': bank?.brand_color ? hexToRgba(bank.brand_color, 0.45) : 'rgba(0,0,0,0.45)',
+                '--glow-color': bank?.getBrandColor() ? hexToRgba(bank.getBrandColor()!, 0.45) : 'rgba(0,0,0,0.45)',
             }}
         >
             <div className="relative">
@@ -155,8 +158,8 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                                 href={`/ngan-hang/${card.bank_id}`}
                                 className="flex items-center justify-center size-10 rounded-full bg-white border border-dashed border-slate-300 shadow-sm text-slate-600 hover:border-brand-blue hover:text-brand-blue transition-all overflow-hidden"
                             >
-                                {bank?.logo_url ? (
-                                    <img src={getBankImageUrl(bank.logo_url)} alt={bank.name} className="w-full h-full object-contain p-1.5" />
+                                {bank ? (
+                                    <img src={bank.getLogoUrl()} alt={bank.getName()} className="w-full h-full object-contain p-1.5" />
                                 ) : (
                                     <IconBuildingBank className="size-4" />
                                 )}

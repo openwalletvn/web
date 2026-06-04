@@ -2,7 +2,8 @@ import type {Metadata} from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import {cn} from '@/lib/utils';
-import {getBank, getBankImageUrl, getBanks, getCards} from '@/lib/api';
+import {getBank, getBanks, getCards} from '@/lib/api';
+import {BankModel} from '@/lib/bank-model';
 import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {CardsGrid} from '@/components/cards/cards-grid';
 import {NetworkDistributionBar} from '@/components/shared/network-distribution-bar';
@@ -42,9 +43,9 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 export default async function BankPage({params}: Props) {
     const {slug} = await params;
 
-    let bank;
+    let bank: BankModel;
     try {
-        bank = await getBank(slug);
+        bank = new BankModel(await getBank(slug));
     } catch {
         return (
             <MarketingPageShell title="Không tìm thấy" breadcrumbItems={[{label: 'Trang chủ', href: '/'}, {label: 'Ngân hàng', href: '/ngan-hang'}, {label: 'Không tìm thấy'}]}>
@@ -59,7 +60,7 @@ export default async function BankPage({params}: Props) {
         getBanks().catch(() => [] as Awaited<ReturnType<typeof getBanks>>),
     ]);
 
-    const {jsonLd, breadcrumbItems} = buildBankPageMeta(bank, cards);
+    const {jsonLd, breadcrumbItems} = buildBankPageMeta(bank.toRaw(), cards);
 
     const hybridCards = cards.filter((c) => c.card_type.includes('hybrid'));
     const hybridIds = new Set(hybridCards.map((c) => c.id));
@@ -76,20 +77,20 @@ export default async function BankPage({params}: Props) {
                 {/* Bank Identity */}
                 <div className="flex items-start gap-12">
                     <div className="relative w-56 aspect-video shrink-0">
-                        <Image src={getBankImageUrl(bank.logo_url)} alt="" fill className="object-contain"/>
+                        <Image src={bank.getLogoUrl()} alt="" fill className="object-contain"/>
                     </div>
 
                     <div className="flex-1">
-                        <h1>{bank.name}</h1>
-                        <p className="text-text-muted mt-1">{bank.full_name}</p>
-                        {bank.link && (
+                        <h1>{bank.getName()}</h1>
+                        <p className="text-text-muted mt-1">{bank.getFullName()}</p>
+                        {bank.hasLink() && (
                             <a
-                                href={bank.link}
+                                href={bank.getLink()}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 mt-3 text-body-sm text-text-subtle hover:text-text-primary"
                             >
-                                {new URL(bank.link).hostname} ↗
+                                {bank.getLinkHostname()} ↗
                             </a>
                         )}
                     </div>
@@ -97,17 +98,17 @@ export default async function BankPage({params}: Props) {
 
                 <div className="space-y-5">
                     {/* Network Distribution */}
-                    {bank.stats?.network_counts && bank.networks_data && (
+                    {bank.getStats()?.network_counts && bank.getNetworksData().length > 0 && (
                         <NetworkDistributionBar
-                            networkCounts={bank.stats.network_counts}
-                            networksData={bank.networks_data}
-                            totalCards={bank.stats.card_count ?? 0}
+                            networkCounts={bank.getStats()!.network_counts!}
+                            networksData={bank.getNetworksData()}
+                            totalCards={bank.getCardCount()}
                         />
                     )}
 
                     {/* Stats Row */}
                     {(() => {
-                        const maxFee = bank.stats?.max_annual_fee;
+                        const maxFee = bank.getStats()?.max_annual_fee;
                         const statsItems: { label: string; value: string }[] = [
                             {label: 'Tổng số thẻ', value: String(cards.length)},
                             ...(creditCards.length > 0 ? [{label: 'Tín dụng', value: String(creditCards.length)}] : []),
@@ -157,8 +158,8 @@ export default async function BankPage({params}: Props) {
         </MarketingPageShell>
         <ChatContextSetter context={{
             type: 'bank',
-            bankId: bank.id,
-            bankName: bank.name,
+            bankId: bank.getId(),
+            bankName: bank.getName(),
         }} />
         </>
     );

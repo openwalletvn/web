@@ -1,4 +1,5 @@
 import type {Bank} from '@/lib/api';
+import {BankModel} from '@/lib/bank-model';
 import {normalizeCardTypes} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
 import {CoBrandDisplay} from '@/components/cards/co-brand-display';
@@ -10,14 +11,15 @@ interface Props {
     bank: Bank | null;
 }
 
-export function CardDetailHeader({ card, bank }: Props) {
+export function CardDetailHeader({ card, bank: bankRaw }: Props) {
+    const bank = bankRaw ? new BankModel(bankRaw) : null;
     const contactlessMethods = card.getContactlessMethods();
     const coBrand = card.getCoBrand();
     const coBrandData = card.getCoBrandData();
 
     return (
         <div className="ow-card-detail-header flex flex-col items-start gap-3">
-            {bank && <OwBankImage className="h-6 w-auto" bank={bank} href={`/ngan-hang/${bank.id}`} />}
+            {bank && bankRaw && <OwBankImage className="h-6 w-auto" bank={bankRaw} href={bank.getHref()} />}
 
             <h1>{card.getName()}</h1>
 
