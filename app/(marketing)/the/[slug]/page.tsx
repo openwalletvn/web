@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {cn} from '@/lib/utils';
 import {getBank, getCard, getCards, getRelatedCards} from '@/lib/api';
 import {CardModel} from '@/lib/card-model';
+import {BankModel} from '@/lib/bank-model';
 import {ChatContextSetter} from '@/components/chat/chat-context-setter';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
 import {Breadcrumbs} from '@/components/layout/breadcrumbs';
@@ -12,7 +13,7 @@ import {CardDetailHeader} from '@/components/cards/detail/card-detail-header';
 import {CardDetailBillingCycle} from '@/components/cards/detail/card-detail-billing-cycle';
 import {CardDetailFees} from '@/components/cards/detail/card-detail-fees';
 import {CardDetailOtherFees} from '@/components/cards/detail/card-detail-other-fees';
-import {CardDetailSources} from '@/components/cards/detail/card-detail-sources';
+import {OwSourceList} from '@/components/ow-ui/ow-source-list';
 import {CardDetailLastModified} from '@/components/cards/detail/card-detail-last-modified';
 import {CardDetailRelated} from '@/components/cards/detail/card-detail-related';
 import {CardDetailCompare} from '@/components/cards/detail/card-detail-compare';
@@ -66,12 +67,13 @@ export default async function CardPage({ params }: Props) {
         );
     }
 
-    const [bank, relatedCards, compareCards] = await Promise.all([
+    const [rawBank, relatedCards, compareCards] = await Promise.all([
         getBank(card.bank_id).catch(() => null),
         getCards({ bank_id: card.bank_id }).catch(() => []),
         getRelatedCards(card.id).catch(() => []),
     ]);
 
+    const bank = rawBank ? new BankModel(rawBank) : null;
     const cardModel = new CardModel(card);
     const { jsonLd, breadcrumbItems } = buildCardPageMeta(card, bank);
     const isVertical = card.image?.orientation === 'vertical';
@@ -116,7 +118,9 @@ export default async function CardPage({ params }: Props) {
                         <CardDetailFees card={cardModel} bank={bank} />
                         <CardDetailOtherFees card={cardModel} bank={bank} />
                         <CardDetailCashback card={cardModel}/>
-                        <CardDetailSources card={cardModel} bank={bank} />
+                        <CardDetailSection title="Nguồn & liên kết" className="ow-card-detail-sources">
+                            <OwSourceList sources={cardModel.getSources()} />
+                        </CardDetailSection>
                         <CardDetailLastModified card={cardModel} bank={bank} />
                     </div>
                 </div>

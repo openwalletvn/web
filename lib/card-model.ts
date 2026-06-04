@@ -194,9 +194,11 @@ export class CardModel {
         return this.data.description;
     }
 
-    /** Source reference array, or `undefined`. */
-    getSources(): Card['sources'] {
-        return this.data.sources;
+    getSources(): {url: string; label?: string}[] {
+        const sources = (this.data.sources ?? []) as {url: string; label?: string}[];
+        const cardLink = this.data.card_link;
+        if (!cardLink || sources.some(s => s.url === cardLink)) return sources;
+        return [...sources, {url: cardLink, label: 'Xem chi tiết thẻ chính thức'}];
     }
 
     /** ISO timestamp of last admin edit, or `undefined`. */
