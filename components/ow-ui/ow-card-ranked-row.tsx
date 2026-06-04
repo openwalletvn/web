@@ -75,115 +75,149 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
     const suggestions = breakdown?.suggestions ?? [];
     const showBreakdown = cashback > 0 && byIntentEntries.length > 0;
 
+    const globalCap = cashbackData?.global_cap;
+    const showGlobalCap = globalCap && globalCap.amount !== -1;
+
     return (
-        <div className="ow-card-ranked-row grid grid-cols-12 gap-3 items-start">
-            {/*col 1 — card image [2]*/}
-            <div className="col-span-2">
-                <Link href={`/the/${cardModel.getId()}`}>
-                    <OwCardImage card={card} className="w-full"/>
-                </Link>
-            </div>
-
-            {/*col 2 — card info [6]*/}
-            <div className="col-span-6 flex flex-col gap-1 min-w-0">
-                {/*rank badge row*/}
-                <div className="flex items-center gap-0.5">
-                    <OwRankBadge rank={rank}/>
-                    {tiebreaker_delta !== undefined && tiebreaker_delta > 0 && (
-                        <span
-                            className="flex items-center gap-0.5 text-emerald-500 text-[10px] font-semibold leading-none">
-                            <IconCaretUpFilled size={10}/>{tiebreaker_delta}
-                        </span>
-                    )}
-                    {tiebreaker_delta !== undefined && tiebreaker_delta < 0 && (
-                        <span
-                            className="flex items-center gap-0.5 text-orange-400 text-[10px] font-semibold leading-none">
-                            <IconCaretDownFilled size={10}/>{Math.abs(tiebreaker_delta)}
-                        </span>
-                    )}
-                </div>
-
-                {/*card name + type*/}
-                <div className="flex items-center gap-1.5 min-w-0">
-                    <Link href={`/the/${cardModel.getId()}`}
-                          className="text-body font-semibold truncate hover:underline text-black">
-                        {cardModel.getName()}
+        <div className="ow-card-ranked-row @container">
+            <div className="grid grid-cols-12 gap-3 items-start">
+                {/*col 1 — card image [2]*/}
+                <div className="col-span-2">
+                    <Link href={`/the/${cardModel.getId()}`}>
+                        <OwCardImage card={card} className="w-full"/>
                     </Link>
                 </div>
 
-                {/*intent badges*/}
-                {intentMap && (cardIntents.length > 0 || catchallRules.length > 0) && (
-                    <OwBadges>
-                        {cardTypes.length > 0 && (
-                            <OwBadge small variant="card-type" cardTypes={cardTypes}/>
-                        )}
-                        {catchallRules.map((rule, i) => (
-                            <OwBadge small key={i} colorHex={highlighted.size > 0 ? 'var(--color-primary)' : undefined}>
-                                {catchallLabel(rule)}
-                            </OwBadge>
-                        ))}
-                        <OwCardIntentBadges intents={cardIntents} highlighted={highlighted} small/>
-                    </OwBadges>
-                )}
+                {/*col 2 — card info [6 wide / 10 narrow]*/}
+                <div className="col-span-10 @[480px]:col-span-6 flex flex-col gap-1 min-w-0">
+                    {/*expired warning*/}
+                    {cashbackData?.cashback_expired && (
+                        <span className="flex items-center gap-1 text-[10px] text-amber-600 leading-4">
+                            <IconAlertTriangle size={10} className="shrink-0"/>
+                            Ưu đãi hoàn tiền đã kết thúc · thông tin chỉ mang tính tham khảo
+                        </span>
+                    )}
 
-                {/*min spend*/}
-                {cashbackData?.min_spend_per_period != null && (
-                    <p className="text-body-sm text-text-muted">
-                        Chi tối thiểu {cashbackData.min_spend_per_period.toLocaleString('vi-VN')}đ/tháng
-                    </p>
-                )}
-
-                {/*rank reason*/}
-                {showReason && (
-                    <span className="flex items-center gap-1 text-xs text-text-muted">
-                        <IconBulb size={12} className="shrink-0 text-amber-400"/>
-                        {rank_reason}
-                    </span>
-                )}
-
-                {/*cashback display*/}
-                {cashback === 0 ? (
-                    <span className="text-body-sm text-text-muted">Đang cập nhật thông tin ưu đãi</span>
-                ) : showBreakdown ? (
-                    <div className="flex flex-col gap-0.5">
-                        {byIntentEntries.map(([slug, v]) => {
-                            const intent = intentMap?.get(slug);
-                            return (
-                                <span key={slug} className="text-[11px] text-text-muted leading-4">
-                                    {intent?.icon && <span className="mr-0.5">{intent.icon}</span>}
-                                    <span>{intent?.label ?? slug}</span>
-                                    {v.budget != null && (
-                                        <span className="text-text-muted/60"> {(v.budget / 1_000_000).toFixed(0)}tr →</span>
-                                    )}
-                                    <span className="font-medium text-slate-700"> {(v.cashback ?? 0).toLocaleString('vi-VN')}đ</span>
-                                    {v.rate != null && (
-                                        <span className="text-text-muted/60"> ({Math.round(v.rate * 10000) / 100}%)</span>
-                                    )}
-                                </span>
-                            );
-                        })}
-                        {[...cardNotes, ...suggestions].slice(0, 1).map((msg, i) => (
-                            <span key={i} className="flex items-center gap-1 text-[10px] text-amber-600 leading-4">
-                                <IconAlertTriangle size={10} className="shrink-0"/>
-                                {msg}
+                    {/*rank badge row*/}
+                    <div className="flex items-center gap-0.5">
+                        <OwRankBadge rank={rank}/>
+                        {tiebreaker_delta !== undefined && tiebreaker_delta > 0 && (
+                            <span className="flex items-center gap-0.5 text-emerald-500 text-[10px] font-semibold leading-none">
+                                <IconCaretUpFilled size={10}/>{tiebreaker_delta}
                             </span>
-                        ))}
+                        )}
+                        {tiebreaker_delta !== undefined && tiebreaker_delta < 0 && (
+                            <span className="flex items-center gap-0.5 text-orange-400 text-[10px] font-semibold leading-none">
+                                <IconCaretDownFilled size={10}/>{Math.abs(tiebreaker_delta)}
+                            </span>
+                        )}
                     </div>
-                ) : rateDisplay ? (
-                    <span className="text-body-sm text-text-muted">Hoàn {rateDisplay}/kỳ</span>
-                ) : null}
-            </div>
 
-            {/*col 3 — cashback amount [2]*/}
-            <div className="col-span-2 flex flex-col items-end">
-                <OwAmount amount={ranked.cashback_result.cashback} unit="k" period="period"/>
-            </div>
+                    {/*card name*/}
+                    <div className="flex items-center gap-1.5 min-w-0">
+                        <Link href={`/the/${cardModel.getId()}`}
+                              className="text-body font-semibold truncate hover:underline text-black">
+                            {cardModel.getName()}
+                        </Link>
+                    </div>
 
-            {/*col 4 — annual fee [2]*/}
-            <div className="col-span-2 flex flex-col items-end">
-                {cardModel.getFees()?.annual != null && (
-                    <OwAmount amount={cardModel.getFees()!.annual!.amount} unit="k" period="year"/>
-                )}
+                    {/*intent badges*/}
+                    {intentMap && (cardIntents.length > 0 || catchallRules.length > 0) && (
+                        <OwBadges>
+                            {cardTypes.length > 0 && (
+                                <OwBadge small variant="card-type" cardTypes={cardTypes}/>
+                            )}
+                            {catchallRules.map((rule, i) => (
+                                <OwBadge small key={i} colorHex={highlighted.size > 0 ? 'var(--color-primary)' : undefined}>
+                                    {catchallLabel(rule)}
+                                </OwBadge>
+                            ))}
+                            <OwCardIntentBadges intents={cardIntents} highlighted={highlighted} small/>
+                        </OwBadges>
+                    )}
+
+                    {/*min spend + global cap — ranking constraints*/}
+                    {(cashbackData?.min_spend_per_period != null || showGlobalCap) && (
+                        <p className="text-body-sm text-text-muted flex flex-wrap gap-x-3 gap-y-0.5">
+                            {cashbackData?.min_spend_per_period != null && (
+                                <span>Chi tối thiểu <OwAmount amount={cashbackData.min_spend_per_period} unit="k" textOnly period="month"/></span>
+                            )}
+                            {showGlobalCap && (
+                                <span>Trần <OwAmount
+                                    amount={globalCap.amount}
+                                    unit="k"
+                                    textOnly
+                                    period={cashbackData?.global_cap_max ? undefined : 'period'}
+                                />{cashbackData?.global_cap_max && <>–<OwAmount amount={cashbackData.global_cap_max.amount} unit="k" textOnly period="period"/></>}</span>
+                            )}
+                        </p>
+                    )}
+
+                    {/*cashback breakdown*/}
+                    {cashback === 0 ? (
+                        <span className="text-body-sm text-text-muted">Đang cập nhật thông tin ưu đãi</span>
+                    ) : showBreakdown ? (
+                        <div className="flex flex-col gap-0.5">
+                            {byIntentEntries.map(([slug, v]) => {
+                                const intent = intentMap?.get(slug);
+                                return (
+                                    <span key={slug} className="text-sm text-text-muted leading-4">
+                                        {intent?.icon && <span className="mr-0.5">{intent.icon}</span>}
+                                        <span>{intent?.label ?? slug}</span>
+                                        {v.budget != null && (
+                                            <span className="text-text-muted/60"> {(v.budget / 1_000_000).toFixed(0)}tr →</span>
+                                        )}
+                                        <span className="font-medium text-slate-700"> {(v.cashback ?? 0).toLocaleString('vi-VN')}đ</span>
+                                        {v.rate != null && (
+                                            <span className="text-text-muted/60"> ({Math.round(v.rate * 10000) / 100}%)</span>
+                                        )}
+                                    </span>
+                                );
+                            })}
+                            {[...cardNotes, ...suggestions].slice(0, 1).map((msg, i) => (
+                                <span key={i} className="flex items-center gap-1 text-[10px] text-amber-600 leading-4">
+                                    <IconAlertTriangle size={10} className="shrink-0"/>
+                                    {msg}
+                                </span>
+                            ))}
+                        </div>
+                    ) : rateDisplay ? (
+                        <span className="text-body-sm text-text-muted">Hoàn {rateDisplay}/kỳ</span>
+                    ) : null}
+
+
+
+                    {/*rank reason*/}
+                    {showReason && (
+                        <span className="flex items-center gap-1 text-sm text-text-muted">
+                            <IconBulb size={12} className="shrink-0 text-amber-400"/>
+                            {rank_reason}
+                        </span>
+                    )}
+
+                    {/*narrow: amounts inline below info*/}
+                    <div className="flex @[480px]:hidden items-center gap-3 mt-1">
+                        <OwAmount amount={ranked.cashback_result.cashback} unit="k" period="period"/>
+                        {cardModel.getFees()?.annual != null && (
+                            <span className="text-text-muted/60 text-sm">·</span>
+                        )}
+                        {cardModel.getFees()?.annual != null && (
+                            <OwAmount amount={cardModel.getFees()!.annual!.amount} unit="k" period="year"/>
+                        )}
+                    </div>
+                </div>
+
+                {/*col 3 — cashback amount [2] — wide only*/}
+                <div className="hidden @[480px]:flex col-span-2 flex-col items-end">
+                    <OwAmount medium amount={ranked.cashback_result.cashback} unit="k" period="period"/>
+                </div>
+
+                {/*col 4 — annual fee [2] — wide only*/}
+                <div className="hidden @[480px]:flex col-span-2 flex-col items-end">
+                    {cardModel.getFees()?.annual != null && (
+                        <OwAmount medium amount={cardModel.getFees()!.annual!.amount} unit="k" period="year"/>
+                    )}
+                </div>
             </div>
         </div>
     );
