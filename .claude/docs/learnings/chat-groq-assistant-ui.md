@@ -12,7 +12,7 @@
 /api/chat/route.ts (server)
   ├── IP rate limit (in-memory Map, 20 req/min → 429)
   ├── convertToModelMessages(uiMessages.slice(-12))
-  └── streamText(groq(CHAT_MODEL), tools, stopWhen: stepCountIs(5))
+  └── streamText(groq(EVAL_CHAT_MODEL), tools, stopWhen: stepCountIs(5))
 ```
 
 ## AI SDK v6 gotchas

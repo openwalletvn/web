@@ -73,8 +73,8 @@ Note: `custom` functions cannot live in JSON. Replace with `customDescription` s
 | `GITHUB_TOKEN` | Push JSONL to evals repo |
 | `EVALS_REPO` | `openwalletvn/evals` (or hardcode) |
 | `GROQ_API_KEY` | Already exists — reuse for judge |
-| `CHAT_MODEL` | Already exists |
-| `JUDGE_MODEL` | Groq model for judge (e.g. `openai/gpt-oss-120b`) |
+| `EVAL_CHAT_MODEL` | Already exists |
+| `EVAL_JUDGE_MODEL` | Groq model for judge (e.g. `openai/gpt-oss-120b`) |
 
 ### Prompt version
 
@@ -119,8 +119,8 @@ Parse score + reasoning. Judge pass threshold: score >= 60.
 interface EvalResult {
   run_id: string;          // uuid or `${timestamp}-${shortHash}`
   prompt_version: string;  // git hash of system-prompt.ts
-  model: string;           // CHAT_MODEL
-  judge_model: string;     // JUDGE_MODEL
+  model: string;           // EVAL_CHAT_MODEL
+  EVAL_JUDGE_MODEL: string;     // EVAL_JUDGE_MODEL
   test_id: string;
   input: string;
   response: string;
@@ -265,8 +265,8 @@ jobs:
       - run: npx tsx scripts/eval-chat.ts
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          CHAT_MODEL: ${{ vars.CHAT_MODEL || 'llama-3.3-70b-versatile' }}
-          JUDGE_MODEL: ${{ vars.JUDGE_MODEL || 'llama-3.3-70b-versatile' }}
+          EVAL_CHAT_MODEL: ${{ vars.EVAL_CHAT_MODEL || 'llama-3.3-70b-versatile' }}
+          EVAL_JUDGE_MODEL: ${{ vars.EVAL_JUDGE_MODEL || 'llama-3.3-70b-versatile' }}
           CHAT_URL: ${{ inputs.chat_url || 'https://openwallet.vn/api/chat' }}
           GITHUB_TOKEN: ${{ secrets.EVALS_GITHUB_TOKEN }}
 ```

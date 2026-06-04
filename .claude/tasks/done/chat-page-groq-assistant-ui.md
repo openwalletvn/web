@@ -8,7 +8,7 @@ Build a production-standard `/chat` page for openwallet.vn that lets users ask V
 
 - [ ] `npx assistant-ui@latest init` run — `components/assistant-ui/thread.tsx` and siblings generated
 - [ ] Deps installed: `@assistant-ui/react`, `@assistant-ui/react-ai-sdk`, `@ai-sdk/groq`, `ai`, `zod`
-- [ ] `GROQ_API_KEY` and `CHAT_MODEL` added to `.env.local` and `.env.example`
+- [ ] `GROQ_API_KEY` and `EVAL_CHAT_MODEL` added to `.env.local` and `.env.example`
 - [ ] `lib/chat/system-prompt.ts` created — scope-locked Vietnamese prompt, refusal template, response format rules
 - [ ] `app/api/chat/route.ts` created — `streamText` with Groq, 5 card tools, history trimmed to last 12 messages
 - [ ] Tools implemented: `searchCards`, `getCardDetail`, `rankCardsForSpend`, `compareCards`, `listBanks`
@@ -34,7 +34,7 @@ Build a production-standard `/chat` page for openwallet.vn that lets users ask V
 | `components/chat/chat-page-client.tsx` | CREATE — client component with runtime + localStorage |
 | `app/(marketing)/chat/page.tsx` | CREATE — server component page with metadata |
 | `scripts/eval-chat.ts` | CREATE — offline eval harness (8 test cases) |
-| `.env.local` | EDIT — add `GROQ_API_KEY`, `CHAT_MODEL` |
+| `.env.local` | EDIT — add `GROQ_API_KEY`, `EVAL_CHAT_MODEL` |
 | `.env.example` | EDIT — document new vars |
 | `package.json` | EDIT — add 5 new deps |
 
@@ -45,7 +45,7 @@ Build a production-standard `/chat` page for openwallet.vn that lets users ask V
 - **Push:** push `feat/chat-page` to origin once all commits are done
 - Vercel AI SDK (`ai`) is protocol glue only — not tied to Vercel platform infra
 - `GROQ_API_KEY` is server-only — never use `NEXT_PUBLIC_` prefix
-- Model name read from `process.env.CHAT_MODEL` — not user-selectable
+- Model name read from `process.env.EVAL_CHAT_MODEL` — not user-selectable
 - History truncation to last 12 messages happens in API route before `streamText` call
 - Tools should strip heavy/unused card fields before returning to LLM (reduce token usage)
 - Phase 2 (out of scope): input classification guardrail, Upstash rate limiting, RAG for blog content, embeddable iframe widget
