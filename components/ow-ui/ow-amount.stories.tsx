@@ -27,8 +27,14 @@ export const Overview: Story = {
             <OwStorySection title="VND / month">
                 <OwAmount amount={50000} unit="vnd" period="month"/>
             </OwStorySection>
-            <OwStorySection title="Free">
-                <OwAmount amount={0}/>
+            <OwStorySection title="Free (zero + vnd/k → Miễn phí)">
+                <OwAmount amount={0} unit="vnd"/>
+                <OwAmount amount={0} unit="vnd" zeroLabel="Miễn phí thường niên"/>
+                <OwAmount amount={0} unit="vnd" zeroLabel="Miễn phí hủy thẻ"/>
+            </OwStorySection>
+            <OwStorySection title="Medium (heading-5)">
+                <OwAmount amount={399000} unit="vnd" period="year" medium/>
+                <OwAmount amount={0} unit="vnd" medium/>
             </OwStorySection>
             <OwStorySection title="Compact (k) — 100k, 399k, 1tr, 1.5tr">
                 <div className="flex flex-col gap-1">
@@ -62,7 +68,19 @@ export const VndMonthly: Story = {
 };
 
 export const Free: Story = {
-    render: () => <OwAmount amount={0}/>,
+    render: () => <OwAmount amount={0} unit="vnd"/>,
+};
+
+export const FreeCustomLabel: Story = {
+    render: () => <OwAmount amount={0} unit="vnd" zeroLabel="Miễn phí thường niên"/>,
+};
+
+export const Medium: Story = {
+    render: () => <OwAmount amount={399000} unit="vnd" period="year" medium/>,
+};
+
+export const MediumFree: Story = {
+    render: () => <OwAmount amount={0} unit="vnd" medium/>,
 };
 
 export const Compact100k: Story = {

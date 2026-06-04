@@ -24,6 +24,8 @@ interface Props {
     period?: PeriodKey | string | null;
     textOnly?: boolean;
     large?: boolean;
+    medium?: boolean;
+    zeroLabel?: string;
 }
 
 function formatAmount(amount: number, unit: UnitKey | undefined): { value: string; suffix: string | null } {
@@ -38,23 +40,35 @@ function formatAmount(amount: number, unit: UnitKey | undefined): { value: strin
     return {value: amount.toLocaleString('vi-VN'), suffix: null};
 }
 
-export function formatOwAmount(amount: number, unit?: UnitKey, period?: PeriodKey | string | null): string {
+export function formatOwAmount(amount: number, unit?: UnitKey, period?: PeriodKey | string | null, zeroLabel?: string): string {
+    if (amount === 0 && (unit === 'vnd' || unit === 'k')) return zeroLabel ?? 'Miễn phí';
     const {value, suffix} = formatAmount(amount, unit);
     const resolvedPeriod = resolvePeriod(period);
     return `${value}${suffix ?? ''}${resolvedPeriod ? `/${resolvedPeriod}` : ''}`;
 }
 
-export function OwAmount({amount, unit, period, textOnly = false, large = false}: Props) {
+function resolveClassName(textOnly: boolean, large: boolean, medium: boolean): string {
+    if (textOnly) return 'ow-amount';
+    if (large) return 'ow-amount sm:heading-2 heading-4';
+    if (medium) return 'ow-amount heading-5';
+    return 'ow-amount text-body-md text-slate-800';
+}
+
+export function OwAmount({amount, unit, period, textOnly = false, large = false, medium = false, zeroLabel}: Props) {
+    if (amount === 0 && (unit === 'vnd' || unit === 'k')) {
+        const label = zeroLabel ?? 'Miễn phí';
+        return <span className={resolveClassName(textOnly, large, medium)}>{label}</span>;
+    }
     const {value, suffix} = formatAmount(amount, unit);
     const resolvedPeriod = resolvePeriod(period);
-    const className = cn('ow-amount', !textOnly && (large ? 'sm:heading-2 heading-4' : 'text-body-md text-slate-800'));
+    const className = resolveClassName(textOnly, large, medium);
 
     return (
         <span className={className}>
             {value}
-            {suffix && <span className={textOnly ? undefined : 'text-slate-500'}>{suffix}</span>}
+            {suffix && <span className={textOnly ? undefined : 'opacity-70'}>{suffix}</span>}
             {unit !== 'percent' && resolvedPeriod &&
-                <span className={textOnly ? undefined : 'text-xs text-slate-400'}>/{resolvedPeriod}</span>}
+                <span className={textOnly ? undefined : 'text-xs opacity-70'}>/{resolvedPeriod}</span>}
         </span>
     );
 }
