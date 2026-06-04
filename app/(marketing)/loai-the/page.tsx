@@ -65,15 +65,15 @@ export default function CardTypesPage() {
             <section className="ow-card-types-page flex flex-col gap-10">
                 <div className="ow-card-types-page-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {ITEMS.map(({type, label, description, href, hex, Icon}) => (
-                        <OwWobbleCard key={type} brandColor={hex} asChild>
-                            <Link href={href}>
+                        <Link key={type} href={href}>
+                            <OwWobbleCard brandColor={hex}>
                                 <span className="flex items-center gap-2 font-semibold text-base text-white">
                                     {Icon && <Icon size={18}/>}
                                     {label}
                                 </span>
                                 <span className="text-white/70 text-sm">{description}</span>
-                            </Link>
-                        </OwWobbleCard>
+                            </OwWobbleCard>
+                        </Link>
                     ))}
                 </div>
             </section>

@@ -79,7 +79,6 @@ type OwWobbleCardProps = {
     brandColor?: string;
     children?: React.ReactNode;
     renderCondition?: boolean | null;
-    asChild?: boolean;
     className?: string;
     containerClassName?: string;
 };
@@ -88,7 +87,6 @@ export function OwWobbleCard({
                                  children,
                                  brandColor = "#e1795d",
                                  renderCondition,
-                                 asChild,
                                  className,
                                  containerClassName,
                              }: OwWobbleCardProps) {
@@ -96,16 +94,9 @@ export function OwWobbleCard({
 
     const cardStyle = brandColor ? {backgroundColor: hexToRgba(brandColor, 0.9)} : undefined;
 
-    if (asChild) {
-        const child = React.Children.only(children) as React.ReactElement<React.HTMLAttributes<HTMLElement>>;
-        children = React.cloneElement(child, {
-            className: [child.props.className].filter(Boolean).join(" "),
-        });
-    }
-
     return (
-        <WobbleCard containerClassName={cn("ow-wobble-card col-span-1 h-full", containerClassName)}
-                    className={cn("flex flex-col justify-center items-center text-center gap-4 z-20 relative w-full h-full p-8", className)}
+        <WobbleCard containerClassName={cn("ow-wobble-card col-span-1 h-full p-0", containerClassName)}
+                    className={cn("flex flex-col justify-center items-center text-center gap-4 w-full h-full p-5", className)}
                     style={cardStyle}>
             {children}
         </WobbleCard>

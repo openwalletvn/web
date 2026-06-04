@@ -15,18 +15,16 @@ const meta: Meta<typeof OwWobbleCard> = {
                     '',
                     '**Props:**',
                     '- `brandColor` — hex color for card background tint (default: `#e1795d`)',
-                    '- `asChild` — merge wobble card onto child element (e.g. `<Link>`)',
                     '- `className` — extra classes on outer container (for bento grid sizing)',
-                    '- `contentClass` — extra classes on inner content wrapper',
                     '- `renderCondition` — pass `false` to hide the card entirely',
                     '',
                     '```tsx',
-                    '<OwWobbleCard brandColor="#e1795d" asChild>',
-                    '  <Link href="/linh-vuc/shopee">',
+                    '<Link href="/linh-vuc/shopee">',
+                    '  <OwWobbleCard brandColor="#e1795d">',
                     '    <span className="font-semibold">Shopee</span>',
                     '    <span className="text-sm">Hoàn tiền cao nhất cho Shopee</span>',
-                    '  </Link>',
-                    '</OwWobbleCard>',
+                    '  </OwWobbleCard>',
+                    '</Link>',
                     '```',
                 ].join('\n'),
             },
@@ -64,14 +62,14 @@ export const Overview: Story = {
                     </OwWobbleCard>
                 </div>
             </OwStorySection>
-            <OwStorySection title="With asChild + Link (clickable)">
+            <OwStorySection title="With Link (clickable)">
                 <div className="grid grid-cols-3 gap-4">
-                    <OwWobbleCard brandColor="#a855f7" asChild>
-                        <Link href="/linh-vuc/shopee">
+                    <Link href="/linh-vuc/shopee">
+                        <OwWobbleCard brandColor="#a855f7">
                             <span className="font-semibold text-white">🛍️ Shopee</span>
                             <span className="text-sm text-white/70">Click me</span>
-                        </Link>
-                    </OwWobbleCard>
+                        </OwWobbleCard>
+                    </Link>
                 </div>
             </OwStorySection>
             <OwStorySection title="renderCondition=false (hidden)">
@@ -148,11 +146,11 @@ export const BentoGrid: Story = {
 
 export const WithLink: Story = {
     render: () => (
-        <OwWobbleCard brandColor="#3b82f6" asChild>
-            <Link href="/linh-vuc/shopee">
+        <Link href="/linh-vuc/shopee">
+            <OwWobbleCard brandColor="#3b82f6">
                 <span className="font-semibold text-white">🛍️ Shopee</span>
                 <span className="text-sm text-white/70">Hoàn tiền cao nhất cho Shopee</span>
-            </Link>
-        </OwWobbleCard>
+            </OwWobbleCard>
+        </Link>
     ),
 };
