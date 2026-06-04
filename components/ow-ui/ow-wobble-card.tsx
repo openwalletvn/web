@@ -40,7 +40,7 @@ const WobbleCard = ({
                 transition: "transform 0.1s ease-out",
                 ...style,
             }}
-            className={cn("mx-auto w-full bg-indigo-800 relative rounded-lg overflow-hidden", containerClassName)}
+            className={cn("mx-auto w-full bg-indigo-800 relative sm:rounded-lg rounded-md overflow-hidden", containerClassName)}
         >
             <div
                 className="relative h-full [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))] sm:mx-0 sm:rounded-lg overflow-hidden"
