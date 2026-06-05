@@ -3,6 +3,7 @@ import { createMCPClient } from '@ai-sdk/mcp';
 import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
 import { buildSystemPrompt } from '@/lib/chat/system-prompt';
 import { fetchSystemPrompt, sendChatTrace } from '@/lib/langfuse';
+import { isAllowedModel, getDefaultModel } from '@/lib/chat/models';
 import type { PageContext } from '@/lib/chat/page-context';
 import fs from 'fs';
 import path from 'path';
@@ -53,17 +54,12 @@ export async function POST(req: Request) {
         );
     }
 
-    const body = await req.json() as { messages?: UIMessage[]; pageContext?: PageContext; userId?: string; sessionId?: string };
+    const body = await req.json() as { messages?: UIMessage[]; pageContext?: PageContext; userId?: string; sessionId?: string; config?: { modelName?: string } };
     const uiMessages: UIMessage[] = body.messages ?? [];
     const messages = await convertToModelMessages(uiMessages.slice(-12));
 
-    const model = process.env.CHAT_MODEL ?? process.env.DEFAULT_MODEL;
-    if (!model) {
-        return new Response(
-            JSON.stringify({ error: 'Chat service unavailable: no AI model configured (CHAT_MODEL or DEFAULT_MODEL required).' }),
-            { status: 503, headers: { 'Content-Type': 'application/json' } }
-        );
-    }
+    const requestedModel = body.config?.modelName;
+    const model = isAllowedModel(requestedModel) ? requestedModel! : getDefaultModel().id;
     const startTime = Date.now();
     const lastUserMessage = uiMessages.findLast((m) => m.role === 'user')?.parts
         ?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? '';

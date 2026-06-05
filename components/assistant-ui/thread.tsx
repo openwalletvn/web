@@ -1,46 +1,45 @@
-import { MarkdownText } from "@/components/assistant-ui/markdown-text";
+import {MarkdownText} from "@/components/assistant-ui/markdown-text";
+import {ModelSelector} from "@/components/assistant-ui/model-selector";
+import {getDefaultModel, getVisibleModels} from "@/lib/chat/models";
 import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningRoot,
-  ReasoningText,
-  ReasoningTrigger,
+    Reasoning,
+    ReasoningContent,
+    ReasoningRoot,
+    ReasoningText,
+    ReasoningTrigger,
 } from "@/components/assistant-ui/reasoning";
+import {ToolGroupContent, ToolGroupRoot, ToolGroupTrigger,} from "@/components/assistant-ui/tool-group";
+import {ToolFallback} from "@/components/assistant-ui/tool-fallback";
+import {TooltipIconButton} from "@/components/assistant-ui/tooltip-icon-button";
+import {Button} from "@/components/ui/button";
+import {cn} from "@/lib/utils";
 import {
-  ToolGroupContent,
-  ToolGroupRoot,
-  ToolGroupTrigger,
-} from "@/components/assistant-ui/tool-group";
-import { ToolFallback } from "@/components/assistant-ui/tool-fallback";
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import {
-  ActionBarMorePrimitive,
-  ActionBarPrimitive,
-  AuiIf,
-  BranchPickerPrimitive,
-  ComposerPrimitive,
-  ErrorPrimitive,
-  getMcpAppFromToolPart,
-  MessagePrimitive,
-  ThreadPrimitive,
-  useAuiState,
+    ActionBarMorePrimitive,
+    ActionBarPrimitive,
+    AuiIf,
+    BranchPickerPrimitive,
+    ComposerPrimitive,
+    ErrorPrimitive,
+    getMcpAppFromToolPart,
+    MessagePrimitive,
+    ThreadPrimitive,
+    useAuiState,
 } from "@assistant-ui/react";
 import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  CheckIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CopyIcon,
-  DownloadIcon,
-  MoreHorizontalIcon,
-  PencilIcon,
-  RefreshCwIcon,
-  SquareIcon,
+    ArrowDownIcon,
+    ArrowUpIcon,
+    CheckIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    CopyIcon,
+    DownloadIcon,
+    MoreHorizontalIcon,
+    PencilIcon,
+    RefreshCwIcon,
+    SquareIcon,
 } from "lucide-react";
-import { type FC, useEffect, useState } from "react";
+import {useOverlayScrollbars} from "overlayscrollbars-react";
+import {type FC, useEffect, useRef, useState} from "react";
 
 type HealthState = { ready: boolean; mcp: boolean; api: boolean; model?: string } | null;
 
@@ -64,21 +63,30 @@ function useApiReady(): HealthState {
 }
 
 export const Thread: FC = () => {
+    const viewportRef = useRef<HTMLDivElement>(null);
+    const [initialize] = useOverlayScrollbars({defer: true});
+
+    useEffect(() => {
+        if (viewportRef.current) initialize(viewportRef.current);
+    }, [initialize]);
+
   return (
     <ThreadPrimitive.Root
       className="aui-root aui-thread-root @container flex h-full flex-col bg-background"
       style={{
         ["--thread-max-width" as string]: "44rem",
-        ["--composer-radius" as string]: "24px",
+          ["--composer-radius" as string]: "12px",
         ["--composer-padding" as string]: "10px",
       }}
     >
       <ThreadPrimitive.Viewport
+          ref={viewportRef}
         turnAnchor="top"
         data-slot="aui_thread-viewport"
-        className="relative flex flex-1 flex-col overflow-x-auto overflow-y-scroll scroll-smooth"
+          className="ow-thread-viewport relative flex flex-1 flex-col overflow-x-auto overflow-y-scroll scroll-smooth"
       >
-        <div className="mx-auto flex w-full max-w-(--thread-max-width) flex-1 flex-col px-4 pt-4">
+          <div
+              className="ow-thread-viewport-inner mx-auto flex w-full h-full max-w-(--thread-max-width) flex-1 flex-col px-3 py-3">
           <AuiIf condition={(s) => s.thread.isEmpty}>
             <ThreadWelcome />
           </AuiIf>
@@ -92,7 +100,8 @@ export const Thread: FC = () => {
             </ThreadPrimitive.Messages>
           </div>
 
-          <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mt-auto flex flex-col gap-4 overflow-visible rounded-t-(--composer-radius) bg-background pb-4 md:pb-4">
+              <ThreadPrimitive.ViewportFooter
+                  className="aui-thread-viewport-footer sticky bottom-0 mt-auto flex flex-col gap-4 overflow-visible rounded-t-(--composer-radius) bg-background">
             <ThreadScrollToBottom />
             <Composer />
           </ThreadPrimitive.ViewportFooter>
@@ -130,11 +139,11 @@ const ThreadWelcome: FC = () => {
     <div className="aui-thread-welcome-root my-auto flex grow flex-col">
       <div className="aui-thread-welcome-center flex w-full grow flex-col items-center justify-center">
         <div className="aui-thread-welcome-message flex size-full flex-col justify-center px-4">
-          <h1 className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both font-semibold text-2xl duration-200">
-            Hello there!
+            <h1 className="aui-thread-welcome-message-inner heading-1 fade-in slide-in-from-bottom-1 animate-in fill-mode-both font-semibold text-2xl duration-200">
+                Chào bạn,
           </h1>
-          <p className="aui-thread-welcome-message-inner fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground text-xl delay-75 duration-200">
-            How can I help you today?
+            <p className="aui-thread-welcome-message-inner pt-1 fade-in slide-in-from-bottom-1 animate-in fill-mode-both text-muted-foreground text-xl delay-75 duration-200">
+                Owie là trợ lý ảo giải đáp những câu hỏi về thẻ.
           </p>
         </div>
       </div>
@@ -145,26 +154,22 @@ const ThreadWelcome: FC = () => {
 
 const SUGGESTIONS = [
   {
-    title: 'Mua sắm Shopee & TikTok ~3tr/tháng',
-    prompt: 'Tôi mua sắm trên Shopee và TikTok khoảng 3 triệu một tháng thì nên dùng thẻ nào?',
-  },
-  {
     title: 'Đi siêu thị 5tr/tháng nên mở thẻ nào?',
     prompt: 'Mỗi tháng đi siêu thị 5 triệu thì nên mở thẻ nào?',
   },
   {
-    title: 'Thẻ hoàn tiền tốt nhất cho sinh viên',
-    prompt: 'Sinh viên nên dùng thẻ tín dụng hoàn tiền nào? Tôi chi tiêu chủ yếu ăn uống và mua sắm online.',
+      title: 'Thẻ ghi nợ nào có ưu đãi hoàn tiền?',
+      prompt: 'Thẻ ghi nợ nào có ưu đãi hoàn tiền?',
   },
   {
-    title: 'So sánh thẻ Techcombank vs Vietcombank',
-    prompt: 'So sánh thẻ tín dụng Techcombank và Vietcombank cho người đi làm chi tiêu hàng ngày?',
+      title: 'Mua vé máy bay, khách sạn thường xuyên thì nên mở thẻ nào?',
+      prompt: 'Mua vé máy bay, khách sạn thường xuyên thì nên mở thẻ nào?',
   },
 ];
 
 const ThreadSuggestions: FC = () => {
   return (
-    <div className="aui-thread-welcome-suggestions grid w-full @md:grid-cols-2 gap-2 pb-4">
+      <div className="aui-thread-welcome-suggestions grid w-full gap-2 pb-3">
       {SUGGESTIONS.map((s) => (
         <div
           key={s.title}
@@ -173,7 +178,7 @@ const ThreadSuggestions: FC = () => {
           <ThreadPrimitive.Suggestion prompt={s.prompt} autoSend asChild>
             <Button
               variant="ghost"
-              className="aui-thread-welcome-suggestion h-auto w-full @md:flex-col flex-wrap items-start justify-start gap-1 rounded-3xl border bg-background px-4 py-3 text-start text-sm transition-colors hover:bg-muted whitespace-normal"
+              className="aui-thread-welcome-suggestion h-auto w-full @md:flex-col flex-wrap items-start justify-start gap-1 rounded-md border bg-background px-3 py-2 text-start text-sm transition-colors hover:bg-muted whitespace-normal"
             >
               <span className="aui-thread-welcome-suggestion-text-1 font-medium">{s.title}</span>
             </Button>
@@ -193,7 +198,7 @@ const Composer: FC = () => {
           className="flex w-full flex-col gap-2 rounded-(--composer-radius) border bg-background p-(--composer-padding) transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20"
         >
           <ComposerPrimitive.Input
-            placeholder="Send a message..."
+              placeholder="Mua Shopee mỗi tháng 3 triệu nên dùng thẻ nào?"
             className="aui-composer-input max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
             rows={1}
             autoFocus
@@ -213,8 +218,17 @@ const Composer: FC = () => {
 const ComposerAction: FC<{ health: HealthState }> = ({ health }) => {
   const notReady = health !== null && !health.ready;
   const unavailableLabel = health && !health.mcp ? "MCP unavailable" : "API unavailable";
+    const visibleModels = getVisibleModels().map((m) => ({id: m.id, name: m.label}));
+    const defaultModelId = getDefaultModel().id;
   return (
-    <div className="aui-composer-action-wrapper relative flex items-center justify-end gap-2">
+      <div className="aui-composer-action-wrapper relative flex items-center gap-2">
+          <ModelSelector
+              models={visibleModels}
+              defaultValue={defaultModelId}
+              size="sm"
+              variant="ghost"
+          />
+          <div className="ml-auto flex items-center gap-2">
       {notReady && (
         <span className="text-xs text-destructive">{unavailableLabel}</span>
       )}
@@ -247,6 +261,7 @@ const ComposerAction: FC<{ health: HealthState }> = ({ health }) => {
           </Button>
         </ComposerPrimitive.Cancel>
       </AuiIf>
+          </div>
     </div>
   );
 };

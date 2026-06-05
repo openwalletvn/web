@@ -103,7 +103,7 @@ export function ChatPanel() {
                 // Mobile: full-screen bottom sheet
                 'bottom-0 right-0 w-full h-full',
                 // Desktop: floating bottom-right panel
-                'sm:bottom-2 sm:right-2 sm:w-[480px] sm:h-[80vh] sm:!rounded-xl max-sm:!rounded-none',
+                'sm:bottom-2 sm:right-2 sm:w-[480px] sm:h-[80vh] sm:!rounded-lg max-sm:!rounded-none',
                 'shadow-2xl',
                 isOpen
                     ? 'pointer-events-auto opacity-100 translate-y-0'
@@ -112,81 +112,88 @@ export function ChatPanel() {
             className="flex flex-col sm:border bg-background h-full sm:rounded-[50px] max-sm:!rounded-none"
             colors={["#355bd2", "#e53e3e", "#805ad5"]}
             duration={2}
-            borderWidth={isDesktop ? 2 : 0}
+            borderWidth={isDesktop ? 1 : 0}
             gradientWidth={2000}
-            radius={30}
+            radius={15}
         >
             {/* Header */}
-            <div className="flex shrink-0 items-center gap-2 border-b px-3 py-2 sm:rounded-t-xl">
-                <span className="flex-1 font-semibold text-sm flex gap-1 items-center">
+            <div className="ow-chat-panel-header flex justify-between items-center gap-2 border-b px-3 py-2">
+                <div className="font-semibold text-sm flex gap-1 items-center">
                     <OwLogo className="w-6" variant="full" color="red" href="/chat" />
-                    Chat
-                </span>
+                    Owie
+                </div>
 
-                {mounted && convos.length > 0 && (
-                    <Select value={activeId} onValueChange={setActiveId}>
-                        <SelectTrigger className="h-8 w-40 text-xs">
-                            <SelectValue placeholder="Chọn cuộc trò chuyện" />
-                        </SelectTrigger>
-                        <SelectContent align="end">
-                            {grouped.today.length > 0 && (
-                                <SelectGroup>
-                                    <SelectLabel>Hôm nay</SelectLabel>
-                                    {grouped.today.map((c) => (
-                                        <SelectItem key={c.id} value={c.id}>
-                                            <span className="block max-w-[140px] truncate">{c.title}</span>
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            )}
-                            {grouped.today.length > 0 && grouped.yesterday.length > 0 && <SelectSeparator />}
-                            {grouped.yesterday.length > 0 && (
-                                <SelectGroup>
-                                    <SelectLabel>Hôm qua</SelectLabel>
-                                    {grouped.yesterday.map((c) => (
-                                        <SelectItem key={c.id} value={c.id}>
-                                            <span className="block max-w-[140px] truncate">{c.title}</span>
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            )}
-                            {grouped.earlier.length > 0 &&
-                                (grouped.today.length > 0 || grouped.yesterday.length > 0) && (
-                                    <SelectSeparator />
+                <div className="flex gap-1 items-center">
+                    {mounted && convos.length > 0 && (
+                        <Select value={activeId} onValueChange={setActiveId}>
+                            <SelectTrigger className="h-8 w-40 text-xs">
+                                <SelectValue placeholder="Chọn cuộc trò chuyện"/>
+                            </SelectTrigger>
+                            <SelectContent align="end">
+                                {grouped.today.length > 0 && (
+                                    <SelectGroup>
+                                        <SelectLabel>Hôm nay</SelectLabel>
+                                        {grouped.today.map((c) => (
+                                            <SelectItem key={c.id} value={c.id}>
+                                                <span className="block max-w-[140px] truncate">{c.title}</span>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
                                 )}
-                            {grouped.earlier.length > 0 && (
-                                <SelectGroup>
-                                    <SelectLabel>Trước đó</SelectLabel>
-                                    {grouped.earlier.map((c) => (
-                                        <SelectItem key={c.id} value={c.id}>
-                                            <span className="block max-w-[140px] truncate">{c.title}</span>
-                                        </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                            )}
-                        </SelectContent>
-                    </Select>
-                )}
+                                {grouped.today.length > 0 && grouped.yesterday.length > 0 && <SelectSeparator/>}
+                                {grouped.yesterday.length > 0 && (
+                                    <SelectGroup>
+                                        <SelectLabel>Hôm qua</SelectLabel>
+                                        {grouped.yesterday.map((c) => (
+                                            <SelectItem key={c.id} value={c.id}>
+                                                <span className="block max-w-[140px] truncate">{c.title}</span>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                )}
+                                {grouped.earlier.length > 0 &&
+                                    (grouped.today.length > 0 || grouped.yesterday.length > 0) && (
+                                        <SelectSeparator/>
+                                    )}
+                                {grouped.earlier.length > 0 && (
+                                    <SelectGroup>
+                                        <SelectLabel>Trước đó</SelectLabel>
+                                        {grouped.earlier.map((c) => (
+                                            <SelectItem key={c.id} value={c.id}>
+                                                <span className="block max-w-[140px] truncate">{c.title}</span>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                )}
+                            </SelectContent>
+                        </Select>
+                    )}
 
-                <Button size="icon" variant="ghost" className="size-8 shrink-0 hidden" onClick={handleCopy}
-                        title="Copy messages (debug)">
-                    {copied ? <CheckIcon className="size-4 text-green-500" /> : <ClipboardCopyIcon className="size-4" />}
-                </Button>
-                <Button
-                    size="icon"
-                    variant="ghost"
-                    className="size-8 shrink-0"
-                    onClick={() => { close(); router.push(`/chat?id=${activeId}`); }}
-                    title="Mở rộng"
-                >
-                    <Maximize2Icon className="size-4" />
-                </Button>
-                <Button size="icon" variant="ghost" className="size-8 shrink-0" onClick={handleNew} title="Cuộc trò chuyện mới">
-                    <PlusIcon className="size-4" />
-                </Button>
-                <Button size="icon" variant="ghost" className="size-8 shrink-0" onClick={close} title="Đóng">
-                    <XIcon className="size-4" />
-                </Button>
+                    <Button size="icon" variant="ghost" className="size-8 shrink-0 hidden" onClick={handleCopy}
+                            title="Copy messages (debug)">
+                        {copied ? <CheckIcon className="size-4 text-green-500"/> :
+                            <ClipboardCopyIcon className="size-4"/>}
+                    </Button>
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-8 shrink-0"
+                        onClick={() => {
+                            close();
+                            router.push(`/chat?id=${activeId}`);
+                        }}
+                        title="Mở rộng"
+                    >
+                        <Maximize2Icon className="size-4"/>
+                    </Button>
+                    <Button size="icon" variant="ghost" className="size-8 shrink-0" onClick={handleNew}
+                            title="Cuộc trò chuyện mới">
+                        <PlusIcon className="size-4"/>
+                    </Button>
+                    <Button size="icon" variant="ghost" className="size-8 shrink-0" onClick={close} title="Đóng">
+                        <XIcon className="size-4"/>
+                    </Button>
+                </div>
             </div>
 
             {/* Anonymous user chip */}
