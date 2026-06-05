@@ -49,6 +49,8 @@ export interface ChatTraceOptions {
     finishReason: string;
     steps: number;
     promptVersion?: number;
+    userId?: string;
+    sessionId?: string;
 }
 
 export async function sendChatTrace(opts: ChatTraceOptions): Promise<void> {
@@ -68,6 +70,8 @@ export async function sendChatTrace(opts: ChatTraceOptions): Promise<void> {
                     name: 'chat',
                     input: opts.input,
                     output: opts.output,
+                    ...(opts.userId ? { userId: opts.userId } : {}),
+                    ...(opts.sessionId ? { sessionId: opts.sessionId } : {}),
                     metadata: {
                         model: opts.model,
                         tokens: opts.tokens,

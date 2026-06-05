@@ -1,7 +1,6 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { createMCPClient } from '@ai-sdk/mcp';
 import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
-import { after } from 'next/server';
 import { buildSystemPrompt } from '@/lib/chat/system-prompt';
 import { fetchSystemPrompt, sendChatTrace } from '@/lib/langfuse';
 import type { PageContext } from '@/lib/chat/page-context';
@@ -39,7 +38,7 @@ export async function POST(req: Request) {
         );
     }
 
-    const body = await req.json() as { messages?: UIMessage[]; pageContext?: PageContext };
+    const body = await req.json() as { messages?: UIMessage[]; pageContext?: PageContext; userId?: string; sessionId?: string };
     const uiMessages: UIMessage[] = body.messages ?? [];
     const messages = await convertToModelMessages(uiMessages.slice(-12));
 
@@ -73,20 +72,20 @@ export async function POST(req: Request) {
             tools,
             onFinish: async ({ usage, text, finishReason, steps }) => {
                 await mcpClient?.close();
-                after(async () => {
-                    await sendChatTrace({
-                        input: lastUserMessage,
-                        output: text,
-                        model,
-                        tokens: {
-                            input: usage?.inputTokens ?? 0,
-                            output: usage?.outputTokens ?? 0,
-                        },
-                        latencyMs: Date.now() - startTime,
-                        finishReason: finishReason ?? 'unknown',
-                        steps: steps?.length ?? 0,
-                        promptVersion,
-                    });
+                await sendChatTrace({
+                    input: lastUserMessage,
+                    output: text,
+                    model,
+                    tokens: {
+                        input: usage?.inputTokens ?? 0,
+                        output: usage?.outputTokens ?? 0,
+                    },
+                    latencyMs: Date.now() - startTime,
+                    finishReason: finishReason ?? 'unknown',
+                    steps: steps?.length ?? 0,
+                    promptVersion,
+                    userId: body.userId,
+                    sessionId: body.sessionId,
                 });
             },
             onError: async ({ error }) => {
@@ -94,6 +93,8 @@ export async function POST(req: Request) {
                 await mcpClient?.close();
             },
         });
+
+        result.consumeStream(); // no await — ensures onFinish fires even if client disconnects
 
         return result.toUIMessageStreamResponse();
     } catch (err) {

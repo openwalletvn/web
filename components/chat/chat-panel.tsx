@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select';
 import { useChatContext } from '@/components/chat/chat-provider';
 import { ChatRuntime } from '@/components/chat/chat-runtime';
+import { getUserId } from '@/lib/chat/anonymous-user';
 import {
     createConversation,
     getConversation,
@@ -42,6 +43,8 @@ export function ChatPanel() {
     const [convos, setConvos] = useState<Conversation[]>([]);
     const [activeId, setActiveId] = useState('');
     const [copied, setCopied] = useState(false);
+    const [userId, setUserId] = useState<string | null>(null);
+    const [userIdCopied, setUserIdCopied] = useState(false);
 
     useEffect(() => {
         const list = listConversations();
@@ -53,6 +56,7 @@ export function ChatPanel() {
             setConvos([fresh]);
             setActiveId(fresh.id);
         }
+        setUserId(getUserId());
         setMounted(true);
     }, []);
 
@@ -170,6 +174,24 @@ export function ChatPanel() {
                     <XIcon className="size-4" />
                 </Button>
             </div>
+
+            {/* Anonymous user chip */}
+            {mounted && userId && (
+                <div className="shrink-0 flex items-center justify-end px-4 py-1 border-b bg-muted/30">
+                    <button
+                        className="font-mono text-[10px] text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                        title="Click to copy your anonymous ID"
+                        onClick={() => {
+                            navigator.clipboard.writeText(userId);
+                            setUserIdCopied(true);
+                            setTimeout(() => setUserIdCopied(false), 2000);
+                        }}
+                    >
+                        {userIdCopied ? <CheckIcon className="size-3 text-green-500" /> : null}
+                        {userId}
+                    </button>
+                </div>
+            )}
 
             {/* Thread */}
             <div className="relative min-h-0 flex-1 overflow-hidden sm:rounded-b-xl">
