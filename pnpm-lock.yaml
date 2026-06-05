@@ -32,6 +32,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.4)
+      '@gsap/react':
+        specifier: ^2.1.2
+        version: 2.1.2(gsap@3.15.0)(react@19.2.4)
       '@langfuse/client':
         specifier: ^5.4.1
         version: 5.4.1(@opentelemetry/api@1.9.0)
@@ -89,6 +92,9 @@ importers:
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
+      gsap:
+        specifier: ^3.15.0
+        version: 3.15.0
       lucide-react:
         specifier: ^0.574.0
         version: 0.574.0(react@19.2.4)
@@ -795,6 +801,12 @@ packages:
     resolution: {integrity: sha512-wtF6h+DY6M3YaDBPAmvuuA6jV8Sif9MjtOI5euKFWRgCDl5PeDpPsHR9u2l6St5ceY8AZgoNDww5+HvEsXFsGg==}
     engines: {node: '>=6'}
     hasBin: true
+
+  '@gsap/react@2.1.2':
+    resolution: {integrity: sha512-JqliybO1837UcgH2hVOM4VO+38APk3ECNrsuSM4MuXp+rbf+/2IG2K1YJiqfTcXQHH7XlA0m3ykniFYstfq0Iw==}
+    peerDependencies:
+      gsap: ^3.12.5
+      react: '>=17'
 
   '@headlessui/tailwindcss@0.2.2':
     resolution: {integrity: sha512-xNe42KjdyA4kfUKLLPGzME9zkH7Q3rOZ5huFihWNWOQFxnItxPB3/67yBI8/qBfY8nwBRx5GHn4VprsoluVMGw==}
@@ -4190,6 +4202,9 @@ packages:
     resolution: {integrity: sha512-5v6yZd4JK3eMI3FqqCouswVqwugaA9r4dNZB1wwcmrD02QkV5H0y7XBQW8QwQqEaZY1pM9aqORSORhJRdNK44Q==}
     engines: {node: '>=6.0'}
 
+  gsap@3.15.0:
+    resolution: {integrity: sha512-dMW4CWBTUK1AEEDeZc1g4xpPGIrSf9fJF960qbTZmN/QwZIWY5wgliS6JWl9/25fpTGJrMRtSjGtOmPnfjZB+A==}
+
   guess-json-indent@3.0.1:
     resolution: {integrity: sha512-LWZ3Vr8BG7DHE3TzPYFqkhjNRw4vYgFSsv2nfMuHklAlOfiy54/EwiDQuQfFVLxENCVv20wpbjfTayooQHrEhQ==}
     engines: {node: '>=18.18.0'}
@@ -7143,6 +7158,11 @@ snapshots:
       long: 5.3.2
       protobufjs: 7.6.2
       yargs: 17.7.2
+
+  '@gsap/react@2.1.2(gsap@3.15.0)(react@19.2.4)':
+    dependencies:
+      gsap: 3.15.0
+      react: 19.2.4
 
   '@headlessui/tailwindcss@0.2.2(tailwindcss@4.1.18)':
     dependencies:
@@ -10834,6 +10854,8 @@ snapshots:
       kind-of: 6.0.3
       section-matter: 1.0.0
       strip-bom-string: 1.0.0
+
+  gsap@3.15.0: {}
 
   guess-json-indent@3.0.1: {}
 
