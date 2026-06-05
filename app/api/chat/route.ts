@@ -3,7 +3,7 @@ import { createMCPClient } from '@ai-sdk/mcp';
 import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
 import { buildSystemPrompt } from '@/lib/chat/system-prompt';
 import { fetchSystemPrompt, sendChatTrace } from '@/lib/langfuse';
-import { isAllowedModel, getDefaultModel } from '@/lib/chat/models';
+import { isAllowedModel, getDefaultModel, getModelById } from '@/lib/chat/models';
 import type { PageContext } from '@/lib/chat/page-context';
 import fs from 'fs';
 import path from 'path';
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
     const body = await req.json() as { messages?: UIMessage[]; pageContext?: PageContext; userId?: string; sessionId?: string; config?: { modelName?: string } };
     const uiMessages: UIMessage[] = body.messages ?? [];
-    const messages = await convertToModelMessages(uiMessages.slice(-12));
+    const messages = await convertToModelMessages(uiMessages);
 
     const requestedModel = body.config?.modelName;
     const model = isAllowedModel(requestedModel) ? requestedModel! : getDefaultModel().id;
@@ -131,7 +131,13 @@ export async function POST(req: Request) {
 
         result.consumeStream(); // no await — ensures onFinish fires even if client disconnects
 
-        return result.toUIMessageStreamResponse();
+        return result.toUIMessageStreamResponse({
+            messageMetadata: ({ part }) => {
+                if (part.type === 'finish') return { usage: part.totalUsage };
+                if (part.type === 'finish-step') return { modelId: part.response.modelId };
+                return undefined;
+            },
+        });
     } catch (err) {
         console.error('[chat] fatal error:', err);
         await mcpClient?.close();
