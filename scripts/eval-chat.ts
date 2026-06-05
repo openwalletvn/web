@@ -2,7 +2,7 @@
  * Offline eval harness for the /api/chat endpoint.
  * Run: npx tsx scripts/eval-chat.ts
  *
- * Requires OPENROUTER_API_KEY, EVAL_CHAT_MODEL, EVAL_JUDGE_MODEL,
+ * Requires OPENROUTER_API_KEY, EVAL_CHAT_MODEL,
  * LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL in .env.local
  * and the dev server running on localhost:3000 (or set CHAT_URL).
  */
