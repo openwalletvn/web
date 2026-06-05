@@ -117,7 +117,7 @@ export function ChatPanel() {
             radius={30}
         >
             {/* Header */}
-            <div className="flex shrink-0 items-center gap-2 border-b px-4 py-3 sm:rounded-t-xl">
+            <div className="flex shrink-0 items-center gap-2 border-b px-3 py-2 sm:rounded-t-xl">
                 <span className="flex-1 font-semibold text-sm flex gap-1 items-center">
                     <OwLogo className="w-6" variant="full" color="red" href="/chat" />
                     Chat
@@ -168,7 +168,8 @@ export function ChatPanel() {
                     </Select>
                 )}
 
-                <Button size="icon" variant="ghost" className="size-8 shrink-0" onClick={handleCopy} title="Copy messages (debug)">
+                <Button size="icon" variant="ghost" className="size-8 shrink-0 hidden" onClick={handleCopy}
+                        title="Copy messages (debug)">
                     {copied ? <CheckIcon className="size-4 text-green-500" /> : <ClipboardCopyIcon className="size-4" />}
                 </Button>
                 <Button
@@ -190,24 +191,38 @@ export function ChatPanel() {
 
             {/* Anonymous user chip */}
             {mounted && userId && (
-                <div className="shrink-0 flex items-center justify-end px-4 py-1 border-b bg-muted/30">
-                    <button
-                        className="font-mono text-[10px] text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-                        title="Click to copy your anonymous ID"
-                        onClick={() => {
-                            navigator.clipboard.writeText(userId);
-                            setUserIdCopied(true);
-                            setTimeout(() => setUserIdCopied(false), 2000);
-                        }}
-                    >
-                        {userIdCopied ? <CheckIcon className="size-3 text-green-500" /> : null}
-                        {userId}
-                    </button>
+                <div className="ow-chat-info-bar shrink-0 flex items-center justify-between px-4 py-1 border-b bg-muted/30 text-xs">
+                    {/* Page context hint badge */}
+                    {pageContext && (
+                        <div
+                            className="">
+                            Đang xem:{' '}
+                            <strong>
+                                {pageContext.type === 'card' ? pageContext.cardName : pageContext.bankName}
+                            </strong>
+                        </div>
+                    )}
+
+
+                    <div>
+                        <button
+                            className="font-mono text-[10px] text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                            title="Click to copy your anonymous ID"
+                            onClick={() => {
+                                navigator.clipboard.writeText(userId);
+                                setUserIdCopied(true);
+                                setTimeout(() => setUserIdCopied(false), 2000);
+                            }}
+                        >
+                            {userIdCopied ? <CheckIcon className="size-3 text-green-500" /> : null}
+                            {userId}
+                        </button>
+                    </div>
                 </div>
             )}
 
             {/* Thread */}
-            <div className="relative min-h-0 flex-1 overflow-hidden sm:rounded-b-xl">
+            <div className="ow-chat-thread relative min-h-0 flex-1 overflow-hidden sm:rounded-b-xl">
                 {mounted && activeId && (
                     <ChatRuntime
                         key={activeId}
@@ -215,18 +230,6 @@ export function ChatPanel() {
                         onSaved={refresh}
                         pageContext={pageContext}
                     />
-                )}
-
-                {/* Page context hint badge */}
-                {pageContext && (
-                    <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex justify-center px-4 pb-[80px]">
-                        <span className="pointer-events-auto rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground shadow-sm">
-                            Đang xem:{' '}
-                            <strong>
-                                {pageContext.type === 'card' ? pageContext.cardName : pageContext.bankName}
-                            </strong>
-                        </span>
-                    </div>
                 )}
             </div>
         </MovingBorder>
