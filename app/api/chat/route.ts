@@ -4,6 +4,21 @@ import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 
 import { buildSystemPrompt } from '@/lib/chat/system-prompt';
 import { fetchSystemPrompt, sendChatTrace } from '@/lib/langfuse';
 import type { PageContext } from '@/lib/chat/page-context';
+import fs from 'fs';
+import path from 'path';
+
+const LOG_DIR = path.join(process.cwd(), 'logs');
+
+function appendChatLog(entry: Record<string, unknown>, sessionId?: string) {
+    if (process.env.NODE_ENV !== 'development') return;
+    try {
+        fs.mkdirSync(LOG_DIR, { recursive: true });
+        const filename = sessionId ? `chat-${sessionId}.log` : 'chat-unknown.log';
+        fs.appendFileSync(path.join(LOG_DIR, filename), JSON.stringify(entry) + '\n');
+    } catch {
+        // non-fatal
+    }
+}
 
 // In-memory rate limit store: ip -> { count, windowStart }
 const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
@@ -78,6 +93,24 @@ export async function POST(req: Request) {
             tools,
             onFinish: async ({ usage, text, finishReason, steps }) => {
                 await mcpClient?.close();
+                appendChatLog({
+                    ts: new Date().toISOString(),
+                    sessionId: body.sessionId,
+                    userId: body.userId,
+                    ip,
+                    model,
+                    messages: uiMessages.slice(-12),
+                    steps: steps?.map((s) => ({
+                        text: s.text,
+                        toolCalls: s.toolCalls,
+                        toolResults: s.toolResults,
+                    })),
+                    finalText: text,
+                    inputTokens: usage?.inputTokens ?? 0,
+                    outputTokens: usage?.outputTokens ?? 0,
+                    latencyMs: Date.now() - startTime,
+                    finishReason: finishReason ?? 'unknown',
+                }, body.sessionId);
                 await sendChatTrace({
                     input: lastUserMessage,
                     output: text,
