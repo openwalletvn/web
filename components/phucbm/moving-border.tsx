@@ -39,6 +39,9 @@ export type MovingBorderProps = {
 
     /** Tag name for the outer wrapper (e.g. 'div', 'section', 'figure', etc.). @default "div" */
     as?: keyof JSX.IntrinsicElements;
+
+    /** Background color of the inner container. @default "bg-white" */
+    innerBg?: string;
 };
 
 export function MovingBorder({
@@ -52,6 +55,7 @@ export function MovingBorder({
                                  colors = ["#355bd2"],
                                  isCircle = false,
                                  as = "div",
+                                 innerBg = "bg-white",
                              }: MovingBorderProps) {
     const scope = useRef<HTMLElement | null>(null);
 
@@ -199,7 +203,7 @@ export function MovingBorder({
             </div>
 
             {/*inner*/}
-            <div className={cn(`inner relative z-30 bg-white`, className)}
+            <div className={cn(`inner relative z-30`, innerBg, className)}
                  style={{
                      borderRadius: `${effectiveRadius}px`,
                  }}>
