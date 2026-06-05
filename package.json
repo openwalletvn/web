@@ -16,7 +16,9 @@
     "generate:types": "tsx --env-file=.env.local scripts/generate-types.ts",
     "check:types": "tsx --env-file=.env.local scripts/check-types.ts",
     "storybook": "storybook dev -p 4000",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "ow": "tsx --env-file=.env.local scripts/ow.ts",
+    "chatlog": "tsx --env-file=.env.local scripts/tools/chatlog.ts"
   },
   "dependencies": {
     "@ai-sdk/mcp": "^1.0.43",
@@ -70,6 +72,7 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@inquirer/prompts": "^8.5.2",
     "@storybook/addon-a11y": "^10.4.1",
     "@storybook/addon-docs": "^10.4.1",
     "@storybook/addon-mcp": "^0.6.0",
