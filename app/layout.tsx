@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Inter_Tight } from "next/font/google";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { BodyClass } from '@/components/layout/body-class';
+import { OverlayScrollbarsBody } from '@/components/layout/overlay-scrollbars-body';
 import { PreviewBanner } from '@/components/layout/preview-banner';
 import { cn } from '@/lib/utils';
 import "./globals.css";
@@ -65,9 +66,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={cn(calSans.variable, interTight.variable)}>
+    <html lang="vi" className={cn(calSans.variable, interTight.variable)} data-overlayscrollbars-initialize>
       <body className="antialiased">
         <BodyClass />
+        <OverlayScrollbarsBody />
         {children}
         <PreviewBanner />
         <GoogleAnalytics gaId="G-0PTTBZY0RM" />
