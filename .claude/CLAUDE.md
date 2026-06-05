@@ -92,7 +92,7 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 ### Chat (`/chat`, `openwallet-chat`)
 - **Chat button hidden** — `ChatToggleButton` removed from `components/layout/header.tsx` (both desktop + mobile). Do not re-add unless explicitly requested.
 - Not ready for public release. Needs evals + system prompt iteration first.
-- See `evals/` folder for eval harness.
+- **Full chat docs (arch, logging, Langfuse, evals, dev plan):** `.claude/docs/chat.md`
 
 ### `so-sanh-404-redirect`
 - Active. Handles legacy `/card-battle/X-vs-Y` URLs → redirects to `/card-battle?compare=X,Y`.
@@ -133,3 +133,4 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 @.claude/docs/layout.md
 @.claude/docs/DESIGN.md
 @.claude/docs/design-system.md
+@.claude/docs/chat.md
