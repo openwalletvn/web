@@ -18,7 +18,7 @@ dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
 const CHAT_URL = process.env.CHAT_URL ?? 'http://localhost:3000/api/chat';
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY ?? '';
-const EVAL_CHAT_MODEL = process.env.EVAL_CHAT_MODEL ?? 'google/gemini-flash-1.5';
+const EVAL_CHAT_MODEL = process.env.EVAL_CHAT_MODEL ?? process.env.DEFAULT_MODEL;
 const TRIGGERED_BY = process.env.TRIGGERED_BY ?? (process.env.CI ? 'ci' : 'cli');
 
 const LANGFUSE_BASE_URL = process.env.LANGFUSE_BASE_URL ?? 'https://cloud.langfuse.com';
@@ -436,6 +436,12 @@ async function pushToLangfuse(results: EvalResult[]): Promise<void> {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function runEval() {
+  if (!EVAL_CHAT_MODEL) {
+    console.log('Eval skipped: no AI model configured (EVAL_CHAT_MODEL or DEFAULT_MODEL required).');
+    return;
+  }
+  const evalModel: string = EVAL_CHAT_MODEL;
+
   let TEST_CASES = loadTestCases();
 
   if (FILTER_IDS) {
@@ -455,7 +461,7 @@ async function runEval() {
   console.log(`\nEval run: ${runId}`);
   console.log(`Prompt version: ${promptVersion}`);
   console.log(`Triggered by: ${TRIGGERED_BY}`);
-  console.log(`Chat model: ${EVAL_CHAT_MODEL} | Judge: Langfuse evaluator (cloud)`);
+  console.log(`Chat model: ${evalModel} | Judge: Langfuse evaluator (cloud)`);
   console.log(`Running ${TEST_CASES.length} eval cases${filterNote} against ${CHAT_URL}\n`);
 
   const results: EvalResult[] = [];
@@ -485,7 +491,7 @@ async function runEval() {
         run_id: runId,
         prompt_version: promptVersion,
         triggered_by: TRIGGERED_BY,
-        model: EVAL_CHAT_MODEL,
+        model: evalModel,
         test_id: tc.id,
         test_name: tc.name,
         tags: tc.tags,
@@ -516,7 +522,7 @@ async function runEval() {
         run_id: runId,
         prompt_version: promptVersion,
         triggered_by: TRIGGERED_BY,
-        model: EVAL_CHAT_MODEL,
+        model: evalModel,
         test_id: tc.id,
         test_name: tc.name,
         tags: tc.tags,

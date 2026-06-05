@@ -42,7 +42,13 @@ export async function POST(req: Request) {
     const uiMessages: UIMessage[] = body.messages ?? [];
     const messages = await convertToModelMessages(uiMessages.slice(-12));
 
-    const model = process.env.CHAT_MODEL ?? 'google/gemini-flash-1.5';
+    const model = process.env.CHAT_MODEL ?? process.env.DEFAULT_MODEL;
+    if (!model) {
+        return new Response(
+            JSON.stringify({ error: 'Chat service unavailable: no AI model configured (CHAT_MODEL or DEFAULT_MODEL required).' }),
+            { status: 503, headers: { 'Content-Type': 'application/json' } }
+        );
+    }
     const startTime = Date.now();
     const lastUserMessage = uiMessages.findLast((m) => m.role === 'user')?.parts
         ?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? '';

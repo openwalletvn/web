@@ -42,7 +42,7 @@ async function main() {
             prompt: promptText,
             type: 'text',
             labels: ['production'],
-            config: { model: process.env.CHAT_MODEL ?? 'google/gemini-flash-1.5' },
+            config: { model: process.env.CHAT_MODEL ?? process.env.DEFAULT_MODEL },
         }),
     });
 
