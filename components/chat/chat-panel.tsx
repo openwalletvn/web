@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { CheckIcon, ClipboardCopyIcon, Maximize2Icon, PlusIcon, XIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import {useCallback, useEffect, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {CheckIcon, ClipboardCopyIcon, Maximize2Icon, PlusIcon, XIcon} from 'lucide-react';
+import {cn} from '@/lib/utils';
+import {Button} from '@/components/ui/button';
 import {
     Select,
     SelectContent,
@@ -15,16 +15,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useChatContext } from '@/components/chat/chat-provider';
-import { ChatRuntime } from '@/components/chat/chat-runtime';
-import { getUserId } from '@/lib/chat/anonymous-user';
+import {useChatContext} from '@/components/chat/chat-provider';
+import {ChatRuntime} from '@/components/chat/chat-runtime';
+import {getUserId} from '@/lib/chat/anonymous-user';
 import {
+    type Conversation,
     createConversation,
     getConversation,
     listConversations,
-    type Conversation,
 } from '@/lib/chat/conversation-store';
 import {OwLogo} from "@/components/ow-ui/ow-logo";
+import {MovingBorder} from "@/components/phucbm/moving-border";
 
 function groupConversations(convos: Conversation[]) {
     const todayStart = new Date().setHours(0, 0, 0, 0);
@@ -45,6 +46,7 @@ export function ChatPanel() {
     const [copied, setCopied] = useState(false);
     const [userId, setUserId] = useState<string | null>(null);
     const [userIdCopied, setUserIdCopied] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(false);
 
     useEffect(() => {
         const list = listConversations();
@@ -57,7 +59,12 @@ export function ChatPanel() {
             setActiveId(fresh.id);
         }
         setUserId(getUserId());
+        const mq = window.matchMedia('(min-width: 640px)');
+        const mqHandler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+        setIsDesktop(mq.matches);
+        mq.addEventListener('change', mqHandler);
         setMounted(true);
+        return () => mq.removeEventListener('change', mqHandler);
     }, []);
 
     useEffect(() => {
@@ -90,18 +97,24 @@ export function ChatPanel() {
     const grouped = groupConversations(convos);
 
     return (
-        <div
-            className={cn(
+        <MovingBorder
+            outerClassName={cn(
                 'ow-chat-panel fixed z-50 transition-all duration-300 ease-in-out',
                 // Mobile: full-screen bottom sheet
                 'bottom-0 right-0 w-full h-full',
                 // Desktop: floating bottom-right panel
-                'sm:bottom-4 sm:right-4 sm:w-[480px] sm:h-[80vh] sm:rounded-xl',
-                'flex flex-col border bg-background shadow-2xl',
+                'sm:bottom-2 sm:right-2 sm:w-[480px] sm:h-[80vh] sm:!rounded-xl max-sm:!rounded-none',
+                'shadow-2xl',
                 isOpen
                     ? 'pointer-events-auto opacity-100 translate-y-0'
                     : 'pointer-events-none opacity-0 translate-y-4 sm:translate-y-2',
             )}
+            className="flex flex-col sm:border bg-background h-full sm:rounded-[50px] max-sm:!rounded-none"
+            colors={["#355bd2", "#e53e3e", "#805ad5"]}
+            duration={2}
+            borderWidth={isDesktop ? 2 : 0}
+            gradientWidth={2000}
+            radius={30}
         >
             {/* Header */}
             <div className="flex shrink-0 items-center gap-2 border-b px-4 py-3 sm:rounded-t-xl">
@@ -216,6 +229,6 @@ export function ChatPanel() {
                     </div>
                 )}
             </div>
-        </div>
+        </MovingBorder>
     );
 }
