@@ -12,7 +12,6 @@ export interface CardNotificationConfig {
   enabled: boolean;
   daysBefore: number;
   adapter: string;
-  remoteId?: string;
 }
 
 export interface WalletCard {

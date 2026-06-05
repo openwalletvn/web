@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { getBankImageUrl, type Bank, type Card } from '@/lib/api';
 import type { WalletCard } from '@/lib/db';
-import { buildReminderMessage } from '@/lib/reminder-message';
-import { createReminder, deleteReminder } from '@/lib/notify-api';
 import {formatDueDate, getRelatedStatements} from '@/lib/card-dates';
 import {CardModel} from '@/lib/card-model';
 import { Switch } from '@/components/ui/switch';
@@ -50,12 +48,10 @@ export function ReminderCardRow({
   const nextCloseDate = stmts?.find((s) => s.close > today)?.close ?? null;
   const dueDateObj = cardModel?.getNextDueDate(walletCard.statementDate, today) ?? null;
 
-  // Fire date for statement reminder: next close − daysBefore
   const stmtFireDate = nextCloseDate
     ? (() => { const d = new Date(nextCloseDate.getTime()); d.setDate(d.getDate() - daysBefore); return d; })()
     : null;
 
-  // Fire date for due-date reminder: dueDate − daysBefore
   const dueFireDate = dueDateObj
     ? (() => { const d = new Date(dueDateObj.getTime()); d.setDate(d.getDate() - daysBefore); return d; })()
     : null;
@@ -64,47 +60,19 @@ export function ReminderCardRow({
     return `→ sẽ nhắc ${formatDueDate(fireDate)} lúc ${hourStr}:00`;
   }
 
-  async function handleToggle(
-    type: ReminderType,
-    statementDayForReminder: number,
-    interestFreeDaysForReminder: number,
-    enabled: boolean,
-  ) {
+  async function handleToggle(type: ReminderType, enabled: boolean) {
     if (!adapter) return;
     setBusy(`${type}-toggle`);
     try {
-      const existing = walletCard.notifications?.[type];
-      if (enabled && !existing?.remoteId) {
-        const msg = buildReminderMessage(bankName, cardName, type, daysBefore);
-        const result = await createReminder({
-          wallet_id: walletCard.id,
+      await db.walletCards.update(walletCard.id, {
+        [`notifications.${type}`]: {
+          enabled,
+          daysBefore,
           adapter: adapter.id,
-          credential: adapter.config.webhook_url,
-          statement_day: statementDayForReminder,
-          interest_free_days: interestFreeDaysForReminder,
-          days_before: daysBefore,
-          message: msg,
-        });
-        await db.walletCards.update(walletCard.id, {
-          [`notifications.${type}`]: {
-            enabled: true,
-            daysBefore,
-            adapter: adapter.id,
-            remoteId: result.id,
-          },
-        });
-      } else if (!enabled && existing?.remoteId) {
-        await deleteReminder(existing.remoteId);
-        await db.walletCards.update(walletCard.id, {
-          [`notifications.${type}`]: {
-            enabled: false,
-            daysBefore,
-            adapter: adapter.id,
-          },
-        });
-      }
+        },
+      });
     } catch {
-      // silently fail — user sees no status icon
+      // silently fail
     } finally {
       setBusy(null);
     }
@@ -124,7 +92,7 @@ export function ReminderCardRow({
     }
 
     const config = walletCard.notifications?.statementDate;
-    const isEnabled = !!(config?.enabled && config.remoteId);
+    const isEnabled = !!config?.enabled;
     const disabled = !adapter || busy !== null;
 
     return (
@@ -133,9 +101,7 @@ export function ReminderCardRow({
           <Switch
             checked={isEnabled}
             disabled={disabled}
-            onCheckedChange={(checked) =>
-              handleToggle('statementDate', statementDay, 0, checked)
-            }
+            onCheckedChange={(checked) => handleToggle('statementDate', checked)}
           />
           <span className="text-sm text-slate-600">
             Ngày sao kê tiếp theo{nextCloseDate ? ` · ${formatDueDate(nextCloseDate)}` : ''}
@@ -151,7 +117,6 @@ export function ReminderCardRow({
   }
 
   function renderDueDateRow() {
-    // If no statement day at all, the statement row already shows the warning
     if (dueDateObj == null && statementDay == null) return null;
 
     if (dueDateObj == null) {
@@ -167,7 +132,7 @@ export function ReminderCardRow({
     }
 
     const config = walletCard.notifications?.paymentDueDate;
-    const isEnabled = !!(config?.enabled && config.remoteId);
+    const isEnabled = !!config?.enabled;
     const disabled = !adapter || busy !== null;
 
     return (
@@ -176,14 +141,7 @@ export function ReminderCardRow({
           <Switch
             checked={isEnabled}
             disabled={disabled}
-            onCheckedChange={(checked) =>
-              handleToggle(
-                'paymentDueDate',
-                statementDay!,
-                catalogCard?.interest_free_days ?? 0,
-                checked,
-              )
-            }
+            onCheckedChange={(checked) => handleToggle('paymentDueDate', checked)}
           />
           <span className="text-sm text-slate-600">
             Ngày đến hạn tiếp theo · {formatDueDate(dueDateObj)}
