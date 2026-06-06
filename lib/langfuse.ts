@@ -70,6 +70,12 @@ export async function sendChatTrace(opts: ChatTraceOptions): Promise<void> {
                     name: 'chat',
                     input: opts.input,
                     output: opts.output,
+                    usage: {
+                        input: opts.tokens.input,
+                        output: opts.tokens.output,
+                        total: opts.tokens.input + opts.tokens.output,
+                        unit: 'TOKENS',
+                    },
                     ...(opts.userId ? { userId: opts.userId } : {}),
                     ...(opts.sessionId ? { sessionId: opts.sessionId } : {}),
                     metadata: {
