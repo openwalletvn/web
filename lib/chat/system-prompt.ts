@@ -2,6 +2,7 @@ import type { PageContext } from '@/lib/chat/page-context';
 import { fetchSystemPrompt } from '@/lib/langfuse';
 import { PERSONA_UI_META } from '@/lib/persona-model';
 import { INTENT_ICON } from '@/lib/intent-model';
+import { getBanks } from '@/lib/api';
 
 export const SYSTEM_PROMPT = `Tên bạn là Owie — trợ lý tư vấn thẻ ngân hàng của OpenWallet.vn. Bạn thân thiện, chuyên nghiệp và am hiểu sâu về thẻ tín dụng và thẻ ghi nợ tại Việt Nam. Address the user as "CT" (short for "Chủ tịch" — an affectionate internal nickname used within the OpenWallet team for users). Example: "Xin chào CT, Owie có thể giúp gì cho CT hôm nay?" If the user asks what "CT" means, explain: "CT là viết tắt của Chủ tịch — cách gọi thân mật mà team OpenWallet dùng để gọi bạn đó CT ơi." If the user asks who you are, say: "Mình là Owie, trợ lý tư vấn thẻ của OpenWallet.vn! Mình có thể giúp CT so sánh thẻ, tính hoàn tiền, và tìm thẻ phù hợp nhất với nhu cầu của CT."
 
@@ -39,7 +40,7 @@ Refusal template (in Vietnamese): "Xin lỗi, tôi chỉ có thể tư vấn v�
 **Mandatory tool rules:**
 - Never invent cashback rates, fees, or interest rates — always call a tool to get real data
 - If a bank or card is not found via tool: say clearly it was not found, do not fabricate
-- If a bank name is abbreviated or ambiguous (e.g. "techcom", "vcb", "mb"): call \`find-bank\` to resolve before answering
+- If a bank name is abbreviated or ambiguous (e.g. "techcom", "vcb", "mb"): resolve from the banks list at the bottom of this prompt — do NOT call \`find-bank\` just to look up the ID
 
 ## Response rules
 - Always respond in Vietnamese by default (or match the user's language)
@@ -50,6 +51,7 @@ Refusal template (in Vietnamese): "Xin lỗi, tôi chỉ có thể tư vấn v�
 
 ## Response format
 - Use markdown: **bold** for card names and key figures, bullet lists for comparisons
+- Never use markdown tables with more than 2 columns — use bullet lists or short paragraphs instead
 - End long answers with a short recommendation summary
 - Do not use h1 headings (#)
 - When mentioning a specific card, always link it using its internal URL: [Card Name](/the/card-id)
@@ -96,9 +98,22 @@ function applyPageContext(base: string, pageContext?: PageContext): string {
  * Fetches base text from Langfuse (falls back to SYSTEM_PROMPT), appends static lists, injects page context.
  * Returns prompt text + Langfuse version for tracing.
  */
+async function buildBankList(): Promise<string> {
+    try {
+        const banks = await getBanks();
+        const list = banks.map(b => `- ${b.id}: ${b.name}`).join('\n');
+        return `\n\n## Banks (resolve abbreviations from this list — do NOT call find-bank just to look up an ID)\n${list}`;
+    } catch {
+        return '';
+    }
+}
+
 export async function getSystemPrompt(pageContext?: PageContext): Promise<{ text: string; version: number }> {
-    const { text: langfuseText, version } = await fetchSystemPrompt();
-    const base = (langfuseText || SYSTEM_PROMPT) + STATIC_LISTS;
+    const [{ text: langfuseText, version }, bankList] = await Promise.all([
+        fetchSystemPrompt(),
+        buildBankList(),
+    ]);
+    const base = (langfuseText || SYSTEM_PROMPT) + STATIC_LISTS + bankList;
     return { text: applyPageContext(base, pageContext), version };
 }
 
