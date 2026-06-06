@@ -2,9 +2,8 @@
 
 import {useCallback, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {CheckIcon, Maximize2Icon, PlusIcon, XIcon} from 'lucide-react';
+import {CheckIcon} from 'lucide-react';
 import {cn} from '@/lib/utils';
-import {Button} from '@/components/ui/button';
 import {OwTrafficLights} from '@/components/ow-ui/ow-traffic-lights';
 import {
     Select,
@@ -19,13 +18,9 @@ import {
 import {useChatContext} from '@/components/chat/chat-provider';
 import {ChatRuntime} from '@/components/chat/chat-runtime';
 import {getUserId} from '@/lib/chat/anonymous-user';
-import {
-    type Conversation,
-    createConversation,
-    listConversations,
-} from '@/lib/chat/conversation-store';
+import {type Conversation, createConversation, listConversations,} from '@/lib/chat/conversation-store';
 import {OwLogo} from "@/components/ow-ui/ow-logo";
-import {MovingBorder} from "@/components/phucbm/moving-border";
+import {IconArrowsMaximize, IconMinus, IconPlus} from "@tabler/icons-react";
 
 function groupConversations(convos: Conversation[]) {
     const todayStart = new Date().setHours(0, 0, 0, 0);
@@ -45,7 +40,6 @@ export function ChatPanel() {
     const [activeId, setActiveId] = useState('');
     const [userId, setUserId] = useState<string | null>(null);
     const [userIdCopied, setUserIdCopied] = useState(false);
-    const [isDesktop, setIsDesktop] = useState(false);
 
     useEffect(() => {
         const list = listConversations();
@@ -58,12 +52,7 @@ export function ChatPanel() {
             setActiveId(fresh.id);
         }
         setUserId(getUserId());
-        const mq = window.matchMedia('(min-width: 640px)');
-        const mqHandler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-        setIsDesktop(mq.matches);
-        mq.addEventListener('change', mqHandler);
         setMounted(true);
-        return () => mq.removeEventListener('change', mqHandler);
     }, []);
 
     useEffect(() => {
@@ -88,24 +77,17 @@ export function ChatPanel() {
     const grouped = groupConversations(convos);
 
     return (
-        <MovingBorder
-            outerClassName={cn(
+        <div
+            className={cn(
                 'ow-chat-panel fixed z-50 transition-all duration-300 ease-in-out',
-                // Mobile: full-screen bottom sheet
                 'bottom-0 right-0 w-full h-full',
-                // Desktop: floating bottom-right panel
-                'sm:bottom-2 sm:right-2 sm:w-[480px] sm:h-[80vh] sm:!rounded-lg max-sm:!rounded-none',
+                'sm:bottom-2 sm:right-2 sm:w-[480px] sm:h-[80vh] sm:rounded-lg max-sm:rounded-none',
                 'shadow-2xl',
+                'flex flex-col sm:border bg-background',
                 isOpen
                     ? 'pointer-events-auto opacity-100 translate-y-0'
                     : 'pointer-events-none opacity-0 translate-y-4 sm:translate-y-2',
             )}
-            className="flex flex-col sm:border bg-background h-full sm:rounded-[50px] max-sm:!rounded-none"
-            colors={["#355bd2", "#e53e3e", "#805ad5"]}
-            duration={2}
-            borderWidth={isDesktop ? 1 : 0}
-            gradientWidth={2000}
-            radius={15}
         >
             {/* Header */}
             <div className="ow-chat-panel-header flex justify-between items-center gap-2 border-b px-3 py-2">
@@ -114,7 +96,7 @@ export function ChatPanel() {
                     Owie
                 </div>
 
-                <div className="flex gap-1 items-center">
+                <div className="flex gap-3 items-center">
                     {mounted && convos.length > 0 && (
                         <Select value={activeId} onValueChange={setActiveId}>
                             <SelectTrigger className="h-8 w-40 text-xs">
@@ -163,28 +145,28 @@ export function ChatPanel() {
                     <OwTrafficLights
                         buttons={[
                             {
-                                id: 'close',
-                                color: '#ff5f57',
-                                label: 'Đóng',
-                                icon: <XIcon className="size-2.5"/>,
-                                onClick: close,
-                            },
-                            {
                                 id: 'new',
                                 color: '#febc2e',
                                 label: 'Cuộc trò chuyện mới',
-                                icon: <PlusIcon className="size-2.5"/>,
+                                icon: <IconPlus stroke={2} className="size-3"/>,
                                 onClick: handleNew,
                             },
                             {
                                 id: 'expand',
                                 color: '#28c840',
                                 label: 'Mở rộng',
-                                icon: <Maximize2Icon className="size-2.5"/>,
+                                icon: <IconArrowsMaximize stroke={2} className="size-3"/>,
                                 onClick: () => {
                                     close();
                                     router.push(`/chat?id=${activeId}`);
                                 },
+                            },
+                            {
+                                id: 'close',
+                                color: '#ff5f57',
+                                label: 'Đóng',
+                                icon: <IconMinus stroke={2} className="size-3"/>,
+                                onClick: close,
                             },
                         ]}
                     />
@@ -234,6 +216,6 @@ export function ChatPanel() {
                     />
                 )}
             </div>
-        </MovingBorder>
+        </div>
     );
 }

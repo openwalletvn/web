@@ -49,7 +49,7 @@ export function OwTrafficLights({
                     >
                         {btn.icon && (
                             <span
-                                className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                className="absolute inset-0 flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200"
                                 style={{color: 'rgba(0,0,0,0.5)'}}
                             >
                                 {btn.icon}
