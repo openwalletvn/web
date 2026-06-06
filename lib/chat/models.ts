@@ -3,6 +3,7 @@ export type ChatModel = {
     label: string;
     provider: string;
     free: boolean;
+    contextWindow: number;
     default?: true;
     localOnly?: true;
 };
@@ -14,48 +15,50 @@ export const CHAT_MODELS: ChatModel[] = [
         label: 'Laguna M.1 (free)',
         provider: 'Poolside',
         free: true,
+        contextWindow: 262_000,
     },
     // https://openrouter.ai/nvidia/nemotron-3-super-120b-a12b:free
-    {
-        id: 'nvidia/nemotron-3-super-120b-a12b:free',
-        label: 'Nemotron 3 Super (free)',
-        provider: 'NVIDIA',
-        free: true,
-        default: true,
-    },
+    // {
+    //     id: 'nvidia/nemotron-3-super-120b-a12b:free',
+    //     label: 'NVIDIA Nemotron 3 Super (free)',
+    //     provider: 'NVIDIA',
+    //     free: true,
+    //     default: true,
+    //     contextWindow: 1_000_000,
+    // },
     // https://openrouter.ai/qwen/qwen3-coder:free
     {
         id: 'qwen/qwen3-coder:free',
         label: 'Qwen3 Coder 480B A35B (free)',
         provider: 'Qwen',
         free: true,
+        contextWindow: 1_000_000,
     },
     // https://openrouter.ai/openai/gpt-oss-120b:free
     {
         id: 'openai/gpt-oss-120b:free',
-        label: 'gpt-oss-120b (free)',
+        label: 'OpenAI gpt-oss-120b (free)',
         provider: 'OpenAI',
         free: true,
+        contextWindow: 131_000,
     },
     // Paid — dev only for testing
-    {
-        id: 'openai/gpt-4o-mini',
-        label: 'GPT-4o mini',
-        provider: 'OpenAI',
-        free: false,
-        localOnly: true,
-    },
-    {
-        id: 'anthropic/claude-3-5-haiku',
-        label: 'Claude 3.5 Haiku',
-        provider: 'Anthropic',
-        free: false,
-        localOnly: true,
-    },
+    // {
+    //     id: 'openai/gpt-4o-mini',
+    //     label: 'GPT-4o mini',
+    //     provider: 'OpenAI',
+    //     free: false,
+    //     localOnly: true,
+    //     contextWindow: 128_000,
+    // }
 ];
 
 export function getDefaultModel(): ChatModel {
     return CHAT_MODELS.find((m) => m.default) ?? CHAT_MODELS[0];
+}
+
+export function getModelById(id: string): ChatModel | undefined {
+    return CHAT_MODELS.find((m) => m.id === id);
 }
 
 export function getVisibleModels(): ChatModel[] {
