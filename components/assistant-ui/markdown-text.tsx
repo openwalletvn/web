@@ -137,7 +137,7 @@ const defaultComponents = memoizeMarkdownComponents({
     />
   ),
   a: ({ href, className, children, ...props }) => {
-    const cls = cn("aui-md-a text-primary underline underline-offset-2 hover:text-primary/80", className);
+    const cls = cn("aui-md-a text-link hover:text-primary/80", className);
     if (href?.startsWith('/')) {
       return <Link href={href} className={cls} {...props}>{children}</Link>;
     }
