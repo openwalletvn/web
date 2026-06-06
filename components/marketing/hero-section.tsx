@@ -26,7 +26,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
 
             {/*
                 3-col grid: [left] [phone] [right]
-                Floats live in left/right columns — never touch the phone.
+                Floats live in left/right columns - never touch the phone.
                 Mobile: collapses to phone only + stat row below.
             */}
             <div

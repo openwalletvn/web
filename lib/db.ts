@@ -29,7 +29,7 @@ export interface WalletCard {
   /**
    * Stored only when the user explicitly overrides the due date (paymentDueDateSource === 'custom').
    * For all other cases the due date is computed on-the-fly via calcDueDate() from lib/card-dates.ts
-   * using statementDate + catalogCard.interest_free_days — do NOT read this field for display or
+   * using statementDate + catalogCard.interest_free_days - do NOT read this field for display or
    * scheduling logic unless you have confirmed paymentDueDateSource === 'custom'.
    */
   paymentDueDate?: number;

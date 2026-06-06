@@ -130,7 +130,7 @@ export default async function BlogPostPage({params}: Props) {
                         {/* Divider */}
                         <div className="border-t border-dashed border-slate-200 my-12"/>
 
-                        {/* Related cards — mobile only (desktop shows in sidebar) */}
+                        {/* Related cards - mobile only (desktop shows in sidebar) */}
                         {cardSlugs.length > 0 && (
                             <div className="lg:hidden mb-10">
                                 <SidebarRelatedCards cardSlugs={cardSlugs}/>

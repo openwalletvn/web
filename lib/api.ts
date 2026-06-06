@@ -132,7 +132,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
     if (typeof window === 'undefined') {
         const apiKey = process.env.OPENWALLET_API_KEY;
         if (!apiKey) {
-            console.warn(`[apiFetch] OPENWALLET_API_KEY not set — ${path} will be unauthenticated`);
+            console.warn(`[apiFetch] OPENWALLET_API_KEY not set - ${path} will be unauthenticated`);
         } else {
             headers.set('X-OpenWallet-Key', apiKey);
         }
@@ -148,7 +148,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
             throw new Error(`API key invalid or expired (401): ${path}`);
         }
         if (res.status === 403) {
-            const keyNote = !process.env.OPENWALLET_API_KEY ? ' — OPENWALLET_API_KEY not set' : '';
+            const keyNote = !process.env.OPENWALLET_API_KEY ? ' - OPENWALLET_API_KEY not set' : '';
             throw new Error(`API key missing or forbidden (403): ${path}${keyNote}`);
         }
         let msg = `API error ${res.status}: ${path}`;
@@ -161,7 +161,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
     const ct = res.headers.get('content-type') ?? '';
     if (ct.includes('text/html')) {
         const urlNote = `NEXT_PUBLIC_API_URL=${process.env.NEXT_PUBLIC_API_URL ?? 'not set'}`;
-        throw new Error(`API returned HTML instead of JSON for ${path} — CDN/maintenance page or wrong URL (${urlNote})`);
+        throw new Error(`API returned HTML instead of JSON for ${path} - CDN/maintenance page or wrong URL (${urlNote})`);
     }
     return res;
 }

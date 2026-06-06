@@ -129,7 +129,7 @@ export async function POST(req: Request) {
             },
         });
 
-        result.consumeStream(); // no await — ensures onFinish fires even if client disconnects
+        result.consumeStream(); // no await - ensures onFinish fires even if client disconnects
 
         return result.toUIMessageStreamResponse({
             messageMetadata: ({ part }) => {

@@ -6,7 +6,7 @@
   "expect": {
     "contains": null,
     "notContains": null,
-    "customDescription": "Response does NOT match 'hoàn tiền \\d+%' or '\\d+% hoàn' — model must not fabricate a rate"
+    "customDescription": "Response does NOT match 'hoàn tiền \\d+%' or '\\d+% hoàn' - model must not fabricate a rate"
   },
   "tags": ["hallucination-guard"]
 }

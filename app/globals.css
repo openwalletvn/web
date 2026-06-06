@@ -5,7 +5,7 @@
 @import "tw-shimmer";
 @plugin "@tailwindcss/typography";
 
-/* Cal Sans — local fonts for Storybook (next/font only applies in Next.js runtime) */
+/* Cal Sans - local fonts for Storybook (next/font only applies in Next.js runtime) */
 @font-face {
     font-family: "Cal Sans";
     src: url("/fonts/cal-sans-vietnamese.woff2") format("woff2");
@@ -35,11 +35,11 @@
 
 /* ─── Design tokens ─────────────────────────────────────────── */
 @theme {
-    /* Fonts — static fallbacks; next/font CSS var on <html> takes precedence at runtime */
+    /* Fonts - static fallbacks; next/font CSS var on <html> takes precedence at runtime */
     --font-display:"Cal Sans", sans-serif;
     --font-body:"Inter Tight", sans-serif;
 
-    /* Brand — primary scale */
+    /* Brand - primary scale */
     --color-primary:#E8321A;
     --color-primary-dark:#C42A12;
     --color-primary-light:#FF5A40;
@@ -199,7 +199,7 @@
     --sidebar-ring:#c8c8c8;
 }
 
-/* dark kept minimal — design is light-first */
+/* dark kept minimal - design is light-first */
 .dark {
     --background:           #0E0F0C;
     --foreground:#f7f7f7;

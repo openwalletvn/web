@@ -41,7 +41,7 @@ const LINKS = {
 export function Footer() {
     return (
         <footer className="ow-footer relative">
-            {/* Zip: red scallops on white bg — creates page→footer edge */}
+            {/* Zip: red scallops on white bg - creates page→footer edge */}
             <div className="w-full absolute top-0 left-0 right-0 -translate-y-1/2 md:h-[75px] h-[40px] overflow-hidden">
                 <Image src="/zip.svg" alt="" width={2803} height={75} className="h-full max-w-none aspect-[2803/75] block absolute left-1/2 -translate-x-1/2 top-0" aria-hidden/>
             </div>

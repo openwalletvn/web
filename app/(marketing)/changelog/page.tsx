@@ -60,7 +60,7 @@ export default function ChangelogPage() {
                                 {i > 0 && <div className="border-t border-dashed border-slate-200 md:my-12 my-6"/>}
 
                                 <div className="flex gap-8 lg:gap-12">
-                                    {/* Date column — desktop only */}
+                                    {/* Date column - desktop only */}
                                     <div className="hidden lg:block w-28 shrink-0 pt-1 sticky top-[30px] self-start">
                                         <time
                                             dateTime={entry.date}
@@ -72,7 +72,7 @@ export default function ChangelogPage() {
 
                                     {/* Content column */}
                                     <div className="flex-1 min-w-0">
-                                        {/* Date — mobile only */}
+                                        {/* Date - mobile only */}
                                         <time
                                             dateTime={entry.date}
                                             className="block lg:hidden text-sm font-mono text-slate-400 mb-2"

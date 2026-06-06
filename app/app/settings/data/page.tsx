@@ -223,12 +223,12 @@ export default function DataSettingsPage() {
  {/* Raw data */}
  <section>
  <h2 className="text-label text-text-muted mb-1">Dữ liệu thô</h2>
- <p className="text-slate-500 mb-5">Xem toàn bộ dữ liệu dưới dạng JSON — nội dung khớp với file sao lưu khi xuất.</p>
+ <p className="text-slate-500 mb-5">Xem toàn bộ dữ liệu dưới dạng JSON - nội dung khớp với file sao lưu khi xuất.</p>
  <button onClick={handleOpenJsonDialog} className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left">
  <IconDatabase size={20} className="text-slate-500 shrink-0" />
  <div>
  <p className="text-sm font-medium text-slate-800">Xem dữ liệu JSON</p>
- <p className="text-slate-500 mt-0.5">Hiện toàn bộ dữ liệu — tất cả ví, thẻ, và cài đặt</p>
+ <p className="text-slate-500 mt-0.5">Hiện toàn bộ dữ liệu - tất cả ví, thẻ, và cài đặt</p>
  </div>
  </button>
  </section>

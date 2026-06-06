@@ -70,7 +70,7 @@ export const CHAT_MODELS: ChatModel[] = [
     //     free: true,
     //     contextWindow: 262_000,
     // },
-    // Paid — dev only for testing
+    // Paid - dev only for testing
     // {
     //     id: 'openai/gpt-4o-mini',
     //     label: 'GPT-4o mini',

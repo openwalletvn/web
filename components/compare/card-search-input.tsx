@@ -91,7 +91,7 @@ export function CardSearchInput({
 
     function handleXClick() {
         if (editing) {
-            // Cancel edit — keep current value
+            // Cancel edit - keep current value
             setEditing(false);
             setQuery('');
             setOpen(false);

@@ -1,7 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie';
 
 export interface Account {
-  id: string;                                       // UUID, generated locally — will be the server account ID when sync enabled
+  id: string;                                       // UUID, generated locally - will be the server account ID when sync enabled
   email?: string;                                   // null until auth/sync
   created_at: string;                               // ISO timestamp
   last_login_at?: string;
@@ -25,8 +25,8 @@ export interface NotificationAdapter {
   id: 'discord' | 'telegram' | 'email';
   config: Record<string, string>;
   enabled: boolean;
-  daysBefore: number;   // default 1 — how many days before the event to fire
-  notifyHour: number;   // default 8 — hour in Vietnam time (ICT UTC+7) to send the reminder
+  daysBefore: number;   // default 1 - how many days before the event to fire
+  notifyHour: number;   // default 8 - hour in Vietnam time (ICT UTC+7) to send the reminder
   lastStatus?: 'ok' | 'failed';
   lastCheckedAt?: string;
 }
@@ -73,7 +73,7 @@ async function seed() {
     // Validate the wallet the config points to still exists
     const wallet = await appDb.wallets.get(existing.value);
     if (!wallet) {
-      // Orphaned activeWalletId — point to first available wallet or create one
+      // Orphaned activeWalletId - point to first available wallet or create one
       const first = await appDb.wallets.toArray().then((ws) => ws[0]);
       if (first) {
         await appDb.config.put({ key: 'activeWalletId', value: first.id });
@@ -97,7 +97,7 @@ async function seed() {
     return;
   }
 
-  // New user — seed everything
+  // New user - seed everything
   const walletId = crypto.randomUUID();
   const accountId = crypto.randomUUID();
 

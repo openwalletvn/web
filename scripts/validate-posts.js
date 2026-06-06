@@ -53,7 +53,7 @@ function error(file, msg) {
 }
 
 if (!fs.existsSync(POSTS_DIR)) {
-  console.log('⚠️  content/posts directory not found — nothing to validate.');
+  console.log('⚠️  content/posts directory not found - nothing to validate.');
   process.exit(0);
 }
 
@@ -88,12 +88,12 @@ for (const file of files) {
 
   // Status validation
   if (fm.status && !VALID_STATUSES.includes(fm.status)) {
-    error(file, `Invalid status "${fm.status}" — must be one of: ${VALID_STATUSES.join(', ')}`);
+    error(file, `Invalid status "${fm.status}" - must be one of: ${VALID_STATUSES.join(', ')}`);
   }
 
   // Date format: YYYY-MM-DD
   if (fm.date && !/^\d{4}-\d{2}-\d{2}$/.test(fm.date)) {
-    error(file, `Invalid date format "${fm.date}" — must be YYYY-MM-DD`);
+    error(file, `Invalid date format "${fm.date}" - must be YYYY-MM-DD`);
   }
 
   // Slug: filename should be kebab-case

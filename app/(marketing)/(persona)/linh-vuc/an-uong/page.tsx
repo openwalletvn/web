@@ -44,8 +44,8 @@ const CONFIG: IntentCategoryConfig = {
         },
         {
             q: 'Thẻ hoàn tiền ăn uống nào miễn phí thường niên?',
-            a: <><L href="/the/woori-visa-z">Woori Visa Z</L> miễn phí thường niên hoàn toàn, tích 2% tất cả giao dịch online (tối đa 500.000 điểm/tháng) — thẻ này xuất hiện trong danh sách vì đặt đồ ăn qua Shopee Food và GrabFood là giao dịch online, nên được tính điểm. Tuy nhiên đây không phải cashback ăn uống riêng, thanh toán trực tiếp tại nhà hàng sẽ không được tích điểm. <L href="/the/msb-mdigi">MSB mDigi</L> (399.000 VND/năm, có điều kiện miễn) là lựa chọn phí thấp nếu bạn cần hoàn tiền cả ăn tại chỗ lẫn đặt app.</>,
-            aText: 'Woori Visa Z miễn phí thường niên, tích 2% giao dịch online (tối đa 500.000 điểm/tháng). Xuất hiện trong danh sách vì Shopee Food và GrabFood là giao dịch online — nhưng thanh toán trực tiếp tại nhà hàng không được tích điểm. MSB mDigi là lựa chọn nếu cần hoàn tiền cả ăn tại chỗ lẫn đặt app.',
+            a: <><L href="/the/woori-visa-z">Woori Visa Z</L> miễn phí thường niên hoàn toàn, tích 2% tất cả giao dịch online (tối đa 500.000 điểm/tháng) - thẻ này xuất hiện trong danh sách vì đặt đồ ăn qua Shopee Food và GrabFood là giao dịch online, nên được tính điểm. Tuy nhiên đây không phải cashback ăn uống riêng, thanh toán trực tiếp tại nhà hàng sẽ không được tích điểm. <L href="/the/msb-mdigi">MSB mDigi</L> (399.000 VND/năm, có điều kiện miễn) là lựa chọn phí thấp nếu bạn cần hoàn tiền cả ăn tại chỗ lẫn đặt app.</>,
+            aText: 'Woori Visa Z miễn phí thường niên, tích 2% giao dịch online (tối đa 500.000 điểm/tháng). Xuất hiện trong danh sách vì Shopee Food và GrabFood là giao dịch online - nhưng thanh toán trực tiếp tại nhà hàng không được tích điểm. MSB mDigi là lựa chọn nếu cần hoàn tiền cả ăn tại chỗ lẫn đặt app.',
         },
         {
             q: 'Thẻ ăn uống có hoàn tiền khi đặt đồ ăn qua app không?',

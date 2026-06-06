@@ -1,6 +1,6 @@
 /**
  * Push full system prompt → Langfuse as 'chat-system-prompt' (label: production).
- * Uses getSystemPrompt() — same SSOT as the chat route — so Langfuse reflects exactly what the LLM receives.
+ * Uses getSystemPrompt() - same SSOT as the chat route - so Langfuse reflects exactly what the LLM receives.
  * Run: pnpm push:prompt
  *
  * Requires LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL in .env.local
@@ -23,7 +23,7 @@ const auth = 'Basic ' + Buffer.from(`${LANGFUSE_PUBLIC_KEY}:${LANGFUSE_SECRET_KE
 
 async function main() {
     // Import after env is loaded so LANGFUSE_* vars are set (fetchSystemPrompt reads them)
-    // Pass no pageContext — push base prompt only, no page-specific context
+    // Pass no pageContext - push base prompt only, no page-specific context
     const { getSystemPrompt } = await import('@/lib/chat/system-prompt');
     const { text: promptText } = await getSystemPrompt();
 

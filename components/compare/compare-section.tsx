@@ -254,7 +254,7 @@ function CompareSectionInner({ defaultPair, children, excludePair, recordOnMount
 
     const isLoading = cards.filter(Boolean).some((c) => !cardCache[c!.id]);
 
-    // Compare result — fetched once all slot cards are loaded
+    // Compare result - fetched once all slot cards are loaded
     const [compareResult, setCompareResult] = useState<CompareResult | null>(null);
     const lastCompareKey = useRef('');
     useEffect(() => {

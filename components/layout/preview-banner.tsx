@@ -17,7 +17,7 @@ export function PreviewBanner() {
       padding: '4px 8px',
       letterSpacing: '0.05em',
     }}>
-      PREVIEW — {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? 'branch unknown'}
+      PREVIEW - {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? 'branch unknown'}
     </div>
   );
 }

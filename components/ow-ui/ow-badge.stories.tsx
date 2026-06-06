@@ -27,7 +27,7 @@ const meta: Meta<typeof OwBadge> = {
                     '</OwBadge>',
                     '```',
                     '',
-                    '**Color system:** `intent` and `network` variants resolve color from slug/id to hex, then compute `rgba` for bg/border/text — no Tailwind color classes. Pass `colorHex` on the default variant for custom brand color.',
+                    '**Color system:** `intent` and `network` variants resolve color from slug/id to hex, then compute `rgba` for bg/border/text - no Tailwind color classes. Pass `colorHex` on the default variant for custom brand color.',
                     '',
                     '**Wrapper:** Always use `<OwBadges>` to group multiple badges. Never use raw `flex flex-wrap` divs.',
                 ].join('\n'),
@@ -90,32 +90,32 @@ const CONTACTLESS = [
 export const Overview: Story = {
     render: () => (
         <OwStories>
-            <OwStorySection title="Intent — highlighted">
+            <OwStorySection title="Intent - highlighted">
                 <OwBadges>
                     {SAMPLE_INTENTS.map(i => (
                         <OwBadge key={i.slug} variant="intent" slug={i.slug} emoji={i.emoji} label={i.label} rate={i.rate} highlighted/>
                     ))}
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Intent — base">
+            <OwStorySection title="Intent - base">
                 <OwBadges>
                     {SAMPLE_INTENTS.map(i => (
                         <OwBadge key={i.slug} variant="intent" slug={i.slug} emoji={i.emoji} label={i.label} rate={i.rate}/>
                     ))}
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Intent — unknown slug fallback">
+            <OwStorySection title="Intent - unknown slug fallback">
                 <OwBadges>
                     <OwBadge variant="intent" slug="unknown-slug" emoji="❓" label="Unknown" rate={0.02}/>
                     <OwBadge variant="intent" slug="unknown-slug" emoji="❓" label="Unknown" rate={0.02} highlighted/>
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Network — no tier">
+            <OwStorySection title="Network - no tier">
                 <OwBadges>
                     {NETWORKS.map(n => <OwBadge key={n.id} variant="network" networkData={n}/>)}
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Network — with tier">
+            <OwStorySection title="Network - with tier">
                 <OwBadges>
                     {NETWORKS.map(n => <OwBadge key={n.id} variant="network" networkData={n} tier="Platinum"/>)}
                 </OwBadges>
@@ -130,13 +130,13 @@ export const Overview: Story = {
                     {CARD_TYPES.map(t => <OwBadge key={t} variant="card-type" cardType={t}/>)}
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Card type — custom icon prop (component ref)">
+            <OwStorySection title="Card type - custom icon prop (component ref)">
                 <OwBadges>
                     <OwBadge variant="card-type" cardType="prepaid" icon={IconStarFilled}/>
                     <OwBadge variant="card-type" cardType="co-branded" icon="🤝"/>
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Default — active state (filter chip use case)">
+            <OwStorySection title="Default - active state (filter chip use case)">
                 <OwBadges>
                     <OwBadge>Inactive</OwBadge>
                     <OwBadge active>Active</OwBadge>
@@ -155,7 +155,7 @@ export const Overview: Story = {
                     <OwBadge small variant="discontinued"/>
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Small — all variants">
+            <OwStorySection title="Small - all variants">
                 <OwBadges>
                     <OwBadge small variant="intent" slug="dining" emoji="🍜" label="Ăn uống" rate={0.03}/>
                     <OwBadge small variant="network" networkData={NETWORKS[0]}/>
@@ -174,12 +174,12 @@ export const Overview: Story = {
                     {PERSONAS.map(p => <OwBadge key={p.slug} variant="persona" personaData={p}/>)}
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Persona — active">
+            <OwStorySection title="Persona - active">
                 <OwBadges>
                     {PERSONAS.map(p => <OwBadge key={p.slug} variant="persona" personaData={p} active/>)}
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Persona — interactive (asChild button)">
+            <OwStorySection title="Persona - interactive (asChild button)">
                 <OwBadges>
                     {PERSONAS.map(p => (
                         <OwBadge key={p.slug} variant="persona" personaData={p} asChild>
@@ -188,7 +188,7 @@ export const Overview: Story = {
                     ))}
                 </OwBadges>
             </OwStorySection>
-            <OwStorySection title="Interactive — asChild (default variant only)">
+            <OwStorySection title="Interactive - asChild (default variant only)">
                 <OwBadges>
                     <OwBadge asChild><button onClick={() => alert('clicked')}>Button badge</button></OwBadge>
                     <OwBadge asChild active><button>Active button</button></OwBadge>

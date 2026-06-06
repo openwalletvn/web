@@ -35,7 +35,7 @@ export interface SectionDef {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const empty = <span className="text-slate-300">—</span>;
+const empty = <span className="text-slate-300">-</span>;
 
 const purelyDebit = (c: Card) => c.card_type.every(t => t === 'debit' || t === 'atm');
 const hasCredit = (cards: (Card | null)[]) => cards.some(c => c && !purelyDebit(c));
@@ -152,7 +152,7 @@ export const SECTION_DEFS: SectionDef[] = [
                 getValues: (cards) => cards.map(c => {
                     if (!c) return empty;
                     const methods = c.contactless_methods_data;
-                    if (!methods?.length) return <span>—</span>;
+                    if (!methods?.length) return <span>-</span>;
                     return <OwBadges>{methods.map(m => <OwBadge key={m.id} variant="contactless" contactlessData={m}/>)}</OwBadges>;
                 }),
             },

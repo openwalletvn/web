@@ -113,7 +113,7 @@ function SortableCardRow({
  </div>
  )}
 
- {/* Drag handle — only shown when group has more than 1 card */}
+ {/* Drag handle - only shown when group has more than 1 card */}
  {sortable && (
  <button
  {...attributes}

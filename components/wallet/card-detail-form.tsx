@@ -343,7 +343,7 @@ export function CardDetailForm({
               label="Ngày sao kê"
               hint={
                 !isEdit && card.statement_date && statementDate === String(card.statement_date)
-                  ? 'Mặc định của ngân hàng — bạn có thể thay đổi nếu khác'
+                  ? 'Mặc định của ngân hàng - bạn có thể thay đổi nếu khác'
                   : undefined
               }
             >
@@ -448,7 +448,7 @@ export function CardDetailForm({
             </button>
           )}
 
-          {/* Move to wallet — only in edit mode when 2+ wallets exist */}
+          {/* Move to wallet - only in edit mode when 2+ wallets exist */}
           {isEdit && otherWallets.length > 0 && (
             <div className="pt-1">
               <button

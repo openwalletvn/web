@@ -30,7 +30,7 @@ export function createCompareOgImage({
                 }}
             >
 
-                {/* Card A — left half */}
+                {/* Card A - left half */}
                 {imageUrlA && isVerticalA ? (
                     <>
                         <img src={imageUrlA} style={{
@@ -59,7 +59,7 @@ export function createCompareOgImage({
 
 
 
-                {/* Card B — right half */}
+                {/* Card B - right half */}
                 {imageUrlB && isVerticalB ? (
                     <>
                         <img src={imageUrlB} style={{
@@ -147,7 +147,7 @@ export function createCompareOgImage({
                     </div>
                 }
 
-                {/* Card B name — bottom-right */}
+                {/* Card B name - bottom-right */}
                 <div
                     style={{
                         position: 'absolute',
@@ -161,7 +161,7 @@ export function createCompareOgImage({
                     {titleB}
                 </div>
 
-                {/* Card A name — bottom-left */}
+                {/* Card A name - bottom-left */}
                 <div
                     style={{
                         position: 'absolute',

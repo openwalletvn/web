@@ -39,7 +39,7 @@ const bodyScales = [
   { cls: 'text-link', label: 'Link', note: 'Red / underline / hover opacity' },
 ];
 
-const sample = 'Việt Nam Ơi — OpenWallet';
+const sample = 'Việt Nam Ơi - OpenWallet';
 
 function Row({ tag, cls, label, note }: { tag: string; cls: string; label: string; note: string }) {
   const Tag = tag as React.ElementType;

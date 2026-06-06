@@ -156,7 +156,7 @@ const customChecks: Record<string, (text: string, toolsCalled?: string[]) => boo
       t.toLowerCase().includes('uob') || t.toLowerCase().includes('msb')),
 
   // A2 shopee: intent=shopee/ecommerce → woori-vv-hype-point-gold (10% ecommerce), vpbank-shopee-platinum
-  // rule-fail if list-merchants called — slugs are injected in system prompt, no tool needed
+  // rule-fail if list-merchants called - slugs are injected in system prompt, no tool needed
   'A2-merchant-shopee': (t, toolsCalled) =>
     !(toolsCalled ?? []).includes('list-merchants') &&
     t.length > 100 &&
@@ -172,7 +172,7 @@ const customChecks: Record<string, (text: string, toolsCalled?: string[]) => boo
       t.toLowerCase().includes('bvbank') || t.toLowerCase().includes('eximbank') || t.toLowerCase().includes('thẻ')),
 
   // A4 traveler: persona=traveler → acb lotusmiles series, techcombank vietnam-airlines cards
-  // rule-fail if list-personas called — persona slugs injected in system prompt
+  // rule-fail if list-personas called - persona slugs injected in system prompt
   'A4-persona-traveler': (t, toolsCalled) =>
     !(toolsCalled ?? []).includes('list-personas') &&
     t.length > 100 &&
@@ -212,7 +212,7 @@ const customChecks: Record<string, (text: string, toolsCalled?: string[]) => boo
     (t.toLowerCase().includes('299') || t.toLowerCase().includes('phí') ||
       t.toLowerCase().includes('thường niên') || t.toLowerCase().includes('không tìm thấy')),
 
-  // C2: techcombank-spark (899k fee) vs vpbank-stepup/flex (299-499k fee) — both must appear
+  // C2: techcombank-spark (899k fee) vs vpbank-stepup/flex (299-499k fee) - both must appear
   'C2-compare': (t) =>
     t.length > 150 &&
     (t.toLowerCase().includes('techcombank') || t.toLowerCase().includes('spark')) &&
@@ -231,10 +231,10 @@ const customChecks: Record<string, (text: string, toolsCalled?: string[]) => boo
       t.toLowerCase().includes('visa') || t.toLowerCase().includes('thẻ')),
 
   // Guards
-  // guard-invented-rate: mb-jcb-platinum — model must call tool, not invent rate; judge evaluates grounding
+  // guard-invented-rate: mb-jcb-platinum - model must call tool, not invent rate; judge evaluates grounding
   'guard-invented-rate': (t) => {
     if (t.length === 0) return true;
-    // rule: pass to judge — can't statically verify grounding; judge checks if confident % is stated without evidence
+    // rule: pass to judge - can't statically verify grounding; judge checks if confident % is stated without evidence
     return true;
   },
 
@@ -366,7 +366,7 @@ async function sendMessage(message: string): Promise<{ text: string; toolsCalled
 
 async function pushToLangfuse(results: EvalResult[]): Promise<void> {
   if (!LANGFUSE_PUBLIC_KEY || !LANGFUSE_SECRET_KEY) {
-    console.log('  [langfuse] LANGFUSE_PUBLIC_KEY/SECRET_KEY not set — skipping push');
+    console.log('  [langfuse] LANGFUSE_PUBLIC_KEY/SECRET_KEY not set - skipping push');
     return;
   }
 

@@ -1,4 +1,4 @@
-// Local dev proxy — forwards /api/* to the real API with the key injected server-side.
+// Local dev proxy - forwards /api/* to the real API with the key injected server-side.
 // This file is removed before Cloudflare builds (see prebuild in package.json).
 // In production, functions/api/[[path]].ts (Cloudflare Pages Function) handles this.
 
@@ -13,7 +13,7 @@ async function proxy(req: NextRequest, path: string[]): Promise<NextResponse> {
         method: req.method,
         headers: { 'X-OpenWallet-Key': API_KEY },
         body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
-        // @ts-expect-error — node fetch duplex
+        // @ts-expect-error - node fetch duplex
         duplex: req.method !== 'GET' && req.method !== 'HEAD' ? 'half' : undefined,
     });
     const body = await res.arrayBuffer();

@@ -49,8 +49,8 @@ export const CARD_TYPE_SLUGS: Partial<Record<CardType, string>> = {
  * Domain model for a catalog card. Wraps a plain `Card` API object and exposes
  * all display/computation helpers as instance methods.
  *
- * **Usage:** construct at the call site from any `Card` prop or API result —
- * `new CardModel(card)` — then use `card.` autocomplete to discover methods.
+ * **Usage:** construct at the call site from any `Card` prop or API result -
+ * `new CardModel(card)` - then use `card.` autocomplete to discover methods.
  * The underlying data object is never mutated; the class is stateless.
  *
  * **RSC / serialization:** pass the raw `Card` across server→client boundaries
@@ -61,7 +61,7 @@ export const CARD_TYPE_SLUGS: Partial<Record<CardType, string>> = {
  *
  * ## Raw data getters
  * All schema field access goes through typed getters below. If the API renames
- * a field (e.g. `bank_data` → `bank`), update the getter — zero call-site churn.
+ * a field (e.g. `bank_data` → `bank`), update the getter - zero call-site churn.
  */
 export class CardModel {
     constructor(private readonly data: Card) {

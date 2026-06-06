@@ -41,7 +41,7 @@ const MERCHANT_MAP = new Map<string, Merchant>([
 export const Overview: Story = {
     render: () => (
         <OwStories>
-            <OwStorySection title="Standard — intents + cap">
+            <OwStorySection title="Standard - intents + cap">
                 <OwCardCashbackRule
                     rule={{
                         rate: 0.05,

@@ -4,9 +4,9 @@ Copyright (c) 2026 OpenWallet Vietnam. All rights reserved.
 
 ## Card Database
 
-The card data displayed and served by this platform — including but not limited to
+The card data displayed and served by this platform - including but not limited to
 card records, benefit structures, cashback rules, fee schedules, normalized
-bank data, intent mappings, and ranking algorithms — is the proprietary work
+bank data, intent mappings, and ranking algorithms - is the proprietary work
 product of OpenWallet Vietnam.
 
 While the underlying raw financial data (interest rates, fees, card features)
