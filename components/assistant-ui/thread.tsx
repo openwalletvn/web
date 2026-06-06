@@ -228,6 +228,7 @@ const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
     const [selectedModelId, setSelectedModelId] = useState(defaultModelId);
     const contextWindow = CHAT_MODELS.find((m) => m.id === selectedModelId)?.contextWindow ?? 128_000;
     const isRunning = useAuiState((s) => s.thread.isRunning);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     const currentPlaceholder = useContextPlaceholder(pageContext, isRunning);
 
@@ -236,14 +237,25 @@ const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
             data-slot="aui_composer-shell"
             className="ow-composer-root flex w-full flex-col gap-2 rounded-(--composer-radius) border bg-background p-(--composer-padding) transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20"
         >
-            <ComposerPrimitive.Input
-                placeholder={currentPlaceholder}
-                className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
-                rows={1}
-                autoFocus
-                aria-label="Message input"
-                disabled={isRunning}
-            />
+            <ThreadPrimitive.Suggestion prompt={currentPlaceholder} asChild>
+                <div
+                    onDoubleClick={(e) => {
+                        if (inputRef.current?.value.trim() === '') {
+                            e.currentTarget.click();
+                        }
+                    }}
+                >
+                    <ComposerPrimitive.Input
+                        ref={inputRef}
+                        placeholder={currentPlaceholder}
+                        className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
+                        rows={1}
+                        autoFocus
+                        aria-label="Message input"
+                        disabled={isRunning}
+                    />
+                </div>
+            </ThreadPrimitive.Suggestion>
             <ComposerAction health={health} selectedModelId={selectedModelId} onModelChange={setSelectedModelId}
                             contextWindow={contextWindow}/>
         </div>
