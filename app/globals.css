@@ -30,6 +30,7 @@
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant is-home (&:is(.is-home *));
+@custom-variant is-chat-open (&:is(.is-chat-open *));
 
 /* ─── Design tokens ─────────────────────────────────────────── */
 @theme {
@@ -119,6 +120,12 @@
     --radius-badge:52px;
     --radius-full:96px;
     --radius-circle:112px;
+
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@utility ease-bounce {
+    transition-timing-function: var(--ease-bounce);
 }
 
 /* ─── shadcn semantic tokens (light) ────────────────────────── */
