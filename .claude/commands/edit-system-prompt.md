@@ -39,6 +39,11 @@ Prompt writing rules:
 - If new behavior added: note it needs a new eval case (don't write it now unless asked).
 
 ### 5. Push to Langfuse
+**STOP — do NOT run the push command automatically. Show the diff and ask for confirmation first.**
+
+After editing, show the user what changed, then ask: "Push to Langfuse as version N?"
+
+Only run after explicit user approval:
 ```bash
 pnpm push:prompt
 ```

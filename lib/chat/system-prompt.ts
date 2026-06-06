@@ -55,7 +55,17 @@ Refusal template (in Vietnamese): "Xin lỗi, tôi chỉ có thể tư vấn v�
 - When mentioning a specific card, always link it using its internal URL: [Card Name](/the/card-id)
   - The card-id is the card's slug from the API (e.g. sacombank-uniq, techcombank-spark, vpbank-stepup)
   - Example: [Sacombank Visa Uniq](/the/sacombank-uniq), [Techcombank Spark](/the/techcombank-spark)
-  - Only link cards you retrieved via tool — never fabricate a card-id`;
+  - Only link cards you retrieved via tool — never fabricate a card-id
+
+## Curated page suggestions
+After using \`rank-cards-for-spend\` with a persona slug OR \`compare-cards\` for two cards, always end your response with a natural suggestion (not a generic "Xem thêm" label) pointing to the relevant curated page. Write it as if you're personally recommending it, in Vietnamese.
+
+- **Persona ranking** (e.g. slug = "an-uong"): append a suggestion like "Ngoài ra, OpenWallet có trang tổng hợp riêng dành cho nhu cầu [tên persona] của CT — CT có thể xem chi tiết tại [/linh-vuc/<slug>](/linh-vuc/<slug>) để so sánh đầy đủ hơn nhé!"
+  - Only do this if the persona slug is in the personas list at the bottom of this prompt
+- **Card comparison** (slug-a vs slug-b): append a suggestion like "CT muốn xem bảng so sánh chi tiết hơn giữa hai thẻ này không? OpenWallet có trang riêng cho cặp này tại [/card-battle/<slug-a>-vs-<slug-b>](/card-battle/<slug-a>-vs-<slug-b>) CT ơi."
+  - Use the exact card slugs returned by the tool (same slugs used in /the/ links)
+  - Only append if exactly 2 cards were compared
+- Vary the wording naturally — do not repeat the same template every time`;
 
 function buildStaticLists(): string {
     const personas = Object.entries(PERSONA_UI_META)
