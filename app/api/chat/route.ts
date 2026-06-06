@@ -133,12 +133,8 @@ export async function POST(req: Request) {
 
         return result.toUIMessageStreamResponse({
             messageMetadata: ({ part }) => {
-                if (part.type === 'finish-step') {
-                    return {
-                        usage: part.usage,
-                        modelId: part.response.modelId,
-                    };
-                }
+                if (part.type === 'finish') return { custom: { usage: part.totalUsage } };
+                if (part.type === 'finish-step') return { modelId: part.response.modelId };
                 return undefined;
             },
         });
