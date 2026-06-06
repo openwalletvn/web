@@ -2,6 +2,7 @@ import {MarkdownText} from "@/components/assistant-ui/markdown-text";
 import {ModelSelector} from "@/components/assistant-ui/model-selector";
 import {CHAT_MODELS, getDefaultModel, getVisibleModels} from "@/lib/chat/models";
 import {ContextDisplay} from "@/components/assistant-ui/context-display";
+import {MovingBorder} from "@/components/phucbm/moving-border";
 import {
     Reasoning,
     ReasoningContent,
@@ -195,23 +196,41 @@ const Composer: FC = () => {
     const [selectedModelId, setSelectedModelId] = useState(defaultModelId);
     const contextWindow = CHAT_MODELS.find((m) => m.id === selectedModelId)?.contextWindow ?? 128_000;
     const isRunning = useAuiState((s) => s.thread.isRunning);
+
+    const composerShell = (
+        <div
+            data-slot="aui_composer-shell"
+            className="ow-composer-root flex w-full flex-col gap-2 rounded-(--composer-radius) border bg-background p-(--composer-padding) transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20"
+        >
+            <ComposerPrimitive.Input
+                placeholder="Mua Shopee mỗi tháng 3 triệu nên dùng thẻ nào?"
+                className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
+                rows={1}
+                autoFocus
+                aria-label="Message input"
+                disabled={isRunning}
+            />
+            <ComposerAction health={health} selectedModelId={selectedModelId} onModelChange={setSelectedModelId}
+                            contextWindow={contextWindow}/>
+        </div>
+    );
+
     return (
-        <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col">
-            <div
-                data-slot="aui_composer-shell"
-                className="ow-composer-root mb-3 flex w-full flex-col gap-2 rounded-(--composer-radius) border bg-background p-(--composer-padding) transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20"
-            >
-                <ComposerPrimitive.Input
-                    placeholder="Mua Shopee mỗi tháng 3 triệu nên dùng thẻ nào?"
-                    className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
-                    rows={1}
-                    autoFocus
-                    aria-label="Message input"
-                    disabled={isRunning}
-                />
-                <ComposerAction health={health} selectedModelId={selectedModelId} onModelChange={setSelectedModelId}
-                                contextWindow={contextWindow}/>
-            </div>
+        <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col mb-3">
+            {isRunning ? (
+                <MovingBorder
+                    borderWidth={1}
+                    gradientWidth={400}
+                    radius={12}
+                    duration={2}
+                    colors={["#ef3c23", "#4486ff", "#ef3c23"]}
+                    innerBg="bg-transparent"
+                >
+                    {composerShell}
+                </MovingBorder>
+            ) : (
+                composerShell
+            )}
             {health?.model && (
                 <p className="aui-composer-model mt-1.5 text-center text-xs text-muted-foreground/50">
                     {health.model}
@@ -232,16 +251,19 @@ const ComposerAction: FC<{
     const visibleModels = getVisibleModels().map((m) => ({id: m.id, name: m.label}));
     const defaultModelId = getDefaultModel().id;
     return (
-        <div className="ow-composer-action-wrapper relative flex items-center gap-1">
-            <ModelSelector
-                models={visibleModels}
-                value={selectedModelId}
-                onValueChange={onModelChange}
-                defaultValue={defaultModelId}
-                size="sm"
-                variant="ghost"
-            />
-            <ContextDisplay.Ring modelContextWindow={contextWindow}/>
+        <div className="ow-composer-action-wrapper relative flex justify-between items-center gap-1">
+            <div
+                className="flex justify-between items-center gap-1 is-thread-running:pointer-events-none is-thread-running:opacity-60">
+                <ModelSelector
+                    models={visibleModels}
+                    value={selectedModelId}
+                    onValueChange={onModelChange}
+                    defaultValue={defaultModelId}
+                    size="sm"
+                    variant="ghost"
+                />
+                <ContextDisplay.Ring modelContextWindow={contextWindow}/>
+            </div>
             <div className="ow-send-message-wrapper ml-auto flex items-center gap-2">
                 {notReady && (
                     <span className="text-xs text-destructive">{unavailableLabel}</span>
