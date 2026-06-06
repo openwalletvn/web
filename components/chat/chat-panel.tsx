@@ -176,17 +176,17 @@ export function ChatPanel() {
             {/* Anonymous user chip */}
             {mounted && userId && (
                 <div className="ow-chat-info-bar shrink-0 flex items-center justify-between px-4 py-1 border-b bg-muted/30 text-xs">
-                    {/* Page context hint badge */}
-                    {pageContext && (
-                        <div
-                            className="">
-                            Đang xem:{' '}
-                            <strong>
-                                {pageContext.type === 'card' ? pageContext.cardName : pageContext.bankName}
-                            </strong>
-                        </div>
-                    )}
-
+                    <div className="">
+                        {/* Page context hint badge */}
+                        {pageContext && (
+                            <>
+                                Đang xem:{' '}
+                                <strong>
+                                    {pageContext.type === 'card' ? pageContext.cardName : pageContext.bankName}
+                                </strong>
+                            </>
+                        )}
+                    </div>
 
                     <div>
                         <button
