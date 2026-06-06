@@ -10,7 +10,6 @@ import {cn} from '@/lib/utils';
 import {ROUTES} from '@/lib/routes';
 import {TOOLS} from '@/lib/tools';
 import {PersonaModel} from '@/lib/persona-model';
-import {ChatToggleButton} from '@/components/chat/chat-toggle-button';
 
 const PERSONA_ITEMS = PersonaModel.all().slice(0, 6);
 
@@ -148,10 +147,6 @@ export function MobileNav() {
                             </div>
                         </CollapsibleContent>
                     </Collapsible>
-
-                    <div className="pt-4 border-t border-slate-100 mt-2">
-                        <ChatToggleButton/>
-                    </div>
 
                 </nav>
             </SheetContent>

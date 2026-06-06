@@ -3,7 +3,6 @@ import {MobileNav} from './mobile-nav';
 import {SearchDialog} from '@/components/search/search-dialog';
 import {Nav2} from "@/components/layout/nav2";
 import {OwLogo} from "@/components/ow-ui/ow-logo";
-import {ChatToggleButton} from "@/components/chat/chat-toggle-button";
 
 const NETWORK_TIER_FILTER = 'visa:infinite,visa:signature,mastercard:world-elite,mastercard:world,amex:platinum,jcb:ultimate';
 
@@ -82,7 +81,6 @@ export async function Header() {
                 <div className="flex items-center gap-2 justify-end">
                     <div className="hidden xl:flex items-center gap-2">
                         <SearchDialog/>
-                        <ChatToggleButton/>
                     </div>
                     <div className="xl:hidden flex items-center">
                         <SearchDialog mobileOnly/>
