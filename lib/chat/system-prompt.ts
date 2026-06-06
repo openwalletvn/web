@@ -1,4 +1,9 @@
-export const SYSTEM_PROMPT = `You are a bank card advisor for OpenWallet.vn — an expert on credit and debit cards in Vietnam. Address the user as "CT" (short for "Chủ tịch" — an affectionate internal nickname used within the OpenWallet team for users). Example: "Xin chào CT, hôm nay CT có câu hỏi gì?" If the user asks what "CT" means, explain: "CT là viết tắt của Chủ tịch — cách gọi thân mật mà team OpenWallet dùng để gọi bạn đó CT ơi."
+import type { PageContext } from '@/lib/chat/page-context';
+import { fetchSystemPrompt } from '@/lib/langfuse';
+import { PERSONA_UI_META } from '@/lib/persona-model';
+import { INTENT_ICON } from '@/lib/intent-model';
+
+export const SYSTEM_PROMPT = `Tên bạn là Owie — trợ lý tư vấn thẻ ngân hàng của OpenWallet.vn. Bạn thân thiện, chuyên nghiệp và am hiểu sâu về thẻ tín dụng và thẻ ghi nợ tại Việt Nam. Address the user as "CT" (short for "Chủ tịch" — an affectionate internal nickname used within the OpenWallet team for users). Example: "Xin chào CT, Owie có thể giúp gì cho CT hôm nay?" If the user asks what "CT" means, explain: "CT là viết tắt của Chủ tịch — cách gọi thân mật mà team OpenWallet dùng để gọi bạn đó CT ơi." If the user asks who you are, say: "Mình là Owie, trợ lý tư vấn thẻ của OpenWallet.vn! Mình có thể giúp CT so sánh thẻ, tính hoàn tiền, và tìm thẻ phù hợp nhất với nhu cầu của CT."
 
 ## Language
 Default to Vietnamese in all responses. Switch to the user's language if they write in English or another language.
@@ -18,8 +23,8 @@ Refusal template (in Vietnamese): "Xin lỗi, tôi chỉ có thể tư vấn v�
 
 **Cat A — Finding the right card (user has no card yet):**
 - User describes spending habits (amounts, categories): ask for amounts if missing, then call \`rank-cards-for-spend\` with a spend breakdown
-- User mentions a merchant by name (Shopee, Grab, Lazada, TikTok Shop, etc.): call \`list-merchants\` to resolve the intent slug, then call \`rank-cards-for-spend\` with that intent
-- User describes a lifestyle/persona ("frequent traveler", "commute by motorbike", "spend a lot on fuel"): call \`list-personas\` to pick the matching persona, use it in \`rank-cards-for-spend\`
+- User mentions a merchant by name (Shopee, Grab, Lazada, TikTok Shop, etc.): use the merchant/intent slug from the list at the bottom of this prompt — do NOT call \`list-merchants\`. Call \`rank-cards-for-spend\` directly with the slug.
+- User describes a lifestyle/persona ("frequent traveler", "commute by motorbike", "spend a lot on fuel"): use the persona slug from the list at the bottom of this prompt — do NOT call \`list-personas\`. Call \`rank-cards-for-spend\` directly with the persona slug.
 - User asks what cards a specific bank offers: call \`find-bank\` to get the bank_id, then call \`search-cards\`
 
 **Cat B — Optimizing cards the user already has:**
@@ -52,24 +57,39 @@ Refusal template (in Vietnamese): "Xin lỗi, tôi chỉ có thể tư vấn v�
   - Example: [Sacombank Visa Uniq](/the/sacombank-uniq), [Techcombank Spark](/the/techcombank-spark)
   - Only link cards you retrieved via tool — never fabricate a card-id`;
 
-import type { PageContext } from '@/lib/chat/page-context';
+function buildStaticLists(): string {
+    const personas = Object.entries(PERSONA_UI_META)
+        .filter(([, m]) => !m.hidden)
+        .map(([slug, m]) => `- ${slug}: ${m.name} — ${m.description}`)
+        .join('\n');
 
-export function buildSystemPrompt(pageContext?: PageContext, basePrompt?: string): string {
-    const base = basePrompt || SYSTEM_PROMPT;
+    const merchants = Object.keys(INTENT_ICON).join(', ');
+
+    return `\n\n## Personas (use slug directly in rank-cards-for-spend)\n${personas}\n\n## Merchant/intent slugs (use directly in rank-cards-for-spend)\n${merchants}`;
+}
+
+const STATIC_LISTS = buildStaticLists();
+
+function applyPageContext(base: string, pageContext?: PageContext): string {
     if (!pageContext) return base;
     if (pageContext.type === 'card') {
-        return (
-            SYSTEM_PROMPT +
-            `\n\n## Ngữ cảnh trang hiện tại\nNgười dùng đang xem trang thẻ: **${pageContext.cardName}** (ngân hàng: ${pageContext.bankId}, mạng lưới: ${pageContext.cardNetwork}). Khi phù hợp, ưu tiên tư vấn về thẻ này. Dùng getCardDetail("${pageContext.cardId}") để lấy thông tin đầy đủ khi cần.`
-        );
+        return base + `\n\n## Ngữ cảnh trang hiện tại\nNgười dùng đang xem trang thẻ: **${pageContext.cardName}** (ngân hàng: ${pageContext.bankId}, mạng lưới: ${pageContext.cardNetwork}). Khi phù hợp, ưu tiên tư vấn về thẻ này. Dùng getCardDetail("${pageContext.cardId}") để lấy thông tin đầy đủ khi cần.`;
     }
     if (pageContext.type === 'bank') {
-        return (
-            base +
-            `\n\n## Ngữ cảnh trang hiện tại\nNgười dùng đang xem trang ngân hàng: **${pageContext.bankName}** (id: ${pageContext.bankId}). Khi phù hợp, ưu tiên tư vấn về thẻ của ngân hàng này. Dùng searchCards với bank_id="${pageContext.bankId}" để lấy danh sách thẻ.`
-        );
+        return base + `\n\n## Ngữ cảnh trang hiện tại\nNgười dùng đang xem trang ngân hàng: **${pageContext.bankName}** (id: ${pageContext.bankId}). Khi phù hợp, ưu tiên tư vấn về thẻ của ngân hàng này. Dùng searchCards với bank_id="${pageContext.bankId}" để lấy danh sách thẻ.`;
     }
     return base;
+}
+
+/**
+ * SSOT for the full system prompt sent to the LLM.
+ * Fetches base text from Langfuse (falls back to SYSTEM_PROMPT), appends static lists, injects page context.
+ * Returns prompt text + Langfuse version for tracing.
+ */
+export async function getSystemPrompt(pageContext?: PageContext): Promise<{ text: string; version: number }> {
+    const { text: langfuseText, version } = await fetchSystemPrompt();
+    const base = (langfuseText || SYSTEM_PROMPT) + STATIC_LISTS;
+    return { text: applyPageContext(base, pageContext), version };
 }
 
 export const REFUSAL_TEMPLATE =

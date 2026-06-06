@@ -1,8 +1,8 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { createMCPClient } from '@ai-sdk/mcp';
 import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
-import { buildSystemPrompt } from '@/lib/chat/system-prompt';
-import { fetchSystemPrompt, sendChatTrace } from '@/lib/langfuse';
+import { getSystemPrompt } from '@/lib/chat/system-prompt';
+import { sendChatTrace } from '@/lib/langfuse';
 import { isAllowedModel, getDefaultModel, getModelById } from '@/lib/chat/models';
 import type { PageContext } from '@/lib/chat/page-context';
 import fs from 'fs';
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     const lastUserMessage = uiMessages.findLast((m) => m.role === 'user')?.parts
         ?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? '';
 
-    const { text: promptText, version: promptVersion } = await fetchSystemPrompt();
+    const { text: systemPrompt, version: promptVersion } = await getSystemPrompt(body.pageContext);
 
     let mcpClient: Awaited<ReturnType<typeof createMCPClient>> | null = null;
 
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
 
         const result = streamText({
             model: openrouter(model),
-            system: buildSystemPrompt(body.pageContext, promptText || undefined),
+            system: systemPrompt,
             messages,
             stopWhen: stepCountIs(5),
             tools,

@@ -1,12 +1,12 @@
 /**
- * Push lib/chat/system-prompt.ts → Langfuse as 'chat-system-prompt' (label: production).
+ * Push full system prompt → Langfuse as 'chat-system-prompt' (label: production).
+ * Uses getSystemPrompt() — same SSOT as the chat route — so Langfuse reflects exactly what the LLM receives.
  * Run: pnpm push:prompt
  *
  * Requires LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL in .env.local
  */
 import * as dotenv from 'dotenv';
 import * as path from 'node:path';
-import * as fs from 'node:fs';
 
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
@@ -19,21 +19,17 @@ if (!LANGFUSE_PUBLIC_KEY || !LANGFUSE_SECRET_KEY) {
     process.exit(1);
 }
 
-const promptFile = path.join(process.cwd(), 'lib/chat/system-prompt.ts');
-const src = fs.readFileSync(promptFile, 'utf-8');
-const match = src.match(/export const SYSTEM_PROMPT = `([\s\S]*?)`;/);
-if (!match) {
-    console.error('Could not parse SYSTEM_PROMPT from lib/chat/system-prompt.ts');
-    process.exit(1);
-}
-const promptText = match[1];
-
-console.log(`Pushing chat-system-prompt to ${LANGFUSE_BASE_URL}`);
-console.log(`Length: ${promptText.length} chars`);
-
 const auth = 'Basic ' + Buffer.from(`${LANGFUSE_PUBLIC_KEY}:${LANGFUSE_SECRET_KEY}`).toString('base64');
 
 async function main() {
+    // Import after env is loaded so LANGFUSE_* vars are set (fetchSystemPrompt reads them)
+    // Pass no pageContext — push base prompt only, no page-specific context
+    const { getSystemPrompt } = await import('@/lib/chat/system-prompt');
+    const { text: promptText } = await getSystemPrompt();
+
+    console.log(`Pushing chat-system-prompt to ${LANGFUSE_BASE_URL}`);
+    console.log(`Length: ${promptText.length} chars`);
+
     const res = await fetch(`${LANGFUSE_BASE_URL}/api/public/v2/prompts`, {
         method: 'POST',
         headers: { Authorization: auth, 'Content-Type': 'application/json' },
