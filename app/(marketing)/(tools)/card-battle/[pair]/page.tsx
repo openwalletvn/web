@@ -1,7 +1,7 @@
 import React from 'react';
 import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
-// next-mdx-remote/rsc + lib/compare-mdx + content/so-sanh/ MDX files — unused, remove when cleaning up
+// next-mdx-remote/rsc + lib/compare-mdx + content/so-sanh/ MDX files - unused, remove when cleaning up
 import {getCard, getComparePairs, getIntents, getRelatedCardsForMany} from '@/lib/api';
 import {buildComparePageMeta} from '@/lib/page-meta/compare';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';

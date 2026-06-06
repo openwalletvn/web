@@ -2,7 +2,7 @@ import { createOgImage, OG_SIZE } from '@/lib/og';
 import { createCompareOgImage } from '@/lib/og-card-compare';
 import { apiFetch } from '@/lib/api';
 import { getComparePairs } from '@/lib/api';
-// lib/compare-mdx + content/so-sanh/ MDX files — unused, remove when cleaning up
+// lib/compare-mdx + content/so-sanh/ MDX files - unused, remove when cleaning up
 
 export const dynamic = 'force-static';
 export const size = OG_SIZE;
