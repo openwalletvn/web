@@ -14,6 +14,7 @@ import {ToolFallback} from "@/components/assistant-ui/tool-fallback";
 import {TooltipIconButton} from "@/components/assistant-ui/tooltip-icon-button";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
+import {useChatContext} from "@/components/chat/chat-provider";
 import {
     ActionBarMorePrimitive,
     ActionBarPrimitive,
@@ -63,6 +64,13 @@ function useApiReady(): HealthState {
 }
 
 export const Thread: FC = () => {
+    const {setThreadRunning} = useChatContext();
+    const isRunning = useAuiState((s) => s.thread.isRunning);
+
+    useEffect(() => {
+        setThreadRunning(isRunning);
+    }, [isRunning, setThreadRunning]);
+
     return (
         <ThreadPrimitive.Root
             className="aui-root aui-thread-root @container flex h-full flex-col bg-background"
@@ -186,6 +194,7 @@ const Composer: FC = () => {
     const defaultModelId = getDefaultModel().id;
     const [selectedModelId, setSelectedModelId] = useState(defaultModelId);
     const contextWindow = CHAT_MODELS.find((m) => m.id === selectedModelId)?.contextWindow ?? 128_000;
+    const isRunning = useAuiState((s) => s.thread.isRunning);
     return (
         <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col">
             <div
@@ -194,10 +203,11 @@ const Composer: FC = () => {
             >
                 <ComposerPrimitive.Input
                     placeholder="Mua Shopee mỗi tháng 3 triệu nên dùng thẻ nào?"
-                    className="aui-composer-input max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
+                    className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
                     rows={1}
                     autoFocus
                     aria-label="Message input"
+                    disabled={isRunning}
                 />
                 <ComposerAction health={health} selectedModelId={selectedModelId} onModelChange={setSelectedModelId}
                                 contextWindow={contextWindow}/>
@@ -232,7 +242,7 @@ const ComposerAction: FC<{
                 variant="ghost"
             />
             <ContextDisplay.Ring modelContextWindow={contextWindow}/>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="ow-send-message-wrapper ml-auto flex items-center gap-2">
                 {notReady && (
                     <span className="text-xs text-destructive">{unavailableLabel}</span>
                 )}

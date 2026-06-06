@@ -31,6 +31,7 @@
 @custom-variant dark (&:is(.dark *));
 @custom-variant is-home (&:is(.is-home *));
 @custom-variant is-chat-open (&:is(.is-chat-open *));
+@custom-variant is-thread-running (&:is(.is-thread-running *));
 
 /* ─── Design tokens ─────────────────────────────────────────── */
 @theme {
