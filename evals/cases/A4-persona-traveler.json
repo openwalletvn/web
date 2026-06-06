@@ -1,12 +1,12 @@
 {
   "id": "A4-persona-traveler",
   "name": "A4: recommend card for frequent international traveler",
-  "description": "User describes travel persona. Model should call list-personas and use traveler persona in rank.",
+  "description": "User describes travel persona. Model should use injected persona slug directly in rank-cards-for-spend — must NOT call list-personas.",
   "message": "Tôi hay đi du lịch nước ngoài, khoảng 3-4 lần mỗi năm. Thẻ tín dụng nào phù hợp nhất cho tôi?",
   "expect": {
     "contains": null,
     "notContains": null,
-    "customDescription": "Response mentions 'quốc tế' or 'ngoại tệ' or 'visa' or 'travel' AND mentions a card or bank AND length > 100"
+    "customDescription": "list-personas NOT called AND response mentions 'quốc tế' or 'ngoại tệ' or 'travel' or 'miles' AND mentions a card or bank AND length > 100"
   },
-  "tags": ["cat-a", "persona", "traveler", "rank"]
+  "tags": ["cat-a", "persona", "traveler", "rank", "no-list-personas"]
 }

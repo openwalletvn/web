@@ -41,7 +41,7 @@ import {
     RefreshCwIcon,
     SquareIcon,
 } from "lucide-react";
-import {type FC, useEffect, useState, useRef} from "react";
+import {type FC, useEffect, useRef, useState} from "react";
 import {getContextPlaceholders, type PageContext} from "@/lib/chat/page-context";
 
 type HealthState = { ready: boolean; mcp: boolean; api: boolean; model?: string } | null;
@@ -88,7 +88,7 @@ export const Thread: FC = () => {
                 className="ow-thread-viewport ow-custom-scrollbar relative flex flex-1 flex-col overflow-x-auto overflow-y-scroll scroll-smooth"
             >
                 <div
-                    className="ow-thread-viewport-inner mx-auto flex w-full h-full max-w-(--thread-max-width) flex-1 flex-col px-3 py-3">
+                    className="ow-thread-viewport-inner mx-auto flex w-full h-full max-w-(--thread-max-width) flex-1 flex-col px-3 pt-3">
                     <AuiIf condition={(s) => s.thread.isEmpty}>
                         <ThreadWelcome/>
                     </AuiIf>
@@ -225,10 +225,17 @@ function useContextPlaceholder(pageContext: PageContext | undefined, isRunning: 
 const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
     const health = useApiReady();
     const defaultModelId = getDefaultModel().id;
-    const [selectedModelId, setSelectedModelId] = useState(defaultModelId);
+    const [selectedModelId, setSelectedModelId] = useState(() => {
+        if (typeof window === 'undefined') return defaultModelId;
+        return localStorage.getItem('ow-chat-model') ?? defaultModelId;
+    });
     const contextWindow = CHAT_MODELS.find((m) => m.id === selectedModelId)?.contextWindow ?? 128_000;
     const isRunning = useAuiState((s) => s.thread.isRunning);
     const inputRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        localStorage.setItem('ow-chat-model', selectedModelId);
+    }, [selectedModelId]);
 
     const currentPlaceholder = useContextPlaceholder(pageContext, isRunning);
 
@@ -300,14 +307,16 @@ const ComposerAction: FC<{
         <div className="ow-composer-action-wrapper relative flex justify-between items-center gap-1">
             <div
                 className="flex justify-between items-center gap-1 is-thread-running:pointer-events-none is-thread-running:opacity-60">
-                <ModelSelector
-                    models={visibleModels}
-                    value={selectedModelId}
-                    onValueChange={onModelChange}
-                    defaultValue={defaultModelId}
-                    size="sm"
-                    variant="ghost"
-                />
+                <div className="ow-model-selector">
+                    <ModelSelector
+                        models={visibleModels}
+                        value={selectedModelId}
+                        onValueChange={onModelChange}
+                        defaultValue={defaultModelId}
+                        size="sm"
+                        variant="ghost"
+                    />
+                </div>
                 <ContextDisplay.Ring modelContextWindow={contextWindow}/>
             </div>
             <div className="ow-send-message-wrapper ml-auto flex items-center gap-2">

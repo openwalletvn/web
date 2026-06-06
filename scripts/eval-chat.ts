@@ -56,7 +56,7 @@ interface EvalCase {
   expect: {
     contains?: string;
     notContains?: string;
-    custom?: (text: string) => boolean;
+    custom?: (text: string, toolsCalled?: string[]) => boolean;
     customDescription?: string;
   };
 }
@@ -79,7 +79,7 @@ interface EvalResult {
 
 // ─── Custom checks (predicate logic keyed by test id) ─────────────────────────
 
-const customChecks: Record<string, (text: string) => boolean> = {
+const customChecks: Record<string, (text: string, toolsCalled?: string[]) => boolean> = {
   'happy-path-list-banks': (t) =>
     t.toLowerCase().includes('vietcombank') ||
     t.toLowerCase().includes('techcombank') ||
@@ -156,16 +156,13 @@ const customChecks: Record<string, (text: string) => boolean> = {
       t.toLowerCase().includes('uob') || t.toLowerCase().includes('msb')),
 
   // A2 shopee: intent=shopee/ecommerce → woori-vv-hype-point-gold (10% ecommerce), vpbank-shopee-platinum
-  'A2-merchant-shopee': (t) =>
+  // rule-fail if list-merchants called — slugs are injected in system prompt, no tool needed
+  'A2-merchant-shopee': (t, toolsCalled) =>
+    !(toolsCalled ?? []).includes('list-merchants') &&
     t.length > 100 &&
     (t.toLowerCase().includes('shopee') || t.toLowerCase().includes('ecommerce') || t.toLowerCase().includes('thương mại điện tử')) &&
     (t.toLowerCase().includes('hoàn tiền') || t.toLowerCase().includes('cashback') || t.toLowerCase().includes('thẻ')),
 
-  // A2 tiktok: tiktok-shop intent → model resolves via list-merchants
-  'A2-merchant-tiktok': (t) =>
-    t.length > 80 &&
-    (t.toLowerCase().includes('tiktok') || t.toLowerCase().includes('thương mại điện tử') || t.toLowerCase().includes('ecommerce')) &&
-    (t.toLowerCase().includes('hoàn tiền') || t.toLowerCase().includes('thẻ')),
 
   // A3 no-fee: free annual fee credit cards → msb-super-free (0 fee, 30k cashback), hsbc-livefree
   'A3-no-fee': (t) =>
@@ -175,7 +172,9 @@ const customChecks: Record<string, (text: string) => boolean> = {
       t.toLowerCase().includes('bvbank') || t.toLowerCase().includes('eximbank') || t.toLowerCase().includes('thẻ')),
 
   // A4 traveler: persona=traveler → acb lotusmiles series, techcombank vietnam-airlines cards
-  'A4-persona-traveler': (t) =>
+  // rule-fail if list-personas called — persona slugs injected in system prompt
+  'A4-persona-traveler': (t, toolsCalled) =>
+    !(toolsCalled ?? []).includes('list-personas') &&
     t.length > 100 &&
     (t.toLowerCase().includes('du lịch') || t.toLowerCase().includes('quốc tế') ||
       t.toLowerCase().includes('ngoại tệ') || t.toLowerCase().includes('travel') ||
@@ -183,13 +182,6 @@ const customChecks: Record<string, (text: string) => boolean> = {
     (t.toLowerCase().includes('acb') || t.toLowerCase().includes('techcombank') ||
       t.toLowerCase().includes('vietcombank') || t.toLowerCase().includes('thẻ')),
 
-  // A4 commuter: transport cashback → sacombank-uniq (20% transport), hsbc-cashback (6%), uob-one (10% transport+grab)
-  'A4-persona-commuter': (t) =>
-    t.length > 80 &&
-    (t.toLowerCase().includes('xăng') || t.toLowerCase().includes('transport') ||
-      t.toLowerCase().includes('di chuyển') || t.toLowerCase().includes('hoàn tiền')) &&
-    (t.toLowerCase().includes('sacombank') || t.toLowerCase().includes('hsbc') ||
-      t.toLowerCase().includes('uob') || t.toLowerCase().includes('thẻ')),
 
   // A5: VCB cards → model must list real vietcombank cards (vcb-digicard, vietcombank-vibe, vietcombank-mastercard, etc.)
   'A5-bank-browse': (t) =>
@@ -312,7 +304,7 @@ function makeRunId(): string {
 
 const TIMEOUT_MS = 180_000;
 
-async function sendMessage(message: string): Promise<string> {
+async function sendMessage(message: string): Promise<{ text: string; toolsCalled: string[] }> {
   const res = await fetch(CHAT_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -344,15 +336,18 @@ async function sendMessage(message: string): Promise<string> {
 
   const textParts: string[] = [];
   const toolOutputParts: string[] = [];
+  const toolsCalled: string[] = [];
   const lines = fullText.split('\n');
   for (const line of lines) {
     if (!line.startsWith('data: ')) continue;
     const raw = line.slice(6).trim();
     if (!raw || raw === '[DONE]') continue;
     try {
-      const chunk = JSON.parse(raw) as { type: string; delta?: string; output?: { content?: { type: string; text?: string }[] } };
+      const chunk = JSON.parse(raw) as { type: string; delta?: string; toolName?: string; output?: { content?: { type: string; text?: string }[] } };
       if (chunk.type === 'text-delta' && chunk.delta) {
         textParts.push(chunk.delta);
+      } else if (chunk.type === 'tool-input-available' && chunk.toolName) {
+        toolsCalled.push(chunk.toolName);
       } else if (chunk.type === 'tool-output-available' && chunk.output?.content) {
         for (const c of chunk.output.content) {
           if (c.type === 'text' && c.text) toolOutputParts.push(c.text);
@@ -364,7 +359,7 @@ async function sendMessage(message: string): Promise<string> {
   }
   // prefer text response; fall back to tool output text (model stopped after tool calls)
   const text = textParts.join('');
-  return text.length > 0 ? text : toolOutputParts.join('\n');
+  return { text: text.length > 0 ? text : toolOutputParts.join('\n'), toolsCalled };
 }
 
 // ─── Langfuse push ────────────────────────────────────────────────────────────
@@ -471,7 +466,7 @@ async function runEval() {
     const startMs = Date.now();
 
     try {
-      const response = await sendMessage(tc.message);
+      const { text: response, toolsCalled } = await sendMessage(tc.message);
       const latency_ms = Date.now() - startMs;
 
       let rule_pass = true;
@@ -481,7 +476,7 @@ async function runEval() {
       if (tc.expect.notContains && response.toLowerCase().includes(tc.expect.notContains.toLowerCase())) {
         rule_pass = false;
       }
-      if (tc.expect.custom && !tc.expect.custom(response)) {
+      if (tc.expect.custom && !tc.expect.custom(response, toolsCalled)) {
         rule_pass = false;
       }
 
@@ -511,6 +506,7 @@ async function runEval() {
         if (tc.expect.contains) console.log(`    expected to contain: "${tc.expect.contains}"`);
         if (tc.expect.notContains) console.log(`    expected NOT to contain: "${tc.expect.notContains}"`);
         if (tc.expect.customDescription) console.log(`    custom check: ${tc.expect.customDescription}`);
+        if (toolsCalled.length > 0) console.log(`    tools called: ${toolsCalled.join(', ')}`);
         console.log(`    response (${response.length} chars): ${response.slice(0, 300)}`);
       }
     } catch (err) {
