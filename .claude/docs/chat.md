@@ -1,6 +1,6 @@
 # Chat
 
-Feature gate: hidden from public. Button removed from header. Not ready — needs evals + system prompt iteration.
+Feature gate: hidden from public. Button removed from header. Not ready - needs evals + system prompt iteration.
 
 ## Architecture
 
@@ -25,8 +25,8 @@ Feature gate: hidden from public. Button removed from header. Not ready — need
 
 - Model: `CHAT_MODEL` env var, fallback `DEFAULT_MODEL`
 - MCP: `OPENWALLET_MCP_URL` (default `http://localhost:8001`) + `OPENWALLET_MCP_KEY`
-- Rate limit: 20 req/min per IP, in-memory Map — replace with Upstash Redis for multi-instance prod
-- `result.consumeStream()` without await — ensures `onFinish` fires even if client disconnects
+- Rate limit: 20 req/min per IP, in-memory Map - replace with Upstash Redis for multi-instance prod
+- `result.consumeStream()` without await - ensures `onFinish` fires even if client disconnects
 
 ## AI SDK v6 gotchas
 
@@ -47,13 +47,13 @@ const messages = await convertToModelMessages(uiMessages.slice(-12));
 Fix: `result.consumeStream()` (no await) before returning response.
 
 ```ts
-result.consumeStream(); // no await — ensures onFinish fires even if client disconnects
+result.consumeStream(); // no await - ensures onFinish fires even if client disconnects
 return result.toUIMessageStreamResponse();
 ```
 
 What does NOT work:
-- `after(() => sendChatTrace(...))` inside `onFinish` — `after()` must register synchronously in route scope
-- `await after(result.consumeStream())` — type error + wrong behavior
+- `after(() => sendChatTrace(...))` inside `onFinish` - `after()` must register synchronously in route scope
+- `await after(result.consumeStream())` - type error + wrong behavior
 
 ## assistant-ui setup
 
@@ -66,12 +66,12 @@ const runtime = useChatRuntime({
 ```
 
 Install components: `npx assistant-ui@latest add thread --path components/assistant-ui`
-(Not `npx assistant-ui@latest init` alone — files end up missing without `--path`.)
+(Not `npx assistant-ui@latest init` alone - files end up missing without `--path`.)
 
 ## Local dev logging
 
 Dev only (`NODE_ENV=development`). Writes to `logs/chat-<sessionId>.log` (gitignored).
-One JSON line per AI response (NDJSON). Each session gets its own file — same session appends, new session = new file.
+One JSON line per AI response (NDJSON). Each session gets its own file - same session appends, new session = new file.
 
 ### Log entry shape
 ```json
@@ -105,16 +105,16 @@ tail -f logs/chat-*.log | jq .        # same as pnpm chatlog
 cat logs/chat-<id>.log | jq .         # read full session without streaming
 ```
 
-Use logs as eval harness input — full messages + tool calls + tool results, no Langfuse needed.
+Use logs as eval harness input - full messages + tool calls + tool results, no Langfuse needed.
 
 ## Observability (Langfuse)
 
-All observability uses Langfuse direct HTTP ingestion — no SDK (JS SDK silently fails in CF Workers, GitHub issue #11984).
+All observability uses Langfuse direct HTTP ingestion - no SDK (JS SDK silently fails in CF Workers, GitHub issue #11984).
 
 **File:** `lib/langfuse.ts`
 
-- `fetchSystemPrompt()` — fetches `chat-system-prompt?label=production`, 60s in-memory cache, falls back to hardcoded `SYSTEM_PROMPT` on error
-- `sendChatTrace()` — sends trace with input/output/model/tokens/latency/finishReason/steps/promptVersion
+- `fetchSystemPrompt()` - fetches `chat-system-prompt?label=production`, 60s in-memory cache, falls back to hardcoded `SYSTEM_PROMPT` on error
+- `sendChatTrace()` - sends trace with input/output/model/tokens/latency/finishReason/steps/promptVersion
 
 **Trace fields:**
 
@@ -203,7 +203,7 @@ pnpm eval   # runs scripts/eval-chat.ts, requires dev server on :3000
 CHAT_URL=http://localhost:3000/api/chat pnpm eval
 ```
 
-Or use `logs/chat-<sessionId>.log` directly as eval input — contains full messages + steps + tool calls/results.
+Or use `logs/chat-<sessionId>.log` directly as eval input - contains full messages + steps + tool calls/results.
 
 **Eval cases needed** (pass ≥85% before moving on):
 
@@ -217,14 +217,14 @@ Guards: `guard-invented-rate`, `guard-nonexistent-bank`, `guard-ambiguous`
 
 **Harness improvements needed:**
 - Add `pageContext` field to eval case schema
-- Add `expectToolCalls` field — assert which tools were called
+- Add `expectToolCalls` field - assert which tools were called
 - Wire to CI (GitHub Actions) on push to preview/main
 
 ## Dev plan phases
 
 **Phase 1:** Eval coverage (current)
 
-**Phase 2:** System prompt iteration — known gaps:
+**Phase 2:** System prompt iteration - known gaps:
 - No instruction: use `list-merchants` when user mentions brand name
 - No instruction: spend-profile flow → ask amounts → call `rank-cards-for-spend`
 - No instruction: persona shortcut → "hay đi du lịch" → `list-personas`
@@ -242,7 +242,7 @@ Guards: `guard-invented-rate`, `guard-nonexistent-bank`, `guard-ambiguous`
 ## What NOT to do
 
 - No wallet integration with chat
-- No persistent server-side chat history — localStorage only
-- No user auth — anonymous only
-- No new MCP tools — all 13 justified
+- No persistent server-side chat history - localStorage only
+- No user auth - anonymous only
+- No new MCP tools - all 13 justified
 - Chat button stays hidden in header until explicitly requested

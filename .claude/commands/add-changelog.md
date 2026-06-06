@@ -21,7 +21,7 @@ Only `title` and `date` are required.
 
 ## Content
 
-Write the body in Markdown below the frontmatter. Keep it concise — 1–3 short paragraphs.
+Write the body in Markdown below the frontmatter. Keep it concise - 1–3 short paragraphs.
 
 - Describe what changed and why
 - Link to relevant pages if applicable

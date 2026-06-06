@@ -1,11 +1,11 @@
-# Changelog — Hướng dẫn quản lý
+# Changelog - Hướng dẫn quản lý
 
 ## Mục đích
 
 Changelog tại `content/changelog.mdx` là tín hiệu tin tưởng (trust signal) cho hai nhóm đối tượng:
 
-1. **Người dùng cuối** — thấy sản phẩm được cập nhật thường xuyên, có chiều sâu, không phải vibe coding qua đêm
-2. **Developer và AI engineer** — thấy kiến trúc được xây dựng có hệ thống, dữ liệu qua pipeline chuẩn, test suite đầy đủ, quyết định kỹ thuật có lý do rõ ràng
+1. **Người dùng cuối** - thấy sản phẩm được cập nhật thường xuyên, có chiều sâu, không phải vibe coding qua đêm
+2. **Developer và AI engineer** - thấy kiến trúc được xây dựng có hệ thống, dữ liệu qua pipeline chuẩn, test suite đầy đủ, quyết định kỹ thuật có lý do rõ ràng
 
 **Mục tiêu:** Người đọc changelog phải thấy: đây là team hiểu sâu về nghiệp vụ, xây dựng cẩn thận, ra quyết định kỹ thuật dựa trên lý do thực tế.
 
@@ -48,10 +48,10 @@ Thêm entry sau khi hoàn thành:
 
 ## Tone
 
-- **Chuyên nghiệp, cụ thể** — nêu số liệu khi có (39 ngân hàng, 320+ thẻ, 8 tools)
-- **Honest về trạng thái** — tính năng beta ghi rõ "(beta)", WIP ghi "(đang phát triển)"
-- **Không marketing** — không dùng từ ngữ quảng cáo như "đột phá", "tuyệt vời", "mạnh mẽ"
-- **Không em dash (—) trong nội dung bullet** — dùng dấu phẩy, dấu hai chấm hoặc viết lại câu
+- **Chuyên nghiệp, cụ thể** - nêu số liệu khi có (39 ngân hàng, 320+ thẻ, 8 tools)
+- **Honest về trạng thái** - tính năng beta ghi rõ "(beta)", WIP ghi "(đang phát triển)"
+- **Không marketing** - không dùng từ ngữ quảng cáo như "đột phá", "tuyệt vời", "mạnh mẽ"
+- **Không em dash (-) trong nội dung bullet** - dùng dấu phẩy, dấu hai chấm hoặc viết lại câu
 
 ---
 
@@ -74,7 +74,7 @@ Thêm entry sau khi hoàn thành:
 
 ## Lệnh nhanh
 
-Dùng `/add-changelog` để thêm entry mới theo đúng format — lệnh này đã được cấu hình để nhắc nhở các rule trên.
+Dùng `/add-changelog` để thêm entry mới theo đúng format - lệnh này đã được cấu hình để nhắc nhở các rule trên.
 
 ---
 

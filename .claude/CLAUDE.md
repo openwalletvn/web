@@ -25,10 +25,10 @@ When asked to "edit local api repo" → work in `../api`. "edit local mcp repo" 
 - Storybook: `pnpm storybook` → http://localhost:4000
 
 ## Core principles
-1. **Vercel deployment** — SSR/SSG via Vercel. Dynamic routes allowed. Data fetched at build time where possible.
-2. **Local-first** — wallet data in IndexedDB via Dexie.js. No server accounts.
-3. **Vietnamese-first** — UI/content targets Vietnamese users. Technical terms stay English.
-4. **SEO-first** — every public page has JSON-LD, OG metadata, sitemap entries.
+1. **Vercel deployment** - SSR/SSG via Vercel. Dynamic routes allowed. Data fetched at build time where possible.
+2. **Local-first** - wallet data in IndexedDB via Dexie.js. No server accounts.
+3. **Vietnamese-first** - UI/content targets Vietnamese users. Technical terms stay English.
+4. **SEO-first** - every public page has JSON-LD, OG metadata, sitemap entries.
 
 ## ISR revalidation (required for all marketing pages)
 
@@ -38,7 +38,7 @@ Every `app/(marketing)/**/page.tsx` that calls any API fetch **must** export:
 export const revalidate = 3600;
 ```
 
-Without this, pages are pure dynamic SSR — every request hits the API live. On Vercel, a slow or cold API response causes a function timeout → error page. With `revalidate`, Vercel pre-renders at build time and serves cached HTML, revalidating in the background. Reload-fixes-it is the symptom of a missing `revalidate`.
+Without this, pages are pure dynamic SSR - every request hits the API live. On Vercel, a slow or cold API response causes a function timeout → error page. With `revalidate`, Vercel pre-renders at build time and serves cached HTML, revalidating in the background. Reload-fixes-it is the symptom of a missing `revalidate`.
 
 ## Breadcrumbs
 
@@ -65,8 +65,8 @@ Pages currently missing breadcrumbs (add when touching): `dieu-khoan`, `docs`, `
 See `@.claude/docs/layout.md` for container conventions and CSS/typography rules.
 
 ## API authentication
-- Always use `apiFetch()` from `lib/api.ts` — auto-injects `X-OpenWallet-Key` header.
-- Never use `NEXT_PUBLIC_` prefix for `OPENWALLET_API_KEY` — server-only build secret.
+- Always use `apiFetch()` from `lib/api.ts` - auto-injects `X-OpenWallet-Key` header.
+- Never use `NEXT_PUBLIC_` prefix for `OPENWALLET_API_KEY` - server-only build secret.
 - Never use raw `fetch()` for API calls. Pass only path: `apiFetch('/api/v1/cards')`.
 
 ## Blog content rules
@@ -76,21 +76,21 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 - **Images**: `/public/images/posts/<slug>/<filename>.webp`
 
 ## Writing rules
-- **No em dashes (—):** Never use em dashes in any page content or metadata. Replace with a comma, colon, parentheses, or restructure the sentence. Em dashes are a visible AI writing signal.
+- **No em dashes (-):** Never use em dashes in any page content or metadata. Replace with a comma, colon, parentheses, or restructure the sentence. Em dashes are a visible AI writing signal.
 - **Tone for public pages:** Professional and honest, not corporate or casual. Use "chúng tôi" consistently. Avoid overly informal phrasing.
 
 ## Feature gate status
 
-### Wallet app (`/app/*`) — FROZEN
+### Wallet app (`/app/*`) - FROZEN
 - Routes return 404 unless `WALLET_ENABLED=true` env var is set.
 - Gate is in `app/app/layout.tsx` (server component) → calls `notFound()`.
 - Shell code lives in `app/app/app-shell.tsx` (client component, untouched).
-- `WalletNavButton` component exists but is not used anywhere — do not add it to nav.
+- `WalletNavButton` component exists but is not used anywhere - do not add it to nav.
 - Do not delete wallet code. May revive later. ROI currently too low vs competitors.
 - `public/robots.txt` has `Disallow: /app`. Keep this.
 
 ### Chat (`/chat`, `openwallet-chat`)
-- **Chat button hidden** — `ChatToggleButton` removed from `components/layout/header.tsx` (both desktop + mobile). Do not re-add unless explicitly requested.
+- **Chat button hidden** - `ChatToggleButton` removed from `components/layout/header.tsx` (both desktop + mobile). Do not re-add unless explicitly requested.
 - Not ready for public release. Needs evals + system prompt iteration first.
 - **Full chat docs (arch, logging, Langfuse, evals, dev plan):** `.claude/docs/chat.md`
 
@@ -100,20 +100,20 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 
 ## Card ranking
 
-**Architecture SSOT: `../api/.claude/docs/card-recommendation-architecture.md`** — authoritative doc for intent model, intent groups, ranking rules, and data quality requirements. Read this before touching any ranking or recommendation code.
+**Architecture SSOT: `../api/.claude/docs/card-recommendation-architecture.md`** - authoritative doc for intent model, intent groups, ranking rules, and data quality requirements. Read this before touching any ranking or recommendation code.
 
 **Ranking logic lives in the API repo.** The web repo only consumes results:
-- `lib/cashback-calc.ts` — cashback estimation (mirrors API logic for display)
-- `lib/card-ranker.ts` — sort order only (cashback desc → annual_fee asc → network_popularity asc)
-- `components/marketing/card-ranking-table.tsx` — UI with spend selector
-- `components/marketing/recommendation-finder.tsx` — macro→micro→atomic intent selector + `POST /api/ranking` proxy
+- `lib/cashback-calc.ts` - cashback estimation (mirrors API logic for display)
+- `lib/card-ranker.ts` - sort order only (cashback desc → annual_fee asc → network_popularity asc)
+- `components/marketing/card-ranking-table.tsx` - UI with spend selector
+- `components/marketing/recommendation-finder.tsx` - macro→micro→atomic intent selector + `POST /api/ranking` proxy
 
 ## Meta-rules
 1. Before any task: check `.claude/commands/` for a relevant command file.
 2. After creating a command: add it to the commands table below.
 3. After non-trivial task: check if `.claude/docs/learnings/` needs a new note.
-4. **Question-only mode:** If the message starts with `question:` or `answer me:`, only answer — do NOT edit any files or run any commands.
-5. **Changelog:** After card data or feature changes, add entry to `content/changelog.mdx`. Use `/add-changelog`. Card/feature scope only — no UI or page structure changes. See `.claude/docs/changelog.md` for purpose, rules, tone, and format guide.
+4. **Question-only mode:** If the message starts with `question:` or `answer me:`, only answer - do NOT edit any files or run any commands.
+5. **Changelog:** After card data or feature changes, add entry to `content/changelog.mdx`. Use `/add-changelog`. Card/feature scope only - no UI or page structure changes. See `.claude/docs/changelog.md` for purpose, rules, tone, and format guide.
 
 ## Custom commands
 

@@ -1,10 +1,10 @@
-# OpenWallet User Service — Data Schema
+# OpenWallet User Service - Data Schema
 
 Status legend: ✅ Live · 🔮 Planned
 
 ---
 
-## ✅ reminders (Live — migration 0001)
+## ✅ reminders (Live - migration 0001)
 
 Server-side. Each row = one scheduled notification.
 
@@ -67,7 +67,7 @@ interface Reminder {
   "credential_hash": "sha256:7f3a...",
   "fire_on_day": 13,
   "days_before": 2,
-  "message": "💳 Visa Techcombank — đến hạn thanh toán sau 2 ngày (ngày 15)",
+  "message": "💳 Visa Techcombank - đến hạn thanh toán sau 2 ngày (ngày 15)",
   "last_status": "sent",
   "last_sent_at": "2026-03-05T01:00:12Z",
   "last_sent_date": "2026-03-05",
@@ -79,7 +79,7 @@ interface Reminder {
 
 ---
 
-## ✅ delivery_logs (Live — migration 0002)
+## ✅ delivery_logs (Live - migration 0002)
 
 Server-side. Audit trail for every send attempt. Cleaned weekly (kept 30 days).
 
@@ -126,7 +126,7 @@ interface DeliveryLog {
 
 ---
 
-## 🔮 accounts (Planned — Phase 5: Auth + Sync)
+## 🔮 accounts (Planned - Phase 5: Auth + Sync)
 
 Server-side. Created only when user explicitly opts in to sync.
 
@@ -168,7 +168,7 @@ interface Account {
 
 ---
 
-## 🔮 wallets (Planned — Phase 5: Auth + Sync)
+## 🔮 wallets (Planned - Phase 5: Auth + Sync)
 
 Server-side. Synced wallet metadata. One user can have multiple wallets.
 
@@ -200,9 +200,9 @@ interface Wallet {
 
 ---
 
-## 🔮 wallet_cards (Planned — Phase 5: Auth + Sync)
+## 🔮 wallet_cards (Planned - Phase 5: Auth + Sync)
 
-Server-side. Synced card metadata — no sensitive financial data (no card numbers, no credit limits).
+Server-side. Synced card metadata - no sensitive financial data (no card numbers, no credit limits).
 
 ### D1 SQL
 
@@ -230,7 +230,7 @@ CREATE INDEX idx_wallet_cards_wallet_id ON wallet_cards(wallet_id);
 
 ### Due date computation model
 
-When `payment_due_date_source = 'calculated'` (the default), the due date is **never stored** — derived client-side at runtime:
+When `payment_due_date_source = 'calculated'` (the default), the due date is **never stored** - derived client-side at runtime:
 
 ```
 cycleClose = statementDay / resultMonth
@@ -291,10 +291,10 @@ accounts (🔮)
 
 ## Migration path
 
-The `reminders` table already has `account_id TEXT` (nullable) — no schema change needed when sync launches. Future migrations:
+The `reminders` table already has `account_id TEXT` (nullable) - no schema change needed when sync launches. Future migrations:
 
-- `0003_accounts.sql` — CREATE TABLE accounts
-- `0004_wallets.sql` — CREATE TABLE wallets
-- `0005_wallet_cards.sql` — CREATE TABLE wallet_cards
+- `0003_accounts.sql` - CREATE TABLE accounts
+- `0004_wallets.sql` - CREATE TABLE wallets
+- `0005_wallet_cards.sql` - CREATE TABLE wallet_cards
 
 All additive. No existing table alterations. No breaking changes.

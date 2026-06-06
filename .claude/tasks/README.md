@@ -1,6 +1,6 @@
 # .claude/tasks
 
-This folder is managed by [clask](https://github.com/phucbm/clask) — an autonomous Claude Code task runner.
+This folder is managed by [clask](https://github.com/phucbm/clask) - an autonomous Claude Code task runner.
 
 ## How it works
 

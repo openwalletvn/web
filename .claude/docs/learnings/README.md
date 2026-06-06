@@ -1,6 +1,6 @@
 # Learnings & Concepts
 
-Personal knowledge base — concepts and patterns encountered while building this project.
+Personal knowledge base - concepts and patterns encountered while building this project.
 Updated as new things are learned. Review anytime to consolidate understanding.
 
 ## Index

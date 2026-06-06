@@ -2,7 +2,7 @@
 
 ## What "Local-First" Means
 
-The wallet app (`app/app/`) stores all user data **in the browser** using IndexedDB — a built-in browser database. There is no server, no account, no login. Data lives only on the user's device.
+The wallet app (`app/app/`) stores all user data **in the browser** using IndexedDB - a built-in browser database. There is no server, no account, no login. Data lives only on the user's device.
 
 Benefits:
 - No privacy concerns (data never leaves the device)
@@ -18,7 +18,7 @@ Tradeoff:
 
 IndexedDB is a low-level key-value store built into every browser. It can store large amounts of structured data (unlike localStorage which is limited to ~5 MB strings).
 
-Dexie.js is a wrapper that makes IndexedDB much easier to use — it gives you a clean API with TypeScript support.
+Dexie.js is a wrapper that makes IndexedDB much easier to use - it gives you a clean API with TypeScript support.
 
 ## How It's Used Here
 

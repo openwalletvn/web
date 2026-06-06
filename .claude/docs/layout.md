@@ -35,10 +35,10 @@ width: 100%
 **`OwBadge`** is the single primitive for all badge/chip UI. Import from `@/components/ow-ui/ow-badge`.
 
 Variants:
-- `variant="intent"` — cashback intent, colored by slug
-- `variant="network"` — card network with logo
-- `variant="card-type"` — card type label
-- _(no variant)_ — generic badge, pass `colorHex` for brand color
+- `variant="intent"` - cashback intent, colored by slug
+- `variant="network"` - card network with logo
+- `variant="card-type"` - card type label
+- _(no variant)_ - generic badge, pass `colorHex` for brand color
 
 All variants support `active`, `asChild` (for interactive usage).
 
@@ -55,7 +55,7 @@ All variants support `active`, `asChild` (for interactive usage).
 ```
 
 ## CSS & typography rules
-- **Typography source of truth:** `app/typography.css` — all text styles live here (h1–h6 base + utility classes).
+- **Typography source of truth:** `app/typography.css` - all text styles live here (h1–h6 base + utility classes).
 - **No hardcoded styles:** Never write hardcoded `font-size`, `font-weight`, `line-height`, `letter-spacing`, `color`, or `text-decoration` values in components or inline styles. Always use an existing class from `app/typography.css`. If no class fits, stop and ask for approval before adding one.
 - **Reusable utility classes over inline chains:** Before writing multi-class chains like `text-[#EF3C23] underline hover:opacity-70 transition-opacity`, check `app/typography.css` for an existing utility. If none exists, create one there. Example: inline link styling → `.text-link`. This applies to any recurring visual pattern, not just typography.
 - **Do not use `[&_a]:` Tailwind arbitrary variants to compose multi-property styles.** The `[&_a]:` pattern is fine for single Tailwind utilities (e.g. `[&_a]:font-medium`), but multi-property patterns belong in a utility class in `app/typography.css` applied directly to the element.

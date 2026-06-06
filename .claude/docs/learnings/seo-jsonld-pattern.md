@@ -2,7 +2,7 @@
 
 ## Why JSON-LD Matters
 
-JSON-LD is structured data that search engines (Google) read to understand page content. It enables rich results — e.g. a card page might show star ratings or price info directly in Google search results.
+JSON-LD is structured data that search engines (Google) read to understand page content. It enables rich results - e.g. a card page might show star ratings or price info directly in Google search results.
 
 It's injected as a `<script type="application/ld+json">` tag in the page `<head>`.
 
