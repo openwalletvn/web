@@ -9,7 +9,7 @@ export interface Tool {
 export const TOOLS: Tool[] = [
     {name: 'Card Battle', href: ROUTES.cardBattle},
     {name: 'Card Match', href: ROUTES.cardMatch},
-    {name: 'OpenWallet Chat', href: ROUTES.openwalletChat},
+    {name: 'Owie Chat', href: ROUTES.owieChat},
     {name: 'OpenWallet MCP', href: ROUTES.openwalletMcp},
     {name: 'OpenWallet App', href: ROUTES.openwalletApp, disabled: true},
 ];

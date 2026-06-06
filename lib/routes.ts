@@ -11,8 +11,8 @@ export const ROUTES = {
     cardBattle: '/card-battle',
     cardMatch: '/card-match',
     chat: '/chat',
-    openwalletChat: '/openwallet-chat',
-    openwalletMcp: '/openwallet-mcp',
+    owieChat: '/owie-chat',
+    openwalletMcp: '/mcp',
     openwalletApp: '/openwallet-app',
 
     // Info pages
