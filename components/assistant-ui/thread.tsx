@@ -42,7 +42,7 @@ import {
     SquareIcon,
 } from "lucide-react";
 import {type FC, useEffect, useRef, useState} from "react";
-import {getContextPlaceholders, type PageContext} from "@/lib/chat/page-context";
+import {getContextPlaceholders, stripPlaceholderHint, type PageContext} from "@/lib/chat/page-context";
 
 type HealthState = { ready: boolean; mcp: boolean; api: boolean; model?: string } | null;
 
@@ -194,10 +194,15 @@ const ThreadSuggestions: FC = () => {
 /**
  * Hook for rotating context-aware placeholders
  */
-function useContextPlaceholder(pageContext: PageContext | undefined, isRunning: boolean) {
+function useContextPlaceholder(pageContext: PageContext | undefined, isRunning: boolean, hasInputValue: boolean) {
     const [currentPlaceholder, setCurrentPlaceholder] = useState('');
     const placeholdersRef = useRef<string[]>([]);
     const indexRef = useRef(0);
+    const hasInputValueRef = useRef(hasInputValue);
+
+    useEffect(() => {
+        hasInputValueRef.current = hasInputValue;
+    }, [hasInputValue]);
 
     // Initialize and rotate placeholders
     useEffect(() => {
@@ -212,6 +217,7 @@ function useContextPlaceholder(pageContext: PageContext | undefined, isRunning: 
 
         // Rotate every 8 seconds
         const interval = setInterval(() => {
+            if (hasInputValueRef.current) return; // Stop rotation if input has value
             indexRef.current = (indexRef.current + 1) % placeholders.length;
             setCurrentPlaceholder(placeholders[indexRef.current]);
         }, 8000);
@@ -232,22 +238,29 @@ const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
     const contextWindow = CHAT_MODELS.find((m) => m.id === selectedModelId)?.contextWindow ?? 128_000;
     const isRunning = useAuiState((s) => s.thread.isRunning);
     const inputRef = useRef<HTMLTextAreaElement>(null);
+    const [hasInputValue, setHasInputValue] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('ow-chat-model', selectedModelId);
     }, [selectedModelId]);
 
-    const currentPlaceholder = useContextPlaceholder(pageContext, isRunning);
+    const currentPlaceholder = useContextPlaceholder(pageContext, isRunning, hasInputValue);
 
     const composerShell = (
         <div
             data-slot="aui_composer-shell"
             className="ow-composer-root flex w-full flex-col gap-2 rounded-(--composer-radius) border bg-background p-(--composer-padding) transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20"
         >
-            <ThreadPrimitive.Suggestion prompt={currentPlaceholder} asChild>
+            <ThreadPrimitive.Suggestion prompt={stripPlaceholderHint(currentPlaceholder)} asChild>
                 <div
+                    onClick={(e) => {
+                        if (inputRef.current?.value.trim() !== '') {
+                            e.stopPropagation(); // Block suggestion if input has value
+                        }
+                    }}
                     onDoubleClick={(e) => {
                         if (inputRef.current?.value.trim() === '') {
+                            setHasInputValue(true);
                             e.currentTarget.click();
                         }
                     }}
@@ -260,6 +273,7 @@ const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
                         autoFocus
                         aria-label="Message input"
                         disabled={isRunning}
+                        onChange={(e) => setHasInputValue(e.target.value.trim() !== '')}
                     />
                 </div>
             </ThreadPrimitive.Suggestion>
