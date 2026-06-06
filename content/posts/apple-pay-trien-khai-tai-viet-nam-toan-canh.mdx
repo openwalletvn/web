@@ -31,12 +31,12 @@ image_prompts:
 
     Center-right: a sleek white POS terminal with the contactless/NFC wave
     symbol lit up in blue on its screen. Three concentric arc lines radiate
-    outward from the terminal toward the phone — the NFC transmission wave,
+    outward from the terminal toward the phone - the NFC transmission wave,
     rendered in soft blue (#60a5fa) with decreasing opacity.
 
     Background suggests a Vietnamese café counter: a subtle blurred counter
     surface in warm wood tone at the bottom, a few soft-focus shapes of cups and
-    greenery. The counter takes up only the bottom 20% — the rest is a gradient
+    greenery. The counter takes up only the bottom 20% - the rest is a gradient
     from warm cream (#fdf8f0) at top-left to almost white (#ffffff) at
     bottom-right. Bottom-right corner must be very light, near-white. Faint
     diagonal line pattern at 10% opacity on the background. No text beyond what
@@ -47,29 +47,29 @@ image_prompts:
 
     Five nodes arranged left to right with labeled arrows between them:
 
-    Node 1 — "Thẻ vật lý" (rounded rectangle, dark green #006633 fill): A
+    Node 1 - "Thẻ vật lý" (rounded rectangle, dark green #006633 fill): A
     miniature Vietcombank Visa card icon with "PAN thật" label below.
 
     Arrow 1 → "Thêm vào Apple Wallet"
 
-    Node 2 — "Apple Wallet / TSP" (rounded rectangle, black fill, Apple logo
-    icon): Label: "Tạo DPAN — số thẻ đại diện" Sub-label: "PAN thật không lưu
+    Node 2 - "Apple Wallet / TSP" (rounded rectangle, black fill, Apple logo
+    icon): Label: "Tạo DPAN - số thẻ đại diện" Sub-label: "PAN thật không lưu
     trên máy"
 
     Arrow 2 → "Mỗi giao dịch"
 
-    Node 3 — "Cryptogram động" (diamond shape, blue #2563eb fill, lock icon):
+    Node 3 - "Cryptogram động" (diamond shape, blue #2563eb fill, lock icon):
     Label: "Mã bảo mật 1 lần duy nhất" Sub-label: "Hết hạn sau mỗi giao dịch"
 
     Arrow 3 → "Tap to pay"
 
-    Node 4 — "Máy POS" (rounded rectangle, gray #e2e8f0 fill, terminal icon):
+    Node 4 - "Máy POS" (rounded rectangle, gray #e2e8f0 fill, terminal icon):
     Label: "Nhận DPAN + cryptogram" Sub-label: "KHÔNG thấy PAN thật" A red
     strikethrough X over a card icon inside.
 
     Arrow 4 → "Xác thực"
 
-    Node 5 — "Ngân hàng" (rounded rectangle, navy #1e3a5f fill, bank icon):
+    Node 5 - "Ngân hàng" (rounded rectangle, navy #1e3a5f fill, bank icon):
     Label: "Giải mã → tra cứu PAN thật" Sub-label: "Xử lý giao dịch"
 
     Background: very light gray (#f8fafc) with faint dot-grid at 8% opacity.
@@ -79,18 +79,18 @@ image_prompts:
     A clean split two-panel illustration comparing payment behavior before and
     after Apple Pay.
 
-    Left panel — "Trước Apple Pay" (muted gray-blue #94a3b8 tones, slightly
+    Left panel - "Trước Apple Pay" (muted gray-blue #94a3b8 tones, slightly
     dim): Header: small clock icon + "Trước". Three stacked items centered in
-    panel: 1. A physical wallet bulging with 3–4 card edges sticking out —
-    cluttered, heavy. 2. A hand-swipe motion icon over a card reader — the card
-    being handed to someone. 3. A small alert icon — "Rủi ro lộ thông tin thẻ".
+    panel: 1. A physical wallet bulging with 3–4 card edges sticking out -
+    cluttered, heavy. 2. A hand-swipe motion icon over a card reader - the card
+    being handed to someone. 3. A small alert icon - "Rủi ro lộ thông tin thẻ".
     Overall feel: slow, bulky, exposed.
 
-    Right panel — "Sau Apple Pay" (vibrant teal-blue #0ea5e9 tones, bright):
+    Right panel - "Sau Apple Pay" (vibrant teal-blue #0ea5e9 tones, bright):
     Header: small lightning bolt icon + "Sau". Three stacked items centered in
-    panel: 1. A slim iPhone with Apple Pay screen visible — one device, clean.
-    2. A tap/NFC wave gesture icon over a terminal — effortless, no card handed
-    over. 3. A shield with checkmark — "Tokenization bảo vệ số thẻ". Overall
+    panel: 1. A slim iPhone with Apple Pay screen visible - one device, clean.
+    2. A tap/NFC wave gesture icon over a terminal - effortless, no card handed
+    over. 3. A shield with checkmark - "Tokenization bảo vệ số thẻ". Overall
     feel: fast, minimal, secure.
 
     A thin vertical divider between panels. Background: soft gradient from light
@@ -101,17 +101,17 @@ card_slugs:
   - vietcombank-vibe
 ---
 
-Apple Pay chính thức triển khai tại Việt Nam từ tháng 8/2023 — không chỉ là thêm một phương thức thanh toán, mà là sự thay đổi trong cách người dùng tương tác với thẻ ngân hàng. Bài viết phân tích toàn cảnh: cách hoạt động, hạ tầng hỗ trợ và những gì thực sự thay đổi.
+Apple Pay chính thức triển khai tại Việt Nam từ tháng 8/2023 - không chỉ là thêm một phương thức thanh toán, mà là sự thay đổi trong cách người dùng tương tác với thẻ ngân hàng. Bài viết phân tích toàn cảnh: cách hoạt động, hạ tầng hỗ trợ và những gì thực sự thay đổi.
 
 ## Apple Pay là gì?
 
 Apple Pay là dịch vụ thanh toán không tiếp xúc do Apple phát triển, cho phép người dùng thanh toán bằng iPhone, Apple Watch, iPad hoặc Mac thay cho thẻ vật lý.
 
-Thay vì rút thẻ, quẹt hoặc cắm và nhập PIN — người dùng chỉ cần đưa thiết bị lại gần máy POS có biểu tượng contactless và xác thực bằng Face ID, Touch ID hoặc mật mã.
+Thay vì rút thẻ, quẹt hoặc cắm và nhập PIN - người dùng chỉ cần đưa thiết bị lại gần máy POS có biểu tượng contactless và xác thực bằng Face ID, Touch ID hoặc mật mã.
 
 Apple Pay không phải là ví điện tử nạp tiền sẵn. Nó là một lớp trung gian bảo mật, liên kết trực tiếp với thẻ ngân hàng của bạn.
 
-![Apple Pay trên iPhone chạm vào máy POS contactless tại Việt Nam — thanh toán không tiếp xúc bằng Face ID](/images/posts/apple-pay-trien-khai-tai-viet-nam-toan-canh/apple-pay-iphone-cham-pos-contactless-viet-nam.webp "Apple Pay: đưa iPhone lại gần POS, xác thực Face ID — nhanh hơn và bảo mật hơn quẹt thẻ")
+![Apple Pay trên iPhone chạm vào máy POS contactless tại Việt Nam - thanh toán không tiếp xúc bằng Face ID](/images/posts/apple-pay-trien-khai-tai-viet-nam-toan-canh/apple-pay-iphone-cham-pos-contactless-viet-nam.webp "Apple Pay: đưa iPhone lại gần POS, xác thực Face ID - nhanh hơn và bảo mật hơn quẹt thẻ")
 
 ---
 
@@ -139,12 +139,12 @@ Apple Pay sử dụng công nghệ tokenization. Khi bạn thêm thẻ vào Appl
 
 1. Số thẻ thật không được lưu trên thiết bị.
 2. Apple tạo một mã đại diện gọi là Device Account Number (DPAN).
-3. Mỗi giao dịch sinh ra mã bảo mật động (dynamic cryptogram) — dùng một lần, hết hạn ngay.
+3. Mỗi giao dịch sinh ra mã bảo mật động (dynamic cryptogram) - dùng một lần, hết hạn ngay.
 4. Máy POS chỉ nhận token và cryptogram, không nhận số thẻ thật.
 
 Kết quả: cửa hàng không thấy số thẻ, nhân viên không thể ghi lại thông tin thẻ, và rủi ro sao chép dữ liệu giảm đáng kể so với quẹt thẻ từ truyền thống.
 
-![Quy trình tokenization của Apple Pay: số thẻ thật được thay bằng DPAN, mỗi giao dịch tạo cryptogram một lần](/images/posts/apple-pay-trien-khai-tai-viet-nam-toan-canh/quy-trinh-tokenization-apple-pay-dpan.webp "Apple Pay tokenization: PAN thật không bao giờ đến tay merchant — chỉ DPAN và cryptogram động")
+![Quy trình tokenization của Apple Pay: số thẻ thật được thay bằng DPAN, mỗi giao dịch tạo cryptogram một lần](/images/posts/apple-pay-trien-khai-tai-viet-nam-toan-canh/quy-trinh-tokenization-apple-pay-dpan.webp "Apple Pay tokenization: PAN thật không bao giờ đến tay merchant - chỉ DPAN và cryptogram động")
 
 ---
 
@@ -174,13 +174,13 @@ Apple Pay không tạo ra hạ tầng mới, nhưng thúc đẩy việc sử d�
 
 Ban đầu, nhiều người lo ngại thanh toán qua điện thoại kém an toàn. Thực tế ngược lại: không ai nhìn thấy số thẻ, có thể khóa thiết bị từ xa nếu mất máy, và giao dịch yêu cầu xác thực sinh trắc học. Từ góc độ bảo mật, Apple Pay thậm chí an toàn hơn quẹt thẻ từ truyền thống.
 
-![Trước và sau Apple Pay: từ ví đầy thẻ vật lý đến một lần chạm iPhone — nhanh hơn, an toàn hơn](/images/posts/apple-pay-trien-khai-tai-viet-nam-toan-canh/apple-pay-truoc-va-sau-thay-doi-hanh-vi.webp "Apple Pay thay đổi hành vi thanh toán: không cần ví thẻ, không giao thẻ cho người khác, tokenization bảo vệ số thẻ")
+![Trước và sau Apple Pay: từ ví đầy thẻ vật lý đến một lần chạm iPhone - nhanh hơn, an toàn hơn](/images/posts/apple-pay-trien-khai-tai-viet-nam-toan-canh/apple-pay-truoc-va-sau-thay-doi-hanh-vi.webp "Apple Pay thay đổi hành vi thanh toán: không cần ví thẻ, không giao thẻ cho người khác, tokenization bảo vệ số thẻ")
 
 ---
 
 ## Apple Pay có mất phí không?
 
-Người dùng không bị tính phí riêng cho Apple Pay — không có phí kích hoạt, phí duy trì, hay phí giao dịch bổ sung. Mọi khoản phí (nếu có) vẫn theo chính sách thẻ ngân hàng.
+Người dùng không bị tính phí riêng cho Apple Pay - không có phí kích hoạt, phí duy trì, hay phí giao dịch bổ sung. Mọi khoản phí (nếu có) vẫn theo chính sách thẻ ngân hàng.
 
 ---
 
