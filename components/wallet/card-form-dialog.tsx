@@ -496,7 +496,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
                   label="Ngày sao kê"
                   hint={
                     !isEdit && card.statement_date && statementDate === String(card.statement_date)
-                      ? 'Mặc định của ngân hàng — bạn có thể thay đổi nếu khác'
+                      ? 'Mặc định của ngân hàng - bạn có thể thay đổi nếu khác'
                       : undefined
                   }
                 >

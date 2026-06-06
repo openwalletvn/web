@@ -55,7 +55,7 @@ export function MobileNav() {
                         Ngân hàng
                     </Link>
 
-                    {/* Thẻ — collapsible */}
+                    {/* Thẻ - collapsible */}
                     <Collapsible defaultOpen={cardsActive}>
                         <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
                             <span className={cn(cardsActive && 'text-brand-red')}>Thẻ</span>
@@ -121,7 +121,7 @@ export function MobileNav() {
                         </Link>
                     ))}
 
-                    {/* Công cụ — collapsible */}
+                    {/* Công cụ - collapsible */}
                     <Collapsible defaultOpen={toolsActive}>
                         <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
                             <span className={cn(toolsActive && 'text-brand-red')}>Công cụ</span>

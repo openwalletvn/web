@@ -42,15 +42,15 @@ Write prompts in **English** for Gemini image generation.
 - Avoid tables inside images (use only when data density requires it, non-cover only)
 
 ### Bank brand colors
-- **Vietcombank** — `#006633` (dark green)
-- **BIDV** — `#003087` (dark blue) + red accent
-- **VietinBank** — `#c8102e` (red) + navy
-- **Techcombank** — `#e30613` (bright red)
-- **MB Bank** — `#004f9f` (teal/navy)
-- **VPBank** — `#00a650` (green) + orange (issues Amex)
-- **Shinhan Bank** — `#003b8e` (blue, also issues Amex)
-- **ACB** — `#0066b2` (blue)
-- **TPBank** — `#6b21a8` (purple)
+- **Vietcombank** - `#006633` (dark green)
+- **BIDV** - `#003087` (dark blue) + red accent
+- **VietinBank** - `#c8102e` (red) + navy
+- **Techcombank** - `#e30613` (bright red)
+- **MB Bank** - `#004f9f` (teal/navy)
+- **VPBank** - `#00a650` (green) + orange (issues Amex)
+- **Shinhan Bank** - `#003b8e` (blue, also issues Amex)
+- **ACB** - `#0066b2` (blue)
+- **TPBank** - `#6b21a8` (purple)
 
 ### General prompt rules
 - Specify visual style: "flat illustration", "minimalist", "isometric"

@@ -24,7 +24,7 @@ If user passes a name (e.g. `chip`), search `components/` for the file. Multiple
 
 - Move file to `components/ow-ui/`
 - Rename file to `ow-<name>.tsx` if not already (e.g. `chip.tsx` → `ow-chip.tsx`)
-- Rename the exported function to `Ow<Name>` (PascalCase with `Ow` prefix) — e.g. `Chip` → `OwChip`
+- Rename the exported function to `Ow<Name>` (PascalCase with `Ow` prefix) - e.g. `Chip` → `OwChip`
 - Add `ow-<name>` CSS class to the wrapper element's `className` if not already present (per component conventions)
 - Update all imports across the codebase to the new path + new export name
 
@@ -42,8 +42,8 @@ Before writing the component, apply **design-system.md §6**:
 - Interactive styles: `[&:is(button,a)]:cursor-pointer [&:is(button,a)]:hover:bg-primary/10`
 
 **B) Component owns its internal content** (logo + text, icon + label, avatar + name) → use `href` prop:
-- `href?: string` — renders `<Link href>` when provided, `<span>` otherwise
-- Do NOT use `asChild` — Slot requires single child and will throw when component renders multiple internal elements
+- `href?: string` - renders `<Link href>` when provided, `<span>` otherwise
+- Do NOT use `asChild` - Slot requires single child and will throw when component renders multiple internal elements
 
 ### 4. Props discipline
 
@@ -57,7 +57,7 @@ Before writing the component, apply **design-system.md §6**:
 
 Create `components/ow-ui/ow-<name>.stories.tsx` following the structure and rules in `commands/create-story.md`.
 
-Title: `'OW UI/OwName'` — use `'Card UI/OwName'` for card-related components.
+Title: `'OW UI/OwName'` - use `'Card UI/OwName'` for card-related components.
 
 ### 6. Report usages
 

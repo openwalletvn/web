@@ -3,7 +3,7 @@ import { createOgImage } from '@/lib/og';
 
 export function createBlogIndexMetadata(): Metadata {
   return {
-    title: 'Blog — Kiến thức tài chính cá nhân | OpenWallet',
+    title: 'Blog - Kiến thức tài chính cá nhân | OpenWallet',
     description: 'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.',
     openGraph: { title: 'Tin tức', description: 'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.' },
     twitter: { title: 'Tin tức', description: 'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.' },
@@ -11,7 +11,7 @@ export function createBlogIndexMetadata(): Metadata {
 }
 
 export function createBlogCategoryMetadata(name: string): Metadata {
-  const title = `${name} — Blog | OpenWallet`;
+  const title = `${name} - Blog | OpenWallet`;
   const description = `Bài viết về chủ đề "${name}" trên OpenWallet Blog.`;
   return {
     title,
@@ -21,7 +21,7 @@ export function createBlogCategoryMetadata(name: string): Metadata {
 }
 
 export function createBlogTagMetadata(name: string): Metadata {
-  const title = `#${name} — Blog | OpenWallet`;
+  const title = `#${name} - Blog | OpenWallet`;
   const description = `Bài viết được gắn thẻ "${name}" trên OpenWallet Blog.`;
   return {
     title,

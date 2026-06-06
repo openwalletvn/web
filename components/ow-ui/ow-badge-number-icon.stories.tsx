@@ -10,7 +10,7 @@ const meta: Meta<typeof OwBadgeNumberIcon> = {
     parameters: {
         docs: {
             description: {
-                component: 'Pill badge combining a large number, label text, and an icon — used for stat callouts on hero and landing sections.',
+                component: 'Pill badge combining a large number, label text, and an icon - used for stat callouts on hero and landing sections.',
             },
         },
     },
@@ -27,13 +27,13 @@ type Story = StoryObj<typeof OwBadgeNumberIcon>;
 export const Overview: Story = {
     render: () => (
         <OwStories>
-            <OwStorySection title="Primary — icon left / right">
+            <OwStorySection title="Primary - icon left / right">
                 <div className="flex flex-wrap gap-4">
                     <OwBadgeNumberIcon number="150+" icon={IconCreditCard} text="Thẻ ngân hàng" iconPosition="left" color="primary"/>
                     <OwBadgeNumberIcon number="100%" icon={IconCircleCheck} text="Độc lập" iconPosition="right" color="primary"/>
                 </div>
             </OwStorySection>
-            <OwStorySection title="Black — icon left / right">
+            <OwStorySection title="Black - icon left / right">
                 <div className="flex flex-wrap gap-4">
                     <OwBadgeNumberIcon number="40+" icon={IconBuildingBank} text="Ngân hàng" iconPosition="left" color="black"/>
                     <OwBadgeNumberIcon number="25+" icon={IconSettings} text="Tính năng" iconPosition="right" color="black"/>

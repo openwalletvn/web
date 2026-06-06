@@ -12,7 +12,7 @@ Path: `content/posts/<slug>.mdx`
 
 ```yaml
 ---
-title: "String — max 80 chars, no clickbait"
+title: "String - max 80 chars, no clickbait"
 description: "120–160 chars. Used as meta description."
 date: "YYYY-MM-DD"
 category: "One of the 4 categories below"
@@ -72,7 +72,7 @@ Do NOT invent new categories.
 
 ### Headings
 - `##` main sections, `###` subsections, `####` sparingly
-- **Never use `#`** — title is already h1
+- **Never use `#`** - title is already h1
 - Auto-TOC is generated from headings
 - Heading IDs use Vietnamese slugification: `"Bat dau su dung"` -> `#bat-dau-su-dung`
 
@@ -114,16 +114,16 @@ Use `.webp` extension (admin server converts to WebP).
 - **No text in the image** (unless data-heavy infographic where labels are essential)
 - Be specific: exact colors, layout, objects, quantities, relationships
 - **Use real bank brands** with actual colors:
-  - **Vietcombank** — dark green `#006633`
-  - **BIDV** — dark blue `#003087` with red accent
-  - **VietinBank** — red `#c8102e` with navy
-  - **Techcombank** — bright red `#e30613`
-  - **MB Bank** — teal/navy `#004f9f`
-  - **VPBank** — green `#00a650` with orange accent (issues Amex in Vietnam)
-  - **Shinhan Bank** — blue `#003b8e` (also issues Amex)
-  - **Agribank** — dark green `#007a3d`
-  - **ACB** — blue `#0066b2`
-  - **TPBank** — purple/violet `#6b21a8`
+  - **Vietcombank** - dark green `#006633`
+  - **BIDV** - dark blue `#003087` with red accent
+  - **VietinBank** - red `#c8102e` with navy
+  - **Techcombank** - bright red `#e30613`
+  - **MB Bank** - teal/navy `#004f9f`
+  - **VPBank** - green `#00a650` with orange accent (issues Amex in Vietnam)
+  - **Shinhan Bank** - blue `#003b8e` (also issues Amex)
+  - **Agribank** - dark green `#007a3d`
+  - **ACB** - blue `#0066b2`
+  - **TPBank** - purple/violet `#6b21a8`
 
 ### Cover image rules
 - Must be an **eye-catching illustration**, never a table or diagram

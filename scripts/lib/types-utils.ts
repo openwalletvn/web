@@ -26,14 +26,14 @@ export type SpendTier = components['schemas']['SpendTier']
 export async function generateTypesOutput(schema: unknown, sourceUrl: URL): Promise<string> {
     const ast = await openapiTS(schema as Parameters<typeof openapiTS>[0])
     const raw = astToString(ast)
-    return `// AUTO-GENERATED — do not edit manually\n// Run: pnpm generate:types\n// Source: ${sourceUrl}\n\n${raw}\n${ALIASES}`
+    return `// AUTO-GENERATED - do not edit manually\n// Run: pnpm generate:types\n// Source: ${sourceUrl}\n\n${raw}\n${ALIASES}`
 }
 
 export type TypeSyncResult = 'synced' | 'updated' | 'stale' | 'error'
 
 const OUT_PATH = resolve(process.cwd(), 'lib/api-types.generated.ts')
 
-// Strip auto-gen header (first 3 lines) — source URL differs between local/prod
+// Strip auto-gen header (first 3 lines) - source URL differs between local/prod
 const strip = (s: string) => s.split('\n').slice(3).join('\n')
 
 export async function checkTypeSync(apiUrl: string, apiKey: string, autoFix = false): Promise<TypeSyncResult> {

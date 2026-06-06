@@ -6,7 +6,7 @@
   "expect": {
     "contains": null,
     "notContains": null,
-    "customDescription": "Response length > 100 characters — must engage meaningfully, ask for spending context"
+    "customDescription": "Response length > 100 characters - must engage meaningfully, ask for spending context"
   },
   "tags": ["vague-query"]
 }

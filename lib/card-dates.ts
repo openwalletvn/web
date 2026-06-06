@@ -148,7 +148,7 @@ export function getRelatedStatements(
  * only when no real milestone already falls on today's date.
  *
  * When a real milestone coincides with today its `isToday` flag is set to true
- * and it serves as the timeline anchor — no separate 'today' node is added.
+ * and it serves as the timeline anchor - no separate 'today' node is added.
  */
 export function getMilestones(statements: Statement[], today: Date): Milestone[] {
     const tod = new Date(today.getFullYear(), today.getMonth(), today.getDate());

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 interface Props {
  cards: Card[];
- /** Tailwind grid-cols class — defaults to match CardDetailCompare */
+ /** Tailwind grid-cols class - defaults to match CardDetailCompare */
  gridClassName?: string;
 }
 

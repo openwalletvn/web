@@ -14,7 +14,7 @@ Build a public MCP server at `mcp.openwallet.vn` on Cloudflare Workers so all AI
 - [ ] MCP auth: `X-MCP-Key` header required, 401 on missing/invalid
 - [ ] MCP works locally via `wrangler dev` (port 8001) connecting to `localhost:3002`
 - [ ] MCP deployed to `mcp.openwallet.vn`
-- [ ] Web `app/api/chat/route.ts` removes local `rankCards()` — calls `POST /api/v1/cards/rank` instead
+- [ ] Web `app/api/chat/route.ts` removes local `rankCards()` - calls `POST /api/v1/cards/rank` instead
 - [ ] Web `components/marketing/card-ranking-table.tsx` updated to call API rank endpoint
 - [ ] `web/lib/card-ranker.ts` + `web/lib/cashback-calc.ts` deleted after web cleanup
 - [ ] MCP `README.md` documents all 8 tools with auth instructions and usage examples
@@ -23,17 +23,17 @@ Build a public MCP server at `mcp.openwallet.vn` on Cloudflare Workers so all AI
 
 | File | Change |
 |------|--------|
-| `api/app/api/v1/cards/rank/route.ts` | New — POST ranking endpoint |
-| `api/app/api/v1/banks/route.ts` | Extend — add `?q=` fuzzy search |
-| `api/app/api/v1/cards/route.ts` | Extend — add `?q=` text search |
+| `api/app/api/v1/cards/rank/route.ts` | New - POST ranking endpoint |
+| `api/app/api/v1/banks/route.ts` | Extend - add `?q=` fuzzy search |
+| `api/app/api/v1/cards/route.ts` | Extend - add `?q=` text search |
 | `api/lib/data-loader.ts` | Extend `filterCards()` with `q` param |
-| `api/lib/card-ranker.ts` | New — migrated from web |
-| `api/lib/cashback-calc.ts` | New — migrated from web |
+| `api/lib/card-ranker.ts` | New - migrated from web |
+| `api/lib/cashback-calc.ts` | New - migrated from web |
 | `api/lib/schemas.ts` | Add rank request Zod schema |
 | `api/app/api/v1/openapi.json/route.ts` | Add new endpoints to spec |
 | `api/.claude/docs/api-architecture.md` | Document new endpoints |
 | `api/.claude/docs/card-recommendation-architecture.md` | Note ranking moved here |
-| `mcp/` | New repo — all files |
+| `mcp/` | New repo - all files |
 | `web/app/api/chat/route.ts` | Remove rankCards import; call API rank endpoint |
 | `web/components/marketing/card-ranking-table.tsx` | Call API rank endpoint |
 | `web/lib/card-ranker.ts` | Delete after web cleanup |
@@ -43,7 +43,7 @@ Build a public MCP server at `mcp.openwallet.vn` on Cloudflare Workers so all AI
 
 - API dev port: 3002 (from web `.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:3002`)
 - MCP dev port: 8001 (wrangler default)
-- Do Phase 1 (API) before Phase 2 (MCP) before Phase 3 (web cleanup) — dependencies in that order
-- `card-ranking-table.tsx` imports `rankCards` client-side — switch to API call (server action or fetch) before deleting web ranker files
+- Do Phase 1 (API) before Phase 2 (MCP) before Phase 3 (web cleanup) - dependencies in that order
+- `card-ranking-table.tsx` imports `rankCards` client-side - switch to API call (server action or fetch) before deleting web ranker files
 - MCP secrets: `MCP_API_KEY` + `OPENWALLET_API_KEY` via `wrangler secret put`
-- CF Worker 3MB limit: MCP deps are light (`@modelcontextprotocol/sdk` + `zod`) — should fit
+- CF Worker 3MB limit: MCP deps are light (`@modelcontextprotocol/sdk` + `zod`) - should fit

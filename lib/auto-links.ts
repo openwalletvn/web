@@ -16,7 +16,7 @@ export const AUTO_LINKS: [keyword: string, url: string][] = [
   ['Visa', '/the-tin-dung-visa'],
   ['JCB', '/the-tin-dung-jcb'],
 
-  // Card types — longer phrases first
+  // Card types - longer phrases first
   ['thẻ 2 trong 1', '/the-2-trong-1'],
   ['thẻ tín dụng', '/the-tin-dung'],
   ['thẻ ghi nợ', '/the-ghi-no'],

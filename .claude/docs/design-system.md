@@ -1,23 +1,23 @@
-# Design System — LLM Reference
+# Design System - LLM Reference
 
 Single source of truth for components, tokens, and layout patterns.
 Read this before creating any UI. Check here before adding new primitives.
 
 ---
 
-## Rules — Before Writing Any UI
+## Rules - Before Writing Any UI
 
 Follow this checklist in order. Stop at the first match.
 
 ### 1. Check `components/ui/` first
 Primitives already exist: `button`, `badge`, `chip`, `dialog`, `input`, `select`, `skeleton`, `tooltip`, `empty-state`, `form-field`, `sheet`, `popover`, `separator`, `switch`, `accordion`, `collapsible`, `command`, `sidebar`, `navigation-menu`, `breadcrumb`, `brand-badge`, `brand-button`, `dashed-badge`, `page-container`.
 
-**If it's there — use it. Do not recreate.**
+**If it's there - use it. Do not recreate.**
 
 ### 2. Check this doc for domain components
-Badge/display components, card variants, page shells — all catalogued below.
+Badge/display components, card variants, page shells - all catalogued below.
 
-**If it exists as a variant prop — use the variant, not a new component.**
+**If it exists as a variant prop - use the variant, not a new component.**
 
 Example: need a compact card in a list? → `<CardDisplay variant="slim" />`, not a new file.
 
@@ -40,7 +40,7 @@ my-widget.tsx → className="ow-my-widget ..."
 ```
 Prepend to existing `className`. Never add a wrapper element just for this.
 
-### 6. Interactive components — use `asChild` + `Slot`, not hardcoded element
+### 6. Interactive components - use `asChild` + `Slot`, not hardcoded element
 
 Two patterns depending on intent:
 
@@ -51,7 +51,7 @@ Default to neutral element (`<span>`). Caller opts in via `asChild`:
 // display only
 <OwChip>Label</OwChip>
 
-// interactive — caller provides the element
+// interactive - caller provides the element
 <OwChip asChild><button onClick={fn}>Filter</button></OwChip>
 <OwChip asChild><a href="/x">Link</a></OwChip>
 ```
@@ -60,7 +60,7 @@ Default to neutral element (`<span>`). Caller opts in via `asChild`:
 Default to `"button"`. `asChild` lets caller swap to `<a>` or custom element:
 
 ```tsx
-// default — renders <button>
+// default - renders <button>
 <OwButtonHeader onClick={fn}>...</OwButtonHeader>
 
 // swap to link
@@ -98,7 +98,7 @@ Rules:
 
 ### Props by variant
 
-**tile** — full card with hover glow + action buttons
+**tile** - full card with hover glow + action buttons
 ```tsx
 <CardDisplay
   variant="tile"
@@ -112,7 +112,7 @@ Rules:
 />
 ```
 
-**row** — horizontal card row with image + badges + optional slot
+**row** - horizontal card row with image + badges + optional slot
 ```tsx
 <CardDisplay
   variant="row"
@@ -123,7 +123,7 @@ Rules:
 />
 ```
 
-**slim** — compact list item, optionally a link
+**slim** - compact list item, optionally a link
 ```tsx
 <CardDisplay
   variant="slim"
@@ -134,7 +134,7 @@ Rules:
 />
 ```
 
-**inline** — inline text span/link
+**inline** - inline text span/link
 ```tsx
 <CardDisplay
   variant="inline"
@@ -150,10 +150,10 @@ Rules:
 | badge | tile | row | slim | inline |
 |-------|------|-----|------|--------|
 | network | ✓ | ✓ | ✓ | ✓ |
-| type | ✓ | ✓ | — | — |
-| metal | ✓ | — | ✓ (always on) | — |
-| status | ✓ | — | ✓ (always on) | — |
-| fee | ✓ | — | — | — |
+| type | ✓ | ✓ | - | - |
+| metal | ✓ | - | ✓ (always on) | - |
+| status | ✓ | - | ✓ (always on) | - |
+| fee | ✓ | - | - | - |
 
 ---
 
@@ -174,13 +174,13 @@ All in `components/shared/badges/`.
 ```tsx
 <NetworkBadge card={card} size="sm|md" variant="full|slim" />
 ```
-- `full` — bordered pill with logo + text (default)
-- `slim` — logo only (or text if no logo)
+- `full` - bordered pill with logo + text (default)
+- `slim` - logo only (or text if no logo)
 
 ### OwBankBadge props
 ```tsx
 <OwBankBadge bank={bank} size="sm|md" showName={true} />
-// interactive — caller provides element via asChild:
+// interactive - caller provides element via asChild:
 <OwBankBadge bank={bank} asChild><a href="/ngan-hang/id" /></OwBankBadge>
 ```
 
@@ -235,7 +235,7 @@ Source: `app/typography.css`. **Never use Tailwind text/font utilities on `<h1>`
 | `.text-body-sm` | Body | 14px | Secondary text |
 | `.text-label` | Body | 12px | Uppercase labels |
 | `.text-nav` | Body | 14px | Nav items (uppercase) |
-| `.text-link` | — | — | Inline links (red + underline) |
+| `.text-link` | - | - | Inline links (red + underline) |
 
 Heading elements `h1`–`h6` have base styles applied automatically.
 Use utility classes when visual size doesn't match semantic level.
@@ -244,7 +244,7 @@ Use utility classes when visual size doesn't match semantic level.
 
 ## Tokens (colors, spacing, radius, typography values)
 
-See `.claude/docs/DESIGN.md` — authoritative Figma export. Token values, full `:root` CSS block, UI pattern specs (button, chip, card, glass).
+See `.claude/docs/DESIGN.md` - authoritative Figma export. Token values, full `:root` CSS block, UI pattern specs (button, chip, card, glass).
 
 Use as Tailwind classes: `bg-primary`, `text-text-muted`, `border-border`, etc.
 
@@ -257,7 +257,7 @@ Full rules: `.claude/docs/layout.md`
 - Container: always `ow-container`, never ad-hoc `max-w-*`
 - Pattern: `<section bg-*><div ow-container>{content}</div></section>`
 - Conditional classes: always `cn()` from `@/lib/utils`
-- No inline styles for static values — use Tailwind arbitrary values
+- No inline styles for static values - use Tailwind arbitrary values
 - Dynamic runtime values only: `style={{ width: \`${pct}%\` }}`
 
 ---
@@ -284,18 +284,18 @@ Check here before creating anything new.
 `heading`, `input`, `navigation-menu`, `page-container`, `popover`, `select`,
 `separator`, `sheet`, `sidebar`, `skeleton`, `stack`, `switch`, `text`, `tooltip`
 
-### `Text` — body copy
+### `Text` - body copy
 ```tsx
 <Text variant="body|body-sm|body-md|body-lg|label|nav" as="p|span|div|li" />
 ```
 
-### `Heading` — display headings
+### `Heading` - display headings
 ```tsx
 <Heading as="h1|h2|h3|h4|h5|h6" variant="hero|section|display-md|card-heading|ui" />
-// variant is optional — omit to use element's default base style
+// variant is optional - omit to use element's default base style
 ```
 
-### `Stack` — flex layout
+### `Stack` - flex layout
 ```tsx
 <Stack direction="col|row" gap={4} align="start|center|end|stretch" justify="start|between|..." wrap={false} as="div" />
 ```

@@ -36,7 +36,7 @@ export const Overview: Story = {
                 <OwAmount amount={399000} unit="vnd" period="year" medium/>
                 <OwAmount amount={0} unit="vnd" medium/>
             </OwStorySection>
-            <OwStorySection title="Compact (k) — 100k, 399k, 1tr, 1.5tr">
+            <OwStorySection title="Compact (k) - 100k, 399k, 1tr, 1.5tr">
                 <div className="flex flex-col gap-1">
                     <OwAmount amount={100000} unit="k" period="year"/>
                     <OwAmount amount={1000000} unit="k" period="year"/>
@@ -57,7 +57,7 @@ export const Overview: Story = {
                 <OwAmount null unit="k" period="month"/>
                 <OwAmount nullLabel="Chưa có" unit="vnd" period="year"/>
             </OwStorySection>
-            <OwStorySection title="Text only — no style classes">
+            <OwStorySection title="Text only - no style classes">
                 <OwAmount amount={399000} unit="vnd" period="year" textOnly/>
                 <OwAmount amount={0} textOnly/>
                 <OwAmount amount={1500000} unit="k" period="year" textOnly/>

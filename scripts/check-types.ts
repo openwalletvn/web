@@ -25,7 +25,7 @@ void (async () => {
         console.log('✓ API types in sync')
         process.exit(0)
     } else if (result === 'stale') {
-        console.error('✗ API types are stale — run: pnpm generate:types')
+        console.error('✗ API types are stale - run: pnpm generate:types')
         process.exit(1)
     } else {
         console.error('✗ Could not reach API to check types')

@@ -24,7 +24,7 @@ export const remarkAutoLink: Plugin<[], Root> = () => (tree) => {
       return [
         pattern,
         (match: string) => {
-          if (linked.has(keyword)) return false; // already linked — leave as-is
+          if (linked.has(keyword)) return false; // already linked - leave as-is
           linked.add(keyword);
           const linkNode: Link = {
             type: 'link',

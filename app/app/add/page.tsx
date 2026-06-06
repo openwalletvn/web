@@ -28,7 +28,7 @@ export default function AddCardPage() {
  const [banksLoading, setBanksLoading] = useState(false);
  const [cardsLoading, setCardsLoading] = useState(false);
 
- // Owned card IDs — used by CardSelectionStep to show"already in wallet" indicator.
+ // Owned card IDs - used by CardSelectionStep to show"already in wallet" indicator.
  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db]);
  const ownedCardIds = useMemo(
  () => new Set((walletCards ?? []).map((c) => c.cardId)),

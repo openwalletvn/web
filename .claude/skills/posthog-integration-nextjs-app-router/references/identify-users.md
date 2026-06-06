@@ -4,7 +4,7 @@ Linking events to specific users enables you to build a full picture of how they
 
 This is straightforward to do when [capturing backend events](/docs/product-analytics/capture-events?tab=Node.js.md), as you associate events to a specific user using a `distinct_id`, which is a required argument.
 
-However, in the frontend of a [web](/docs/libraries/js/features#capturing-events.md) or [mobile app](/docs/libraries/ios#capturing-events.md), a `distinct_id` is not a required argument — PostHog's SDKs will generate an anonymous `distinct_id` for you automatically and you can capture events anonymously, provided you use the appropriate [configuration](/docs/libraries/js/features#capturing-anonymous-events.md).
+However, in the frontend of a [web](/docs/libraries/js/features#capturing-events.md) or [mobile app](/docs/libraries/ios#capturing-events.md), a `distinct_id` is not a required argument - PostHog's SDKs will generate an anonymous `distinct_id` for you automatically and you can capture events anonymously, provided you use the appropriate [configuration](/docs/libraries/js/features#capturing-anonymous-events.md).
 
 To link events to specific users, call `identify`:
 

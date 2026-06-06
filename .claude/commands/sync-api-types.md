@@ -28,11 +28,11 @@ diff /tmp/api-types.before.ts lib/api-types.generated.ts
 
 Parse the diff and extract structured changes per schema:
 
-- **Added fields** — `+` lines inside a schema block
-- **Removed fields** — `-` lines inside a schema block
-- **New schemas** — entire new `SchemaName: {` blocks
-- **Removed schemas** — entire deleted blocks
-- **Changed types** — field type changed (e.g. `string` → `string | null`)
+- **Added fields** - `+` lines inside a schema block
+- **Removed fields** - `-` lines inside a schema block
+- **New schemas** - entire new `SchemaName: {` blocks
+- **Removed schemas** - entire deleted blocks
+- **Changed types** - field type changed (e.g. `string` → `string | null`)
 
 Report changes grouped by schema name. Example format:
 
@@ -65,13 +65,13 @@ For **type changes** (e.g. now nullable): find usages that assume non-null → f
 For each finding, output a concrete suggestion. Example:
 
 **`Bank.group` added (optional `string`)**
-- `components/ow-ui/ow-bank-row.tsx` — consider displaying group badge if `bank.group` is set
-- `components/ow-ui/ow-bank-image.tsx` — no action needed (image-only component)
-- `app/ngan-hang/[id]/page.tsx` — consider adding group to bank detail metadata
-- `components/cards/cards-filter.tsx` — consider grouping bank filter options by `group`
+- `components/ow-ui/ow-bank-row.tsx` - consider displaying group badge if `bank.group` is set
+- `components/ow-ui/ow-bank-image.tsx` - no action needed (image-only component)
+- `app/ngan-hang/[id]/page.tsx` - consider adding group to bank detail metadata
+- `components/cards/cards-filter.tsx` - consider grouping bank filter options by `group`
 
 **`Bank.legacy_code` removed**
-- `lib/some-util.ts:42` — accesses `bank.legacy_code`, will TypeScript error → remove or replace
+- `lib/some-util.ts:42` - accesses `bank.legacy_code`, will TypeScript error → remove or replace
 
 ### 6. Type-check
 

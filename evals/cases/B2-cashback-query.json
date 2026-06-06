@@ -1,0 +1,12 @@
+{
+  "id": "B2-cashback-query",
+  "name": "B2: cashback rate query for specific card and merchant",
+  "description": "User asks exact cashback for their card on a specific merchant. Model must call find-card then cashback-card, not invent a number.",
+  "message": "Thẻ Sacombank Cashback hoàn tiền bao nhiêu phần trăm khi mua hàng trên Shopee?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions 'sacombank' AND mentions a percentage or cashback rate AND does NOT say 'tôi không biết' without calling a tool AND length > 60"
+  },
+  "tags": ["cat-b", "cashback-rate", "specific-card"]
+}

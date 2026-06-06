@@ -1,0 +1,12 @@
+{
+  "id": "guard-nonexistent-bank",
+  "name": "guard: model must not hallucinate cards for fake bank",
+  "description": "User asks about a bank that does not exist. Model must say not found, not invent cards.",
+  "message": "Ngân hàng ABCBank Việt Nam có thẻ tín dụng gì không?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response does NOT recommend specific card names for ABCBank AND indicates bank was not found or does not exist"
+  },
+  "tags": ["guard", "hallucination", "fake-bank"]
+}

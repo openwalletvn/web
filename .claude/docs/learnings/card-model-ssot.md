@@ -13,13 +13,13 @@ This means `CardModel` can only be passed as a prop within RSC subtrees. Client 
 **RSC → client (`'use client'`):** pass raw `Card`. Client wraps internally.
 
 ```ts
-// RSC page — wrap once for RSC children
+// RSC page - wrap once for RSC children
 const cardModel = new CardModel(card);
 
-// RSC child — receives CardModel ✓
+// RSC child - receives CardModel ✓
 <CardDetailHeader card={cardModel} />
 
-// Client child — receives raw Card ✓ (wraps CardModel inside)
+// Client child - receives raw Card ✓ (wraps CardModel inside)
 <CardDetailBillingCycle card={card} />
 <OwCardImage card={card} />
 <CardMasonry cards={rawCards} />
@@ -50,11 +50,11 @@ const cardModel = new CardModel(card);
 ## Where CardModel is constructed
 
 - **RSC page** (`the/[slug]/page.tsx`): `new CardModel(card)` once → passed to RSC detail children
-- **Client components**: each constructs `new CardModel(card)` at top of function body for computation only (`getNextDueDate`, `getRateDisplay`, `buildSlugRateMap` etc.) — not for prop passing
+- **Client components**: each constructs `new CardModel(card)` at top of function body for computation only (`getNextDueDate`, `getRateDisplay`, `buildSlugRateMap` etc.) - not for prop passing
 
 ## toRaw()
 
-`cardModel.toRaw()` — returns underlying `Card`. Use at:
+`cardModel.toRaw()` - returns underlying `Card`. Use at:
 - `lib/page-meta/` builders
 - `ChatContextSetter` context object
 - Passing from RSC `CardModel` to a client component prop (e.g. `card-detail-intents` → `OwCardIntentBadges`)
@@ -65,4 +65,4 @@ New `Card` field needed? Add getter to `lib/card-model.ts` under "Raw data gette
 
 ## Lesson learned
 
-Check `'use client'` markers before designing prop types. If a component or its parent subtree is client-side, `CardModel` cannot be a prop — plan for raw `Card` at that boundary from the start.
+Check `'use client'` markers before designing prop types. If a component or its parent subtree is client-side, `CardModel` cannot be a prop - plan for raw `Card` at that boundary from the start.

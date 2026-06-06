@@ -3,7 +3,7 @@ import path from 'path'
 import { MetadataRoute } from 'next'
 import { getComparePairs } from '@/lib/api'
 import { apiFetch } from '@/lib/api'
-// lib/compare-mdx + content/so-sanh/ MDX files — unused, remove when cleaning up
+// lib/compare-mdx + content/so-sanh/ MDX files - unused, remove when cleaning up
 import { getTool } from '@/lib/tools'
 
 export const dynamic = 'force-static'

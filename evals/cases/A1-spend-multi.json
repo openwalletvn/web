@@ -1,0 +1,12 @@
+{
+  "id": "A1-spend-multi",
+  "name": "A1: recommend card for multi-category spend profile",
+  "description": "User gives detailed spend breakdown. Model should call rank-cards-for-spend with spend object.",
+  "message": "Tôi chi 3 triệu/tháng trên Shopee, 1 triệu ăn uống, và 2 triệu đổ xăng. Thẻ nào hoàn tiền tốt nhất cho tôi?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response length > 100 chars AND mentions 'hoàn tiền' or 'cashback' AND mentions a specific card or bank"
+  },
+  "tags": ["cat-a", "spend-profile", "rank", "multi-category"]
+}

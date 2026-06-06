@@ -14,7 +14,7 @@ const CONFIG: IntentCategoryConfig = {
     intro: 'Thẻ ngân hàng dành riêng cho doanh nghiệp khác thẻ cá nhân ở hạn mức, điều kiện mở thẻ và khả năng quản lý chi tiêu nhóm. Doanh nghiệp vừa và nhỏ có thể mở từ 1 thẻ, trong khi công ty lớn thường phát hành thẻ phụ cho từng bộ phận. OpenWallet tổng hợp thẻ doanh nghiệp từ các ngân hàng Việt Nam, bao gồm hạn mức, phí thường niên và điều kiện mở thẻ cho hộ kinh doanh và công ty TNHH/cổ phần.',
     faqs: [
         {q: 'Doanh nghiệp mới thành lập có mở được thẻ công ty không?', a: 'Có, nhưng thường cần tài khoản doanh nghiệp ít nhất 3–6 tháng và có doanh thu chứng minh với một số ngân hàng.'},
-        {q: 'Thẻ doanh nghiệp có hạn mức cao hơn thẻ cá nhân không?', a: 'Thường có — hạn mức tính trên tài chính doanh nghiệp, không phải thu nhập cá nhân.'},
+        {q: 'Thẻ doanh nghiệp có hạn mức cao hơn thẻ cá nhân không?', a: 'Thường có - hạn mức tính trên tài chính doanh nghiệp, không phải thu nhập cá nhân.'},
         {q: 'Hộ kinh doanh cá thể có mở thẻ doanh nghiệp được không?', a: 'Có, cần giấy phép kinh doanh và tài khoản doanh nghiệp riêng biệt với tài khoản cá nhân.'},
         {q: 'Chi tiêu bằng thẻ doanh nghiệp có được khấu trừ thuế không?', a: 'Có thể, nếu có hóa đơn VAT hợp lệ cho từng giao dịch. Tham khảo kế toán để đảm bảo đúng quy định.'},
     ],

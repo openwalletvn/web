@@ -101,7 +101,7 @@ export default function CardDetailPage() {
  </div>
  <div className="border-t border-dashed border-slate-200 mb-6" />
 
- {/* Two-column form — key forces remount when credit account loads */}
+ {/* Two-column form - key forces remount when credit account loads */}
  {catalogCard && (
  <CardDetailForm
  key={`${walletCard.id}-${creditAccount?.id ?? 'nc'}`}

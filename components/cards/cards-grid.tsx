@@ -59,7 +59,7 @@ function CardsGridInner({
  const [localFee, setLocalFee] = useState<string | null>(null);
  const [localTier, setLocalTier] = useState<string | null>(null);
 
- // Active filter values — from URL params or local state
+ // Active filter values - from URL params or local state
  const type = (useUrlState ? searchParams.get('type') : localType) as CardType | null;
  const network = useUrlState ? searchParams.get('network') : localNetwork;
  const bankId = useUrlState ? searchParams.get('bank') : localBankId;

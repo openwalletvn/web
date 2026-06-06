@@ -70,7 +70,7 @@ export function Nav2() {
                     </NavigationMenuItem>
                 ))}
 
-                {/* Thẻ — mega menu */}
+                {/* Thẻ - mega menu */}
                 <NavigationMenuItem>
                     <NavigationMenuTrigger
                         className={cn(triggerClass, cardsActive && 'text-brand-red')}

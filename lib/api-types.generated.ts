@@ -1,6 +1,6 @@
 // AUTO-GENERATED — do not edit manually
 // Run: pnpm generate:types
-// Source: http://localhost:8000/openapi.json
+// Source: https://api.openwallet.vn/openapi.json
 
 export interface paths {
     "/banks": {

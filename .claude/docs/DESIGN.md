@@ -1,4 +1,4 @@
-# DESIGN TOKENS — Openwallet Homepage
+# DESIGN TOKENS - Openwallet Homepage
 
 > Extracted from Figma CSS export. Use this as the source of truth for variables, styles, and typography setup.
 
@@ -42,7 +42,7 @@
 
 ## Typography
 
-> **Implementation SSOT: `app/typography.css`** — all font sizes, weights, line heights, and breakpoints live there. This section covers intent and font families only.
+> **Implementation SSOT: `app/typography.css`** - all font sizes, weights, line heights, and breakpoints live there. This section covers intent and font families only.
 
 ### Font Families
 
@@ -65,7 +65,7 @@ font-family: 'Inter Tight', sans-serif;
 | `h5`, `.heading-5` | Cal Sans | UI label heading |
 | `h6`, `.heading-6` | Cal Sans | Small label heading |
 
-Headings are responsive — all scale at the same breakpoints. See `app/typography.css`.
+Headings are responsive - all scale at the same breakpoints. See `app/typography.css`.
 
 ### Body Scale
 

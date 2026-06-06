@@ -4,11 +4,11 @@ Create a `.stories.tsx` file for a component. The user will pass a component pat
 
 ## Steps
 
-1. **Find the component** — if user passes just a name (e.g. `card-image`), search `components/` for the file. If multiple matches, ask which one.
+1. **Find the component** - if user passes just a name (e.g. `card-image`), search `components/` for the file. If multiple matches, ask which one.
 
-2. **Read the component** — understand its props interface, variants, required vs optional props.
+2. **Read the component** - understand its props interface, variants, required vs optional props.
 
-3. **Generate the story file** — create `<same-dir>/<filename>.stories.tsx` following the structure below.
+3. **Generate the story file** - create `<same-dir>/<filename>.stories.tsx` following the structure below.
 
 ## Story structure
 
@@ -72,7 +72,7 @@ export const VariantB: Story = {
 
 | Situation | Use |
 |-----------|-----|
-| Props are boolean / enum / string | `args` — Controls work |
+| Props are boolean / enum / string | `args` - Controls work |
 | Props are objects, ReactNode, or asChild pattern | `render: () =>` |
 | Overview story (always) | `render: () =>` |
 | Component has no props | `render: () => <ComponentName />` |
@@ -97,13 +97,13 @@ Map folder → Storybook group:
 
 ## Story rules
 
-- `Overview` is always the **first export** — autodocs renders it as the Primary hero at top
-- `includePrimary={false}` is set globally in `.storybook/preview.tsx` — no double render
+- `Overview` is always the **first export** - autodocs renders it as the Primary hero at top
+- `includePrimary={false}` is set globally in `.storybook/preview.tsx` - no double render
 - Use realistic Vietnamese data in args (card names, bank names, Vietnamese text)
 - Cover key visual states: default, empty/null props, active/inactive, loading (if shimmer exists)
 - If component requires API data or complex objects, import type from the relevant `lib/api-types.ts` or mock a minimal object
-- Never mock Next.js router — `@storybook/nextjs-vite` handles it automatically
-- Never mock `apiFetch` — if component fetches data, note it in a comment and use a static prop version if available
+- Never mock Next.js router - `@storybook/nextjs-vite` handles it automatically
+- Never mock `apiFetch` - if component fetches data, note it in a comment and use a static prop version if available
 
 ## After creating
 

@@ -3,10 +3,29 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AssistantRuntimeProvider } from '@assistant-ui/react';
 import { useChatRuntime, AssistantChatTransport } from '@assistant-ui/react-ai-sdk';
+import { jsonSchema } from 'ai';
 import { Thread } from '@/components/assistant-ui/thread';
 import { listConversations, saveConversation } from '@/lib/chat/conversation-store';
+import { getUserId, getSessionId } from '@/lib/chat/anonymous-user';
 import type { PageContext } from '@/lib/chat/page-context';
 import type { UIMessage } from 'ai';
+
+const chatMessageMetadataSchema = jsonSchema<{ usage?: { inputTokens?: number; outputTokens?: number; totalTokens?: number; reasoningTokens?: number; cachedInputTokens?: number }; modelId?: string }>({
+    type: 'object',
+    properties: {
+        usage: {
+            type: 'object',
+            properties: {
+                inputTokens: { type: 'number' },
+                outputTokens: { type: 'number' },
+                totalTokens: { type: 'number' },
+                reasoningTokens: { type: 'number' },
+                cachedInputTokens: { type: 'number' },
+            },
+        },
+        modelId: { type: 'string' },
+    },
+});
 
 export function ChatRuntime({
     convoId,
@@ -45,8 +64,13 @@ export function ChatRuntime({
     const runtime = useChatRuntime({
         transport: new AssistantChatTransport({
             api: '/api/chat',
-            body: pageContext ? { pageContext } : undefined,
+            body: {
+                ...(pageContext ? { pageContext } : {}),
+                userId: getUserId(),
+                sessionId: getSessionId(),
+            },
         }),
+        messageMetadataSchema: chatMessageMetadataSchema,
         messages: initialMessages,
         onFinish: ({ messages }) => {
             setChatError(null);

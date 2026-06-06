@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(*)",
-      "mcp__*",
+      "mcp__figma-console__*",
+      "mcp__langfuse-docs__*",
+      "mcp__plugin_context7_context7__*",
+      "mcp__posthog__*",
       "WebFetch(domain:localhost)"
     ]
   },

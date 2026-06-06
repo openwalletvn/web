@@ -36,7 +36,7 @@ Create `.env.local`:
 OPENWALLET_API_KEY=your_api_key_here
 ```
 
-`OPENWALLET_API_KEY` is a server-only build secret — never use `NEXT_PUBLIC_` prefix.
+`OPENWALLET_API_KEY` is a server-only build secret - never use `NEXT_PUBLIC_` prefix.
 
 ## Deploy
 
@@ -54,4 +54,4 @@ Vercel. SSR/SSG with dynamic routes. Data fetched at build time where possible.
 
 ## License
 
-PolyForm Noncommercial 1.0.0 — study and personal use only, no commercial forks.
+PolyForm Noncommercial 1.0.0 - study and personal use only, no commercial forks.

@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import { ChatPageClient } from '@/components/chat/chat-page-client';
 
 export const metadata: Metadata = {
-    title: 'Tư vấn thẻ ngân hàng | OpenWallet',
+    title: 'Owie - Trợ lý tư vấn thẻ AI | OpenWallet',
     description:
-        'Hỏi chuyên gia AI về thẻ tín dụng và thẻ ghi nợ tại Việt Nam. So sánh thẻ, tư vấn lựa chọn phù hợp nhu cầu chi tiêu của bạn.',
+        'Hỏi Owie về thẻ ngân hàng Việt Nam: so sánh thẻ, tính hoàn tiền, tìm thẻ phù hợp nhu cầu chi tiêu. Miễn phí, không cần đăng ký.',
     openGraph: {
-        title: 'Tư vấn thẻ ngân hàng AI | OpenWallet',
-        description: 'Hỏi chuyên gia AI về thẻ ngân hàng Việt Nam. Miễn phí, không cần đăng ký.',
+        title: 'Owie - Trợ lý tư vấn thẻ AI | OpenWallet',
+        description: 'Hỏi Owie về thẻ ngân hàng Việt Nam. Miễn phí, không cần đăng ký.',
         url: 'https://openwallet.vn/chat',
     },
 };

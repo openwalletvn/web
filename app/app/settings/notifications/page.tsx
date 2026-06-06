@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { IconBrandDiscord, IconDeviceFloppy, IconCheck, IconSend, IconLock } from '@tabler/icons-react';
+import { IconBrandDiscord, IconDeviceFloppy, IconCheck, IconLock } from '@tabler/icons-react';
 import { appDb, type NotificationAdapter } from '@/lib/app-db';
-import { testAdapter } from '@/lib/notify-api';
 import {
   Select,
   SelectContent,
@@ -33,7 +32,6 @@ export default function NotificationsSettingsPage() {
   );
   const [webhookUrl, setWebhookUrl] = useState('');
   const [adapterSaved, setAdapterSaved] = useState(false);
-  const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'ok' | 'failed'>('idle');
 
   useEffect(() => {
     if (discordAdapter?.config?.webhook_url) {
@@ -49,8 +47,6 @@ export default function NotificationsSettingsPage() {
       enabled: true,
       daysBefore: discordAdapter?.daysBefore ?? 1,
       notifyHour: discordAdapter?.notifyHour ?? 8,
-      lastStatus: discordAdapter?.lastStatus,
-      lastCheckedAt: discordAdapter?.lastCheckedAt,
     };
     await appDb.notificationAdapters.put(adapter);
     setAdapterSaved(true);
@@ -58,27 +54,6 @@ export default function NotificationsSettingsPage() {
     setTimeout(() => setAdapterSaved(false), 2000);
   }
 
-  async function handleTestAdapter() {
-    if (!webhookUrl.trim()) return;
-    setTestStatus('loading');
-    try {
-      await testAdapter('discord', webhookUrl.trim());
-      setTestStatus('ok');
-      await appDb.notificationAdapters.update('discord', {
-        lastStatus: 'ok',
-        lastCheckedAt: new Date().toISOString(),
-      });
-      posthog.capture('adapter_tested', { adapter: 'discord', result: 'ok' });
-    } catch {
-      setTestStatus('failed');
-      await appDb.notificationAdapters.update('discord', {
-        lastStatus: 'failed',
-        lastCheckedAt: new Date().toISOString(),
-      });
-      posthog.capture('adapter_tested', { adapter: 'discord', result: 'failed' });
-    }
-    setTimeout(() => setTestStatus('idle'), 3000);
-  }
 
   async function handleDaysBeforeChange(value: string) {
     await appDb.notificationAdapters.update('discord', { daysBefore: Number(value) });
@@ -86,15 +61,6 @@ export default function NotificationsSettingsPage() {
 
   async function handleNotifyHourChange(value: string) {
     await appDb.notificationAdapters.update('discord', { notifyHour: Number(value) });
-  }
-
-  function formatTime(iso: string) {
-    const d = new Date(iso);
-    const hh = d.getHours().toString().padStart(2, '0');
-    const mm = d.getMinutes().toString().padStart(2, '0');
-    const dd = d.getDate().toString().padStart(2, '0');
-    const MM = (d.getMonth() + 1).toString().padStart(2, '0');
-    return `${hh}:${mm} ${dd}/${MM}`;
   }
 
   return (
@@ -114,14 +80,6 @@ export default function NotificationsSettingsPage() {
         />
         <div className="flex gap-2">
           <button
-            onClick={handleTestAdapter}
-            disabled={!webhookUrl.trim() || testStatus === 'loading'}
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-slate-300 rounded-sm text-sm text-slate-700 hover:border-slate-500 transition-colors disabled:opacity-40"
-          >
-            <IconSend size={14} />
-            {testStatus === 'loading' ? 'Đang gửi...' : testStatus === 'ok' ? 'Thành công!' : testStatus === 'failed' ? 'Thất bại' : 'Test'}
-          </button>
-          <button
             onClick={handleSaveAdapter}
             disabled={!webhookUrl.trim()}
             className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-slate-300 rounded-sm text-sm text-slate-700 hover:border-slate-500 transition-colors disabled:opacity-40"
@@ -130,15 +88,6 @@ export default function NotificationsSettingsPage() {
             {adapterSaved ? 'Đã lưu' : 'Lưu'}
           </button>
         </div>
-        {discordAdapter?.lastCheckedAt && (
-          <p className="text-sm mt-3">
-            {discordAdapter.lastStatus === 'ok' ? (
-              <span className="text-green-600">Gửi thành công lúc {formatTime(discordAdapter.lastCheckedAt)}</span>
-            ) : (
-              <span className="text-amber-600">Gửi thất bại lúc {formatTime(discordAdapter.lastCheckedAt)}</span>
-            )}
-          </p>
-        )}
       </div>
 
       {/* Global reminder preferences */}

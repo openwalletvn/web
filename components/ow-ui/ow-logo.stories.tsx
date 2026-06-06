@@ -9,7 +9,7 @@ const meta: Meta<typeof OwLogo> = {
     parameters: {
         docs: {
             description: {
-                component: 'Site logo — icon or full lockup, black/white/red, optionally wrapped in a link.',
+                component: 'Site logo - icon or full lockup, black/white/red, optionally wrapped in a link.',
             },
         },
     },
@@ -26,15 +26,15 @@ export const Overview: Story = {
             <OwStorySection title="Icon">
                 <OwLogo variant="icon"/>
             </OwStorySection>
-            <OwStorySection title="Full — black">
+            <OwStorySection title="Full - black">
                 <OwLogo variant="full" color="black"/>
             </OwStorySection>
-            <OwStorySection title="Full — white">
+            <OwStorySection title="Full - white">
                 <div className="bg-gray-900 p-4 rounded">
                     <OwLogo variant="full" color="white"/>
                 </div>
             </OwStorySection>
-            <OwStorySection title="Full — red">
+            <OwStorySection title="Full - red">
                 <OwLogo variant="full" color="red"/>
             </OwStorySection>
             <OwStorySection title="No link (display only)">

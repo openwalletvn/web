@@ -140,7 +140,7 @@ export async function exportFullBackup(): Promise<void> {
   downloadJson(backup, buildFileName(backup.account?.id, new Date()));
 }
 
-/** Delete all local data — wallets, cards, account, config, everything. */
+/** Delete all local data - wallets, cards, account, config, everything. */
 export async function clearAllData(): Promise<void> {
   const existingWallets = await appDb.wallets.toArray();
   await Promise.all(

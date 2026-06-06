@@ -16,7 +16,7 @@ List every modified, deleted, and untracked file. Do NOT stage anything yet.
 
 ### 2. Group files logically
 
-Analyze the files and group them by **semantic intent** — what changed together for the same reason. Each group becomes one commit.
+Analyze the files and group them by **semantic intent** - what changed together for the same reason. Each group becomes one commit.
 
 Grouping heuristics (in priority order):
 - Same feature/component → one commit
@@ -38,9 +38,9 @@ Order commits so each builds on the previous. General order:
 
 For each group, in order:
 
-1. `git add <specific files>` — never `git add .` or `git add -A`
+1. `git add <specific files>` - never `git add .` or `git add -A`
 2. Craft commit message:
-   - Subject: `<type>(<scope>): <what changed>` — ≤50 chars, imperative, lowercase after colon
+   - Subject: `<type>(<scope>): <what changed>` - ≤50 chars, imperative, lowercase after colon
    - Body: only when the **why** is non-obvious. One short line max.
    - Types: `feat` `fix` `refactor` `style` `chore` `docs` `test` `perf` `build` `ci`
    - Scope: filename stem, component name, or area (e.g. `ow-logo`, `storybook`, `header`)
@@ -56,7 +56,7 @@ After all commits, output a table:
 
 ## Rules
 
-- Never use `git add .` or `git add -A` — add files explicitly by name
+- Never use `git add .` or `git add -A` - add files explicitly by name
 - Never skip `--no-verify` unless user explicitly asks
 - Never commit files that look like secrets (`.env`, credentials)
 - If a file's intent is ambiguous, ask before grouping

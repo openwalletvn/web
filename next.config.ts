@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
         destination: cardMatchHref,
         permanent: true,
       },
-      // category paths — must be before generic /cards/:slug* rule
+      // category paths - must be before generic /cards/:slug* rule
       { source: '/cards', destination: '/the', permanent: true },
       { source: '/cards/credit', destination: '/loai-the/the-tin-dung', permanent: true },
       { source: '/cards/debit', destination: '/loai-the/the-ghi-no', permanent: true },
@@ -50,18 +50,18 @@ const nextConfig: NextConfig = {
       { source: '/cards/unionpay', destination: '/the', permanent: true },
       { source: '/cards/networks/:path*', destination: '/the', permanent: true },
       { source: '/cards/co-branded/:path*', destination: '/the', permanent: true },
-      // generic card slug — after category rules
+      // generic card slug - after category rules
       {
         source: '/cards/:slug*',
         destination: '/the/:slug*',
         permanent: true,
       },
-      // card type pages — old flat URLs redirect to new /loai-the/* structure
+      // card type pages - old flat URLs redirect to new /loai-the/* structure
       { source: '/the-tin-dung', destination: '/loai-the/the-tin-dung', permanent: true },
       { source: '/the-ghi-no', destination: '/loai-the/the-ghi-no', permanent: true },
       { source: '/the-hybrid', destination: '/loai-the/the-hybrid', permanent: true },
       { source: '/cards/hybrid', destination: '/loai-the/the-hybrid', permanent: true },
-      // persona pages — old flat URLs redirect to nested structure
+      // persona pages - old flat URLs redirect to nested structure
       { source: '/the-shopee', destination: '/linh-vuc/shopee', permanent: true },
       { source: '/the-sieu-thi', destination: '/linh-vuc/sieu-thi', permanent: true },
       { source: '/the-chi-tieu-dich-vu-so', destination: '/linh-vuc/dich-vu-so', permanent: true },
@@ -78,6 +78,8 @@ const nextConfig: NextConfig = {
         destination: '/ngan-hang/:slug*',
         permanent: true,
       },
+      { source: '/openwallet-chat', destination: '/owie-chat', permanent: true },
+      { source: '/openwallet-mcp', destination: '/mcp', permanent: true },
       { source: '/blog', destination: '/tin-tuc', permanent: true },
       {
         source: '/blog/:slug*',

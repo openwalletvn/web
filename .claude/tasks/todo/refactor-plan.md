@@ -16,7 +16,7 @@ Web codebase has old features, mixed components, duplicated UI across features.
 | Card Compare / Battle | Data ready from API | UI needs update |
 | OpenWallet Chat | API+MCP ready | Needs evals, system prompt, more testing |
 | OpenWallet MCP | Public, dev mode | Fine as-is, low usage |
-| Wallet App (`/app/app/`) | **Frozen** | Competitor shipped it, ROI low — revisit later |
+| Wallet App (`/app/app/`) | **Frozen** | Competitor shipped it, ROI low - revisit later |
 | SEO Persona Pages | Partial | Hardcoded, not driven by API personas |
 
 ---
@@ -24,16 +24,16 @@ Web codebase has old features, mixed components, duplicated UI across features.
 ## Phase 0: Triage & Archive
 **Goal:** Remove noise. Nothing new can be built cleanly until dead code is gone.
 
-- [x] Delete `_draft/` folder — 18 dead intent category pages, zero references in codebase
-- [x] Gate `/app/app/*` wallet routes — `app/app/layout.tsx` calls `notFound()` unless `WALLET_ENABLED=true`; shell in `app/app/app-shell.tsx`
-- [x] Update `CLAUDE.md` — documented frozen wallet, chat gate, so-sanh-404-redirect purpose
+- [x] Delete `_draft/` folder - 18 dead intent category pages, zero references in codebase
+- [x] Gate `/app/app/*` wallet routes - `app/app/layout.tsx` calls `notFound()` unless `WALLET_ENABLED=true`; shell in `app/app/app-shell.tsx`
+- [x] Update `CLAUDE.md` - documented frozen wallet, chat gate, so-sanh-404-redirect purpose
 
 ---
 
 ## Phase 1: Design System SSOT
 **Goal:** Single reference doc so LLMs + devs pick right component every time. No new feature ships duplicate UI.
 
-- [ ] Create `.claude/docs/design-system.md` — the LLM reference doc:
+- [ ] Create `.claude/docs/design-system.md` - the LLM reference doc:
   - Card variant usage rules (`card-tile` = grid, `card-row` = list, `card-slim` = compact, `card-inline` = inline embed)
   - Badge component map (when to use NetworkBadge vs CardTypeBadge vs BankDisplay)
   - Page layout templates (marketing shell vs app shell vs blog shell)
@@ -45,9 +45,9 @@ Web codebase has old features, mixed components, duplicated UI across features.
   - `NetworkBadge`, `CardTypeBadge`, `BankBadge`, `ContactlessBadge`
   - All in `components/shared/badges/`
 - [ ] Add missing primitives to `components/ui/`:
-  - `text.tsx` — typography primitive with variant prop
-  - `heading.tsx` — h1-h4 with size variant
-  - `stack.tsx` — flex layout primitive (replaces raw div+flex)
+  - `text.tsx` - typography primitive with variant prop
+  - `heading.tsx` - h1-h4 with size variant
+  - `stack.tsx` - flex layout primitive (replaces raw div+flex)
 
 ---
 
@@ -57,22 +57,22 @@ Web codebase has old features, mixed components, duplicated UI across features.
 - [ ] Reorganize `components/` into clean domain folders:
   ```
   components/
-  ├── ui/          (primitives — already good, add Text/Heading/Stack)
-  ├── shared/      (cross-domain: badges, bank display — consolidate here)
+  ├── ui/          (primitives - already good, add Text/Heading/Stack)
+  ├── shared/      (cross-domain: badges, bank display - consolidate here)
   ├── cards/       (keep, but merge variants into single CardDisplay)
   ├── compare/     (reduce 10 → 3 components)
   ├── match/       (rename/move from marketing/card-match-finder)
   ├── chat/        (keep as-is)
   ├── blog/        (keep as-is)
   ├── layout/      (keep as-is)
-  └── wallet/      (keep as-is — frozen but organized)
+  └── wallet/      (keep as-is - frozen but organized)
   ```
 - [ ] Reduce compare feature: 10 components → 3
-  - `CompareBar` — state management + card selection UI
-  - `CompareTable` — display only
-  - `CompareCard` — individual card in comparison
+  - `CompareBar` - state management + card selection UI
+  - `CompareTable` - display only
+  - `CompareCard` - individual card in comparison
   - Delete: `compare-template.tsx` (inline logic into CompareBar), `record-compare-visit.tsx` (inline into CompareBar)
-- [ ] Split `card-form-dialog.tsx` (23.5K) — already partially split in `wallet/add/`
+- [ ] Split `card-form-dialog.tsx` (23.5K) - already partially split in `wallet/add/`
   - Use `BankSelectionStep`, `CardSelectionStep`, `PaymentMethodStep` as composition
   - Wrapper stays, but delegates to step components
 - [ ] Split `card-detail-form.tsx` (18.8K) same pattern
@@ -82,15 +82,15 @@ Web codebase has old features, mixed components, duplicated UI across features.
 ## Phase 3: SEO / Persona Consolidation
 **Goal:** Data-driven SEO pages. Personas from API → pages. No hardcoded links.
 
-- [ ] Audit persona list from API — call `getPersonas()`, document all slugs + intents
+- [ ] Audit persona list from API - call `getPersonas()`, document all slugs + intents
 - [ ] Create dynamic route `app/(marketing)/the/[persona-slug]/page.tsx`
   - Replaces 14 hardcoded `the-*` pages
   - Each page: persona data + ranked cards by persona from API
   - generateStaticParams → build all persona pages at build time (SSG)
 - [ ] Update `featured-card-categories.tsx` → pull from personas API, not hardcoded
-- [ ] Define firm SEO page list in `CLAUDE.md` — which personas get dedicated pages + sitemap
+- [ ] Define firm SEO page list in `CLAUDE.md` - which personas get dedicated pages + sitemap
 
-### Deprecated SEO collection pages (404 — restore when Phase 3 done)
+### Deprecated SEO collection pages (404 - restore when Phase 3 done)
 These old URLs were indexed by Google, now 404. Need canonical redirects or page revival:
 
 | Old URL | Was | Redirect target (Phase 3) |
@@ -133,24 +133,24 @@ These old URLs were indexed by Google, now 404. Need canonical redirects or page
 **Goal:** Update compare/battle UI using consolidated components + design tokens.
 
 - [ ] Redesign compare page using new `CardDisplay`, `CompareTable`, unified tokens
-- [ ] Update card battle `[pair]` page — same design system
+- [ ] Update card battle `[pair]` page - same design system
 - [ ] Add persona-aware suggestions to compare flow (API ready)
 
 ---
 
 ## What NOT to touch (yet)
 
-- `components/wallet/` internals — frozen feature
-- `lib/api.ts` — clean, centralized, leave alone
-- Chat components — wait for evals
-- Card detail page sections — working, low priority
-- `so-sanh-404-redirect.tsx` — active, handles legacy URL redirects
+- `components/wallet/` internals - frozen feature
+- `lib/api.ts` - clean, centralized, leave alone
+- Chat components - wait for evals
+- Card detail page sections - working, low priority
+- `so-sanh-404-redirect.tsx` - active, handles legacy URL redirects
 
 ---
 
 ## Files to reference before any card/UI task
 
 - `.claude/docs/design-system.md` (create in Phase 1)
-- `components/ui/` — check here first before creating new primitives
-- `lib/api.ts` — types + fetch wrappers
+- `components/ui/` - check here first before creating new primitives
+- `lib/api.ts` - types + fetch wrappers
 - `components/cards/variants/card-display.tsx` (after Phase 1)

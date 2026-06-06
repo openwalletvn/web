@@ -1,0 +1,12 @@
+{
+  "id": "A1-spend-basic",
+  "name": "A1: recommend card for basic spend profile",
+  "description": "User describes monthly spend. Model should call rank-cards-for-spend and return card recommendations.",
+  "message": "Tôi chi khoảng 5 triệu mỗi tháng, thẻ tín dụng nào phù hợp với tôi?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response length > 100 chars AND mentions 'thẻ' AND mentions a card or bank name"
+  },
+  "tags": ["cat-a", "spend-profile", "rank"]
+}

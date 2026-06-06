@@ -4,7 +4,7 @@ import {OwAmount} from '@/components/ow-ui/ow-amount';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 
 function FeeValue({ entry }: { entry?: FeeEntry | null }) {
-    if (!entry) return <span className="ow-amount text-body-md text-slate-400">—</span>;
+    if (!entry) return <span className="ow-amount text-body-md text-slate-400">-</span>;
     if (entry.amount === 0) return <span className="ow-amount text-body-md text-green-600">Miễn phí</span>;
     return <OwAmount amount={entry.amount} unit={entry.type === 'currency' ? 'vnd' : 'percent'} />;
 }

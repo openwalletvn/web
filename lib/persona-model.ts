@@ -39,7 +39,7 @@ interface PersonaUIMeta {
     icon: string;
 }
 
-const PERSONA_UI_META: Record<string, PersonaUIMeta> = {
+export const PERSONA_UI_META: Record<string, PersonaUIMeta> = {
     shopee: {
         name: 'Thẻ Shopee',
         description: 'Thẻ ưu đãi Shopee',

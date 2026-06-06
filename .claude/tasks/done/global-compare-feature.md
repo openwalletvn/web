@@ -1,11 +1,11 @@
 # Global "Add to Compare" + Remove ?compare= Param
 
-**Status:** Planned — not yet started
+**Status:** Planned - not yet started
 
 ## Problem
 
-1. `CompareSection` still writes/reads `?compare=id1,id2` — stale pattern since pair URLs (`/so-sanh/id1-vs-id2`) are now handled by SSR (see issue #2)
-2. No "add to compare" action in card grids — users must search inside the compare page manually
+1. `CompareSection` still writes/reads `?compare=id1,id2` - stale pattern since pair URLs (`/so-sanh/id1-vs-id2`) are now handled by SSR (see issue #2)
+2. No "add to compare" action in card grids - users must search inside the compare page manually
 
 ## Solution
 
@@ -61,7 +61,7 @@
 |------|--------|
 | `components/compare/compare-section.tsx` | Remove `?compare=` URL sync |
 | `app/(marketing)/so-sanh/page.tsx` | Add backward-compat redirect |
-| `lib/use-compare-list.ts` | New — compare list store |
-| `components/compare/compare-bar.tsx` | New — floating bar |
+| `lib/use-compare-list.ts` | New - compare list store |
+| `components/compare/compare-bar.tsx` | New - floating bar |
 | `components/cards/variants/card-tile.tsx` | Add compare button |
 | `app/(marketing)/layout.tsx` | Mount CompareBar |

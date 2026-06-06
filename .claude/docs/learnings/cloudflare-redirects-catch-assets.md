@@ -1,6 +1,6 @@
 # Cloudflare _redirects catches static assets too
 
-`public/_redirects` rules apply to ALL requests — HTML pages AND static files.
+`public/_redirects` rules apply to ALL requests - HTML pages AND static files.
 
 Current rules:
 ```

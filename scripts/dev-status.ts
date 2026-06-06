@@ -1,8 +1,6 @@
-import { createMCPClient } from '@ai-sdk/mcp';
 import { checkTypeSync } from './lib/types-utils';
 
 const MCP_URL = process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8001';
-const MCP_KEY = process.env.OPENWALLET_MCP_KEY ?? 'owmcp_dev';
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 const API_KEY = process.env.OPENWALLET_API_KEY ?? '';
 
@@ -23,17 +21,9 @@ async function checkMCP() {
         const healthRes = await fetch(`${MCP_URL}/health`);
         const health = await healthRes.json() as { version?: string };
         const version = health.version ? `v${health.version}` : '';
-
-        const client = await createMCPClient({
-            transport: { type: 'http', url: MCP_URL, headers: { 'x-mcp-key': MCP_KEY } },
-        });
-        const tools = await client.tools();
-        const toolCount = Object.keys(tools).length;
-        await client.close();
-
-        return { online: true, version, toolCount };
+        return { online: true, version };
     } catch {
-        return { online: false, version: '', toolCount: 0 };
+        return { online: false, version: '' };
     }
 }
 
@@ -67,9 +57,7 @@ async function printStatus() {
     ]);
     const time = c.dim(new Date().toLocaleTimeString());
 
-    const mcpInfo = mcp.online
-        ? `${mcp.version} ${c.dim('|')} ${mcp.toolCount} tools`
-        : 'offline';
+    const mcpInfo = mcp.online ? mcp.version : 'offline';
 
     const typesLabel = types === 'synced'
         ? `${c.dim('|')} types ${c.green('✓')}`

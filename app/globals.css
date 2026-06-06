@@ -5,7 +5,7 @@
 @import "tw-shimmer";
 @plugin "@tailwindcss/typography";
 
-/* Cal Sans — local fonts for Storybook (next/font only applies in Next.js runtime) */
+/* Cal Sans - local fonts for Storybook (next/font only applies in Next.js runtime) */
 @font-face {
     font-family: "Cal Sans";
     src: url("/fonts/cal-sans-vietnamese.woff2") format("woff2");
@@ -30,14 +30,16 @@
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant is-home (&:is(.is-home *));
+@custom-variant is-chat-open (&:is(.is-chat-open *));
+@custom-variant is-thread-running (&:is(.is-thread-running *));
 
 /* ─── Design tokens ─────────────────────────────────────────── */
 @theme {
-    /* Fonts — static fallbacks; next/font CSS var on <html> takes precedence at runtime */
+    /* Fonts - static fallbacks; next/font CSS var on <html> takes precedence at runtime */
     --font-display:"Cal Sans", sans-serif;
     --font-body:"Inter Tight", sans-serif;
 
-    /* Brand — primary scale */
+    /* Brand - primary scale */
     --color-primary:#E8321A;
     --color-primary-dark:#C42A12;
     --color-primary-light:#FF5A40;
@@ -119,6 +121,12 @@
     --radius-badge:52px;
     --radius-full:96px;
     --radius-circle:112px;
+
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@utility ease-bounce {
+    transition-timing-function: var(--ease-bounce);
 }
 
 /* ─── shadcn semantic tokens (light) ────────────────────────── */
@@ -191,7 +199,7 @@
     --sidebar-ring:#c8c8c8;
 }
 
-/* dark kept minimal — design is light-first */
+/* dark kept minimal - design is light-first */
 .dark {
     --background:           #0E0F0C;
     --foreground:#f7f7f7;
@@ -249,6 +257,15 @@
 @theme {
     --animate-accordion-down: accordion-down 200ms ease-out;
     --animate-accordion-up: accordion-up 200ms ease-out;
+}
+
+/* ─── Components ─────────────────────────────────────────────── */
+@layer components {
+    .ow-custom-scrollbar {
+        &::-webkit-scrollbar { width:6px; height:4px; }
+        &::-webkit-scrollbar-track { background:transparent; }
+        &::-webkit-scrollbar-thumb { border-radius:9999px; background-color:var(--color-border); }
+    }
 }
 
 /* ─── Utilities ──────────────────────────────────────────────── */

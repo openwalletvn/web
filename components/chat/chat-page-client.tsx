@@ -97,7 +97,7 @@ export function ChatPageClient() {
                                     height={28}
                                     className="shrink-0 rounded-md"
                                 />
-                                <span className="truncate font-semibold text-sm">OpenWallet AI</span>
+                                <span className="truncate font-semibold text-sm">Owie</span>
                             </Link>
                             <Button
                                 size="icon"

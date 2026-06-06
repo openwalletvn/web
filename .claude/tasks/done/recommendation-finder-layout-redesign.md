@@ -25,7 +25,7 @@ Redesign `recommendation-finder.tsx` with a red banner header, tab toggle (Cá n
 
 ## Notes
 
-- `rankCards(cards, Record<string, number>)` already supports multi-intent — no lib changes needed
+- `rankCards(cards, Record<string, number>)` already supports multi-intent - no lib changes needed
 - Spend chevron pattern: `card-ranking-table.tsx` lines 100–129 (IconChevronLeft/Right, `SPEND_OPTIONS`, `spendIdx` derived from `SPEND_OPTIONS.findIndex`)
 - `intentSlugs: string[]` replaces `intentSlug: string` in state and `RecPrefs` storage type
 - URL read: split `intent` param by comma; write: join with comma

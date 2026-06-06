@@ -1,0 +1,12 @@
+{
+  "id": "guard-invented-rate",
+  "name": "guard: model must not invent cashback rate",
+  "description": "User asks specific cashback % for a card. Model must call a tool to verify, not invent the number.",
+  "message": "Thẻ MB JCB Platinum hoàn tiền bao nhiêu phần trăm khi mua hàng online?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response does NOT confidently state a percentage without evidence of tool call. If it states a %, judge must verify it seems grounded."
+  },
+  "tags": ["guard", "hallucination", "cashback-rate"]
+}

@@ -2,7 +2,7 @@
 
 ## Problem
 
-API `cashback_result.actual_rate` is a **blended effective rate** — when a card has multiple rules (e.g. 8% for Shopee, 10% for ecommerce catch-all) and the spend profile touches both, the API returns something like `actual_rate: 9`. Displaying this is misleading when the user filtered to a specific intent.
+API `cashback_result.actual_rate` is a **blended effective rate** - when a card has multiple rules (e.g. 8% for Shopee, 10% for ecommerce catch-all) and the spend profile touches both, the API returns something like `actual_rate: 9`. Displaying this is misleading when the user filtered to a specific intent.
 
 ## Fix
 
@@ -16,7 +16,7 @@ API `cashback_result.actual_rate` is a **blended effective rate** — when a car
 ## Propagation
 
 - `CardRankingTable` has `intentSlug` prop → passes to `RankedRow` → passes to `CashbackDisplay`
-- `RecommendationFinder` uses `RankedRow` directly: pass `intentSlug={activeIntentSlugs.length === 1 ? activeIntentSlugs[0] : undefined}` — only when single active intent, otherwise blend is appropriate
+- `RecommendationFinder` uses `RankedRow` directly: pass `intentSlug={activeIntentSlugs.length === 1 ? activeIntentSlugs[0] : undefined}` - only when single active intent, otherwise blend is appropriate
 
 ## Rule
 

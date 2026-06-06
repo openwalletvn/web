@@ -4,7 +4,7 @@ import {cn} from "@/lib/utils"
 import {type VariantProps} from "class-variance-authority"
 
 type OwButtonColor = "default" | "outline"
-type OwButtonSize = "md" | "sm" | "full"
+export type OwButtonSize = "md" | "sm" | "full"
 
 const colorClasses: Record<OwButtonColor, string> = {
     default: "bg-primary !text-white border-2 border-primary hover:bg-black hover:border-black",

@@ -1,0 +1,12 @@
+{
+  "id": "A2-merchant-shopee",
+  "name": "A2: recommend card for Shopee spending",
+  "description": "User mentions Shopee. Model should use injected merchant slug directly in rank-cards-for-spend - must NOT call list-merchants.",
+  "message": "Thẻ tín dụng nào hoàn tiền tốt nhất khi mua sắm trên Shopee?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "list-merchants NOT called AND response mentions 'shopee' AND mentions 'hoàn tiền' or 'cashback' AND length > 100"
+  },
+  "tags": ["cat-a", "merchant", "shopee", "rank", "no-list-merchants"]
+}

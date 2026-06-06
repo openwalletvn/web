@@ -52,7 +52,7 @@ export function PaymentRow({walletCard, catalogCard, variant}: {
         ? new CardModel(catalogCard).getTimeline(walletCard.statementDate, today)
         : null;
 
-    // Days to the next event — mirrors the timeline summary
+    // Days to the next event - mirrors the timeline summary
     const milestones = timeline?.milestones ?? [];
     const todayMilestone  = milestones.find((m) => m.isToday && m.type !== 'today') ?? null;
     const firstUpcoming   = milestones.find((m) => m.isUpcoming) ?? null;
@@ -62,7 +62,7 @@ export function PaymentRow({walletCard, catalogCard, variant}: {
 
     return (
         <div className="ow-payment-row flex items-start gap-4 py-4 border-b border-dashed border-slate-100 last:border-0">
-            {/* Date block — days to next milestone */}
+            {/* Date block - days to next milestone */}
             <div className="shrink-0 w-16 text-center">
                 {todayMilestone ? (
                     <p className="text-xl font-bold leading-none text-brand-blue">Hôm nay</p>

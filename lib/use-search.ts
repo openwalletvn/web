@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from 'react';
 import Fuse from 'fuse.js';
 import type { SearchCard, SearchBank, SearchPost, SearchIndex } from './search-types';
 
-// Module-level cache — shared across all hook instances
+// Module-level cache - shared across all hook instances
 let cachedIndex: SearchIndex | null = null;
 let fetchPromise: Promise<SearchIndex> | null = null;
 
@@ -102,7 +102,7 @@ export function useSearch(): UseSearchReturn {
       });
   }, []);
 
-  // Pure function — no side effects, safe to call during render
+  // Pure function - no side effects, safe to call during render
   const search = useCallback((query: string): SearchResults => {
     if (!query.trim() || !initialized.current) return EMPTY;
 

@@ -45,8 +45,8 @@ Never add new categories without updating the filter UI.
 ## How Posts Are Read
 
 `lib/mdx.ts` handles all post parsing:
-- `getAllPosts()` — reads all MDX files, parses frontmatter, returns sorted list
-- `getPostBySlug(slug)` — reads a single post, compiles MDX to renderable content
+- `getAllPosts()` - reads all MDX files, parses frontmatter, returns sorted list
+- `getPostBySlug(slug)` - reads a single post, compiles MDX to renderable content
 - TOC is auto-generated from `##`, `###`, `####` headings (never use `#`)
 
 ## Images

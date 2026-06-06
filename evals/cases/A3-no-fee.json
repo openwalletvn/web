@@ -1,0 +1,12 @@
+{
+  "id": "A3-no-fee",
+  "name": "A3: recommend card with fee constraint",
+  "description": "User wants cashback but with annual fee constraint. Model should apply filter in rank call.",
+  "message": "Tôi muốn thẻ hoàn tiền tốt nhưng phí thường niên dưới 500 nghìn đồng. Thẻ nào phù hợp?",
+  "expect": {
+    "contains": null,
+    "notContains": null,
+    "customDescription": "Response mentions 'phí' or 'thường niên' AND mentions 'hoàn tiền' or 'cashback' AND length > 80"
+  },
+  "tags": ["cat-a", "constraint", "fee", "rank"]
+}

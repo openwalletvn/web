@@ -1,13 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { IconBell, IconBellOff, IconSend } from '@tabler/icons-react';
+import { IconBell, IconBellOff } from '@tabler/icons-react';
 import { useWalletCatalog } from '@/hooks/use-wallet-catalog';
 import { appDb, type NotificationAdapter } from '@/lib/app-db';
-import { testAdapter } from '@/lib/notify-api';
-import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/ui/page-container';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useWalletDb } from '@/providers/wallet-db-provider';
@@ -22,7 +20,6 @@ export default function RemindersPage() {
  const walletCards = useLiveQuery(() => db.walletCards.toArray(), [db]);
  const adapters = useLiveQuery(() => appDb.notificationAdapters.toArray(), [], []);
  const { banks, catalogCards } = useWalletCatalog(walletCards);
- const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'ok' | 'failed'>('idle');
 
  const activeAdapter = useMemo(
  () => adapters?.find((a) => a.enabled),
@@ -38,25 +35,13 @@ export default function RemindersPage() {
  () =>
  activeCards.reduce((count, c) => {
  const n = c.notifications;
- if (n?.statementDate?.remoteId) count++;
- if (n?.paymentDueDate?.remoteId) count++;
+ if (n?.statementDate?.enabled) count++;
+ if (n?.paymentDueDate?.enabled) count++;
  return count;
  }, 0),
  [activeCards],
  );
 
-
- async function handleTestDiscord() {
- if (!activeAdapter) return;
- setTestStatus('loading');
- try {
- await testAdapter(activeAdapter.id, activeAdapter.config.webhook_url);
- setTestStatus('ok');
- } catch {
- setTestStatus('failed');
- }
- setTimeout(() => setTestStatus('idle'), 3000);
- }
 
  return (
  <PageContainer>
@@ -110,28 +95,11 @@ export default function RemindersPage() {
  )}
 
  {/* Footer */}
- <div className="mt-4 flex items-center justify-center gap-3">
+ <div className="mt-4 flex items-center justify-center">
  <p className="text-sm text-slate-400">
  {activeRemoteCount} nhắc nhở đang bật
  {activeAdapter ? ` (${activeAdapter.id === 'discord' ? 'Discord' : activeAdapter.id})` : ''}
  </p>
- {activeAdapter && (
- <Button
- variant="outline"
- size="sm"
- onClick={handleTestDiscord}
- disabled={testStatus === 'loading'}
- >
- <IconSend size={14} />
- {testStatus === 'loading'
- ? 'Đang gửi...'
- : testStatus === 'ok'
- ? 'Thành công!'
- : testStatus === 'failed'
- ? 'Thất bại'
- : 'Test Discord'}
- </Button>
- )}
  </div>
  </PageContainer>
  );

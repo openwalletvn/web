@@ -81,14 +81,14 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
     return (
         <div className="ow-card-ranked-row @container">
             <div className="grid grid-cols-12 gap-3 items-start">
-                {/*col 1 — card image [2]*/}
+                {/*col 1 - card image [2]*/}
                 <div className="col-span-2">
                     <Link href={`/the/${cardModel.getId()}`}>
                         <OwCardImage card={card} className="w-full"/>
                     </Link>
                 </div>
 
-                {/*col 2 — card info [6 wide / 10 narrow]*/}
+                {/*col 2 - card info [6 wide / 10 narrow]*/}
                 <div className="col-span-10 @[480px]:col-span-6 flex flex-col gap-1 min-w-0">
                     {/*expired warning*/}
                     {cashbackData?.cashback_expired && (
@@ -136,7 +136,7 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
                         </OwBadges>
                     )}
 
-                    {/*min spend + global cap — ranking constraints*/}
+                    {/*min spend + global cap - ranking constraints*/}
                     {(cashbackData?.min_spend_per_period != null || showGlobalCap) && (
                         <p className="text-body-sm text-text-muted flex flex-wrap gap-x-3 gap-y-0.5">
                             {cashbackData?.min_spend_per_period != null && (
@@ -207,12 +207,12 @@ export function OwCardRankedRow({ranked, intentMap, highlightedSlugs, intentSlug
                     </div>
                 </div>
 
-                {/*col 3 — cashback amount [2] — wide only*/}
+                {/*col 3 - cashback amount [2] - wide only*/}
                 <div className="hidden @[480px]:flex col-span-2 flex-col items-end">
                     <OwAmount medium amount={ranked.cashback_result.cashback} unit="k" period="period"/>
                 </div>
 
-                {/*col 4 — annual fee [2] — wide only*/}
+                {/*col 4 - annual fee [2] - wide only*/}
                 <div className="hidden @[480px]:flex col-span-2 flex-col items-end">
                     {cardModel.getFees()?.annual != null && (
                         <OwAmount medium amount={cardModel.getFees()!.annual!.amount} unit="k" period="year"/>

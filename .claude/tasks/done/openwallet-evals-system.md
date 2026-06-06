@@ -12,15 +12,15 @@ git checkout -b feature/evals-system
 
 ## Current state
 
-- `scripts/eval-chat.ts` — eval harness with **8 inline test cases**, no JSONL output, no LLM judge, no GitHub push
-- `admin/server.ts` — Express on port 3004, serves static HTML (`blog-post.html`). **No Vite/React UI exists yet.**
-- `lib/chat/system-prompt.ts` — single file, git commit hash of this = prompt version
+- `scripts/eval-chat.ts` - eval harness with **8 inline test cases**, no JSONL output, no LLM judge, no GitHub push
+- `admin/server.ts` - Express on port 3004, serves static HTML (`blog-post.html`). **No Vite/React UI exists yet.**
+- `lib/chat/system-prompt.ts` - single file, git commit hash of this = prompt version
 - No `.github/workflows/` directory
 - `openwalletvn/evals` repo created externally
 
 ---
 
-## Part 1 — Migrate test cases to JSON files
+## Part 1 - Migrate test cases to JSON files
 
 ### Files to create
 
@@ -58,13 +58,13 @@ Note: `custom` functions cannot live in JSON. Replace with `customDescription` s
 ### Changes to `scripts/eval-chat.ts`
 
 - Remove `TEST_CASES` array
-- Add `loadTestCases()` — `fs.readdirSync('scripts/eval-cases/')`, parse each JSON, return `EvalCase[]`
-- `customChecks` map: `Record<string, (text: string) => boolean>` — port all 8 `custom` lambdas keyed by `id`
+- Add `loadTestCases()` - `fs.readdirSync('scripts/eval-cases/')`, parse each JSON, return `EvalCase[]`
+- `customChecks` map: `Record<string, (text: string) => boolean>` - port all 8 `custom` lambdas keyed by `id`
 - On startup: merge loaded JSON with `customChecks` to reconstruct full `EvalCase` objects
 
 ---
 
-## Part 2 — Eval harness upgrade
+## Part 2 - Eval harness upgrade
 
 ### New env vars required
 
@@ -72,9 +72,9 @@ Note: `custom` functions cannot live in JSON. Replace with `customDescription` s
 |-----|---------|
 | `GITHUB_TOKEN` | Push JSONL to evals repo |
 | `EVALS_REPO` | `openwalletvn/evals` (or hardcode) |
-| `GROQ_API_KEY` | Already exists — reuse for judge |
-| `CHAT_MODEL` | Already exists |
-| `JUDGE_MODEL` | Groq model for judge (e.g. `openai/gpt-oss-120b`) |
+| `GROQ_API_KEY` | Already exists - reuse for judge |
+| `EVAL_CHAT_MODEL` | Already exists |
+| `EVAL_JUDGE_MODEL` | Groq model for judge (e.g. `openai/gpt-oss-120b`) |
 
 ### Prompt version
 
@@ -119,8 +119,8 @@ Parse score + reasoning. Judge pass threshold: score >= 60.
 interface EvalResult {
   run_id: string;          // uuid or `${timestamp}-${shortHash}`
   prompt_version: string;  // git hash of system-prompt.ts
-  model: string;           // CHAT_MODEL
-  judge_model: string;     // JUDGE_MODEL
+  model: string;           // EVAL_CHAT_MODEL
+  EVAL_JUDGE_MODEL: string;     // EVAL_JUDGE_MODEL
   test_id: string;
   input: string;
   response: string;
@@ -166,7 +166,7 @@ async function pushToEvalsRepo(runId: string, lines: string[]) {
 
 ---
 
-## Part 3 — Admin UI (`admin/ui/`)
+## Part 3 - Admin UI (`admin/ui/`)
 
 ### Setup
 
@@ -186,28 +186,28 @@ app.use('/ui', express.static(path.join(ADMIN_DIR, 'ui/dist')));
 
 ### Routes in admin UI
 
-- `/` — existing blog post manager (keep as-is, just wrap in React router)
-- `/evals` — new evals route
+- `/` - existing blog post manager (keep as-is, just wrap in React router)
+- `/evals` - new evals route
 
-### `/evals` page — components
+### `/evals` page - components
 
-**RunList** — fetches runs from GitHub API:
+**RunList** - fetches runs from GitHub API:
 ```
 GET https://api.github.com/repos/openwalletvn/evals/contents/results/{date}
 ```
 Displays: run_id, timestamp, model, prompt_version (short hash), pass rate %, avg score.
 
-**RunDetail** — per-run breakdown:
+**RunDetail** - per-run breakdown:
 - Fetch JSONL file content via GitHub API
 - Parse lines → `EvalResult[]`
 - Table: test_id | score | pass | input (truncated) | response (truncated) | judge_reasoning
 
-**PromptCompare** — diff two runs:
+**PromptCompare** - diff two runs:
 - Select run A and run B (dropdowns)
 - Table: test_id | score_A | score_B | delta | pass_A | pass_B
 - Color delta: green if improved, red if regressed
 
-**TriggerButton** — only shown when `window.location.hostname === 'localhost'`:
+**TriggerButton** - only shown when `window.location.hostname === 'localhost'`:
 ```ts
 await fetch('http://localhost:3004/api/evals/trigger', { method: 'POST' });
 ```
@@ -235,7 +235,7 @@ All reads via `https://api.github.com/repos/openwalletvn/evals/...`. No auth nee
 
 ---
 
-## Part 4 — GitHub Actions
+## Part 4 - GitHub Actions
 
 ### `.github/workflows/eval-run.yml`
 
@@ -265,13 +265,13 @@ jobs:
       - run: npx tsx scripts/eval-chat.ts
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          CHAT_MODEL: ${{ vars.CHAT_MODEL || 'llama-3.3-70b-versatile' }}
-          JUDGE_MODEL: ${{ vars.JUDGE_MODEL || 'llama-3.3-70b-versatile' }}
+          EVAL_CHAT_MODEL: ${{ vars.EVAL_CHAT_MODEL || 'llama-3.3-70b-versatile' }}
+          EVAL_JUDGE_MODEL: ${{ vars.EVAL_JUDGE_MODEL || 'llama-3.3-70b-versatile' }}
           CHAT_URL: ${{ inputs.chat_url || 'https://openwallet.vn/api/chat' }}
           GITHUB_TOKEN: ${{ secrets.EVALS_GITHUB_TOKEN }}
 ```
 
-Note: use `EVALS_GITHUB_TOKEN` (PAT with `contents:write` on `openwalletvn/evals`) — not the default `GITHUB_TOKEN` which only has access to the current repo.
+Note: use `EVALS_GITHUB_TOKEN` (PAT with `contents:write` on `openwalletvn/evals`) - not the default `GITHUB_TOKEN` which only has access to the current repo.
 
 ### `.github/workflows/evals-site.yml`
 
@@ -306,7 +306,7 @@ jobs:
 
 ---
 
-## Part 5 — `openwalletvn/evals` repo
+## Part 5 - `openwalletvn/evals` repo
 
 **Status: repo created.** Expected structure:
 
@@ -321,20 +321,20 @@ openwalletvn/evals/
 
 No application code. Pure data store.
 
-**Pending:** PAT with `contents:write` on `openwalletvn/evals` — add as `EVALS_GITHUB_TOKEN` secret in `openwalletvn/web` repo settings once provided. Same var used in eval script env and CI workflow.
+**Pending:** PAT with `contents:write` on `openwalletvn/evals` - add as `EVALS_GITHUB_TOKEN` secret in `openwalletvn/web` repo settings once provided. Same var used in eval script env and CI workflow.
 
 ---
 
 ## Implementation order
 
-1. **Part 1** — migrate test cases to JSON files, update harness loader
-2. **Part 2** — add prompt version, LLM judge, JSONL writer, GitHub push
-3. **Part 3 (server)** — add `/api/evals/trigger` to `admin/server.ts`
-4. **Part 3 (UI)** — scaffold `admin/ui/` Vite+React, build `/evals` route
-5. **Part 4** — create workflow files
-6. **Wire PAT** — once provided: set `EVALS_GITHUB_TOKEN` in `.env.local` + GitHub repo secrets
-7. **Test locally** — run `npx tsx scripts/eval-chat.ts`, verify JSONL pushed to evals repo
-8. **Test UI** — `pnpm admin` + `pnpm admin:ui`, open `localhost:3004/ui/evals`
+1. **Part 1** - migrate test cases to JSON files, update harness loader
+2. **Part 2** - add prompt version, LLM judge, JSONL writer, GitHub push
+3. **Part 3 (server)** - add `/api/evals/trigger` to `admin/server.ts`
+4. **Part 3 (UI)** - scaffold `admin/ui/` Vite+React, build `/evals` route
+5. **Part 4** - create workflow files
+6. **Wire PAT** - once provided: set `EVALS_GITHUB_TOKEN` in `.env.local` + GitHub repo secrets
+7. **Test locally** - run `npx tsx scripts/eval-chat.ts`, verify JSONL pushed to evals repo
+8. **Test UI** - `pnpm admin` + `pnpm admin:ui`, open `localhost:3004/ui/evals`
 
 ---
 
@@ -346,4 +346,4 @@ No application code. Pure data store.
 - [ ] Prompt version = `git log -1 --format=%H -- lib/chat/system-prompt.ts`
 - [ ] One eval script, same code path local and CI (`CHAT_URL` env var switches target)
 - [ ] `evals-site.yml` deploys to `evals.openwallet.vn` via Cloudflare Pages
-- [ ] `EVALS_GITHUB_TOKEN` — PAT with `contents:write` on `openwalletvn/evals` (pending)
+- [ ] `EVALS_GITHUB_TOKEN` - PAT with `contents:write` on `openwalletvn/evals` (pending)
