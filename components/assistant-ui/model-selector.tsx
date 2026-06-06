@@ -151,7 +151,7 @@ function ModelSelectorContent({
   return (
     <SelectContent
       data-slot="model-selector-content"
-      className={cn("min-w-[180px]", className)}
+      className={cn("min-w-[180px] rounded-md", className)}
       {...props}
     >
       {children ??

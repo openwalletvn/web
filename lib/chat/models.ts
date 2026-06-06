@@ -27,13 +27,13 @@ export const CHAT_MODELS: ChatModel[] = [
     //     contextWindow: 1_000_000,
     // },
     // https://openrouter.ai/qwen/qwen3-coder:free
-    {
-        id: 'qwen/qwen3-coder:free',
-        label: 'Qwen3 Coder 480B A35B (free)',
-        provider: 'Qwen',
-        free: true,
-        contextWindow: 1_000_000,
-    },
+    // {
+    //     id: 'qwen/qwen3-coder:free',
+    //     label: 'Qwen3 Coder 480B A35B (free)',
+    //     provider: 'Qwen',
+    //     free: true,
+    //     contextWindow: 1_000_000,
+    // },
     // https://openrouter.ai/openai/gpt-oss-120b:free
     {
         id: 'openai/gpt-oss-120b:free',
