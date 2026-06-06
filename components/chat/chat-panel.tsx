@@ -2,9 +2,10 @@
 
 import {useCallback, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
-import {CheckIcon, ClipboardCopyIcon, Maximize2Icon, PlusIcon, XIcon} from 'lucide-react';
+import {CheckIcon, Maximize2Icon, PlusIcon, XIcon} from 'lucide-react';
 import {cn} from '@/lib/utils';
 import {Button} from '@/components/ui/button';
+import {OwTrafficLights} from '@/components/ow-ui/ow-traffic-lights';
 import {
     Select,
     SelectContent,
@@ -21,7 +22,6 @@ import {getUserId} from '@/lib/chat/anonymous-user';
 import {
     type Conversation,
     createConversation,
-    getConversation,
     listConversations,
 } from '@/lib/chat/conversation-store';
 import {OwLogo} from "@/components/ow-ui/ow-logo";
@@ -43,7 +43,6 @@ export function ChatPanel() {
     const [mounted, setMounted] = useState(false);
     const [convos, setConvos] = useState<Conversation[]>([]);
     const [activeId, setActiveId] = useState('');
-    const [copied, setCopied] = useState(false);
     const [userId, setUserId] = useState<string | null>(null);
     const [userIdCopied, setUserIdCopied] = useState(false);
     const [isDesktop, setIsDesktop] = useState(false);
@@ -79,14 +78,6 @@ export function ChatPanel() {
     }, [toggle]);
 
     const refresh = useCallback(() => setConvos(listConversations()), []);
-
-    const handleCopy = useCallback(() => {
-        const convo = getConversation(activeId);
-        if (!convo) return;
-        navigator.clipboard.writeText(JSON.stringify(convo.messages, null, 2));
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    }, [activeId]);
 
     const handleNew = useCallback(() => {
         const convo = createConversation();
@@ -169,30 +160,34 @@ export function ChatPanel() {
                         </Select>
                     )}
 
-                    <Button size="icon" variant="ghost" className="size-8 shrink-0 hidden" onClick={handleCopy}
-                            title="Copy messages (debug)">
-                        {copied ? <CheckIcon className="size-4 text-green-500"/> :
-                            <ClipboardCopyIcon className="size-4"/>}
-                    </Button>
-                    <Button
-                        size="icon"
-                        variant="ghost"
-                        className="size-8 shrink-0"
-                        onClick={() => {
-                            close();
-                            router.push(`/chat?id=${activeId}`);
-                        }}
-                        title="Mở rộng"
-                    >
-                        <Maximize2Icon className="size-4"/>
-                    </Button>
-                    <Button size="icon" variant="ghost" className="size-8 shrink-0" onClick={handleNew}
-                            title="Cuộc trò chuyện mới">
-                        <PlusIcon className="size-4"/>
-                    </Button>
-                    <Button size="icon" variant="ghost" className="size-8 shrink-0" onClick={close} title="Đóng">
-                        <XIcon className="size-4"/>
-                    </Button>
+                    <OwTrafficLights
+                        buttons={[
+                            {
+                                id: 'close',
+                                color: '#ff5f57',
+                                label: 'Đóng',
+                                icon: <XIcon className="size-2.5"/>,
+                                onClick: close,
+                            },
+                            {
+                                id: 'new',
+                                color: '#febc2e',
+                                label: 'Cuộc trò chuyện mới',
+                                icon: <PlusIcon className="size-2.5"/>,
+                                onClick: handleNew,
+                            },
+                            {
+                                id: 'expand',
+                                color: '#28c840',
+                                label: 'Mở rộng',
+                                icon: <Maximize2Icon className="size-2.5"/>,
+                                onClick: () => {
+                                    close();
+                                    router.push(`/chat?id=${activeId}`);
+                                },
+                            },
+                        ]}
+                    />
                 </div>
             </div>
 

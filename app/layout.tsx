@@ -6,6 +6,7 @@ import { BodyClass } from '@/components/layout/body-class';
 import { OverlayScrollbarsBody } from '@/components/layout/overlay-scrollbars-body';
 import { PreviewBanner } from '@/components/layout/preview-banner';
 import { cn } from '@/lib/utils';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import "./globals.css";
 
 const calSans = localFont({
@@ -68,10 +69,12 @@ export default function RootLayout({
   return (
     <html lang="vi" className={cn(calSans.variable, interTight.variable)} data-overlayscrollbars-initialize>
       <body className="antialiased">
-        <BodyClass />
-        <OverlayScrollbarsBody />
-        {children}
-        <PreviewBanner />
+        <TooltipProvider>
+          <BodyClass />
+          <OverlayScrollbarsBody />
+          {children}
+          <PreviewBanner />
+        </TooltipProvider>
         <GoogleAnalytics gaId="G-0PTTBZY0RM" />
       </body>
     </html>
