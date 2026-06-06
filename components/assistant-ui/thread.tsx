@@ -41,7 +41,8 @@ import {
     RefreshCwIcon,
     SquareIcon,
 } from "lucide-react";
-import {type FC, useEffect, useState} from "react";
+import {type FC, useEffect, useState, useRef} from "react";
+import {getContextPlaceholders, type PageContext} from "@/lib/chat/page-context";
 
 type HealthState = { ready: boolean; mcp: boolean; api: boolean; model?: string } | null;
 
@@ -65,7 +66,7 @@ function useApiReady(): HealthState {
 }
 
 export const Thread: FC = () => {
-    const {setThreadRunning} = useChatContext();
+    const {setThreadRunning, pageContext} = useChatContext();
     const isRunning = useAuiState((s) => s.thread.isRunning);
 
     useEffect(() => {
@@ -104,7 +105,7 @@ export const Thread: FC = () => {
                     <ThreadPrimitive.ViewportFooter
                         className="aui-thread-viewport-footer sticky bottom-0 mt-auto flex flex-col gap-4 overflow-visible rounded-t-(--composer-radius) bg-background">
                         <ThreadScrollToBottom/>
-                        <Composer/>
+                        <Composer pageContext={pageContext}/>
                     </ThreadPrimitive.ViewportFooter>
                 </div>
             </ThreadPrimitive.Viewport>
@@ -190,12 +191,45 @@ const ThreadSuggestions: FC = () => {
     );
 };
 
-const Composer: FC = () => {
+/**
+ * Hook for rotating context-aware placeholders
+ */
+function useContextPlaceholder(pageContext: PageContext | undefined, isRunning: boolean) {
+    const [currentPlaceholder, setCurrentPlaceholder] = useState('');
+    const placeholdersRef = useRef<string[]>([]);
+    const indexRef = useRef(0);
+
+    // Initialize and rotate placeholders
+    useEffect(() => {
+        const placeholders = getContextPlaceholders(pageContext ?? null);
+        placeholdersRef.current = placeholders;
+
+        // Pick random initial index
+        indexRef.current = Math.floor(Math.random() * placeholders.length);
+        setCurrentPlaceholder(placeholders[indexRef.current]);
+
+        if (isRunning) return;
+
+        // Rotate every 8 seconds
+        const interval = setInterval(() => {
+            indexRef.current = (indexRef.current + 1) % placeholders.length;
+            setCurrentPlaceholder(placeholders[indexRef.current]);
+        }, 8000);
+
+        return () => clearInterval(interval);
+    }, [pageContext, isRunning]);
+
+    return currentPlaceholder;
+}
+
+const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
     const health = useApiReady();
     const defaultModelId = getDefaultModel().id;
     const [selectedModelId, setSelectedModelId] = useState(defaultModelId);
     const contextWindow = CHAT_MODELS.find((m) => m.id === selectedModelId)?.contextWindow ?? 128_000;
     const isRunning = useAuiState((s) => s.thread.isRunning);
+
+    const currentPlaceholder = useContextPlaceholder(pageContext, isRunning);
 
     const composerShell = (
         <div
@@ -203,7 +237,7 @@ const Composer: FC = () => {
             className="ow-composer-root flex w-full flex-col gap-2 rounded-(--composer-radius) border bg-background p-(--composer-padding) transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20"
         >
             <ComposerPrimitive.Input
-                placeholder="Mua Shopee mỗi tháng 3 triệu nên dùng thẻ nào?"
+                placeholder={currentPlaceholder}
                 className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
                 rows={1}
                 autoFocus

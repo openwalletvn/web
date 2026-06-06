@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently -n next,status,sb -c blue,cyan,magenta --kill-others-on-fail \"rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next dev\" \"tsx --env-file=.env.local scripts/dev-status.ts\" \"rm -rf node_modules/.cache/storybook && storybook dev -p 4000 --quiet\"",
+    "dev": "concurrently -n next,status,sb -c blue,cyan,magenta --kill-others-on-fail \"rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next dev\" \"tsx --env-file=.env.local scripts/dev-status.ts\" \"lsof -ti:4000 | xargs kill -9 2>/dev/null || true && rm -rf node_modules/.cache/storybook && storybook dev -p 4000 --quiet\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
