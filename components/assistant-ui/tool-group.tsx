@@ -141,15 +141,17 @@ function ToolGroupTrigger({
           </span>
         )}
       </span>
-      <ChevronDownIcon
-        data-slot="tool-group-trigger-chevron"
-        className={cn(
-          "aui-tool-group-trigger-chevron size-4 shrink-0",
-          "transition-transform duration-(--animation-duration) ease-out",
-          "group-data-[state=closed]/trigger:-rotate-90",
-          "group-data-[state=open]/trigger:rotate-0",
-        )}
-      />
+      {!props.disabled && (
+        <ChevronDownIcon
+          data-slot="tool-group-trigger-chevron"
+          className={cn(
+            "aui-tool-group-trigger-chevron size-4 shrink-0",
+            "transition-transform duration-(--animation-duration) ease-out",
+            "group-data-[state=closed]/trigger:-rotate-90",
+            "group-data-[state=open]/trigger:rotate-0",
+          )}
+        />
+      )}
     </CollapsibleTrigger>
   );
 }

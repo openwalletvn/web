@@ -431,6 +431,7 @@ const AssistantMessage: FC = () => {
                                         <ToolGroupTrigger
                                             count={part.indices.length}
                                             active={part.status.type === "running"}
+                                            disabled
                                         />
                                         <ToolGroupContent>{children}</ToolGroupContent>
                                     </ToolGroupRoot>
