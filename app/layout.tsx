@@ -1,12 +1,15 @@
-import type { Metadata } from "next";
+import type {Metadata} from "next";
 import localFont from "next/font/local";
-import { Inter_Tight } from "next/font/google";
-import { GoogleAnalytics } from '@next/third-parties/google';
-import { BodyClass } from '@/components/layout/body-class';
-import { OverlayScrollbarsBody } from '@/components/layout/overlay-scrollbars-body';
-import { PreviewBanner } from '@/components/layout/preview-banner';
-import { cn } from '@/lib/utils';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import {Inter_Tight} from "next/font/google";
+import {GoogleAnalytics} from '@next/third-parties/google';
+import {BodyClass} from '@/components/layout/body-class';
+import {OverlayScrollbarsBody} from '@/components/layout/overlay-scrollbars-body';
+import {PreviewBanner} from '@/components/layout/preview-banner';
+import {cn} from '@/lib/utils';
+import {TooltipProvider} from '@/components/ui/tooltip';
+import {OwOwieFab} from '@/components/ow-ui/ow-owie-fab';
+import {ChatProvider} from '@/components/chat/chat-provider';
+import {ChatPanel} from '@/components/chat/chat-panel';
 import "./globals.css";
 
 const calSans = localFont({
@@ -70,10 +73,14 @@ export default function RootLayout({
     <html lang="vi" className={cn(calSans.variable, interTight.variable)} data-overlayscrollbars-initialize>
       <body className="antialiased">
         <TooltipProvider>
-          <BodyClass />
-          <OverlayScrollbarsBody />
-          {children}
-          <PreviewBanner />
+          <ChatProvider>
+            <BodyClass />
+            <OverlayScrollbarsBody />
+            {children}
+            <OwOwieFab/>
+            <ChatPanel/>
+            <PreviewBanner />
+          </ChatProvider>
         </TooltipProvider>
         <GoogleAnalytics gaId="G-0PTTBZY0RM" />
       </body>
