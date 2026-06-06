@@ -1,6 +1,7 @@
 import {MarkdownText} from "@/components/assistant-ui/markdown-text";
 import {ModelSelector} from "@/components/assistant-ui/model-selector";
-import {getDefaultModel, getVisibleModels} from "@/lib/chat/models";
+import {CHAT_MODELS, getDefaultModel, getVisibleModels} from "@/lib/chat/models";
+import {ContextDisplay} from "@/components/assistant-ui/context-display";
 import {
     Reasoning,
     ReasoningContent,
@@ -38,8 +39,7 @@ import {
     RefreshCwIcon,
     SquareIcon,
 } from "lucide-react";
-import {useOverlayScrollbars} from "overlayscrollbars-react";
-import {type FC, useEffect, useRef, useState} from "react";
+import {type FC, useEffect, useState} from "react";
 
 type HealthState = { ready: boolean; mcp: boolean; api: boolean; model?: string } | null;
 
@@ -63,13 +63,6 @@ function useApiReady(): HealthState {
 }
 
 export const Thread: FC = () => {
-    const viewportRef = useRef<HTMLDivElement>(null);
-    const [initialize] = useOverlayScrollbars({defer: true});
-
-    useEffect(() => {
-        if (viewportRef.current) initialize(viewportRef.current);
-    }, [initialize]);
-
   return (
     <ThreadPrimitive.Root
       className="aui-root aui-thread-root @container flex h-full flex-col bg-background"
@@ -80,10 +73,9 @@ export const Thread: FC = () => {
       }}
     >
       <ThreadPrimitive.Viewport
-          ref={viewportRef}
         turnAnchor="top"
         data-slot="aui_thread-viewport"
-          className="ow-thread-viewport relative flex flex-1 flex-col overflow-x-auto overflow-y-scroll scroll-smooth"
+        className="ow-thread-viewport ow-custom-scrollbar relative flex flex-1 flex-col overflow-x-auto overflow-y-scroll scroll-smooth"
       >
           <div
               className="ow-thread-viewport-inner mx-auto flex w-full h-full max-w-(--thread-max-width) flex-1 flex-col px-3 py-3">
@@ -191,6 +183,9 @@ const ThreadSuggestions: FC = () => {
 
 const Composer: FC = () => {
   const health = useApiReady();
+    const defaultModelId = getDefaultModel().id;
+    const [selectedModelId, setSelectedModelId] = useState(defaultModelId);
+    const contextWindow = CHAT_MODELS.find((m) => m.id === selectedModelId)?.contextWindow ?? 128_000;
   return (
     <ComposerPrimitive.Root className="aui-composer-root relative flex w-full flex-col">
       <div
@@ -204,7 +199,8 @@ const Composer: FC = () => {
             autoFocus
             aria-label="Message input"
           />
-          <ComposerAction health={health} />
+          <ComposerAction health={health} selectedModelId={selectedModelId} onModelChange={setSelectedModelId}
+                          contextWindow={contextWindow}/>
         </div>
       {health?.model && (
         <p className="aui-composer-model mt-1.5 text-center text-xs text-muted-foreground/50">
@@ -215,7 +211,12 @@ const Composer: FC = () => {
   );
 };
 
-const ComposerAction: FC<{ health: HealthState }> = ({ health }) => {
+const ComposerAction: FC<{
+    health: HealthState;
+    selectedModelId: string;
+    onModelChange: (id: string) => void;
+    contextWindow: number
+}> = ({health, selectedModelId, onModelChange, contextWindow}) => {
   const notReady = health !== null && !health.ready;
   const unavailableLabel = health && !health.mcp ? "MCP unavailable" : "API unavailable";
     const visibleModels = getVisibleModels().map((m) => ({id: m.id, name: m.label}));
@@ -224,10 +225,13 @@ const ComposerAction: FC<{ health: HealthState }> = ({ health }) => {
       <div className="aui-composer-action-wrapper relative flex items-center gap-2">
           <ModelSelector
               models={visibleModels}
+              value={selectedModelId}
+              onValueChange={onModelChange}
               defaultValue={defaultModelId}
               size="sm"
               variant="ghost"
           />
+          <ContextDisplay.Ring modelContextWindow={contextWindow} />
           <div className="ml-auto flex items-center gap-2">
       {notReady && (
         <span className="text-xs text-destructive">{unavailableLabel}</span>
@@ -410,7 +414,8 @@ const UserMessage: FC = () => {
       data-role="user"
     >
       <div className="aui-user-message-content-wrapper relative col-start-2 min-w-0">
-        <div className="aui-user-message-content wrap-break-word peer rounded-2xl bg-muted px-4 py-2.5 text-foreground empty:hidden">
+          <div
+              className="aui-user-message-content wrap-break-word peer rounded-lg bg-muted px-4 py-2.5 text-foreground empty:hidden">
           <MessagePrimitive.Parts />
         </div>
         <div className="aui-user-action-bar-wrapper absolute start-0 top-1/2 -translate-x-full -translate-y-1/2 pe-2 peer-empty:hidden rtl:translate-x-full">
@@ -448,7 +453,8 @@ const EditComposer: FC = () => {
       data-slot="aui_edit-composer-wrapper"
       className="flex flex-col px-2"
     >
-      <ComposerPrimitive.Root className="aui-edit-composer-root ms-auto flex w-full max-w-[85%] flex-col rounded-2xl bg-muted">
+        <ComposerPrimitive.Root
+            className="aui-edit-composer-root ms-auto flex w-full max-w-[85%] flex-col rounded-lg bg-muted">
         <ComposerPrimitive.Input
           className="aui-edit-composer-input min-h-14 w-full resize-none bg-transparent p-4 text-foreground text-sm outline-none"
           autoFocus
