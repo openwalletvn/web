@@ -251,6 +251,15 @@
     --animate-accordion-up: accordion-up 200ms ease-out;
 }
 
+/* ─── Components ─────────────────────────────────────────────── */
+@layer components {
+    .ow-custom-scrollbar {
+        &::-webkit-scrollbar { width:6px; height:4px; }
+        &::-webkit-scrollbar-track { background:transparent; }
+        &::-webkit-scrollbar-thumb { border-radius:9999px; background-color:var(--color-border); }
+    }
+}
+
 /* ─── Utilities ──────────────────────────────────────────────── */
 @layer utilities {
     .max-w-container {
