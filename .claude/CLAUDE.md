@@ -47,9 +47,9 @@ Every marketing page **must** include breadcrumb JSON-LD via `buildBreadcrumbJso
 Pattern:
 ```ts
 const breadcrumbItems = [
-  { label: 'Trang chủ', href: '/' },
-  { label: 'Section', href: '/section' },
-  { label: 'Current page' }, // no href on last item
+    {label: 'Trang chủ', href: '/'},
+    {label: 'Section', href: '/section'},
+    {label: 'Current page'}, // no href on last item
 ];
 ```
 
@@ -89,10 +89,13 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 - Do not delete wallet code. May revive later. ROI currently too low vs competitors.
 - `public/robots.txt` has `Disallow: /app`. Keep this.
 
-### Chat (`/chat`, `openwallet-chat`)
-- **Chat button hidden** - `ChatToggleButton` removed from `components/layout/header.tsx` (both desktop + mobile). Do not re-add unless explicitly requested.
-- Not ready for public release. Needs evals + system prompt iteration first.
-- **Full chat docs (arch, logging, Langfuse, evals, dev plan):** `.claude/docs/chat.md`
+### Owie Chat (`/owie-chat`) - LIVE
+- `/owie-chat` — public landing + info page. No auth. Free to use.
+- `/chat` — full chat app (separate route group `app/(chat)/`).
+- Legacy redirect: `/openwallet-chat` → `/owie-chat` (next.config.ts, keep).
+- `OpenOwieButton` — opens chat panel (use in marketing pages).
+- `ChatToggleButton` — exists but NOT in header. Do not re-add unless explicitly requested (UX decision, separate from launch status).
+- **Full chat docs (arch, logging, Langfuse, evals):** `.claude/docs/chat.md`
 
 ### `so-sanh-404-redirect`
 - Active. Handles legacy `/card-battle/X-vs-Y` URLs → redirects to `/card-battle?compare=X,Y`.
@@ -130,6 +133,7 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 | `/sync-api-types` | `commands/sync-api-types.md` | Regenerate types from API schema, diff changes, scan codebase, suggest updates |
 | `/edit-system-prompt` | `commands/edit-system-prompt.md` | Edit Owie's system prompt, enforce invariants, push to Langfuse |
 
+@.claude/docs/openwallet-brain.md
 @.claude/docs/architecture.md
 @.claude/docs/layout.md
 @.claude/docs/DESIGN.md

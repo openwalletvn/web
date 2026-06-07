@@ -16,7 +16,7 @@ export function ChatToggleButton() {
             <span className="bg-primary rounded-sm w-8 h-8 flex justify-center items-center text-white">
                 <MessageCircleIcon className="size-4 shrink-0" />
             </span>
-            <span className="pr-2 text-sm">WalletChat</span>
+            <span className="pr-2 text-sm">Owie</span>
             <kbd className="hidden items-center gap-0.5 rounded px-1.5 text-xs md:flex opacity-50 mr-1">
                 <span className="text-[16px]">⌘</span>/
             </kbd>

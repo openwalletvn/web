@@ -39,7 +39,7 @@ function InfoBox({children}: { children: React.ReactNode }) {
     );
 }
 
-export default function WalletChatPage() {
+export default function OwieChatPage() {
     const jsonLd = {
         '@context': 'https://schema.org',
         '@graph': [

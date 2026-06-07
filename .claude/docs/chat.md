@@ -1,6 +1,7 @@
-# Chat
+# Chat (Owie)
 
-Feature gate: hidden from public. Button removed from header. Not ready - needs evals + system prompt iteration.
+**Status: LIVE.** Public at `/owie-chat` (landing) + `/chat` (full app). No auth required, free.
+Header toggle button (`ChatToggleButton`) still hidden — UX decision, not readiness gate.
 
 ## Architecture
 
