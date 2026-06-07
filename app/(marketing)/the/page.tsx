@@ -55,13 +55,13 @@ export default async function CardsPage() {
     return (
         <MarketingPageShell title="Thẻ ngân hàng Việt Nam" breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
             <div className="mb-8 space-y-4">
-                <p className="text-text-muted">
+                <p className="">
                     Tra cứu danh sách {allCards.length}+ các loại thẻ ngân hàng tại Việt Nam. Với sự phát triển của
                     thanh toán không tiền mặt và hưởng ứng chủ trương của chính phủ, OpenWallet thu thập danh sách thẻ
                     từ {banks.length}+ ngân hàng đang hoạt động tại Việt Nam với thông tin được kiểm duyệt thận trọng.
                     Mục tiêu mang đến cho mọi người một công cụ tra cứu thẻ phù hợp với nhu cầu tiêu dùng.
                 </p>
-                <p className="text-text-muted">
+                <p className="">
                     Bạn có thể bắt đầu với bảng xếp hạng thẻ theo lĩnh vực chi tiêu được tổng hợp tại đây:
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -71,7 +71,7 @@ export default async function CardsPage() {
                         </Link>
                     ))}
                 </div>
-                <p className="text-text-muted">
+                <p className="">
                     Bạn muốn được tư vấn? Hãy đặt câu hỏi với Owie.
                 </p>
                 <OpenOwieButton label="Hỏi Owie ngay" size="sm"/>
