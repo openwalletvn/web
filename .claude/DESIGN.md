@@ -230,34 +230,37 @@ Single source of truth for tokens, components, and UI rules. Read this before wr
 --font-body: 'Inter Tight', sans-serif;   /* body, UI, nav */
 ```
 
+**Source of truth: `app/typography.css`** — always read that file for the authoritative class list and values. The table below is a snapshot; the file is canonical.
+
 ### Utility Classes
 
-| Class | Font | Size | Use for |
-|-------|------|------|---------|
-| `.text-hero` | Display | clamp(2.5rem → 72px) | Homepage hero |
-| `.text-section` | Display | clamp(1.75rem → 56px) | Section headings |
-| `.text-display-md` | Display | clamp(1.5rem → 40px) | Feature headings |
-| `.text-card-heading` | Display | clamp(1.125rem → 24px) | Card section titles |
-| `.text-ui` | Display | clamp(1rem → 18px) | UI labels, nav |
-| `.text-body-lg` | Body | 22px | Lead text |
-| `.text-body-md` | Body | 18px | Standard body |
-| `.text-body` | Body | 16px | Default body |
-| `.text-body-sm` | Body | 14px | Secondary text |
-| `.text-label` | Body | 12px | Uppercase labels |
-| `.text-nav` | Body | 14px | Nav items (uppercase) |
-| `.text-link` | — | — | Inline links (red + underline) |
+**Display (Cal Sans) — applied automatically to `h1`–`h6`, or use as override classes:**
+
+| Class | Size (mobile → desktop) | Use for |
+|-------|--------------------------|---------|
+| `.heading-1` | 40px → 72px | Page hero |
+| `.heading-2` | 31px → 56px | Section headings |
+| `.heading-3` | 23px → 42px | Feature headings |
+| `.heading-4` | 20px → 36px | Card section titles |
+| `.heading-5` | 17px → 30px | UI labels |
+| `.heading-6` | 14px → 20px | Small UI labels |
+
+**Body (Inter Tight):**
+
+| Class | Size | Use for |
+|-------|------|---------|
+| `.text-body-lg` | 22px | Lead text |
+| `.text-body-md` | 18px | Standard body |
+| `.text-body` | 16px | Default body |
+| `.text-body-sm` | 14px | Secondary text |
+| `.text-caption` | 14px | Captions |
+| `.text-label` | 12px | Uppercase labels |
+| `.text-numeral` | 24px bold | Stat numbers |
+| `.text-link` | — | Inline links (red + underline) |
 
 ### Heading Elements
 
-`h1`–`h6` get base styles automatically. Use utility classes when visual size doesn't match semantic level.
-
-| Element | Default class |
-|---------|--------------|
-| `h1` | `.text-hero` |
-| `h2` | `.text-section` |
-| `h3` | `.text-display-md` |
-| `h4` | `.text-card-heading` |
-| `h5`, `h6` | `.text-ui` |
+`h1`–`h6` get `heading-1` through `heading-6` automatically via `@layer base`. Use a different `.heading-*` class on the element when visual size should differ from semantic level.
 
 ### Typography Rules
 
@@ -270,8 +273,8 @@ Single source of truth for tokens, components, and UI rules. Read this before wr
 ### `Text` + `Heading` Components
 
 ```tsx
-<Text variant="body|body-sm|body-md|body-lg|label|nav" as="p|span|div|li" />
-<Heading as="h1|h2|h3|h4|h5|h6" variant="hero|section|display-md|card-heading|ui" />
+<Text variant="body|body-sm|body-md|body-lg|label" as="p|span|div|li" />
+<Heading as="h1|h2|h3|h4|h5|h6" />
 // variant optional — omit to use element's default base style
 ```
 
@@ -432,6 +435,19 @@ border-radius: 8px;
 padding: 24px;
 ```
 
+### Metric / Stat Grid (Wobble Cards)
+
+Use `OwWobbleCard` in a responsive grid for any group of stats, fees, or key figures. Never flat bordered cards for this pattern.
+
+```tsx
+<div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+  <OwWobbleCard brandColor={brandColor}>
+    {/* stat content */}
+  </OwWobbleCard>
+  {/* … more cells */}
+</div>
+```
+
 ---
 
 ## Components
@@ -440,7 +456,7 @@ padding: 24px;
 
 Follow in order. Stop at first match.
 
-1. **Check `components/ui/` first** — primitives already exist (see list below). If it's there, use it. Do not recreate.
+1. **Check `components/ui/` AND `components/ow-ui/` first** — primitives already exist (see list below). If it's there, use it. Do not recreate. If unsure whether a needed component exists, ask before creating.
 2. **Check this doc for domain components** — if variant prop exists, use it.
 3. **Add variant before new file** — new visual treatment → add `variant` prop to existing component.
 4. **New file only when ROI is clear** — used in 2+ places, OR >80 lines JSX, OR clearly distinct domain.
@@ -485,14 +501,26 @@ Import `Slot` from `"radix-ui"`.
 
 ---
 
-### UI Primitives (`components/ui/`)
+### UI Primitives
 
-Check before creating anything new:
+**Before writing any UI, check both component folders for existing primitives. If something looks like it should exist but doesn't, ask — don't invent.**
+
+**`components/ui/`** (shadcn/radix primitives):
 
 `accordion`, `badge`, `brand-badge`, `brand-button`, `breadcrumb`, `button`, `chip`,
 `collapsible`, `command`, `dashed-badge`, `dialog`, `empty-state`, `form-field`,
 `heading`, `input`, `navigation-menu`, `page-container`, `popover`, `select`,
 `separator`, `sheet`, `sidebar`, `skeleton`, `stack`, `switch`, `text`, `tooltip`
+
+**`components/ow-ui/`** (domain primitives — updated regularly):
+
+**Source of truth: `ls components/ow-ui/`** — always list the directory before starting any UI work. The list below is a snapshot only.
+
+`ow-accordion`, `ow-alert`, `ow-amount`, `ow-badge` + `ow-badges`, `ow-badge-number-icon`,
+`ow-bank-image`, `ow-bank-row`, `ow-button`, `ow-button-header`, `ow-card-cashback-rule`,
+`ow-card-image`, `ow-card-intent-badges`, `ow-card-ranked-row`, `ow-logo`, `ow-owie-fab`,
+`ow-rank-badge`, `ow-range-slider`, `ow-source-list`, `ow-tooltip`, `ow-traffic-lights`,
+`ow-wobble-card`
 
 ---
 
