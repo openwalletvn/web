@@ -450,7 +450,7 @@ Follow in order. Stop at first match.
 
 ### `ow-` Naming Convention
 
-Every component wrapper must have `ow-<filename-kebab-case>`:
+Every component wrapper must have `ow-<filename-kebab-case>` — purpose: identify components in browser DevTools inspector.
 
 ```
 post-card.tsx       → ow-post-card

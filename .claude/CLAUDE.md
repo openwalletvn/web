@@ -8,11 +8,11 @@ Vietnamese-first web app: public card-comparison site (SEO, SSR/SSG on Vercel) +
 
 Three sibling repos share the same parent folder:
 
-| Repo | Relative path from this repo |
-|------|------------------------------|
-| web (this) | `.` |
-| api | `../api` |
-| mcp | `../mcp` |
+| Repo       | Relative path from this repo |
+|------------|------------------------------|
+| web (this) | `.`                          |
+| api        | `../api`                     |
+| mcp        | `../mcp`                     |
 
 When asked to "edit local api repo" → work in `../api`. "edit local mcp repo" → work in `../mcp`.
 
@@ -23,6 +23,11 @@ When asked to "edit local api repo" → work in `../api`. "edit local mcp repo" 
 - Validate posts: `pnpm validate:posts`
 - Admin server: `pnpm admin`
 - Storybook: `pnpm storybook` → http://localhost:4000
+- Generate types: `pnpm generate:types` — regen from API schema
+- Check types: `pnpm check:types`
+- Chat evals: `pnpm eval`
+- Push system prompt: `pnpm push:prompt` (confirm with user first — see memory)
+- Chat log viewer: `pnpm chatlog`
 
 ## Core principles
 1. **Vercel deployment** - SSR/SSG via Vercel. Dynamic routes allowed. Data fetched at build time where possible.
@@ -53,16 +58,11 @@ const breadcrumbItems = [
 ];
 ```
 
-Pages currently missing breadcrumbs (add when touching): `dieu-khoan`, `docs`, `ve-openwallet`, `lien-he`, `mien-tru-trach-nhiem`, `chinh-sach-bao-mat`, `card-battle` (index).
-
-## Component conventions
-- Every component's wrapper element **must** have a class name matching its filename, prefixed with `ow-`.
-- Pattern: `ow-<filename-kebab-case>` → e.g. `post-card.tsx` → `ow-post-card`, `card-image.tsx` → `ow-card-image`.
-- Prepend to existing `className` string. No new wrapper elements.
-- Purpose: identify components in browser DevTools inspector.
+When adding a new marketing page, add breadcrumb JSON-LD immediately — do not leave it for later.
 
 ## Layout & CSS rules
-See `@.claude/docs/DESIGN.md` for container conventions, CSS/typography rules, and full design system.
+
+See `@.claude/DESIGN.md` for container conventions, CSS/typography rules, and full design system.
 
 ## API authentication
 - Always use `apiFetch()` from `lib/api.ts` - auto-injects `X-OpenWallet-Key` header.
@@ -120,20 +120,20 @@ See `@.claude/docs/DESIGN.md` for container conventions, CSS/typography rules, a
 
 ## Custom commands
 
-| Command | File | Purpose |
-|---------|------|---------|
-| `/write-post` | `commands/write-post.md` | Write a new blog post |
-| `/generate-images` | `commands/generate-images.md` | Add images to blog posts + Gemini prompts |
-| `/add-json-ld` | `commands/add-json-ld.md` | Add JSON-LD structured data to a page |
-| `/add-changelog` | `commands/add-changelog.md` | Add a changelog entry |
-| `/persona-page` | `commands/persona-page.md` | Create or update persona page (scaffold + intro + FAQs from live API data) |
-| `/create-story` | `commands/create-story.md` | Create Storybook story for a component |
-| `/add-ow-ui` | `commands/add-ow-ui.md` | Move component to `ow-ui/`, rename to `Ow*`, create story, report usages |
-| `/commit-all` | `commands/commit-all.md` | Stage + commit all changes in logical groups with conventional commit messages |
-| `/sync-api-types` | `commands/sync-api-types.md` | Regenerate types from API schema, diff changes, scan codebase, suggest updates |
-| `/edit-system-prompt` | `commands/edit-system-prompt.md` | Edit Owie's system prompt, enforce invariants, push to Langfuse |
+| Command               | File                             | Purpose                                                                        |
+|-----------------------|----------------------------------|--------------------------------------------------------------------------------|
+| `/write-post`         | `commands/write-post.md`         | Write a new blog post                                                          |
+| `/generate-images`    | `commands/generate-images.md`    | Add images to blog posts + Gemini prompts                                      |
+| `/add-json-ld`        | `commands/add-json-ld.md`        | Add JSON-LD structured data to a page                                          |
+| `/add-changelog`      | `commands/add-changelog.md`      | Add a changelog entry                                                          |
+| `/persona-page`       | `commands/persona-page.md`       | Create or update persona page (scaffold + intro + FAQs from live API data)     |
+| `/create-story`       | `commands/create-story.md`       | Create Storybook story for a component                                         |
+| `/add-ow-ui`          | `commands/add-ow-ui.md`          | Move component to `ow-ui/`, rename to `Ow*`, create story, report usages       |
+| `/commit-all`         | `commands/commit-all.md`         | Stage + commit all changes in logical groups with conventional commit messages |
+| `/sync-api-types`     | `commands/sync-api-types.md`     | Regenerate types from API schema, diff changes, scan codebase, suggest updates |
+| `/edit-system-prompt` | `commands/edit-system-prompt.md` | Edit Owie's system prompt, enforce invariants, push to Langfuse                |
 
 @.claude/docs/openwallet-brain.md
 @.claude/docs/architecture.md
-@.claude/docs/DESIGN.md
+@.claude/DESIGN.md
 @.claude/docs/chat.md
