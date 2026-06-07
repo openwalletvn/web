@@ -68,6 +68,7 @@ See `@.claude/DESIGN.md` for container conventions, CSS/typography rules, and fu
 - Always use `apiFetch()` from `lib/api.ts` - auto-injects `X-OpenWallet-Key` header.
 - Never use `NEXT_PUBLIC_` prefix for `OPENWALLET_API_KEY` - server-only build secret.
 - Never use raw `fetch()` for API calls. Pass only path: `apiFetch('/api/v1/cards')`.
+- Never read `../api/lib/generated-*.json` or any cross-repo data files directly — use `apiFetch()` unless user explicitly asks.
 
 ## Blog content rules
 - **Categories**: `Review the`, `Huong dan`, `Tin tuc`, `So sanh the`, `Case Study` — dynamic, add new ones freely (no code enum)
@@ -123,7 +124,6 @@ See `@.claude/DESIGN.md` for container conventions, CSS/typography rules, and fu
 |-----------------------|----------------------------------|--------------------------------------------------------------------------------|
 | `/write-post`         | `commands/write-post.md`         | Write a new blog post                                                          |
 | `/generate-images`    | `commands/generate-images.md`    | Add images to blog posts + Gemini prompts                                      |
-| `/add-json-ld`        | `commands/add-json-ld.md`        | Add JSON-LD structured data to a page                                          |
 | `/add-changelog`      | `commands/add-changelog.md`      | Add a changelog entry                                                          |
 | `/persona-page`       | `commands/persona-page.md`       | Create or update persona page (scaffold + intro + FAQs from live API data)     |
 | `/create-story`       | `commands/create-story.md`       | Create Storybook story for a component                                         |

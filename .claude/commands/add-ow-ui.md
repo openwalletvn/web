@@ -30,7 +30,7 @@ If user passes a name (e.g. `chip`), search `components/` for the file. Multiple
 
 ### 3. Apply interactivity pattern
 
-Before writing the component, apply **design-system.md §6**:
+Before writing the component, apply **DESIGN.md § Components → Pre-Write Checklist**:
 - Default element → semantically neutral (`<span>` not `<button>`)
 - Never hardcode `<button>` as default for components that can be display-only
 
