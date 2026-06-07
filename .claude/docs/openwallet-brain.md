@@ -99,16 +99,6 @@ Organized under `/linh-vuc/`:
 
 ---
 
-## Architecture notes (web-relevant)
-
-- API: `https://api.openwallet.vn/api/v1/` — always use `apiFetch()`, never raw `fetch()`
-- Ranking logic lives in API repo — web only consumes results
-- Card data: read from `../api/lib/generated-*.json` locally, never hit live API in Claude sessions
-- ISR: all marketing pages with API calls must export `revalidate = 3600`
-- SEO: every public page needs JSON-LD + breadcrumb JSON-LD
-
----
-
 ## Key dates
 
 | Date | Event |
