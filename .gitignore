@@ -47,3 +47,4 @@ search-console-page-indexing/
 *storybook.log
 storybook-static
 logs/
+.claude/settings.local.json
