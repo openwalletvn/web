@@ -70,7 +70,7 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 - Never use raw `fetch()` for API calls. Pass only path: `apiFetch('/api/v1/cards')`.
 
 ## Blog content rules
-- **Categories** (exactly 4): `Review the`, `Huong dan`, `Tin tuc`, `So sanh the`
+- **Categories**: `Review the`, `Huong dan`, `Tin tuc`, `So sanh the`, `Case Study` — dynamic, add new ones freely (no code enum)
 - **Frontmatter required**: title, description, date, category, tags, status
 - **Headings**: `##`, `###`, `####` only (no `#`). Auto-TOC generated.
 - **Images**: `/public/images/posts/<slug>/<filename>.webp`
