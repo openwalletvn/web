@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import {redirect} from 'next/navigation';
 import {getIntents, getRelatedCardsForMany} from '@/lib/api';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
+import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {CompareSection} from '@/components/compare/compare-section';
 import {CompareSuggestedCards} from '@/components/compare/compare-suggested-cards';
 import {getTool} from '@/lib/tools';
@@ -39,12 +40,19 @@ export default async function ComparePage({
         getIntents().catch(() => []),
     ]);
     const intentMap = new Map(allIntents.map((i) => [i.slug, i]));
+    const jsonLd = buildBreadcrumbJsonLd(BREADCRUMB_ITEMS);
     return (
+        <>
+        <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
+        />
         <MarketingPageShell title="So sánh thẻ" breadcrumbItems={BREADCRUMB_ITEMS}>
             <IntentMapProvider intentMap={intentMap}>
                 <CompareSection />
             </IntentMapProvider>
             <CompareSuggestedCards cards={suggestedCards} />
         </MarketingPageShell>
+        </>
     );
 }

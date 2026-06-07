@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
 import {ContactForm} from '@/components/marketing/contact-form';
 import {buildTitle} from '@/lib/page-meta/title';
+import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 
 export const metadata: Metadata = {
     title: buildTitle('Liên Hệ'),
@@ -10,8 +11,18 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+    const jsonLd = buildBreadcrumbJsonLd([
+        {label: 'Trang chủ', href: '/'},
+        {label: 'Liên hệ'},
+    ]);
+
     return (
-        <ProsePageShell title="Liên hệ">
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
+            />
+            <ProsePageShell title="Liên hệ">
             <div className="flex flex-col gap-8">
                 <div className="flex flex-col gap-3 text-body text-slate-700">
                     <p>
@@ -44,5 +55,6 @@ export default function Page() {
                 </div>
             </div>
         </ProsePageShell>
+        </>
     );
 }
