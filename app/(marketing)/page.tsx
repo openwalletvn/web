@@ -5,6 +5,7 @@ import {SITE_NAME} from '@/lib/page-meta/title';
 
 export const metadata: Metadata = {
     title: SITE_NAME,
+    description: 'Tra cứu và so sánh thẻ ngân hàng Việt Nam một cách độc lập và minh bạch. Card Match, Card Battle, Owie AI, và OpenWallet MCP.',
 };
 import {BanksSection, BanksSectionSkeleton} from '@/components/marketing/banks-section';
 import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
@@ -13,6 +14,7 @@ import {HeroSection} from '@/components/marketing/hero-section';
 import {PersonaCategories} from '@/components/marketing/persona-categories';
 import {GradientShader} from "@/components/shared/gradient-shader";
 import {CardMatchFinder} from '@/components/match/card-match-finder';
+import {ToolsOverview} from '@/components/marketing/tools-overview';
 
 export const revalidate = 3600;
 
@@ -31,14 +33,14 @@ export default async function HomePage() {
                 '@type': 'WebSite',
                 name: 'OpenWallet',
                 url: 'https://openwallet.vn',
-                description: 'Tra cứu thông tin thẻ ngân hàng Việt Nam và quản lý ngày sao kê, nhắc hạn thanh toán. Miễn phí, bảo mật, mã nguồn mở.',
+                description: 'Tra cứu và so sánh thẻ ngân hàng Việt Nam một cách độc lập và minh bạch. Thuật toán xếp hạng không bị chi phối bởi quan hệ thương mại với bất kỳ ngân hàng nào.',
             },
             {
                 '@type': 'Organization',
                 name: 'OpenWallet',
                 url: 'https://openwallet.vn',
                 logo: 'https://openwallet.vn/icon.png',
-                description: 'Nguồn dữ liệu thẻ ngân hàng Việt Nam mã nguồn mở.',
+                description: 'Công cụ so sánh và tư vấn thẻ ngân hàng Việt Nam. Mã nguồn mở, độc lập về biên tập.',
             },
             buildBreadcrumbJsonLd([{label: 'Trang chủ', href: '/'}]),
         ],
@@ -62,6 +64,12 @@ export default async function HomePage() {
             <section className="border-t border-dashed border-border py-12">
                 <div className="ow-container">
                     <CardMatchFinder personas={personas} intents={intents}/>
+                </div>
+            </section>
+
+            <section className="border-t border-dashed border-border py-12">
+                <div className="ow-container">
+                    <ToolsOverview/>
                 </div>
             </section>
 
