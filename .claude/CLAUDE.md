@@ -62,7 +62,7 @@ Pages currently missing breadcrumbs (add when touching): `dieu-khoan`, `docs`, `
 - Purpose: identify components in browser DevTools inspector.
 
 ## Layout & CSS rules
-See `@.claude/docs/layout.md` for container conventions and CSS/typography rules.
+See `@.claude/docs/DESIGN.md` for container conventions, CSS/typography rules, and full design system.
 
 ## API authentication
 - Always use `apiFetch()` from `lib/api.ts` - auto-injects `X-OpenWallet-Key` header.
@@ -135,7 +135,5 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 
 @.claude/docs/openwallet-brain.md
 @.claude/docs/architecture.md
-@.claude/docs/layout.md
 @.claude/docs/DESIGN.md
-@.claude/docs/design-system.md
 @.claude/docs/chat.md
