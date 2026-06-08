@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {OwButton} from '@/components/ow-ui/ow-button';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
 import {buildTitle} from '@/lib/page-meta/title';
+import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {OpenOwieButton} from '@/components/chat/open-owie-button';
 
 export const metadata: Metadata = {
@@ -11,8 +12,18 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+    const jsonLd = buildBreadcrumbJsonLd([
+        {label: 'Trang chủ', href: '/'},
+        {label: 'Về OpenWallet'},
+    ]);
+
     return (
-        <ProsePageShell title="Về OpenWallet">
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
+            />
+            <ProsePageShell title="Về OpenWallet">
                     <div className="flex flex-col gap-10">
                         <Section title="Chúng tôi là ai">
                             <p>OpenWallet là công cụ so sánh và tư vấn thẻ ngân hàng Việt Nam, xây dựng trên nguyên tắc độc lập về biên tập: thuật toán xếp hạng và gợi ý thẻ không bị chi phối bởi quan hệ thương mại với bất kỳ ngân hàng nào.</p>
@@ -71,6 +82,7 @@ export default function Page() {
                         </Section>
                     </div>
         </ProsePageShell>
+        </>
     );
 }
 

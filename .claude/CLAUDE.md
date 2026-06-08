@@ -8,11 +8,11 @@ Vietnamese-first web app: public card-comparison site (SEO, SSR/SSG on Vercel) +
 
 Three sibling repos share the same parent folder:
 
-| Repo | Relative path from this repo |
-|------|------------------------------|
-| web (this) | `.` |
-| api | `../api` |
-| mcp | `../mcp` |
+| Repo       | Relative path from this repo |
+|------------|------------------------------|
+| web (this) | `.`                          |
+| api        | `../api`                     |
+| mcp        | `../mcp`                     |
 
 When asked to "edit local api repo" → work in `../api`. "edit local mcp repo" → work in `../mcp`.
 
@@ -23,6 +23,11 @@ When asked to "edit local api repo" → work in `../api`. "edit local mcp repo" 
 - Validate posts: `pnpm validate:posts`
 - Admin server: `pnpm admin`
 - Storybook: `pnpm storybook` → http://localhost:4000
+- Generate types: `pnpm generate:types` — regen from API schema
+- Check types: `pnpm check:types`
+- Chat evals: `pnpm eval`
+- Push system prompt: `pnpm push:prompt` (confirm with user first — see memory)
+- Chat log viewer: `pnpm chatlog`
 
 ## Core principles
 1. **Vercel deployment** - SSR/SSG via Vercel. Dynamic routes allowed. Data fetched at build time where possible.
@@ -47,30 +52,26 @@ Every marketing page **must** include breadcrumb JSON-LD via `buildBreadcrumbJso
 Pattern:
 ```ts
 const breadcrumbItems = [
-  { label: 'Trang chủ', href: '/' },
-  { label: 'Section', href: '/section' },
-  { label: 'Current page' }, // no href on last item
+    {label: 'Trang chủ', href: '/'},
+    {label: 'Section', href: '/section'},
+    {label: 'Current page'}, // no href on last item
 ];
 ```
 
-Pages currently missing breadcrumbs (add when touching): `dieu-khoan`, `docs`, `ve-openwallet`, `lien-he`, `mien-tru-trach-nhiem`, `chinh-sach-bao-mat`, `card-battle` (index).
-
-## Component conventions
-- Every component's wrapper element **must** have a class name matching its filename, prefixed with `ow-`.
-- Pattern: `ow-<filename-kebab-case>` → e.g. `post-card.tsx` → `ow-post-card`, `card-image.tsx` → `ow-card-image`.
-- Prepend to existing `className` string. No new wrapper elements.
-- Purpose: identify components in browser DevTools inspector.
+When adding a new marketing page, add breadcrumb JSON-LD immediately — do not leave it for later.
 
 ## Layout & CSS rules
-See `@.claude/docs/layout.md` for container conventions and CSS/typography rules.
+
+See `@.claude/DESIGN.md` for container conventions, CSS/typography rules, and full design system.
 
 ## API authentication
 - Always use `apiFetch()` from `lib/api.ts` - auto-injects `X-OpenWallet-Key` header.
 - Never use `NEXT_PUBLIC_` prefix for `OPENWALLET_API_KEY` - server-only build secret.
 - Never use raw `fetch()` for API calls. Pass only path: `apiFetch('/api/v1/cards')`.
+- Never read `../api/lib/generated-*.json` or any cross-repo data files directly — use `apiFetch()` unless user explicitly asks.
 
 ## Blog content rules
-- **Categories** (exactly 4): `Review the`, `Huong dan`, `Tin tuc`, `So sanh the`
+- **Categories**: `Review the`, `Huong dan`, `Tin tuc`, `So sanh the`, `Case Study` — dynamic, add new ones freely (no code enum)
 - **Frontmatter required**: title, description, date, category, tags, status
 - **Headings**: `##`, `###`, `####` only (no `#`). Auto-TOC generated.
 - **Images**: `/public/images/posts/<slug>/<filename>.webp`
@@ -89,10 +90,13 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 - Do not delete wallet code. May revive later. ROI currently too low vs competitors.
 - `public/robots.txt` has `Disallow: /app`. Keep this.
 
-### Chat (`/chat`, `openwallet-chat`)
-- **Chat button hidden** - `ChatToggleButton` removed from `components/layout/header.tsx` (both desktop + mobile). Do not re-add unless explicitly requested.
-- Not ready for public release. Needs evals + system prompt iteration first.
-- **Full chat docs (arch, logging, Langfuse, evals, dev plan):** `.claude/docs/chat.md`
+### Owie Chat (`/owie-chat`) - LIVE
+- `/owie-chat` — public landing + info page. No auth. Free to use.
+- `/chat` — full chat app (separate route group `app/(chat)/`).
+- Legacy redirect: `/openwallet-chat` → `/owie-chat` (next.config.ts, keep).
+- `OpenOwieButton` — opens chat panel (use in marketing pages).
+- `ChatToggleButton` — exists but NOT in header. Do not re-add unless explicitly requested (UX decision, separate from launch status).
+- **Full chat docs (arch, logging, Langfuse, evals):** `.claude/docs/chat.md`
 
 ### `so-sanh-404-redirect`
 - Active. Handles legacy `/card-battle/X-vs-Y` URLs → redirects to `/card-battle?compare=X,Y`.
@@ -100,13 +104,12 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 
 ## Card ranking
 
-**Architecture SSOT: `../api/.claude/docs/card-recommendation-architecture.md`** - authoritative doc for intent model, intent groups, ranking rules, and data quality requirements. Read this before touching any ranking or recommendation code.
+**Architecture SSOT: `../api/.claude/docs/card-ranking.md`** - authoritative doc for intent model, intent groups, ranking rules, and data quality requirements. Read this before touching any ranking or recommendation code.
 
 **Ranking logic lives in the API repo.** The web repo only consumes results:
 - `lib/cashback-calc.ts` - cashback estimation (mirrors API logic for display)
 - `lib/card-ranker.ts` - sort order only (cashback desc → annual_fee asc → network_popularity asc)
-- `components/marketing/card-ranking-table.tsx` - UI with spend selector
-- `components/marketing/recommendation-finder.tsx` - macro→micro→atomic intent selector + `POST /api/ranking` proxy
+- `components/match/card-match-finder.tsx` - persona selector, spend slider, `POST /api/ranking` proxy
 
 ## Meta-rules
 1. Before any task: check `.claude/commands/` for a relevant command file.
@@ -117,21 +120,19 @@ See `@.claude/docs/layout.md` for container conventions and CSS/typography rules
 
 ## Custom commands
 
-| Command | File | Purpose |
-|---------|------|---------|
-| `/write-post` | `commands/write-post.md` | Write a new blog post |
-| `/generate-images` | `commands/generate-images.md` | Add images to blog posts + Gemini prompts |
-| `/add-json-ld` | `commands/add-json-ld.md` | Add JSON-LD structured data to a page |
-| `/add-changelog` | `commands/add-changelog.md` | Add a changelog entry |
-| `/persona-page` | `commands/persona-page.md` | Create or update persona page (scaffold + intro + FAQs from live API data) |
-| `/create-story` | `commands/create-story.md` | Create Storybook story for a component |
-| `/add-ow-ui` | `commands/add-ow-ui.md` | Move component to `ow-ui/`, rename to `Ow*`, create story, report usages |
-| `/commit-all` | `commands/commit-all.md` | Stage + commit all changes in logical groups with conventional commit messages |
-| `/sync-api-types` | `commands/sync-api-types.md` | Regenerate types from API schema, diff changes, scan codebase, suggest updates |
-| `/edit-system-prompt` | `commands/edit-system-prompt.md` | Edit Owie's system prompt, enforce invariants, push to Langfuse |
+| Command               | File                             | Purpose                                                                        |
+|-----------------------|----------------------------------|--------------------------------------------------------------------------------|
+| `/write-post`         | `commands/write-post.md`         | Write a new blog post                                                          |
+| `/generate-images`    | `commands/generate-images.md`    | Add images to blog posts + Gemini prompts                                      |
+| `/add-changelog`      | `commands/add-changelog.md`      | Add a changelog entry                                                          |
+| `/persona-page`       | `commands/persona-page.md`       | Create or update persona page (scaffold + intro + FAQs from live API data)     |
+| `/create-story`       | `commands/create-story.md`       | Create Storybook story for a component                                         |
+| `/add-ow-ui`          | `commands/add-ow-ui.md`          | Move component to `ow-ui/`, rename to `Ow*`, create story, report usages       |
+| `/commit-all`         | `commands/commit-all.md`         | Stage + commit all changes in logical groups with conventional commit messages |
+| `/sync-api-types`     | `commands/sync-api-types.md`     | Regenerate types from API schema, diff changes, scan codebase, suggest updates |
+| `/edit-system-prompt` | `commands/edit-system-prompt.md` | Edit Owie's system prompt, enforce invariants, push to Langfuse                |
 
+@.claude/docs/openwallet-brain.md
 @.claude/docs/architecture.md
-@.claude/docs/layout.md
-@.claude/docs/DESIGN.md
-@.claude/docs/design-system.md
-@.claude/docs/chat.md
+@.claude/DESIGN.md
+@.claude/docs/features/owie-chat.md

@@ -21,7 +21,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
 
             {/* Heading */}
             <h1 className="heading-1 text-center mb-10 px-4 relative z-20">
-                OpenWallet<br/>Tra cứu thẻ tại Việt Nam.
+                OpenWallet<br/>Dùng thẻ mỗi ngày cùng Owie.
             </h1>
 
             {/*
@@ -79,7 +79,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
                 <div
                     className="ow-headline z-20 absolute left-1/2 -translate-x-1/2 md:top-1/2 max-md:bottom-0 w-full md:max-w-[500px] max-w-[320px] flex items-center justify-center md:p-6 p-4 bg-[rgba(124,124,124,0.4)] border border-[rgba(236,236,236,0.3)] backdrop-blur-[14px] rounded-full">
                     <p className="font-body font-medium md:text-[22px] leading-[130%] text-white text-center">
-                        Tra cứu thẻ tín dụng. Quản lý thẻ. <br/>Theo dõi ngày sao kê và thanh toán.
+                        So sánh thẻ tín dụng. Tìm thẻ phù hợp. <br/>Độc lập, minh bạch, không quảng cáo.
                     </p>
                 </div>
 

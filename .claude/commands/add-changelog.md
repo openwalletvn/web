@@ -1,36 +1,38 @@
 # Add a changelog entry
 
-## Create the file
+## File
 
-Path: `content/changelog/YYYY-MM-DD-<slug>.mdx`
+Single file: `content/changelog.mdx`
 
-- Date prefix matches the entry date
-- Slug is lowercase kebab-case, describes the change
-- Example: `2026-03-04-webp-card-images.mdx`
+Entries are appended at the **top** (newest first), below the `# Changelog` heading.
 
-## Frontmatter
+## Format
 
-```yaml
----
-title: "Short description of the change"
-date: "YYYY-MM-DD"
----
+```mdx
+## YYYY-MM-DD | Tiêu đề ngắn gọn, rõ ràng
+
+- Bullet mô tả WHAT và WHY, không chỉ liệt kê tính năng
+- Technical terms giữ tiếng Anh (API, IndexedDB, MCP, SSR, ISR, WebP...)
+- Tối đa 4 bullets mỗi entry
 ```
 
-Only `title` and `date` are required.
+## Rules
 
-## Content
+- Vietnamese, professional tone — no marketing words ("đột phá", "tuyệt vời")
+- No em dashes in bullet text — dùng dấu phẩy, dấu hai chấm
+- Numbers must be verified from code, not from memory (card count, bank count, etc.)
+- Only add entries for: card/bank data updates, new features, API changes, infra decisions, technical optimizations with clear impact
+- Do NOT add entries for: pure UI changes (color/spacing), minor bug fixes, marketing page content, internal config
 
-Write the body in Markdown below the frontmatter. Keep it concise - 1–3 short paragraphs.
+## When to add
 
-- Describe what changed and why
-- Link to relevant pages if applicable
-- Use Vietnamese
+After completing:
+- Card or bank data changes (even small, if paired with pipeline improvement)
+- New feature launch
+- Significant API change (new endpoint, new filter)
+- Infrastructure decision (hosting, framework, test suite)
+- Technical optimization with measurable impact (WebP, cache, ISR)
 
-## How it works
+## Full guidelines
 
-- `lib/changelog.ts` reads all files from `content/changelog/`
-- Files are sorted by date (newest first)
-- The slug is extracted by stripping the date prefix and extension
-- Rendered at `/changelog`
-- Also included in the sitemap (`app/sitemap.ts`)
+See `.claude/docs/changelog.md` for tone examples, good vs bad entries, and edge cases.

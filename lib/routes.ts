@@ -10,8 +10,8 @@ export const ROUTES = {
     // Tools
     cardBattle: '/card-battle',
     cardMatch: '/card-match',
-    chat: '/chat',
-    owieChat: '/owie-chat',
+    chat: '/chat',         // full chat app (app/(chat)/chat/page.tsx)
+    owieChat: '/owie-chat', // Owie landing/info page (marketing)
     openwalletMcp: '/mcp',
     openwalletApp: '/openwallet-app',
 

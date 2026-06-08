@@ -60,8 +60,9 @@ image_prompts:
 | `Huong dan` | How-to guides, tips, tutorials |
 | `Tin tuc` | Banking news, new card launches, regulatory updates |
 | `So sanh the` | Head-to-head comparisons between cards/networks/strategies |
+| `Tong hop` | Curated roundups and listicles: "X thẻ tốt nhất cho Y", danh sách tổng hợp theo tiêu chí |
 
-Do NOT invent new categories.
+Do NOT invent new categories beyond those listed.
 
 ## Content rules
 
@@ -69,6 +70,7 @@ Do NOT invent new categories.
 - Write in **Vietnamese**
 - Technical terms stay English: API, JSON, Visa, Mastercard
 - Monetary amounts: `200.000 VND` or `200k`
+- **Never imply API counts = market totals.** When citing card/bank counts from our API, say "trong cơ sở dữ liệu OpenWallet" or "mà OpenWallet đang theo dõi", NOT "tại Việt Nam có X thẻ". Our database is a subset, not the full market.
 
 ### Headings
 - `##` main sections, `###` subsections, `####` sparingly
