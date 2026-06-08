@@ -19,7 +19,8 @@ export const remarkAutoLink: Plugin<[], Root> = () => (tree) => {
     AUTO_LINKS.map(([keyword, url]) => {
       // Escape special regex characters in the keyword.
       const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const pattern = new RegExp(escaped);
+      // Word boundaries that cover ASCII and Vietnamese Unicode chars
+      const pattern = new RegExp(`(?<![\\w\\u00C0-\\u1EF9])${escaped}(?![\\w\\u00C0-\\u1EF9])`);
 
       return [
         pattern,
