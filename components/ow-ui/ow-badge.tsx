@@ -116,6 +116,7 @@ type BaseProps = {
     active?: boolean;
     asChild?: boolean;
     className?: string;
+    href?: string;
     onClick?: React.MouseEventHandler;
     small?: boolean;
 };
@@ -162,7 +163,7 @@ export type OwBadgeProps =
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function OwBadge(props: OwBadgeProps) {
-    const {active = false, asChild = false, className, onClick, small = false} = props;
+    const {active = false, asChild = false, className, href, onClick, small = false} = props;
     const slotChild = asChild && 'children' in props ? props.children as React.ReactElement : undefined;
 
     if (props.variant === 'intent') {
@@ -284,7 +285,7 @@ export function OwBadge(props: OwBadgeProps) {
     const {colorHex, children} = props as Extract<OwBadgeProps, {variant?: never}>;
     const style = colorHex ? colorVars(colorHex, active ? 0.2 : 0.1, active ? 0.5 : 0.3) : {};
     return (
-        <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} style={style} onClick={onClick}
+        <BadgeShell active={active} asChild={asChild} slotChild={slotChild} small={small} style={style} href={href} onClick={onClick}
                     className={cn(
                         colorHex && COLOR_CLS,
                         !colorHex && active && 'bg-primary border-primary text-white',
