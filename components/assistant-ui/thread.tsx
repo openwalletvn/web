@@ -42,7 +42,7 @@ import {
     SquareIcon,
 } from "lucide-react";
 import {type FC, useEffect, useRef, useState} from "react";
-import {getContextPlaceholders, stripPlaceholderHint, type PageContext} from "@/lib/chat/page-context";
+import {getContextPlaceholders, type PageContext} from "@/lib/chat/page-context";
 
 type HealthState = { ready: boolean; mcp: boolean; api: boolean; model?: string } | null;
 
@@ -251,32 +251,16 @@ const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
             data-slot="aui_composer-shell"
             className="ow-composer-root flex w-full flex-col gap-2 rounded-(--composer-radius) border bg-background p-(--composer-padding) transition-shadow focus-within:border-ring/75 focus-within:ring-2 focus-within:ring-ring/20"
         >
-            <ThreadPrimitive.Suggestion prompt={stripPlaceholderHint(currentPlaceholder)} asChild>
-                <div
-                    onClick={(e) => {
-                        if (inputRef.current?.value.trim() !== '') {
-                            e.stopPropagation(); // Block suggestion if input has value
-                        }
-                    }}
-                    onDoubleClick={(e) => {
-                        if (inputRef.current?.value.trim() === '') {
-                            setHasInputValue(true);
-                            e.currentTarget.click();
-                        }
-                    }}
-                >
-                    <ComposerPrimitive.Input
-                        ref={inputRef}
-                        placeholder={currentPlaceholder}
-                        className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-body outline-none placeholder:text-muted-foreground/80"
-                        rows={1}
-                        autoFocus
-                        aria-label="Message input"
-                        disabled={isRunning}
-                        onChange={(e) => setHasInputValue(e.target.value.trim() !== '')}
-                    />
-                </div>
-            </ThreadPrimitive.Suggestion>
+            <ComposerPrimitive.Input
+                ref={inputRef}
+                placeholder={currentPlaceholder}
+                className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-body outline-none placeholder:text-muted-foreground/80 text-black"
+                rows={1}
+                autoFocus
+                aria-label="Message input"
+                disabled={isRunning}
+                onChange={(e) => setHasInputValue(e.target.value.trim() !== '')}
+            />
             <ComposerAction health={health} selectedModelId={selectedModelId} onModelChange={setSelectedModelId}
                             contextWindow={contextWindow}/>
         </div>
@@ -431,7 +415,6 @@ const AssistantMessage: FC = () => {
                                         <ToolGroupTrigger
                                             count={part.indices.length}
                                             active={part.status.type === "running"}
-                                            disabled
                                         />
                                         <ToolGroupContent>{children}</ToolGroupContent>
                                     </ToolGroupRoot>
