@@ -4,10 +4,10 @@ import {SITE_NAME} from '@/lib/page-meta/title';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {GradientShader} from '@/components/shared/gradient-shader';
 import {HeroSection} from '@/components/marketing/hero-section';
-import {CardMatchSection} from '@/components/marketing/card-match-section';
 import {CardsCatalogTeaser} from '@/components/marketing/cards-catalog-teaser';
 import {ToolsSection} from '@/components/marketing/tools-section';
 import {RecentPostsSection} from '@/components/marketing/recent-posts-section';
+import {getPersonaTopCards} from '@/lib/persona-top-cards';
 
 export const metadata: Metadata = {
     title: SITE_NAME,
@@ -17,11 +17,12 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function HomePage() {
-    const [banks, cards, personas, intents] = await Promise.all([
+    const [banks, cards, personas, intents, personaTopCards] = await Promise.all([
         getBanks().catch(() => []),
         getCards().catch(() => []),
         getPersonas().catch(() => []),
         getIntents().catch(() => []),
+        getPersonaTopCards(),
     ]);
 
     const jsonLd = {
@@ -45,7 +46,7 @@ export default async function HomePage() {
     };
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col pb-12 md:pb-16">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
@@ -62,10 +63,14 @@ export default async function HomePage() {
             </div>
 
             {/* Card Match */}
-            <CardMatchSection personas={personas} intents={intents}/>
+            {/*<CardMatchSection personas={personas} intents={intents}/>*/}
 
             {/* Cards catalog entry point */}
-            <CardsCatalogTeaser cards={cards} banks={banks} totalCount={cards.length}/>
+            <section className="ow-cards-catalog-teaser md:py-16 py-12 bg-bg-light">
+                <div className="ow-container">
+                    <CardsCatalogTeaser cards={personaTopCards} banks={banks} totalCount={cards.length}/>
+                </div>
+            </section>
 
             {/* Blog */}
             <RecentPostsSection/>
