@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import type { Post } from '@/lib/mdx';
-import { AiBadge } from './ai-badge';
 import { fmtIsoDateLong } from '@/lib/utils';
 
 interface Props {
@@ -8,7 +7,7 @@ interface Props {
 }
 
 export function PostCard({ post }: Props) {
-  const { frontmatter, slug, excerpt, readingTime, categorySlug, tagSlugs } = post;
+  const { frontmatter, slug, excerpt, readingTime, categorySlug } = post;
 
   return (
     <Link
@@ -30,7 +29,6 @@ export function PostCard({ post }: Props) {
           {frontmatter.category}
         </span>
         <span className="text-body-sm text-text-subtle">{readingTime}</span>
-        {frontmatter.ai_generated && <AiBadge size="sm" />}
       </div>
 
       <h2 className="heading-6 line-clamp-2">
@@ -53,18 +51,6 @@ export function PostCard({ post }: Props) {
           </time>
         )}
 
-        {frontmatter.tags.length > 0 && (
-          <div className="flex gap-1 flex-wrap justify-end">
-            {frontmatter.tags.slice(0, 2).map((tag, i) => (
-              <span
-                key={tagSlugs[i]}
-                className="text-body-sm px-1.5 py-0.5 border border-dashed border-border text-text-subtle rounded"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
       </div>
     </Link>
