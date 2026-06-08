@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type {Post} from '@/lib/mdx';
 import {ROUTES} from '@/lib/routes';
 import {fmtIsoDate} from '@/lib/utils';
+import {OwPostCategoryDate} from './ow-post-category-date';
 
 export function OwPostList({posts, title = 'Tất cả bài viết'}: {
     posts: Post[];
@@ -35,12 +36,22 @@ export function OwPostList({posts, title = 'Tất cả bài viết'}: {
                             key={post.slug}
                             className="grid grid-cols-12 gap-1 sm:gap-4 items-start py-3"
                         >
-                            <span className="col-span-12 sm:col-span-2 text-body-sm text-text-muted sm:pt-0.5">
+                            {/* Mobile: combined category + date */}
+                            <div className="col-span-12 sm:hidden">
+                                <OwPostCategoryDate
+                                    category={post.frontmatter.category}
+                                    categorySlug={post.categorySlug}
+                                    date={post.frontmatter.date}
+                                />
+                            </div>
+
+                            {/* Desktop: separate columns */}
+                            <span className="hidden sm:block sm:col-span-2 text-body-sm text-text-muted sm:pt-0.5">
                                 {fmtIsoDate(post.frontmatter.date)}
                             </span>
                             <Link
                                 href={ROUTES.blogCategory(post.categorySlug)}
-                                className="sm:col-span-3 text-body-sm text-text-accent font-medium truncate sm:pt-0.5 hover:underline"
+                                className="hidden sm:block sm:col-span-3 text-body-sm text-text-accent font-medium truncate sm:pt-0.5 hover:underline"
                             >
                                 {post.frontmatter.category}
                             </Link>

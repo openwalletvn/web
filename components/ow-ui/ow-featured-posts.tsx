@@ -2,18 +2,7 @@ import Link from 'next/link';
 import type {Post} from '@/lib/mdx';
 import {resolvePosts} from '@/lib/mdx';
 import {ROUTES} from '@/lib/routes';
-import {fmtIsoDate} from '@/lib/utils';
-
-function CategoryLink({category, categorySlug}: {category: string; categorySlug: string}) {
-    return (
-        <Link
-            href={ROUTES.blogCategory(categorySlug)}
-            className="text-text-accent font-medium hover:underline"
-        >
-            {category}
-        </Link>
-    );
-}
+import {OwPostCategoryDate} from './ow-post-category-date';
 
 function FeaturedMainCard({post}: {post: Post}) {
     return (
@@ -30,13 +19,12 @@ function FeaturedMainCard({post}: {post: Post}) {
                 <Link href={ROUTES.blogPost(post.slug)} className="block aspect-[16/9] bg-bg-warm"/>
             )}
             <div className="flex flex-col gap-2 px-4 pb-4">
-                <div className="ow-post-category-date flex items-center gap-2 text-xs text-text-muted">
-                    <CategoryLink category={post.frontmatter.category} categorySlug={post.categorySlug}/>
-                    <span>·</span>
-                    <span>{fmtIsoDate(post.frontmatter.date)}</span>
-                    <span>·</span>
-                    <span>{post.readingTime}</span>
-                </div>
+                <OwPostCategoryDate
+                    category={post.frontmatter.category}
+                    categorySlug={post.categorySlug}
+                    date={post.frontmatter.date}
+                    readingTime={post.readingTime}
+                />
                 <Link href={ROUTES.blogPost(post.slug)}>
                     <h3 className="text-body font-semibold text-text-primary hover:text-text-accent transition-colors line-clamp-3">
                         {post.frontmatter.title}
@@ -53,11 +41,11 @@ function FeaturedMainCard({post}: {post: Post}) {
 function FeaturedSideItem({post}: {post: Post}) {
     return (
         <div className="flex flex-col gap-1 pb-4 border-b border-border last:border-0 last:pb-0">
-            <div className="flex items-center gap-2 text-xs text-text-muted">
-                <CategoryLink category={post.frontmatter.category} categorySlug={post.categorySlug}/>
-                <span>·</span>
-                <span>{fmtIsoDate(post.frontmatter.date)}</span>
-            </div>
+            <OwPostCategoryDate
+                category={post.frontmatter.category}
+                categorySlug={post.categorySlug}
+                date={post.frontmatter.date}
+            />
             <Link
                 href={ROUTES.blogPost(post.slug)}
                 className="text-body font-medium text-text-primary hover:text-text-accent transition-colors line-clamp-2"
