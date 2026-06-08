@@ -1,22 +1,16 @@
 import type { Post } from '@/lib/mdx';
-import { PostCard } from './post-card';
+import { OwPostList } from '@/components/ow-ui/ow-post-list';
 
 interface Props {
- posts: Post[];
+    posts: Post[];
 }
 
 export function RelatedPosts({ posts }: Props) {
- if (posts.length === 0) return null;
+    if (posts.length === 0) return null;
 
- return (
- <section className="ow-related-posts">
- <h4 className="mb-1">Bài viết liên quan</h4>
- <div className="border-t border-dashed border-slate-300 mt-1 mb-6" />
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
- {posts.map((post) => (
- <PostCard key={post.slug} post={post} />
- ))}
- </div>
- </section>
- );
+    return (
+        <div className="ow-related-posts">
+            <OwPostList posts={posts} title="Bài viết liên quan" />
+        </div>
+    );
 }
