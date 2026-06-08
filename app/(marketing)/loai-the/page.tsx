@@ -7,6 +7,9 @@ import {ROUTES} from '@/lib/routes';
 import {CARD_TYPE_LABELS, CARD_TYPE_HEX, CARD_TYPE_ICON, CARD_TYPE_SLUGS} from '@/lib/card-model';
 import {OwWobbleCard} from '@/components/ow-ui/ow-wobble-card';
 import type {CardType} from '@/lib/api';
+import {getBanks, getCards} from '@/lib/api';
+import {getPersonaTopCards} from '@/lib/persona-top-cards';
+import {CardsCatalogTeaser} from '@/components/marketing/cards-catalog-teaser';
 
 const CARD_TYPE_DESCRIPTIONS: Partial<Record<CardType, string>> = {
     credit: 'Thẻ thanh toán sau, thường có cashback hoặc tích điểm. Phù hợp để tối ưu hoàn tiền và quản lý chi tiêu linh hoạt.',
@@ -46,7 +49,13 @@ export async function generateMetadata(): Promise<Metadata> {
     return metadata;
 }
 
-export default function CardTypesPage() {
+export default async function CardTypesPage() {
+    const [banks, cards, personaTopCards] = await Promise.all([
+        getBanks().catch(() => []),
+        getCards().catch(() => []),
+        getPersonaTopCards(),
+    ]);
+
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
         title: META.title,
         description: META.description,
@@ -61,6 +70,7 @@ export default function CardTypesPage() {
             description="Tổng hợp các loại thẻ ngân hàng tại Việt Nam. Chọn loại thẻ để xem danh sách và so sánh chi tiết."
             breadcrumbItems={breadcrumbItems}
             jsonLd={jsonLd}
+            className="space-y-12 md:space-y-16"
         >
             <section className="ow-card-types-page flex flex-col gap-10">
                 <div className="ow-card-types-page-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -77,6 +87,9 @@ export default function CardTypesPage() {
                     ))}
                 </div>
             </section>
+
+            <CardsCatalogTeaser cards={personaTopCards} banks={banks} totalCount={cards.length}/>
+
         </MarketingPageShell>
     );
 }
