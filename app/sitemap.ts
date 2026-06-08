@@ -5,6 +5,7 @@ import { getComparePairs } from '@/lib/api'
 import { apiFetch } from '@/lib/api'
 // lib/compare-mdx + content/so-sanh/ MDX files - unused, remove when cleaning up
 import { getTool } from '@/lib/tools'
+import { getAllPosts } from '@/lib/mdx'
 
 export const dynamic = 'force-static'
 
@@ -70,7 +71,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   ]
 
-  // 4. Changelog
+  // 4. Blog posts - published only (getAllPosts filters drafts)
+  const postPages = getAllPosts().map((p) => ({
+    url: `${BASE_URL}/tin-tuc/${p.slug}`,
+    lastModified: new Date(p.frontmatter.updated ?? p.frontmatter.date),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }))
+
+  // 5. Changelog
   const changelogPage = {
     url: `${BASE_URL}/changelog`,
     changeFrequency: 'weekly' as const,
@@ -93,6 +102,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticPages,
     ...bankPages,
     ...cardPages,
+    ...postPages,
     changelogPage,
     ...comparePages,
   ]
