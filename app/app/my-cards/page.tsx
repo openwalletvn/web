@@ -100,7 +100,7 @@ function SortableCardRow({
  {moveOpen && (
  <>
  <div className="fixed inset-0 z-40" onClick={() => setMoveOpen(false)} />
- <div className="absolute right-0 top-full mt-1 z-50 w-52 bg-white border border-dashed border-slate-200 rounded-sm shadow-md overflow-hidden">
+ <div className="absolute right-0 top-full mt-1 z-50 w-52 bg-white border border-dashed border-slate-200 rounded shadow-md overflow-hidden">
  <MoveToWalletPicker
  walletCard={walletCard}
  otherWallets={otherWallets}
@@ -251,7 +251,7 @@ export default function WalletPage() {
  {[...cardsByBank.entries()].map(([bankId, cards]) => {
  const bank = banks[bankId];
  return (
- <div key={bankId} className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
+ <div key={bankId} className="border border-dashed border-slate-200 rounded overflow-hidden">
  <BankSectionHeader label={bank?.name ?? bankId} count={cards.length} />
  <DndContext
  sensors={sensors}

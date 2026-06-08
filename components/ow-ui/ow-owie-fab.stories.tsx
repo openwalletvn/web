@@ -22,7 +22,7 @@ export const Overview: Story = {
     render: () => (
         <OwStories>
             <OwStorySection title="Default (fixed to iframe corner)">
-                <div className="h-48 w-full border border-dashed border-border rounded-lg bg-bg-muted flex items-center justify-center text-text-muted text-sm">
+                <div className="h-48 w-full border border-dashed border-border rounded-2xl bg-bg-muted flex items-center justify-center text-text-muted text-sm">
                     Page content - FAB sits bottom-right of preview
                 </div>
                 <OwOwieFab/>

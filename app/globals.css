@@ -111,16 +111,6 @@
     --space-12:48px;
     --space-13:67px;
 
-    /* Border radius */
-    --radius-sm:4px;
-    --radius-md:8px;
-    --radius-lg:16px;
-    --radius-xl:32px;
-    --radius-2xl:40px;
-    --radius-pill:48px;
-    --radius-badge:52px;
-    --radius-full:96px;
-    --radius-circle:112px;
 
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -266,6 +256,18 @@
         &::-webkit-scrollbar-track { background:transparent; }
         &::-webkit-scrollbar-thumb { border-radius:9999px; background-color:var(--color-border); }
     }
+}
+
+/* ─── Custom radius utilities ───────────────────────────────── */
+@utility ow-rounded-large {
+    border-radius: 1rem;
+    @media (width >= 640px)  { border-radius: 2rem; }
+    @media (width >= 1024px) { border-radius: 2.5rem; }
+}
+
+@utility ow-rounded-small {
+    border-radius: 0.5rem;
+    @media (width >= 640px)  { border-radius: 1rem; }
 }
 
 /* ─── Utilities ──────────────────────────────────────────────── */

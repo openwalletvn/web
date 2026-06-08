@@ -91,7 +91,7 @@ export function WalletCardContent({
           value={walletCard.status ?? 'active'}
           onChange={(e) => onStatusChange(walletCard, e.target.value as CardStatus)}
           onClick={(e) => e.stopPropagation()}
-          className="shrink-0 self-center px-2 py-1 border border-dashed border-slate-200 rounded-sm bg-white text-slate-600 text-sm focus:outline-none focus:border-brand-blue hover:border-slate-400 transition-colors cursor-pointer"
+          className="shrink-0 self-center px-2 py-1 border border-dashed border-slate-200 rounded bg-white text-slate-600 text-sm focus:outline-none focus:border-brand-blue hover:border-slate-400 transition-colors cursor-pointer"
           aria-label="Trạng thái thẻ"
         >
           {ALL_STATUSES.map((opt) => (

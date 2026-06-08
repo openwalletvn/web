@@ -66,7 +66,7 @@ export default function NotificationsSettingsPage() {
   return (
     <>
       {/* Discord */}
-      <div className="p-4 border border-dashed border-slate-200 rounded-sm mb-3">
+      <div className="p-4 border border-dashed border-slate-200 rounded mb-3">
         <div className="flex items-center gap-2 mb-3">
           <IconBrandDiscord size={18} className="text-[#5865F2] shrink-0" />
           <span className="text-sm font-medium text-slate-800">Discord</span>
@@ -76,13 +76,13 @@ export default function NotificationsSettingsPage() {
           value={webhookUrl}
           onChange={(e) => setWebhookUrl(e.target.value)}
           placeholder="https://discord.com/api/webhooks/..."
-          className="w-full px-3 py-2 border border-dashed border-slate-300 rounded-sm text-slate-900 focus:outline-none focus:border-brand-blue text-sm mb-3"
+          className="w-full px-3 py-2 border border-dashed border-slate-300 rounded text-slate-900 focus:outline-none focus:border-brand-blue text-sm mb-3"
         />
         <div className="flex gap-2">
           <button
             onClick={handleSaveAdapter}
             disabled={!webhookUrl.trim()}
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-slate-300 rounded-sm text-sm text-slate-700 hover:border-slate-500 transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-slate-300 rounded text-sm text-slate-700 hover:border-slate-500 transition-colors disabled:opacity-40"
           >
             {adapterSaved ? <IconCheck size={14} className="text-green-500" /> : <IconDeviceFloppy size={14} />}
             {adapterSaved ? 'Đã lưu' : 'Lưu'}
@@ -91,7 +91,7 @@ export default function NotificationsSettingsPage() {
       </div>
 
       {/* Global reminder preferences */}
-      <div className="p-4 border border-dashed border-slate-200 rounded-sm mb-3">
+      <div className="p-4 border border-dashed border-slate-200 rounded mb-3">
         <p className="text-sm font-medium text-slate-800 mb-3">Tùy chọn nhắc nhở</p>
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-4">
@@ -140,7 +140,7 @@ export default function NotificationsSettingsPage() {
 
       {/* Coming soon */}
       {(['Telegram', 'Zalo'] as const).map((name) => (
-        <div key={name} className="flex items-center gap-3 p-4 border border-dashed border-slate-100 rounded-sm mb-2 opacity-50">
+        <div key={name} className="flex items-center gap-3 p-4 border border-dashed border-slate-100 rounded mb-2 opacity-50">
           <IconLock size={16} className="text-slate-300 shrink-0" />
           <span className="text-sm text-slate-400">{name}</span>
           <span className="ml-auto text-sm text-slate-300">Sắp ra mắt</span>

@@ -50,8 +50,8 @@ export default function CardDetailPage() {
  <div className="h-6 w-48 bg-slate-100 rounded" />
  <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-8">
  <div className="space-y-4">
- <div className="aspect-[16/10] bg-slate-100 rounded-sm" />
- <div className="border border-dashed border-slate-200 rounded-sm p-4 space-y-3">
+ <div className="aspect-[16/10] bg-slate-100 rounded" />
+ <div className="border border-dashed border-slate-200 rounded p-4 space-y-3">
  {[1, 2, 3, 4].map((i) => (
  <div key={i} className="flex justify-between">
  <div className="h-3 w-20 bg-slate-100 rounded" />
@@ -62,7 +62,7 @@ export default function CardDetailPage() {
  </div>
  <div className="space-y-4">
  {[1, 2, 3, 4, 5].map((i) => (
- <div key={i} className="h-10 bg-slate-100 rounded-sm" />
+ <div key={i} className="h-10 bg-slate-100 rounded" />
  ))}
  </div>
  </div>

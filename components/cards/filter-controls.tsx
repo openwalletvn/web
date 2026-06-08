@@ -122,7 +122,7 @@ export function BankCombobox({ value, banks, onChange, placeholder, searchPlaceh
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="flex h-9 w-52 items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring">
+        <button className="flex h-9 w-52 items-center gap-2 rounded-2xl border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring">
           <span className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
             {selected ? (
               <span className="flex items-center gap-2">

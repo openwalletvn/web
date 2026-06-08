@@ -13,7 +13,7 @@ const SelectGroup = SelectPrimitive.Group;
 const SelectValue = SelectPrimitive.Value;
 
 const selectTriggerVariants = cva(
-  "focus-visible:ring-ring/50 data-[placeholder]:text-muted-foreground flex w-fit items-center justify-between gap-2 rounded-md text-sm whitespace-nowrap transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&>span]:line-clamp-1",
+  "focus-visible:ring-ring/50 data-[placeholder]:text-muted-foreground flex w-fit items-center justify-between gap-2 rounded-2xl text-sm whitespace-nowrap transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&>span]:line-clamp-1",
   {
     variants: {
       variant: {
@@ -101,7 +101,7 @@ const SelectContent = ({
       position={position}
       sideOffset={6}
       className={cn(
-        "bg-popover/95 text-popover-foreground relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-xl border p-1.5 shadow-lg backdrop-blur-sm",
+        "bg-popover/95 text-popover-foreground relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-[32px] border p-1.5 shadow-lg backdrop-blur-sm",
         "data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:animate-in",
         "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:animate-out",
         "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
@@ -144,7 +144,7 @@ const SelectItem = ({
   <SelectPrimitive.Item
     data-slot="select-item"
     className={cn(
-      "relative flex w-full cursor-default items-center gap-2 rounded-lg py-2 ps-3 pe-9 text-sm outline-none select-none",
+      "relative flex w-full cursor-default items-center gap-2 rounded-2xl py-2 ps-3 pe-9 text-sm outline-none select-none",
       "focus:bg-accent focus:text-accent-foreground",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
@@ -197,7 +197,7 @@ function Select({ options, placeholder, className, ...props }: SelectProps) {
     <SelectRoot {...props}>
       <SelectPrimitive.Trigger
         className={cn(
-          "flex items-center gap-1.5 rounded-md py-1 ps-3 pe-2 text-sm transition-colors outline-none",
+          "flex items-center gap-1.5 rounded-2xl py-1 ps-3 pe-2 text-sm transition-colors outline-none",
           "text-muted-foreground hover:bg-muted hover:text-foreground",
           "focus-visible:ring-ring/50 focus-visible:ring-2",
           "disabled:cursor-not-allowed disabled:opacity-50",

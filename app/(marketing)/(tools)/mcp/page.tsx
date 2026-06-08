@@ -110,7 +110,7 @@ export default function McpPage() {
                             </a>
                             {' '}để bắt đầu ngay.
                         </p>
-                        <div className="rounded-lg overflow-hidden border border-slate-200 mt-2">
+                        <div className="rounded-2xl overflow-hidden border border-slate-200 mt-2">
                             <video
                                 src="/videos/mcp-inspector.mp4"
                                 autoPlay

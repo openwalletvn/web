@@ -282,7 +282,7 @@ function CardsGridInner({
  <div className="pt-8">
  <Link
  href={ROUTES.cards}
- className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
+ className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
  >
  {`Xem tất cả ${filteredCards.length} thẻ →`}
  </Link>

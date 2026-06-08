@@ -114,7 +114,7 @@ export default function WalletChatPage() {
                                 'Techcombank có thẻ nào miễn phí thường niên không?',
                                 'Thẻ nào tốt nhất để dùng ở nước ngoài?',
                             ].map(q => (
-                                <div key={q} className="px-4 py-3 bg-muted rounded-lg text-sm text-slate-600 font-mono">
+                                <div key={q} className="px-4 py-3 bg-muted rounded-2xl text-sm text-slate-600 font-mono">
                                     &ldquo;{q}&rdquo;
                                 </div>
                             ))}

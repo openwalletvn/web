@@ -27,8 +27,8 @@ export function BankSelectionStep({
     return (
       <div className="ow-bank-selection-step grid grid-cols-3 gap-3">
         {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm">
-            <div className="w-12 h-12 bg-slate-100 rounded-sm animate-pulse" />
+          <div key={i} className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded">
+            <div className="w-12 h-12 bg-slate-100 rounded animate-pulse" />
             <div className="w-14 h-3 bg-slate-100 rounded animate-pulse" />
           </div>
         ))}
@@ -44,7 +44,7 @@ export function BankSelectionStep({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Tìm ngân hàng..."
-        className="w-full px-3 py-2 mb-5 border border-dashed border-slate-300 rounded-sm bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
+        className="w-full px-3 py-2 mb-5 border border-dashed border-slate-300 rounded bg-white text-slate-900 placeholder-slate-300 focus:outline-none focus:border-brand-blue text-sm"
       />
 
       {filtered.length === 0 ? (
@@ -55,7 +55,7 @@ export function BankSelectionStep({
             <button
               key={bank.id}
               onClick={() => onSelect(bank)}
-              className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm hover:border-brand-blue hover:bg-blue-50/40 transition-colors text-center"
+              className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded hover:border-brand-blue hover:bg-blue-50/40 transition-colors text-center"
             >
               <img src={getBankImageUrl(bank.logo_url)} alt={bank.name} className="w-12 h-12 object-contain" />
               <span className="text-slate-600 leading-tight text-sm">{bank.name}</span>

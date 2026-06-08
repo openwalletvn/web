@@ -30,19 +30,19 @@ function DashboardSkeleton() {
  return (
  <div className="animate-pulse space-y-8">
  <div className="grid grid-cols-3 gap-3">
- <div className="col-span-3 h-20 bg-slate-100 rounded-sm" />
- {[1, 2, 3].map((i) => <div key={i} className="h-20 bg-slate-100 rounded-sm" />)}
+ <div className="col-span-3 h-20 bg-slate-100 rounded" />
+ {[1, 2, 3].map((i) => <div key={i} className="h-20 bg-slate-100 rounded" />)}
  </div>
  <div className="space-y-3">
  <div className="h-4 w-48 bg-slate-100 rounded" />
- <div className="border border-dashed border-slate-200 rounded-sm p-4 space-y-3">
- {[1, 2].map((i) => <div key={i} className="h-12 bg-slate-100 rounded-sm" />)}
+ <div className="border border-dashed border-slate-200 rounded p-4 space-y-3">
+ {[1, 2].map((i) => <div key={i} className="h-12 bg-slate-100 rounded" />)}
  </div>
  </div>
  <div className="space-y-3">
  <div className="h-4 w-32 bg-slate-100 rounded" />
  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
- {[1, 2, 3, 4].map((i) => <div key={i} className="h-16 bg-slate-100 rounded-sm" />)}
+ {[1, 2, 3, 4].map((i) => <div key={i} className="h-16 bg-slate-100 rounded" />)}
  </div>
  </div>
  </div>
@@ -135,19 +135,19 @@ export default function DashboardPage() {
  <>
  {/* ── Top stats ── */}
  <div className="grid grid-cols-3 gap-3 mb-8">
- <div className="col-span-3 border border-dashed border-slate-200 rounded-sm p-4">
+ <div className="col-span-3 border border-dashed border-slate-200 rounded p-4">
  <p className="text-sm text-slate-500 uppercase tracking-wider mb-1">Tổng hạn mức tín dụng</p>
  <p className="">{formatVND(totalCreditLimit)}</p>
  </div>
- <div className="border border-dashed border-slate-200 rounded-sm p-4">
+ <div className="border border-dashed border-slate-200 rounded p-4">
  <p className="text-sm text-slate-500 uppercase tracking-wider mb-1">Thẻ hoạt động</p>
  <p className="">{activeCards.length}</p>
  </div>
- <div className="border border-dashed border-slate-200 rounded-sm p-4">
+ <div className="border border-dashed border-slate-200 rounded p-4">
  <p className="text-sm text-slate-500 uppercase tracking-wider mb-1">Ngân hàng</p>
  <p className="">{totalBanks}</p>
  </div>
- <div className="border border-dashed border-slate-200 rounded-sm p-4">
+ <div className="border border-dashed border-slate-200 rounded p-4">
  <p className="text-sm text-slate-500 uppercase tracking-wider mb-1">Đến hạn / 30 ngày</p>
  <p className="">{allUpcoming.length}</p>
  </div>
@@ -168,7 +168,7 @@ export default function DashboardPage() {
  </Link>
  )}
  </div>
- <div className="border border-dashed border-slate-200 rounded-sm px-4">
+ <div className="border border-dashed border-slate-200 rounded px-4">
  {previewUpcoming.length === 0 ? (
  <div className="py-8 flex flex-col items-center gap-2 text-slate-300">
  <IconCreditCard size={28} />
@@ -203,7 +203,7 @@ export default function DashboardPage() {
  </h2>
  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
  {Object.entries(STATUS_LABELS).map(([status, label]) => (
- <div key={status} className="border border-dashed border-slate-200 rounded-sm p-3">
+ <div key={status} className="border border-dashed border-slate-200 rounded p-3">
  <p className="">{statusCounts[status] ?? 0}</p>
  <p className="text-sm text-slate-500 mt-0.5">{label}</p>
  </div>

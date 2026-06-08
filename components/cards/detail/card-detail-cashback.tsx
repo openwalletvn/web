@@ -70,11 +70,11 @@ export async function CardDetailCashback({card}: Props) {
                     : '';
 
     return (
-        <CardDetailSection title="" className="ow-card-detail-cashback p-1 bg-primary gap-0 rounded-lg">
+        <CardDetailSection title="" className="ow-card-detail-cashback p-1 bg-primary gap-0 rounded-2xl">
             <div className="py-2">
                 <div className="text-label text-white text-center font-bold !text-lg">Hoàn tiền</div>
             </div>
-            <div className="bg-white px-4 py-6 rounded-lg">
+            <div className="bg-white px-4 py-6 rounded-2xl">
                 <div className="space-y-3">
                     {cashback.cashback_expired && (
                         <OwAlert variant="error">

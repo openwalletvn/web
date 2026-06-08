@@ -171,7 +171,7 @@ export function OwCardCashbackRule({rule, intentMap, merchantMap, selectable, se
         <div
             onClick={selectable ? onToggle : undefined}
             className={cn(
-                'ow-card-cashback-rule rounded-lg flex gap-3 border-dashed border border-slate-300 p-4 w-full transition-colors',
+                'ow-card-cashback-rule rounded-2xl flex gap-3 border-dashed border border-slate-300 p-4 w-full transition-colors',
                 selectable ? 'cursor-pointer select-none' : '',
                 selectable && selected ? 'bg-emerald-50 border-emerald-300' : '',
                 selectable && !selected ? 'opacity-40 hover:opacity-70' : 'hover:bg-slate-50',

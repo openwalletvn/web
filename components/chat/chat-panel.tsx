@@ -81,7 +81,7 @@ export function ChatPanel() {
             className={cn(
                 'ow-chat-panel fixed z-50 transition-all duration-300 ease-in-out',
                 'bottom-0 right-0 w-full h-full',
-                'sm:bottom-2 sm:right-2 sm:w-[480px] sm:h-[80vh] sm:rounded-lg max-sm:rounded-none',
+                'sm:bottom-2 sm:right-2 sm:w-[480px] sm:h-[80vh] sm:rounded-2xl max-sm:rounded-none',
                 'shadow-2xl',
                 'flex flex-col sm:border bg-background',
                 isOpen

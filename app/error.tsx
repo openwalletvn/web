@@ -48,7 +48,7 @@ export default function ErrorPage({
               ? <>API local (<code className="font-mono text-xs">{apiUrl}</code>) chưa chạy.</>
               : <>Không kết nối được tới <code className="font-mono text-xs">{apiUrl}</code>.</>}
           </p>
-          <div className="mb-10 w-full max-w-md rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-left">
+          <div className="mb-10 w-full max-w-md rounded-[32px] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-left">
             <p className="text-body-sm mb-3 font-semibold">Khắc phục (dev only):</p>
             <ol className="text-body-sm list-inside list-decimal space-y-2 text-[var(--color-text-muted)]">
               {isLocalApi && (
@@ -76,7 +76,7 @@ export default function ErrorPage({
           <p className="text-body-sm mb-6 max-w-sm text-[var(--color-text-muted)]">
             Đã có lỗi xảy ra khi tải trang này. Vui lòng thử lại hoặc quay về trang chủ.
           </p>
-          <div className="mb-10 w-full max-w-md rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-left">
+          <div className="mb-10 w-full max-w-md rounded-[32px] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-left">
             {error.message && (
               <p className="font-mono text-xs text-[var(--color-text-muted)] break-all mb-1">{error.message}</p>
             )}

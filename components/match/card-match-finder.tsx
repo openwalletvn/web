@@ -197,7 +197,7 @@ function CardMatchFinderInner({personas, intents = [], limit = 10}: CardMatchFin
                         <div className="flex flex-col gap-3">
                             {Array.from({length: limit}).map((_, i) => (
                                 <div key={i}
-                                     className="animate-pulse flex items-center gap-3 p-3 rounded-lg bg-bg-muted">
+                                     className="animate-pulse flex items-center gap-3 p-3 rounded-2xl bg-bg-muted">
                                     <div className="shrink-0 w-10 h-10 rounded bg-border"/>
                                     <div className="flex-1 flex flex-col gap-2">
                                         <div className="h-3 rounded bg-border w-2/3"/>

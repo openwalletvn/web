@@ -5,7 +5,7 @@ const TO = 'hello@openwallet.vn';
 export function ContactForm() {
     return (
         <div className="ow-contact-form flex flex-col gap-6">
-            <div className="rounded-lg border border-border overflow-hidden text-sm">
+            <div className="rounded-2xl border border-border overflow-hidden text-sm">
                 <div className="flex items-center justify-between px-4 py-2 bg-muted border-b border-border">
                     <span className="text-xs text-muted-foreground font-medium">New Message</span>
                     <div className="flex gap-1.5">

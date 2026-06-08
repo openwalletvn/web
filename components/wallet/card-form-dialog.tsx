@@ -82,7 +82,7 @@ function EditCreditLimitSection({
           🔒 Hạn mức được quản lý bởi thẻ chính
         </p>
       ) : isShared ? (
-        <p className="text-amber-600 border border-dashed border-amber-300 px-2 py-1.5 rounded-sm bg-amber-50/60">
+        <p className="text-amber-600 border border-dashed border-amber-300 px-2 py-1.5 rounded bg-amber-50/60">
           ⚠ Thẻ này đang dùng chung hạn mức với: {formatSiblingNames(siblingCards, siblingCatalogNames)}. Thay đổi sẽ ảnh hưởng tất cả các thẻ.
         </p>
       ) : null}
@@ -91,7 +91,7 @@ function EditCreditLimitSection({
         <button
           type="button"
           onClick={onUnlink}
-          className="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 border border-dashed border-slate-300 hover:border-slate-400 px-2.5 py-1.5 rounded-sm transition-colors"
+          className="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 border border-dashed border-slate-300 hover:border-slate-400 px-2.5 py-1.5 rounded transition-colors"
         >
           <IconUnlink size={12} />
           Tách khỏi pool này
@@ -377,7 +377,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
           className={cn(
             'fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2',
             'max-h-[90vh] overflow-y-auto',
-            'bg-white border border-dashed border-slate-200 rounded-sm shadow-lg',
+            'bg-white border border-dashed border-slate-200 rounded shadow-lg',
             'data-[state=open]:animate-in data-[state=closed]:animate-out',
             'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
             'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -387,7 +387,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
         >
           {/* Header */}
           <div className="flex items-center gap-3 px-4 pt-4 pb-3">
-            <div className="w-16 aspect-[16/10] bg-slate-50 rounded-sm overflow-hidden shrink-0">
+            <div className="w-16 aspect-[16/10] bg-slate-50 rounded overflow-hidden shrink-0">
               <img src={getCardImageUrl(card)} alt={card.name} className="w-full h-full object-contain" />
             </div>
             <div className="flex-1 min-w-0">
@@ -555,7 +555,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
             <button
               onClick={handleSave}
               disabled={saving}
-              className="w-full py-2.5 border border-dashed border-brand-blue text-brand-blue font-semibold rounded-sm hover:bg-blue-50/60 transition-colors disabled:opacity-50 text-sm"
+              className="w-full py-2.5 border border-dashed border-brand-blue text-brand-blue font-semibold rounded hover:bg-blue-50/60 transition-colors disabled:opacity-50 text-sm"
             >
               {saving ? 'Đang lưu...' : isEdit ? 'Cập nhật' : 'Lưu thẻ vào ví'}
             </button>
@@ -564,7 +564,7 @@ export function CardFormDialog({ card, walletCard, open, onClose, onAfterSave, o
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="w-full py-2 border border-dashed border-brand-red text-brand-red rounded-sm hover:bg-red-50/60 transition-colors disabled:opacity-50 text-sm flex items-center justify-center gap-1.5"
+                className="w-full py-2 border border-dashed border-brand-red text-brand-red rounded hover:bg-red-50/60 transition-colors disabled:opacity-50 text-sm flex items-center justify-center gap-1.5"
               >
                 <IconTrash size={14} />
                 {deleting ? 'Đang xóa...' : 'Xóa thẻ'}

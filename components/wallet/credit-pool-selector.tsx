@@ -53,7 +53,7 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
   }, [db, bankId]);
 
   if (loading) {
-    return <div className="ow-credit-pool-selector h-16 bg-slate-50 border border-dashed border-slate-200 rounded-sm animate-pulse" />;
+    return <div className="ow-credit-pool-selector h-16 bg-slate-50 border border-dashed border-slate-200 rounded animate-pulse" />;
   }
 
   if (accounts.length === 0) {
@@ -76,7 +76,7 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
       <label className="block font-medium text-slate-600 mb-2">Hạn mức tín dụng</label>
       <div className="space-y-2">
         {/* Create new pool */}
-        <label className={cn('flex items-start gap-2.5 p-2.5 border border-dashed rounded-sm cursor-pointer transition-colors', value.poolChoice === 'new' ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 hover:border-slate-300')}>
+        <label className={cn('flex items-start gap-2.5 p-2.5 border border-dashed rounded cursor-pointer transition-colors', value.poolChoice === 'new' ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 hover:border-slate-300')}>
           <input
             type="radio"
             name={`pool-${bankId}`}
@@ -104,7 +104,7 @@ export function CreditPoolSelector({ bankId, value, onChange, canBeSupplementary
           const count = cardCounts[account.id] ?? 0;
           const isSelected = value.poolChoice === account.id;
           return (
-            <label key={account.id} className={cn('flex items-start gap-2.5 p-2.5 border border-dashed rounded-sm cursor-pointer transition-colors', isSelected ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 hover:border-slate-300')}>
+            <label key={account.id} className={cn('flex items-start gap-2.5 p-2.5 border border-dashed rounded cursor-pointer transition-colors', isSelected ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 hover:border-slate-300')}>
               <input
                 type="radio"
                 name={`pool-${bankId}`}

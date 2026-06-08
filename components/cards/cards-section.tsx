@@ -55,7 +55,7 @@ export async function CardsSection({ filters, title, limit, showViewAll }: Props
  <div className="mt-8">
  <Link
  href={ROUTES.cards}
- className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
+ className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
  >
  {`Xem tất cả ${cards.length} thẻ →`}
  </Link>
@@ -75,7 +75,7 @@ export function CardsSectionSkeleton() {
  </div>
  <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 gap-4">
  {Array.from({ length: 10 }).map((_, i) => (
- <div key={i} className="break-inside-avoid mb-4 flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded-sm">
+ <div key={i} className="break-inside-avoid mb-4 flex flex-col gap-2 p-3 border border-dashed border-slate-200 rounded">
  <div className={cn('w-full', i % 3 === 0 ? 'aspect-[2/3]' : 'aspect-[16/10]', 'bg-slate-200 animate-pulse')} />
  <div className="h-5 w-3/4 bg-slate-200 rounded animate-pulse" />
  <div className="h-4 w-1/2 bg-slate-200 rounded animate-pulse" />

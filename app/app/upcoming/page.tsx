@@ -115,7 +115,7 @@ export default function UpcomingPage() {
  <div className="space-y-4">
  {/* Warning: cards missing billing data */}
  {warningCards.length > 0 && (
- <div className="border border-dashed border-amber-200 rounded-sm overflow-hidden">
+ <div className="border border-dashed border-amber-200 rounded overflow-hidden">
  <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border-b border-dashed border-amber-200">
  <IconAlertTriangle size={14} className="text-amber-500 shrink-0" />
  <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider flex-1">
@@ -138,7 +138,7 @@ export default function UpcomingPage() {
 
  {/* Main: sorted by billing urgency */}
  {mainCards.length > 0 && (
- <div className="border border-dashed border-slate-200 rounded-sm overflow-hidden">
+ <div className="border border-dashed border-slate-200 rounded overflow-hidden">
  <SectionHeader label="Lịch thanh toán" count={mainCards.length} />
  <div className="px-4">
  {mainCards.map(renderCard)}

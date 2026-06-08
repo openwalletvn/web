@@ -48,7 +48,7 @@ export function MobileNav() {
                         href={ROUTES.banks}
                         onClick={close}
                         className={cn(
-                            'px-3 py-2 rounded-md text-base font-medium transition-colors',
+                            'px-3 py-2 rounded-2xl text-base font-medium transition-colors',
                             pathname.startsWith(ROUTES.banks) ? 'text-brand-red' : 'text-slate-700 hover:bg-slate-100'
                         )}
                     >
@@ -57,7 +57,7 @@ export function MobileNav() {
 
                     {/* Thẻ - collapsible */}
                     <Collapsible defaultOpen={cardsActive}>
-                        <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+                        <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-2xl text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
                             <span className={cn(cardsActive && 'text-brand-red')}>Thẻ</span>
                             <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true"/>
                         </CollapsibleTrigger>
@@ -72,7 +72,7 @@ export function MobileNav() {
                                         href={persona.getHref()}
                                         onClick={close}
                                         className={cn(
-                                            'px-2 py-1.5 rounded-md text-sm transition-colors',
+                                            'px-2 py-1.5 rounded-2xl text-sm transition-colors',
                                             pathname.startsWith(persona.getHref())
                                                 ? 'text-brand-red'
                                                 : 'text-slate-700 hover:text-brand-red'
@@ -93,7 +93,7 @@ export function MobileNav() {
                                         href={ROUTES.cards}
                                         onClick={close}
                                         className={cn(
-                                            'block px-2 py-1.5 rounded-md text-sm transition-colors',
+                                            'block px-2 py-1.5 rounded-2xl text-sm transition-colors',
                                             pathname === ROUTES.cards
                                                 ? 'text-brand-red'
                                                 : 'text-slate-700 hover:text-brand-red'
@@ -113,7 +113,7 @@ export function MobileNav() {
                             href={item.href}
                             onClick={close}
                             className={cn(
-                                'px-3 py-2 rounded-md text-base font-medium transition-colors',
+                                'px-3 py-2 rounded-2xl text-base font-medium transition-colors',
                                 pathname.startsWith(item.href) ? 'text-brand-red' : 'text-slate-700 hover:bg-slate-100'
                             )}
                         >
@@ -123,7 +123,7 @@ export function MobileNav() {
 
                     {/* Công cụ - collapsible */}
                     <Collapsible defaultOpen={toolsActive}>
-                        <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+                        <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-2xl text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
                             <span className={cn(toolsActive && 'text-brand-red')}>Công cụ</span>
                             <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true"/>
                         </CollapsibleTrigger>
@@ -135,7 +135,7 @@ export function MobileNav() {
                                         href={tool.href}
                                         onClick={close}
                                         className={cn(
-                                            'px-2 py-1.5 rounded-md text-sm transition-colors',
+                                            'px-2 py-1.5 rounded-2xl text-sm transition-colors',
                                             pathname.startsWith(tool.href)
                                                 ? 'text-brand-red'
                                                 : 'text-slate-700 hover:text-brand-red'

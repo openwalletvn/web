@@ -87,7 +87,7 @@ export function SearchDialog({ mobileOnly = false }: SearchDialogProps) {
           type="button"
           onClick={handleOpen}
           aria-label="Tìm kiếm"
-          className="flex items-center justify-center rounded-md p-2 text-slate-500 hover:bg-slate-100"
+          className="flex items-center justify-center rounded-2xl p-2 text-slate-500 hover:bg-slate-100"
         >
           <IconSearch className="size-5" />
         </button>

@@ -29,7 +29,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
  <li key={item.href}>
  <Link
  href={item.href}
- className={cn('block px-3 py-2 text-sm font-medium rounded-sm transition-colors', isActive ? 'text-brand-blue bg-blue-50/60' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50')}
+ className={cn('block px-3 py-2 text-sm font-medium rounded transition-colors', isActive ? 'text-brand-blue bg-blue-50/60' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50')}
  >
  {item.label}
  </Link>

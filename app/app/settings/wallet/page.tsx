@@ -61,7 +61,7 @@ export default function WalletSettingsPage() {
  <section className="mb-8">
  <h2 className="text-label text-text-muted mb-1">Tài khoản cục bộ</h2>
  <p className="text-slate-500 text-sm mb-3">ID dùng để nhận diện thiết bị này. Sẽ được dùng khi tính năng đồng bộ ra mắt.</p>
- <div className="px-3 py-2 border border-dashed border-slate-200 rounded-sm bg-slate-50">
+ <div className="px-3 py-2 border border-dashed border-slate-200 rounded bg-slate-50">
  <p className="text-sm font-mono text-slate-500 break-all">{account.id}</p>
  </div>
  </section>
@@ -75,7 +75,7 @@ export default function WalletSettingsPage() {
  <h2 className="text-label text-text-muted">Các ví</h2>
  <button
  onClick={handleCreateWallet}
- className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-slate-300 rounded-sm text-sm text-slate-600 hover:border-slate-500 hover:text-slate-900 transition-colors"
+ className="flex items-center gap-1.5 px-3 py-1.5 border border-dashed border-slate-300 rounded text-sm text-slate-600 hover:border-slate-500 hover:text-slate-900 transition-colors"
  >
  <IconPlus size={14} />
  Thêm ví mới
@@ -91,7 +91,7 @@ export default function WalletSettingsPage() {
  <div
  key={wallet.id}
  onClick={() => !isActive && !isEditing && switchWallet(wallet.id)}
- className={cn('flex items-center gap-3 p-3 border border-dashed rounded-sm transition-colors', isActive ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 cursor-pointer hover:border-slate-400')}
+ className={cn('flex items-center gap-3 p-3 border border-dashed rounded transition-colors', isActive ? 'border-brand-blue bg-blue-50/40' : 'border-slate-200 cursor-pointer hover:border-slate-400')}
  >
  {/* Name + active badge */}
  <div className="flex-1 flex items-center gap-2 min-w-0">
@@ -105,7 +105,7 @@ export default function WalletSettingsPage() {
  if (e.key === 'Enter') saveEdit(wallet.id);
  if (e.key === 'Escape') cancelEdit();
  }}
- className="flex-1 px-2 py-1 border border-dashed border-slate-300 rounded-sm text-sm text-slate-900 focus:outline-none focus:border-brand-blue"
+ className="flex-1 px-2 py-1 border border-dashed border-slate-300 rounded text-sm text-slate-900 focus:outline-none focus:border-brand-blue"
  />
  ) : (
  <>
@@ -116,7 +116,7 @@ export default function WalletSettingsPage() {
  {wallet.name}
  </button>
  {isActive && (
- <span className="text-sm border border-dashed border-brand-blue text-brand-blue px-1.5 py-0.5 rounded-sm shrink-0">
+ <span className="text-sm border border-dashed border-brand-blue text-brand-blue px-1.5 py-0.5 rounded shrink-0">
  Đang dùng
  </span>
  )}

@@ -22,9 +22,9 @@ const ANIMATION_DURATION = 200;
 const reasoningVariants = cva("aui-reasoning-root mb-3 w-full", {
   variants: {
     variant: {
-      outline: "rounded-lg border px-3 py-2",
+      outline: "rounded-2xl border px-3 py-2",
       ghost: "",
-      muted: "rounded-lg bg-muted/50 px-3 py-2",
+      muted: "rounded-2xl bg-muted/50 px-3 py-2",
     },
   },
   defaultVariants: {

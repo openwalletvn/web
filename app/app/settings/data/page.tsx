@@ -135,7 +135,7 @@ export default function DataSettingsPage() {
  <section>
  <h2 className="text-label text-text-muted mb-1">Sao lưu dữ liệu</h2>
  <p className="text-slate-500 mb-5">Dữ liệu ví được lưu trên thiết bị của bạn. Xuất file để sao lưu hoặc chuyển sang thiết bị khác.</p>
- <div className="border border-dashed border-slate-200 rounded-sm p-4">
+ <div className="border border-dashed border-slate-200 rounded p-4">
  {localSummary ? (
  <div className="mb-4">
  <SummaryBlock summary={localSummary} />
@@ -145,7 +145,7 @@ export default function DataSettingsPage() {
  )}
  <button
  onClick={() => { exportFullBackup(); posthog.capture('wallet_exported', { export_scope: 'full' }); }}
- className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-sm hover:bg-slate-700 transition-colors"
+ className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded hover:bg-slate-700 transition-colors"
  >
  <IconDownload size={16} />
  Xuất file sao lưu (JSON)
@@ -173,7 +173,7 @@ export default function DataSettingsPage() {
  onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
  onDragLeave={() => setIsDragOver(false)}
  onClick={() => fileRef.current?.click()}
- className={cn('border-2 border-dashed rounded-sm p-10 text-center cursor-pointer transition-colors', isDragOver ? 'border-slate-500 bg-slate-50' : 'border-slate-200 hover:border-slate-400 hover:bg-slate-50/60')}
+ className={cn('border-2 border-dashed rounded p-10 text-center cursor-pointer transition-colors', isDragOver ? 'border-slate-500 bg-slate-50' : 'border-slate-200 hover:border-slate-400 hover:bg-slate-50/60')}
  >
  <IconFileImport size={28} className="mx-auto text-slate-400 mb-3" />
  <p className="text-sm font-medium text-slate-700">Kéo thả file vào đây hoặc nhấn để chọn</p>
@@ -187,7 +187,7 @@ export default function DataSettingsPage() {
  />
  </div>
  ) : (
- <div className="border border-dashed border-slate-200 rounded-sm p-4">
+ <div className="border border-dashed border-slate-200 rounded p-4">
  <div className="mb-4">
  <SummaryBlock summary={importPreview} />
  </div>
@@ -195,7 +195,7 @@ export default function DataSettingsPage() {
  <button
  onClick={handleImportConfirm}
  disabled={importing}
- className="flex items-center gap-2 px-4 py-2 bg-brand-red text-white text-sm font-medium rounded-sm hover:opacity-90 transition-opacity disabled:opacity-50"
+ className="flex items-center gap-2 px-4 py-2 bg-brand-red text-white text-sm font-medium rounded hover:opacity-90 transition-opacity disabled:opacity-50"
  >
  <IconUpload size={16} />
  {importing ? 'Đang nhập...' : 'Nhập dữ liệu'}
@@ -212,7 +212,7 @@ export default function DataSettingsPage() {
  )}
 
  {importError && (
- <p className="mt-3 text-brand-red border border-dashed border-brand-red px-3 py-2 rounded-sm text-sm">
+ <p className="mt-3 text-brand-red border border-dashed border-brand-red px-3 py-2 rounded text-sm">
  Lỗi: {importError}
  </p>
  )}
@@ -224,7 +224,7 @@ export default function DataSettingsPage() {
  <section>
  <h2 className="text-label text-text-muted mb-1">Dữ liệu thô</h2>
  <p className="text-slate-500 mb-5">Xem toàn bộ dữ liệu dưới dạng JSON - nội dung khớp với file sao lưu khi xuất.</p>
- <button onClick={handleOpenJsonDialog} className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded-sm hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left">
+ <button onClick={handleOpenJsonDialog} className="w-full flex items-center gap-4 p-4 border border-dashed border-slate-200 rounded hover:border-slate-400 hover:bg-slate-50/60 transition-colors text-left">
  <IconDatabase size={20} className="text-slate-500 shrink-0" />
  <div>
  <p className="text-sm font-medium text-slate-800">Xem dữ liệu JSON</p>
@@ -239,7 +239,7 @@ export default function DataSettingsPage() {
  <section>
  <h2 className="text-label text-primary mb-1">Vùng nguy hiểm</h2>
  <p className="text-slate-500 mb-5">Các thao tác dưới đây không thể hoàn tác.</p>
- <div className="border border-dashed border-red-200 rounded-sm p-4">
+ <div className="border border-dashed border-red-200 rounded p-4">
  <p className="text-sm font-medium text-slate-800 mb-1">Xoá toàn bộ dữ liệu</p>
  <p className="text-sm text-slate-500 mb-4">Xoá tất cả ví, thẻ, cài đặt và tài khoản cục bộ. Không thể khôi phục nếu chưa sao lưu.</p>
  <button
@@ -249,7 +249,7 @@ export default function DataSettingsPage() {
  await clearAllData();
  window.location.reload();
  }}
- className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-sm hover:bg-red-700 transition-colors"
+ className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 transition-colors"
  >
  Xoá toàn bộ dữ liệu
  </button>

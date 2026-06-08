@@ -31,7 +31,7 @@ export async function BanksSection({ limit, showViewAll }: Props) {
                 <div className="mt-8">
                     <Link
                         href={ROUTES.banks}
-                        className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
+                        className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors"
                     >
                         {`Xem tất cả ${banks.length} ngân hàng →`}
                     </Link>
@@ -52,7 +52,7 @@ export function BanksSectionSkeleton() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {Array.from({length: 10}).map((_, i) => (
                     <div key={i}
-                         className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded-sm">
+                         className="flex flex-col items-center gap-2 p-4 border border-dashed border-slate-200 rounded">
                         <div className="w-14 h-14 bg-slate-200 rounded animate-pulse"/>
                         <div className="w-16 h-3 bg-slate-200 rounded animate-pulse"/>
                     </div>

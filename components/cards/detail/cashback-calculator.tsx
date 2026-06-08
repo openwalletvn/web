@@ -179,7 +179,7 @@ export function CashbackCalculator({cardId, cashback, intentMap, merchantMap}: P
             </div>
 
             {/* Result */}
-            <div className="rounded-lg bg-slate-50 border border-slate-100 p-3 flex flex-col gap-2 min-h-[52px]">
+            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 flex flex-col gap-2 min-h-[52px]">
                 {loading && (
                     <div className="flex items-center gap-2 text-xs text-text-muted">
                         <IconLoader2 size={14} className="animate-spin"/>

@@ -180,7 +180,7 @@ const ThreadSuggestions: FC = () => {
                     <ThreadPrimitive.Suggestion prompt={s.prompt} autoSend asChild>
                         <Button
                             variant="ghost"
-                            className="aui-thread-welcome-suggestion h-auto w-full @md:flex-col flex-wrap items-start justify-start gap-1 rounded-md border bg-background px-3 py-2 text-start text-sm transition-colors hover:bg-muted whitespace-normal"
+                            className="aui-thread-welcome-suggestion h-auto w-full @md:flex-col flex-wrap items-start justify-start gap-1 rounded-2xl border bg-background px-3 py-2 text-start text-sm transition-colors hover:bg-muted whitespace-normal"
                         >
                             <span className="aui-thread-welcome-suggestion-text-1 font-medium">{s.title}</span>
                         </Button>
@@ -375,7 +375,7 @@ const MessageError: FC = () => {
     return (
         <MessagePrimitive.Error>
             <ErrorPrimitive.Root
-                className="aui-message-error-root mt-2 rounded-md border border-destructive bg-destructive/10 p-3 text-destructive text-sm dark:bg-destructive/5 dark:text-red-200">
+                className="aui-message-error-root mt-2 rounded-2xl border border-destructive bg-destructive/10 p-3 text-destructive text-sm dark:bg-destructive/5 dark:text-red-200">
                 <ErrorPrimitive.Message className="aui-message-error-message line-clamp-2"/>
             </ErrorPrimitive.Root>
         </MessagePrimitive.Error>
@@ -495,11 +495,11 @@ const AssistantActionBar: FC = () => {
                 <ActionBarMorePrimitive.Content
                     side="bottom"
                     align="start"
-                    className="aui-action-bar-more-content z-50 min-w-32 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+                    className="aui-action-bar-more-content z-50 min-w-32 overflow-hidden rounded-2xl border bg-popover p-1 text-popover-foreground shadow-md"
                 >
                     <ActionBarPrimitive.ExportMarkdown asChild>
                         <ActionBarMorePrimitive.Item
-                            className="aui-action-bar-more-item flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                            className="aui-action-bar-more-item flex cursor-pointer select-none items-center gap-2 rounded px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
                             <DownloadIcon className="size-4"/>
                             Export as Markdown
                         </ActionBarMorePrimitive.Item>
@@ -519,7 +519,7 @@ const UserMessage: FC = () => {
         >
             <div className="aui-user-message-content-wrapper relative col-start-2 min-w-0">
                 <div
-                    className="aui-user-message-content wrap-break-word peer rounded-lg bg-muted px-4 py-2.5 text-foreground empty:hidden">
+                    className="aui-user-message-content wrap-break-word peer rounded-2xl bg-muted px-4 py-2.5 text-foreground empty:hidden">
                     <MessagePrimitive.Parts/>
                 </div>
                 <div
@@ -559,7 +559,7 @@ const EditComposer: FC = () => {
             className="flex flex-col px-2"
         >
             <ComposerPrimitive.Root
-                className="aui-edit-composer-root ms-auto flex w-full max-w-[85%] flex-col rounded-lg bg-muted">
+                className="aui-edit-composer-root ms-auto flex w-full max-w-[85%] flex-col rounded-2xl bg-muted">
                 <ComposerPrimitive.Input
                     className="aui-edit-composer-input min-h-14 w-full resize-none bg-transparent p-4 text-foreground text-sm outline-none"
                     autoFocus

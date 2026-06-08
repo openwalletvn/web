@@ -36,7 +36,7 @@ function CompareTemplateSkeleton({ numSlots }: { numSlots: number }) {
                 {Array.from({ length: numSlots }, (_, i) => (
                     <div key={i} className={`${colSpan(numSlots, i)} flex flex-col gap-3`}>
                         <div className="flex items-end h-[200px]">
-                            <div className="w-full max-w-[200px] aspect-[16/10] bg-slate-100 rounded-lg" />
+                            <div className="w-full max-w-[200px] aspect-[16/10] bg-slate-100 rounded-2xl" />
                         </div>
                         <div className="h-5 w-2/3 bg-slate-100 rounded" />
                     </div>
@@ -109,7 +109,7 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange }: Comp
                                         </Link>
                                     </>
                                 ) : (
-                                    <div className="h-[60px] w-[96px] bg-slate-100 rounded-sm shrink-0" />
+                                    <div className="h-[60px] w-[96px] bg-slate-100 rounded shrink-0" />
                                 )}
                             </div>
                         ))}
@@ -141,7 +141,7 @@ function CompareDisplay({ cards, compareResult, children, onStickyChange }: Comp
                             </>
                         ) : (
                             <div className="flex items-end sm:h-[200px] h-[120px]">
-                                <div className="w-full sm:max-w-[200px] max-w-[100px] aspect-[16/10] bg-slate-100 rounded-lg" />
+                                <div className="w-full sm:max-w-[200px] max-w-[100px] aspect-[16/10] bg-slate-100 rounded-2xl" />
                             </div>
                         )}
                     </div>

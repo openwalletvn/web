@@ -50,7 +50,7 @@ export function Footer() {
 
                 {/* Main black box */}
                 <div className="ow-container py-6 sm:py-10">
-                    <div className="bg-black lg:rounded-2xl sm:rounded-xl rounded-lg px-6 py-8 sm:px-10 sm:py-10">
+                    <div className="bg-black ow-rounded-large px-6 py-8 sm:px-10 sm:py-10">
                         {/* Logo + columns */}
                         <div className="grid grid-cols-12 gap-x-4 gap-y-8">
                             {/* Logo */}

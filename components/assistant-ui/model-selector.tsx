@@ -151,7 +151,7 @@ function ModelSelectorContent({
   return (
     <SelectContent
       data-slot="model-selector-content"
-      className={cn("min-w-[180px] rounded-md", className)}
+      className={cn("min-w-[180px] rounded-2xl", className)}
       {...props}
     >
       {children ??
@@ -184,7 +184,7 @@ function ModelSelectorItem({
       value={model.id}
       textValue={model.name}
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 rounded-lg py-2 ps-3 pe-9 text-sm outline-none select-none",
+        "relative flex w-full cursor-default items-center gap-2 rounded-2xl py-2 ps-3 pe-9 text-sm outline-none select-none",
         "focus:bg-accent focus:text-accent-foreground",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,

@@ -19,7 +19,7 @@ export function PersonaCategories() {
             <h2><a href="/linh-vuc">Lĩnh vực</a></h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:mt-10 mt-6">
-                <div className="bg-white md:rounded-xl rounded-lg p-6 flex flex-col gap-3">
+                <div className="bg-white ow-rounded-small p-6 flex flex-col gap-3">
                     <h3>Tiêu dùng hàng ngày</h3>
                     <ul className="list-disc list-inside space-y-1">
                         {daily.map((persona) => (
@@ -32,7 +32,7 @@ export function PersonaCategories() {
 
                 <div className="flex flex-col gap-4">
                     {digital.map((persona) => (
-                        <div key={persona.getSlug()} className="md:rounded-xl rounded-lg p-6 flex flex-col gap-3 flex-1 bg-primary text-white">
+                        <div key={persona.getSlug()} className="ow-rounded-small p-6 flex flex-col gap-3 flex-1 bg-primary text-white">
                             <h3>{persona.getName()}</h3>
                             <ul className="list-disc list-inside space-y-1">
                                 <li><CategoryLink persona={persona}/></li>
@@ -40,7 +40,7 @@ export function PersonaCategories() {
                         </div>
                     ))}
                     {business.map((persona) => (
-                        <div key={persona.getSlug()} className="bg-black text-white md:rounded-xl rounded-lg p-6 flex flex-col gap-3 flex-1">
+                        <div key={persona.getSlug()} className="bg-black text-white ow-rounded-small p-6 flex flex-col gap-3 flex-1">
                             <h3>{persona.getName()}</h3>
                             <ul className="list-disc list-inside space-y-1">
                                 <li><CategoryLink persona={persona}/></li>

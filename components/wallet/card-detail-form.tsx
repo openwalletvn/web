@@ -233,7 +233,7 @@ export function CardDetailForm({
       <div className="space-y-5">
         <OwCardImage card={card} />
 
-        <div className="border border-dashed border-slate-200 rounded-sm">
+        <div className="border border-dashed border-slate-200 rounded">
           <div className="px-4 py-2.5 border-b border-dashed border-slate-100">
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Thông tin thẻ</p>
           </div>
@@ -426,7 +426,7 @@ export function CardDetailForm({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="w-full py-2.5 border border-dashed border-brand-blue text-brand-blue font-semibold rounded-sm hover:bg-blue-50/60 transition-colors disabled:opacity-50 text-sm"
+            className="w-full py-2.5 border border-dashed border-brand-blue text-brand-blue font-semibold rounded hover:bg-blue-50/60 transition-colors disabled:opacity-50 text-sm"
           >
             {saving
               ? 'Đang lưu...'
@@ -441,7 +441,7 @@ export function CardDetailForm({
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="w-full py-2 border border-dashed border-brand-red text-brand-red rounded-sm hover:bg-red-50/60 transition-colors disabled:opacity-50 text-sm flex items-center justify-center gap-1.5"
+              className="w-full py-2 border border-dashed border-brand-red text-brand-red rounded hover:bg-red-50/60 transition-colors disabled:opacity-50 text-sm flex items-center justify-center gap-1.5"
             >
               <IconTrash size={14} />
               {deleting ? 'Đang xóa...' : 'Xóa thẻ khỏi ví'}
@@ -453,14 +453,14 @@ export function CardDetailForm({
             <div className="pt-1">
               <button
                 onClick={() => setMovePickerOpen((v) => !v)}
-                className="w-full py-2 border border-dashed border-slate-300 text-slate-500 rounded-sm hover:border-slate-400 hover:text-slate-700 transition-colors text-sm flex items-center justify-center gap-1.5"
+                className="w-full py-2 border border-dashed border-slate-300 text-slate-500 rounded hover:border-slate-400 hover:text-slate-700 transition-colors text-sm flex items-center justify-center gap-1.5"
               >
                 <IconArrowForwardUp size={14} />
                 Chuyển sang ví khác
               </button>
 
               {movePickerOpen && (
-                <div className="mt-2 border border-dashed border-slate-200 rounded-sm overflow-hidden">
+                <div className="mt-2 border border-dashed border-slate-200 rounded overflow-hidden">
                   <MoveToWalletPicker
                     walletCard={walletCard!}
                     otherWallets={otherWallets}

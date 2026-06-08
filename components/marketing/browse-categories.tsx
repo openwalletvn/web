@@ -12,7 +12,7 @@ export function BrowsePersonas({currentHref}: { currentHref?: string }) {
                             key={persona.getSlug()}
                             href={persona.getHref()}
                             aria-current={isCurrent ? 'page' : undefined}
-                            className={`rounded-lg p-4 flex flex-col gap-1 hover:shadow-md border transition-shadow ${isCurrent ? 'bg-primary/10 border-primary font-bold' : 'bg-white'}`}
+                            className={`rounded-2xl p-4 flex flex-col gap-1 hover:shadow-md border transition-shadow ${isCurrent ? 'bg-primary/10 border-primary font-bold' : 'bg-white'}`}
                         >
                             <span className="font-semibold text-sm">{persona.getName()}</span>
                             <span className="text-text-muted text-xs">{persona.getDescription()}</span>

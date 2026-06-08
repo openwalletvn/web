@@ -122,7 +122,7 @@ export default async function BankPage({params}: Props) {
                         return (
                             <div className={cn('grid', gridClass, 'gap-3')}>
                                 {statsItems.map(({label, value}) => (
-                                    <div key={label} className="border border-zinc-200 rounded-xl px-4 py-4 text-center">
+                                    <div key={label} className="border border-zinc-200 rounded-[32px] px-4 py-4 text-center">
                                         <p className="heading-3">{value}</p>
                                         <p className="text-body-sm text-text-muted mt-1">{label}</p>
                                     </div>

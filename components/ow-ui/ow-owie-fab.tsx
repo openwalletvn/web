@@ -29,7 +29,7 @@ export function OwOwieFab({className}: { className?: string }) {
                     <button
                         type="button"
                         onClick={toggle}
-                        className="bg-black text-white cursor-pointer p-2 sm:w-16 w-14 rounded-md flex flex-col gap-1 justify-center items-center hover:bg-primary transition-all duration-200">
+                        className="bg-black text-white cursor-pointer p-2 sm:w-16 w-14 rounded-2xl flex flex-col gap-1 justify-center items-center hover:bg-primary transition-all duration-200">
                         <OwLogo color="white" variant="full" className="size-10"/>
                         <span className="inline-flex text-label font-bold font-display">Owie</span>
                     </button>

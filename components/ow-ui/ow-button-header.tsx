@@ -14,13 +14,13 @@ export function OwButtonHeader({asChild = false, icon, kbd, className, children,
     return (
         <Comp
             className={cn(
-                "ow-button-header cursor-pointer inline-flex items-center gap-2 rounded-md border-2 border-black bg-slate-50 p-0.5 pr-2 transition-colors",
+                "ow-button-header cursor-pointer inline-flex items-center gap-2 rounded-2xl border-2 border-black bg-slate-50 p-0.5 pr-2 transition-colors",
                 "hover:border-primary hover:bg-white",
                 className,
             )}
             {...props}
         >
-            <span className="bg-primary rounded-sm w-8 h-8 flex justify-center items-center text-white shrink-0">
+            <span className="bg-primary rounded w-8 h-8 flex justify-center items-center text-white shrink-0">
                 {icon ?? <OwLogo variant="full" color="white" href={null} className="w-5"/>}
             </span>
             <span className="flex-1 text-left">{children}</span>

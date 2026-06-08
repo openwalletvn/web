@@ -166,7 +166,7 @@ export function ReminderCardRow({
             className="h-6 w-6 object-contain shrink-0"
           />
         ) : (
-          <div className="h-6 w-6 bg-slate-100 rounded-sm shrink-0" />
+          <div className="h-6 w-6 bg-slate-100 rounded shrink-0" />
         )}
         <span className="font-medium text-slate-900 truncate flex-1">{cardName}</span>
         {walletCard.last4 && (

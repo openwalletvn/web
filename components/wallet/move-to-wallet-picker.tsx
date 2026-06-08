@@ -69,7 +69,7 @@ export function MoveToWalletPicker({ walletCard, otherWallets, onMoved, onClose 
     const { destination, siblingCount, totalCount } = phase;
     return (
       <div className="ow-move-to-wallet-picker p-3 space-y-3">
-        <p className="text-sm text-amber-700 bg-amber-50 border border-dashed border-amber-300 rounded-sm px-2.5 py-2 leading-snug">
+        <p className="text-sm text-amber-700 bg-amber-50 border border-dashed border-amber-300 rounded px-2.5 py-2 leading-snug">
           Thẻ này thông với {siblingCount} thẻ khác (cùng hạn mức tín dụng).
           Tất cả {totalCount} thẻ sẽ được chuyển cùng nhau sang{' '}
           <span className="font-medium">"{destination.name}"</span>.
@@ -77,13 +77,13 @@ export function MoveToWalletPicker({ walletCard, otherWallets, onMoved, onClose 
         <div className="flex gap-2">
           <button
             onClick={() => execute(destination.id)}
-            className="flex-1 py-1.5 border border-dashed border-brand-blue text-brand-blue text-sm rounded-sm hover:bg-blue-50/60 transition-colors font-medium"
+            className="flex-1 py-1.5 border border-dashed border-brand-blue text-brand-blue text-sm rounded hover:bg-blue-50/60 transition-colors font-medium"
           >
             Xác nhận
           </button>
           <button
             onClick={() => setPhase({ kind: 'list' })}
-            className="px-3 py-1.5 border border-dashed border-slate-300 text-slate-500 text-sm rounded-sm hover:border-slate-400 transition-colors"
+            className="px-3 py-1.5 border border-dashed border-slate-300 text-slate-500 text-sm rounded hover:border-slate-400 transition-colors"
           >
             Huỷ
           </button>

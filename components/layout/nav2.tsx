@@ -92,7 +92,7 @@ export function Nav2() {
                                             <Link
                                                 href={persona.getHref()}
                                                 className={cn(
-                                                    'block px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                                                    'block px-3 py-2 rounded-2xl text-sm font-medium transition-colors',
                                                     'text-slate-700 hover:text-brand-red hover:bg-slate-50',
                                                     pathname.startsWith(persona.getHref()) && 'text-brand-red bg-slate-50'
                                                 )}
@@ -106,7 +106,7 @@ export function Nav2() {
                             <NavigationMenuLink asChild>
                                 <Link
                                     href="/linh-vuc"
-                                    className="flex items-center justify-center w-full px-3 py-2 rounded-md text-sm font-semibold text-brand-red border border-brand-red/30 hover:bg-brand-red/5 transition-colors"
+                                    className="flex items-center justify-center w-full px-3 py-2 rounded-2xl text-sm font-semibold text-brand-red border border-brand-red/30 hover:bg-brand-red/5 transition-colors"
                                 >
                                     Xem tất cả nhu cầu →
                                 </Link>
@@ -116,7 +116,7 @@ export function Nav2() {
                                     <Link
                                         href={ROUTES.cards}
                                         className={cn(
-                                            'flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                                            'flex items-center px-3 py-2 rounded-2xl text-sm font-medium transition-colors',
                                             pathname === ROUTES.cards
                                                 ? 'text-brand-red'
                                                 : 'text-slate-700 hover:text-brand-red hover:bg-slate-50'
@@ -163,7 +163,7 @@ export function Nav2() {
                                         <Link
                                             href={tool.href}
                                             className={cn(
-                                                'block px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                                                'block px-3 py-2 rounded-2xl text-sm font-medium transition-colors',
                                                 pathname.startsWith(tool.href)
                                                     ? 'text-brand-red'
                                                     : 'text-slate-700 hover:text-brand-red hover:bg-slate-50'

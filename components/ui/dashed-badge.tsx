@@ -23,7 +23,7 @@ export function DashedBadge({
   return (
     <span
       className={cn(
-        'ow-dashed-badge text-xs px-1.5 py-0.5 border border-dashed rounded-sm shrink-0',
+        'ow-dashed-badge text-xs px-1.5 py-0.5 border border-dashed rounded shrink-0',
         variantClasses[variant],
         className,
       )}

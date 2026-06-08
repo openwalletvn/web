@@ -82,7 +82,7 @@ export function RecentCompares({ excludePair }: Props = {}) {
                                                              height={sc.is_vertical ? 24 : 10}
                                                              className="w-11 h-auto shrink-0"/>
                                             ) : (
-                                                <div className="h-7 w-11 bg-slate-100 rounded-sm shrink-0"/>
+                                                <div className="h-7 w-11 bg-slate-100 rounded shrink-0"/>
                                             )}
                                             <span className="text-sm text-slate-700 truncate min-w-0">
                                    {sc?.name ?? ids[i]}

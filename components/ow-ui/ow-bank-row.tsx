@@ -17,7 +17,7 @@ export function OwBankRow({bank: bankRaw, className}: Props) {
     const bank = new BankModel(bankRaw);
     return (
         <div
-            className={`ow-bank-row group grid grid-cols-12 gap-2 p-3 max-sm:py-4 md:rounded-full rounded-lg bg-[#f6f6f6] ${className ?? ''}`}>
+            className={`ow-bank-row group grid grid-cols-12 gap-2 p-3 max-sm:py-4 md:rounded-full rounded-2xl bg-[#f6f6f6] ${className ?? ''}`}>
             {/*left*/}
             <div
                 className="lg:col-span-8 col-span-12 flex md:gap-4 gap-2 items-center max-sm:flex-col max-sm:items-start">

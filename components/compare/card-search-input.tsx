@@ -116,7 +116,7 @@ export function CardSearchInput({
 
     const wrapperClass = underline
         ? 'relative flex items-center border-b border-slate-300 bg-transparent focus-within:border-slate-700 transition-colors'
-        : 'relative flex items-center border border-slate-300 rounded-sm bg-white focus-within:border-brand-blue focus-within:ring-1 focus-within:ring-brand-blue/30 transition-colors';
+        : 'relative flex items-center border border-slate-300 rounded bg-white focus-within:border-brand-blue focus-within:ring-1 focus-within:ring-brand-blue/30 transition-colors';
 
     return (
         <div ref={containerRef} className="ow-card-search-input relative">
@@ -173,7 +173,7 @@ export function CardSearchInput({
             </div>
 
             {open && results.length > 0 && (
-                <div className="absolute z-50 top-full mt-1 w-full bg-white border border-slate-200 rounded-sm shadow-lg overflow-hidden">
+                <div className="absolute z-50 top-full mt-1 w-full bg-white border border-slate-200 rounded shadow-lg overflow-hidden">
                     {results.map((card) => (
                         <button
                             key={card.id}

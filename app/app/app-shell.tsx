@@ -84,7 +84,7 @@ function WalletSwitcher() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => { setOpen(false); setCreating(false); setNewName(''); }} />
-          <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-dashed border-slate-200 rounded-sm shadow-md overflow-hidden">
+          <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-dashed border-slate-200 rounded shadow-md overflow-hidden">
             {wallets?.map((wallet) => (
               <button
                 key={wallet.id}
@@ -105,12 +105,12 @@ function WalletSwitcher() {
                     onChange={(e) => setNewName(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); if (e.key === 'Escape') { setCreating(false); setNewName(''); } }}
                     placeholder="Tên ví..."
-                    className="flex-1 px-2 py-1 text-sm border border-dashed border-slate-300 rounded-sm focus:outline-none focus:border-brand-blue"
+                    className="flex-1 px-2 py-1 text-sm border border-dashed border-slate-300 rounded focus:outline-none focus:border-brand-blue"
                   />
                   <button
                     onClick={handleCreate}
                     disabled={!newName.trim()}
-                    className="px-2 py-1 text-sm border border-dashed border-brand-blue text-brand-blue rounded-sm hover:bg-blue-50/60 disabled:opacity-40 transition-colors"
+                    className="px-2 py-1 text-sm border border-dashed border-brand-blue text-brand-blue rounded hover:bg-blue-50/60 disabled:opacity-40 transition-colors"
                   >
                     Tạo
                   </button>

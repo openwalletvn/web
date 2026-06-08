@@ -17,7 +17,7 @@ export default function CardPageLoading() {
                     {/* Left col: card image */}
                     <div className="xl:col-span-3 md:col-span-4 col-span-12">
                         <div className="max-w-[360px]">
-                            <Skeleton className="w-full rounded-xl" style={{ aspectRatio: '16/10' }} />
+                            <Skeleton className="w-full rounded-[32px]" style={{ aspectRatio: '16/10' }} />
                             <div className="mt-4 flex flex-col gap-2">
                                 <Skeleton className="h-10 w-full" />
                             </div>
@@ -48,7 +48,7 @@ export default function CardPageLoading() {
                         {/* Billing cycle section */}
                         <div className="flex flex-col gap-3">
                             <Skeleton className="h-4 w-32" />
-                            <Skeleton className="h-20 w-full rounded-lg" />
+                            <Skeleton className="h-20 w-full rounded-2xl" />
                         </div>
 
                         {/* Fees section */}

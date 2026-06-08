@@ -52,7 +52,7 @@ export default function RemindersPage() {
 
  {/* Adapter banner */}
  {!activeAdapter ? (
- <div className="mb-6 flex items-center gap-3 p-4 border border-dashed border-amber-300 bg-amber-50/40 rounded-sm">
+ <div className="mb-6 flex items-center gap-3 p-4 border border-dashed border-amber-300 bg-amber-50/40 rounded">
  <IconBellOff size={20} className="text-amber-500 shrink-0" />
  <div className="flex-1 text-sm text-amber-700">
  Chưa cài kênh thông báo.{' '}
@@ -60,7 +60,7 @@ export default function RemindersPage() {
  </div>
  </div>
  ) : (
- <div className="mb-6 flex items-center gap-3 p-4 border border-dashed border-green-300 bg-green-50/40 rounded-sm">
+ <div className="mb-6 flex items-center gap-3 p-4 border border-dashed border-green-300 bg-green-50/40 rounded">
  <IconBell size={20} className="text-green-600 shrink-0" />
  <span className="text-sm text-green-700">
  Đã kết nối {activeAdapter.id === 'discord' ? 'Discord' : activeAdapter.id}
@@ -79,7 +79,7 @@ export default function RemindersPage() {
  action={{ label: 'Thêm thẻ', href: '/app/add' }}
  />
  ) : (
- <div className="border border-dashed border-slate-200 rounded-sm px-4">
+ <div className="border border-dashed border-slate-200 rounded px-4">
  {activeCards.map((card) => (
  <ReminderCardRow
  key={card.id}

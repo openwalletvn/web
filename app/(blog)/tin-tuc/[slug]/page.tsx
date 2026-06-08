@@ -66,7 +66,7 @@ export default async function BlogPostPage({params}: Props) {
                             <div className="flex items-center gap-2 mb-4 flex-wrap">
                                 <Link
                                     href={`/tin-tuc/category/${post.categorySlug}`}
-                                    className="text-sm font-medium px-2.5 py-1 border border-dashed border-brand-blue text-brand-blue rounded-sm hover:bg-blue-50/60 transition-colors"
+                                    className="text-sm font-medium px-2.5 py-1 border border-dashed border-brand-blue text-brand-blue rounded hover:bg-blue-50/60 transition-colors"
                                 >
                                     {frontmatter.category}
                                 </Link>
@@ -107,7 +107,7 @@ export default async function BlogPostPage({params}: Props) {
                                             <Link
                                                 key={tagSlugs[i]}
                                                 href={`/tin-tuc/tag/${tagSlugs[i]}`}
-                                                className="text-xs px-2 py-0.5 border border-dashed border-slate-200 text-slate-500 rounded-sm hover:border-slate-400 hover:text-slate-600 transition-colors"
+                                                className="text-xs px-2 py-0.5 border border-dashed border-slate-200 text-slate-500 rounded hover:border-slate-400 hover:text-slate-600 transition-colors"
                                             >
                                                 #{tag}
                                             </Link>
@@ -144,7 +144,7 @@ export default async function BlogPostPage({params}: Props) {
                         <div className="mt-10">
                             <Link
                                 href="/tin-tuc"
-                                className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded-sm font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors text-sm"
+                                className="inline-block px-6 py-2.5 border border-dashed border-slate-300 rounded font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors text-sm"
                             >
                                 ← Về trang Blog
                             </Link>

@@ -13,7 +13,7 @@ export function PostCard({ post }: Props) {
   return (
     <Link
       href={`/tin-tuc/${slug}`}
-      className="ow-post-card flex flex-col border border-dashed border-border rounded-sm hover:border-border-mid hover:bg-bg-light/60 transition-colors overflow-hidden"
+      className="ow-post-card flex flex-col border border-dashed border-border rounded hover:border-border-mid hover:bg-bg-light/60 transition-colors overflow-hidden"
     >
       {frontmatter.cover_image && (
         <div className="aspect-[2/1] overflow-hidden bg-bg-muted">
@@ -26,7 +26,7 @@ export function PostCard({ post }: Props) {
       )}
       <div className="flex flex-col gap-3 p-5">
         <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs font-medium px-2 py-0.5 border border-dashed border-brand-blue text-brand-blue rounded-sm">
+        <span className="text-xs font-medium px-2 py-0.5 border border-dashed border-brand-blue text-brand-blue rounded">
           {frontmatter.category}
         </span>
         <span className="text-body-sm text-text-subtle">{readingTime}</span>
@@ -58,7 +58,7 @@ export function PostCard({ post }: Props) {
             {frontmatter.tags.slice(0, 2).map((tag, i) => (
               <span
                 key={tagSlugs[i]}
-                className="text-body-sm px-1.5 py-0.5 border border-dashed border-border text-text-subtle rounded-sm"
+                className="text-body-sm px-1.5 py-0.5 border border-dashed border-border text-text-subtle rounded"
               >
                 #{tag}
               </span>

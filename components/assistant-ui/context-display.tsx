@@ -190,7 +190,7 @@ function ContextDisplayTrigger({
         type="button"
         data-slot="context-display-trigger"
         className={cn(
-          "inline-flex items-center rounded-md transition-colors",
+          "inline-flex items-center rounded-2xl transition-colors",
           className,
         )}
         {...props}
@@ -217,7 +217,7 @@ function ContextDisplayContent({
       sideOffset={8}
       data-slot="context-display-popover"
       className={cn(
-        "bg-popover text-popover-foreground rounded-lg border px-3 py-2 shadow-md [&_span>svg]:hidden!",
+        "bg-popover text-popover-foreground rounded-2xl border px-3 py-2 shadow-md [&_span>svg]:hidden!",
         className,
       )}
     >
