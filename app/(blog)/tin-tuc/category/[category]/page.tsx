@@ -1,9 +1,10 @@
 import type {Metadata} from 'next';
 import {getAllCategories, getPostsByCategory} from '@/lib/mdx';
 import {ROUTES} from '@/lib/routes';
-import {PostList} from '@/components/blog/post-list';
-import {CategoryFilter} from '@/components/blog/category-filter';
+// import {PostList} from '@/components/blog/post-list';
+// import {CategoryFilter} from '@/components/blog/category-filter';
 import {BlogPageShell} from '@/components/layout/blog-page-shell';
+import {OwPostList} from '@/components/ow-ui/ow-post-list';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 
 interface Props {
@@ -62,11 +63,7 @@ export default async function CategoryPage({params}: Props) {
             breadcrumbItems={breadcrumbItems}
             jsonLd={jsonLd}
         >
-            <div className="mb-6">
-                <CategoryFilter categories={categories} activeSlug={slug}/>
-            </div>
-
-            <PostList posts={posts} emptyMessage={`Chưa có bài viết nào trong chủ đề "${displayName}".`}/>
+            <OwPostList posts={posts} title={`${displayName} (${posts.length})`}/>
         </BlogPageShell>
     );
 }

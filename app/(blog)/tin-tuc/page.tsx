@@ -1,11 +1,13 @@
 import type {Metadata} from 'next';
-import {getAllPosts, getAllCategories, getAllTags} from '@/lib/mdx';
+import {getAllPosts} from '@/lib/mdx';
 import {ROUTES} from '@/lib/routes';
-import {PostList} from '@/components/blog/post-list';
-import {CategoryFilter} from '@/components/blog/category-filter';
-import {TagList} from '@/components/blog/tag-list';
+// import {PostList} from '@/components/blog/post-list';
+// import {CategoryFilter} from '@/components/blog/category-filter';
+// import {TagList} from '@/components/blog/tag-list';
 import {BlogPageShell} from '@/components/layout/blog-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {OwFeaturedPosts} from '@/components/ow-ui/ow-featured-posts';
+import {OwPostList} from '@/components/ow-ui/ow-post-list';
 
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},
@@ -26,8 +28,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function BlogPage() {
     const posts = getAllPosts();
-    const categories = getAllCategories();
-    const tags = getAllTags();
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
         title: 'Blog - Kiến thức tài chính cá nhân | OpenWallet',
@@ -44,22 +44,10 @@ export default async function BlogPage() {
             breadcrumbItems={breadcrumbItems}
             jsonLd={jsonLd}
         >
-            {categories.length > 0 && (
-                <div className="mb-6">
-                    <CategoryFilter categories={categories}/>
-                </div>
-            )}
-
-            <PostList posts={posts} emptyMessage='Chưa có bài viết nào. Quay lại sớm nhé!'/>
-
-            {tags.length > 0 && (
-                <div className="mt-12">
-                    <h2 className="text-label text-text-muted mb-3">
-                        Chủ đề
-                    </h2>
-                    <TagList tags={tags}/>
-                </div>
-            )}
+            <div className="flex flex-col gap-12">
+                <OwFeaturedPosts allPosts={posts}/>
+                <OwPostList posts={posts} title={`Tất cả bài viết (${posts.length})`}/>
+            </div>
         </BlogPageShell>
     );
 }
