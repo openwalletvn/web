@@ -1,0 +1,325 @@
+---
+title: "Card schema cho thẻ tín dụng Việt Nam: từ WordPress đến Cloudflare Workers"
+description: >-
+  Hành trình thiết kế data schema cho thẻ tín dụng Việt Nam, từ WordPress custom
+  post type và WPGraphQL đến Zod schema, JSON database và Cloudflare Workers edge API.
+  Không phải dự án làm trong vài tuần mà là quá trình iterate qua từng thẻ thật.
+date: '2026-06-08'
+category: Case study
+tags:
+  - OpenWallet
+  - Schema
+  - Cloudflare Workers
+  - API
+  - Kỹ thuật
+status: published
+---
+
+Khi bắt đầu xây dựng OpenWallet, câu hỏi đầu tiên không phải là "dùng framework nào" mà là "làm sao lưu thông tin một cái thẻ tín dụng cho đúng." Nghe đơn giản, nhưng mất gần ba tháng iterate mới ra được schema hiện tại. Bài này kể lại hành trình đó, từ điểm xuất phát đến kiến trúc đang chạy hôm nay.
+
+## Điểm xuất phát: WordPress và 7 năm thói quen
+
+Trước OpenWallet là tich.vn, một dự án so sánh thẻ tín dụng tôi xây khi đang chuyển từ WordPress sang Next.js. Bảy năm làm WP, nên công cụ quen tay nhất là Custom Post Type, ACF, WPGraphQL.
+
+Cấu trúc lúc đó:
+
+- Mỗi thẻ là một CPT (`cpt_card`) trong WordPress
+- Network và tier encode chung trong một taxonomy slug: `visa-signature`, `mastercard-platinum`
+- Bank, loại thẻ, số ngày miễn lãi đều là taxonomy term
+
+Khi export ra JSON để Next.js dùng, có một đoạn PHP như thế này:
+
+```php
+$net_slug  = get_the_terms($post_id, 'tax-network')[0]->slug; // "visa-signature"
+$net_parts = explode('-', $net_slug, 2);
+$card_network = $net_parts[0]; // "visa"
+$card_tier    = $net_parts[1]; // "signature"
+```
+
+Trông ổn cho đến khi gặp American Express. Slug `"american-express-platinum"` → `network = "american"`, tier = `"express-platinum"`. Fix bằng một dòng hardcode:
+
+```php
+$card_network = $raw_network === 'american' ? 'amex' : $raw_network;
+```
+
+Đây là dấu hiệu đầu tiên: data model đang bị nhồi vào WP taxonomy, không phải được thiết kế từ đầu.
+
+Cashback lúc đó nằm trong ACF fields của một CPT riêng (`cpt_reward`), liên kết với thẻ qua GraphQL resolver. MCC code lưu dưới dạng string `"3000, 3001, 3002"` trong một ACF field, rồi query bằng `meta_query REGEXP` để tìm reward nào chứa mã MCC đó.
+
+JSON xuất ra từ mỗi thẻ trông như thế này:
+
+```json
+{
+  "id": "vib-cash-back",
+  "name": "VIB Cash Back",
+  "bank_id": "vib",
+  "card_network": "mastercard",
+  "card_tier": "platinum",
+  "card_type": ["credit"],
+  "annual_fee": 899000,
+  "currency": "VND",
+  "interest_free_days": 55,
+  "status": "published"
+}
+```
+
+Phần cashback không có trong JSON này. Nó nằm ở WPGraphQL, cần query riêng. Mỗi lần cập nhật một thẻ: sửa trong WP admin, click "Generate All JSONs", commit file, deploy. Ba bước tay cho mỗi lần thay đổi.
+
+### Vấn đề thật sự
+
+WordPress là tool đúng cho blog. Nó là tool sai cho data API.
+
+WPGraphQL thêm overhead cả về runtime lẫn mental model. GraphQL resolver cho cashback ngày càng phức tạp khi số lượng rule tăng lên. Taxonomy term không phải schema, nó là label. Khi cần validate data, không có contract nào cả, bất kỳ field nào cũng có thể có bất kỳ shape nào.
+
+Và quan trọng hơn: GraphQL tốt khi client cần chọn field linh hoạt. Nhưng với card comparison, ranking, và cashback calculation là các computed operation phức tạp, REST endpoint với typed response rõ ràng hơn nhiều.
+
+## Quyết định rebuild: không SQL, không GraphQL
+
+### Tại sao không dùng relational database?
+
+Card data không có transaction. Không có concurrent write. Không có user session. "Relational" duy nhất thật sự cần là hai quan hệ: `bank_id` trỏ đến bank, `card_network` trỏ đến network entity. Hai foreign key này xử lý được bằng enrichment tại generate time, kết quả bundle vào JSON trước khi deploy.
+
+SQL có nghĩa là server, connection pool, migration files, backup strategy. Với dữ liệu của 23 ngân hàng và 321 thẻ, đây là overhead không cần thiết.
+
+JSON files trong git làm được tất cả: mỗi commit là một migration, git history là audit trail, diff đọc được bằng mắt thường.
+
+```
+data/cards/
+  vib/
+    vib-family-link/
+      vib-family-link.json    ← toàn bộ data của một thẻ, kể cả cashback rules
+  kbank/
+    kbank-cashback-plus/
+      kbank-cashback-plus.json
+```
+
+### JSON database và DX với coding assistant
+
+Đây là điểm ít nói đến nhưng thực tế ảnh hưởng lớn nhất đến cách làm việc hàng ngày: toàn bộ API server chạy được hoàn toàn local, kể cả database.
+
+Không cần kết nối đến server nào. Không cần seed script. Không cần Docker compose. Clone repo, `pnpm install`, chạy được ngay.
+
+Điều này có nghĩa là Claude, khi được giao task cập nhật data của một thẻ, có thể đọc file JSON trực tiếp, chỉnh sửa, validate ngay bằng Zod schema trong cùng repo, rồi commit. Không có bước nào cần gọi API bên ngoài, không có bước nào cần auth, không có delay do network.
+
+Pipeline cập nhật thẻ trông như thế này:
+
+```
+Scrape URL/PDF → clean text → LLM extract → Zod validate → write JSON → git commit
+```
+
+Mỗi bước là file trung gian được lưu lại. LLM đọc được, sửa được, trace được từng bước. Không có bước nào là hộp đen.
+
+Đây là lý do cốt lõi giữ JSON files làm database: best DX cho coding assistant. Khi tool hiểu được cả schema lẫn data trong cùng một repo, iteration nhanh hơn hẳn.
+
+### Tại sao Cloudflare Workers?
+
+Lý do đầu tiên thực tế hơn nhiều người nghĩ: Cloudflare cho phép deploy từ private GitHub organization repository. Vercel chỉ cho phép private personal repo ở plan miễn phí. OpenWallet là org repo, nên Cloudflare là lựa chọn tự nhiên cho API.
+
+Ngoài ra:
+
+- **Edge runtime:** API response từ PoP gần nhất, không phải một server duy nhất ở một region
+- **Zero cold start với Workers:** code chạy trên V8 isolate, không có container spin-up
+- **Bundle constraint là ưu điểm ngụy trang:** Cloudflare Workers giới hạn 3 MiB per bundle, buộc phải chia nhỏ JSON bundles theo từng entity type. Kết quả là mỗi bundle chỉ load phần data cần thiết
+- **`wrangler deploy` là quy trình đơn giản:** tương đương `git push`, không có infrastructure phải quản lý
+
+Web (Next.js) vẫn ở Vercel vì một lý do kỹ thuật cụ thể: Next.js ISR (Incremental Static Regeneration) cần Node.js runtime để revalidate cache trong nền. Cloudflare Workers chỉ có edge runtime, không có Node.js, nên ISR không hoạt động được. Web cần ISR để tránh timeout khi API cold start trên Vercel. Mỗi platform một vai trò rõ ràng.
+
+Nguyên tắc chung trong mọi quyết định hosting: tối ưu cost trước, performance sau, không bị lock-in vào bất kỳ vendor nào. API có thể chuyển sang bất kỳ edge runtime nào hỗ trợ Hono. Web có thể chuyển sang bất kỳ platform nào hỗ trợ Next.js.
+
+## Schema evolution: cashback là phần khó nhất
+
+Phần còn lại của bài này đi vào chi tiết kỹ thuật: schema cashback đã thay đổi như thế nào qua từng lần gặp thẻ thật không fit vào model cũ.
+
+### Điểm khởi đầu: flat và đơn giản
+
+Schema đầu tiên cho fees rất phẳng:
+
+```json
+{
+  "fees": {
+    "annual": { "amount": 899000, "type": "currency" },
+    "foreign": { "amount": 2.95, "type": "rate" }
+  }
+}
+```
+
+`type: "currency"` vs `type: "rate"` để phân biệt phí VND và phí phần trăm. Đơn giản, đủ dùng cho 80% thẻ.
+
+Cashback cũng flat ban đầu: `rate`, `cap`, `categories[]`.
+
+### "Miễn phí năm đầu": pattern đầu tiên cần structured field
+
+Hầu hết ngân hàng VN đều có waiver năm đầu với điều kiện chi tiêu. Không thể bỏ vào `note` vì cần hiển thị có cấu trúc trên UI. Kết quả:
+
+```json
+{
+  "fees": {
+    "annual": {
+      "amount": 899000,
+      "type": "currency",
+      "first_year": {
+        "waiver": true,
+        "condition": "Miễn phí năm đầu khi chi tiêu tối thiểu 3 triệu trong 3 tháng đầu"
+      }
+    }
+  }
+}
+```
+
+Rule: giữ text tiếng Việt nguyên vẹn trong `condition`. Không rút gọn, không dịch. Đây là nguồn truth từ bank.
+
+### "all" category slug: catch-all rule
+
+Thẻ hoàn tiền đơn giản nhất vẫn cần rule để tính cashback cho mọi giao dịch. Ban đầu dùng `categories: []` (mảng rỗng) nghĩa là áp dụng cho tất cả, nhưng mảng rỗng và thiếu data trông giống nhau. Cần sentinel rõ ràng:
+
+```json
+{ "rate": 0.005, "intents": ["all"] }
+```
+
+`"all"` là slug đặc biệt: "áp dụng cho mọi giao dịch." Rule match theo thứ tự: rule cụ thể trước, catch-all cuối. First matching rule wins.
+
+### `package_exclusive`: LPBank JCB Ultimate
+
+Thẻ này cho khách hàng chọn một trong hai gói khi phát hành thẻ, và lựa chọn đó là vĩnh viễn:
+
+- Gói Chăm sóc toàn diện: 15% cho bảo hiểm, y tế, giáo dục
+- Gói Trải nghiệm tinh hoa: 10% cho ăn uống, du lịch
+
+Không thể dùng `max_active_rules` vì đó là "chọn lại mỗi tháng." Đây là chọn một lần khi phát hành. Schema:
+
+```json
+{
+  "cashback": {
+    "package_exclusive": true,
+    "rules": [
+      {
+        "rate": 0.15,
+        "cap": { "amount": 800000 },
+        "intents": ["insurance", "health", "education"],
+        "note": "Gói Chăm sóc toàn diện - chọn khi phát hành thẻ"
+      },
+      {
+        "rate": 0.10,
+        "cap": { "amount": 800000 },
+        "intents": ["dining", "travel"],
+        "note": "Gói Trải nghiệm tinh hoa - chọn khi phát hành thẻ"
+      }
+    ]
+  }
+}
+```
+
+Engine đọc `package_exclusive: true` → đánh giá từng rule độc lập → trả về rule có cashback cao nhất. Không cộng, không cộng dồn.
+
+### `tiers[]`: VIB Family Link
+
+Thẻ này có rate phụ thuộc vào tổng chi tiêu kỳ trước:
+
+- Chi tiêu kỳ trước dưới 50 triệu: hoàn 5%
+- Từ 50 triệu: hoàn 8%
+- Từ 100 triệu: hoàn 10%
+
+Flat `rate` không đủ. Cần `tiers[]`:
+
+```json
+{
+  "rate": 0.05,
+  "rate_max": 0.10,
+  "tiers": [
+    { "min_spend": 0,         "rate": 0.05 },
+    { "min_spend": 50000000,  "rate": 0.08 },
+    { "min_spend": 100000000, "rate": 0.10 }
+  ],
+  "intents": ["education", "health", "insurance"]
+}
+```
+
+`rate` và `rate_max` là display-only summary. `tiers[]` là nguồn truth cho engine tính toán.
+
+### `scope`: Sacombank AMEX, Eximbank JCB
+
+Một số thẻ có rule chỉ áp dụng cho giao dịch nước ngoài, hoặc chỉ khi offline. Ban đầu dùng category string như `foreign_offline`, `foreign_online`. Vấn đề: đây không phải category chi tiêu, đây là dimension của giao dịch.
+
+`foreign_offline` là tổ hợp của hai trục độc lập: `channel=offline` và `geography=foreign`. Khi Eximbank JCB có rule riêng cho giao dịch tại Nhật Bản cụ thể, không có category string nào fit được. Giải pháp:
+
+```json
+{
+  "scope": {
+    "channel": "offline",
+    "geography": "foreign"
+  }
+}
+```
+
+Hoặc cụ thể hơn:
+
+```json
+{
+  "scope": {
+    "geography": "JP"
+  }
+}
+```
+
+`geography` nhận `"domestic"`, `"foreign"`, hoặc ISO 3166-1 alpha-2 country code. Orthogonal model: channel và geography là hai trục độc lập, kết hợp tùy ý.
+
+Tất cả card dùng `foreign_offline` và `foreign_online` được migrate sang syntax mới. Các deprecated string bị xóa khỏi schema.
+
+### `max_active_rules`: MSB mDigi
+
+Thẻ này cho chọn một danh mục mỗi tháng, danh mục nào cũng hoàn 20%:
+
+```json
+{
+  "cashback": {
+    "max_active_rules": 1,
+    "rules": [
+      { "rate": 0.20, "cap": { "amount": 300000 }, "intents": ["dining"] },
+      { "rate": 0.20, "cap": { "amount": 300000 }, "intents": ["travel"] },
+      { "rate": 0.20, "cap": { "amount": 300000 }, "intents": ["digital"] }
+    ],
+    "global_cap": { "amount": 300000 }
+  }
+}
+```
+
+`max_active_rules: 1` nghĩa là engine chọn N rule có cashback cao nhất, không phải tất cả cùng lúc. Khác với `package_exclusive`: người dùng chọn lại mỗi tháng, không phải một lần vĩnh viễn.
+
+### `categories` → `intents`: rename khi model trưởng thành
+
+Sau khi xây intent model (`data/intents.json`), mỗi intent là một spending behavior với slug chuẩn như `dining`, `travel`, `digital`. Nhưng field trong cashback rule vẫn đang gọi là `categories`. Hai tên khác nhau cho cùng namespace gây nhầm lẫn.
+
+Rename `categories → intents` trên toàn bộ schema và data. Breaking change, nhưng đúng về semantic. `cashback-categories` entity bị drop hoàn toàn, superseded bởi intents.
+
+### Structured vs deferred: nguyên tắc thiết kế quan trọng nhất
+
+Trong suốt quá trình này, một số field được thêm vào rồi bị remove, hoặc bị comment là `// deferred`:
+
+- `channels[]` và `excluded_channels[]` → thêm vào rồi remove, đưa vào `note`
+- `period` trên cap (month/quarter/year) → deferred, thực tế luôn là per-statement-period
+- `min_transaction` → remove, ngân hàng VN hầu như không document field này
+- `excluded_categories` → deferred vào `note`
+
+Nguyên tắc: tốt hơn là deferred với `note` free text còn hơn là force structure không phản ánh thực tế. `note` giữ text tiếng Việt nguyên vẹn từ nguồn bank, không rút gọn, không translate. Field chỉ được promote lên structured khi gặp đủ nhiều thẻ thật cần nó và cần tính toán programmatic từ nó.
+
+### Một số convention khác
+
+**Decimal rates, VND integers.** 10% lưu là `0.10`, không phải `10`. 300 nghìn lưu là `300000`, không phải `"300k"`. Nhất quán tuyệt đối, không có ngoại lệ.
+
+**`amount: -1` cho unlimited cap.** Phân biệt ba trạng thái: `cap` vắng mặt = không có thông tin, `cap: { amount: 300000 }` = có giới hạn, `cap: { amount: -1 }` = explicitly unlimited. Consumer code xử lý được ba trường hợp khác nhau.
+
+**Hai tầng cap.** Per-rule `cap` giới hạn cashback từ một rule cụ thể. `global_cap` giới hạn tổng cashback từ tất cả rules. `category_caps` trong `CashbackCapSchema` là sub-cap theo danh mục bên trong một rule. Ba tầng này phản ánh đúng cách ngân hàng VN cấu trúc giới hạn hoàn tiền.
+
+**Zod schema là contract.** Mọi file JSON đều được validate qua Zod trước khi vào pipeline. Không có field nào có thể có shape tùy ý. Mỗi `describe()` trên Zod schema là documentation cho cả human và LLM.
+
+## Kết quả hiện tại
+
+321 thẻ từ 23 ngân hàng. Mỗi thẻ có full cashback schema. Cashback engine chạy trên Cloudflare Worker edge runtime, không có database query, không có network call nào ngoài request ban đầu.
+
+Pipeline update data: scrape URL hoặc PDF → LLM extract có guided prompt từ Zod schema → Zod validate → diff trước/sau → confirm → commit. Mỗi thẻ có audit trail đầy đủ trong git history.
+
+Schema đủ expressive để model được hầu hết rule cashback từ ngân hàng VN, không phải vì được thiết kế hoàn hảo từ đầu, mà vì iterate qua từng thẻ thật trong ba tháng. Mỗi field trong schema hiện tại đều có một thẻ cụ thể là lý do nó tồn tại.
+
+Đây không phải schema tổng quát cho mọi thị trường. Nó là schema được calibrate cho thị trường thẻ tín dụng Việt Nam, với các pattern phổ biến nhất ở đây: waiver năm đầu theo điều kiện chi tiêu, pick-one-category-per-cycle, tiered rate theo tổng chi tiêu, và giao dịch nước ngoài với rate riêng.
+
+Đủ để dùng. Vẫn còn chỗ để grow.
