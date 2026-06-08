@@ -19,8 +19,9 @@ import {useChatContext} from '@/components/chat/chat-provider';
 import {ChatRuntime} from '@/components/chat/chat-runtime';
 import {getUserId} from '@/lib/chat/anonymous-user';
 import {type Conversation, createConversation, listConversations,} from '@/lib/chat/conversation-store';
+import Link from 'next/link';
 import {OwLogo} from "@/components/ow-ui/ow-logo";
-import {IconArrowsMaximize, IconMinus, IconPlus} from "@tabler/icons-react";
+import {IconArrowsMaximize, IconHome, IconMinus, IconPlus} from "@tabler/icons-react";
 
 function groupConversations(convos: Conversation[]) {
     const todayStart = new Date().setHours(0, 0, 0, 0);
@@ -206,7 +207,7 @@ export function ChatPanel() {
             )}
 
             {/* Thread */}
-            <div className="ow-chat-thread relative min-h-0 flex-1 overflow-hidden sm:rounded-b-xl">
+            <div className="ow-chat-thread relative min-h-0 flex-1 overflow-hidden">
                 {mounted && activeId && (
                     <ChatRuntime
                         key={activeId}
@@ -215,6 +216,17 @@ export function ChatPanel() {
                         pageContext={pageContext}
                     />
                 )}
+            </div>
+
+            {/* Footer */}
+            <div className="shrink-0 border-t px-3 py-2 sm:rounded-b-2xl">
+                <Link
+                    href="/"
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    <IconHome className="size-3.5" stroke={2}/>
+                    Trang chủ
+                </Link>
             </div>
         </div>
     );

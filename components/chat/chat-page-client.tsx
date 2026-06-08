@@ -21,7 +21,7 @@ import {
     SidebarGroupContent,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { PlusIcon, Trash2Icon } from 'lucide-react';
+import { HomeIcon, MailIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import {
     listConversations,
     createConversation,
@@ -95,7 +95,7 @@ export function ChatPageClient() {
                                     alt="OpenWallet"
                                     width={28}
                                     height={28}
-                                    className="shrink-0 rounded-2xl"
+                                    className="shrink-0 rounded-md"
                                 />
                                 <span className="truncate font-semibold text-sm">Owie</span>
                             </Link>
@@ -112,6 +112,22 @@ export function ChatPageClient() {
                     </SidebarHeader>
 
                     <SidebarContent>
+                        <SidebarGroup>
+                            <SidebarGroupContent>
+                                <SidebarMenu>
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <Link href="/"><HomeIcon />Trang chủ</Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <Link href="/lien-he"><MailIcon />Liên hệ</Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                </SidebarMenu>
+                            </SidebarGroupContent>
+                        </SidebarGroup>
                         {mounted && convos.length === 0 && (
                             <p className="px-4 py-6 text-center text-muted-foreground text-xs">
                                 Chưa có cuộc trò chuyện nào
@@ -158,8 +174,8 @@ export function ChatPageClient() {
                         )}
                     </SidebarContent>
 
-                    <SidebarFooter className="border-t border-sidebar-border p-3">
-                        <p className="text-center text-muted-foreground text-xs">
+                    <SidebarFooter className="border-t border-sidebar-border">
+                        <p className="text-center text-muted-foreground text-xs px-2 py-1">
                             Lịch sử lưu trên thiết bị của bạn
                         </p>
                     </SidebarFooter>
