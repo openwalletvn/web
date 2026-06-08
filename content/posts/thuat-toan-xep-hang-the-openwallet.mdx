@@ -1,0 +1,147 @@
+---
+title: "Thuật toán xếp hạng thẻ của OpenWallet"
+description: "Không có thẻ nào tốt nhất cho tất cả mọi người. OpenWallet xếp hạng thẻ dựa trên thói quen chi tiêu thực tế của bạn, không phải dựa trên % cashback cao nhất."
+date: "2026-06-08"
+category: "Case Study"
+tags:
+  - xep hang the
+  - cashback
+  - thuat toan
+  - openwallet
+  - the tin dung
+  - linh vuc chi tieu
+status: "published"
+ai_generated: true
+cover_image: "/images/posts/thuat-toan-xep-hang-the-openwallet/cover.png"
+image_prompts:
+  cover: "Flat minimalist illustration showing a vertical ranked list of three credit cards (first place with a gold medal, second silver, third bronze) on a light blue to white gradient background with faint hexagonal pattern at 10% opacity. Each card is slightly tilted with a drop shadow. A magnifying glass hovers over the top card, suggesting personalized selection. Clean, modern fintech style, no text."
+  the-khong-phu-hop-cho-tat-ca: "Flat illustration showing four distinct spending category icons (shopping cart, airplane, fork and knife, medical cross) arranged in a 2x2 grid on a soft slate gradient background. Each icon is inside a rounded square tile in a different pastel color. A single credit card overlaps two tiles fully but misses the other two, showing partial coverage. Minimalist, no text."
+  spend-profile-engine: "Isometric infographic showing money (VND banknotes) flowing through a funnel divided into labeled channels: Shopee, Grab, Siêu thị. Each channel has a different width representing spending allocation. At the bottom, coins accumulate into three small piles labeled with cashback amounts. Soft blue gradient background, clean fintech style, no text."
+---
+
+Xếp hạng thẻ không đơn giản chỉ là xem thẻ nào hoàn nhiều tiền nhất.
+
+Có những thẻ cashback bao phủ nhiều lĩnh vực, nhưng mức hoàn ở mỗi lĩnh vực chỉ ở mức trung bình. Có những thẻ chỉ tập trung hoàn tiền cho một lĩnh vực cụ thể, nhưng mức hoàn lại rất cao. Vì vậy, rất hiếm có một thẻ nào bao phủ hết các lĩnh vực chi tiêu thường ngày như đi siêu thị, di chuyển (Grab, Xanh SM), mua sắm online, đóng tiền học, du lịch, đóng bảo hiểm, và nhiều thứ khác.
+
+Mục tiêu của thuật toán xếp hạng này là giúp bạn tìm được thẻ phù hợp với nhu cầu thực tế. Vì vậy, bước đầu tiên không phải là tìm thẻ, mà là xác định rõ thói quen chi tiêu của bạn hiện tại là gì.
+
+## Nhu cầu chi tiêu là điểm khởi đầu
+
+Trước khi xếp hạng bất kỳ thẻ nào, OpenWallet cần biết bạn đang chi tiêu chủ yếu vào đâu. Hệ thống sử dụng khái niệm **intent** (ý định chi tiêu) để mô tả từng loại chi tiêu cụ thể:
+
+- `shopee`, `lazada`, `tiktok-shop` cho mua sắm online
+- `grab`, `xanh-sm` cho di chuyển
+- `supermarket`, `groceries` cho siêu thị
+- `dining` cho ăn uống
+- `vietnam-airlines`, `vietjet` cho vé máy bay
+- `insurance`, `education` cho dịch vụ tài chính
+
+Hiện tại có hơn 40 intent trong cơ sở dữ liệu OpenWallet, được tổ chức theo nhóm lĩnh vực (lĩnh vực di chuyển, lĩnh vực mua sắm, lĩnh vực ăn uống...). Khi bạn vào trang [Lĩnh vực](/linh-vuc) và chọn "Mua sắm online", hệ thống sẽ tự động kích hoạt các intent phù hợp và xếp hạng thẻ theo đó.
+
+![Nhiều lĩnh vực chi tiêu, một thẻ khó bao phủ hết](/images/posts/thuat-toan-xep-hang-the-openwallet/the-khong-phu-hop-cho-tat-ca.png)
+
+## Ba nguyên tắc cốt lõi của thuật toán
+
+### 1. Chỉ xét thẻ phù hợp với lĩnh vực chi tiêu của bạn
+
+Bước đầu tiên là **lọc bỏ những thẻ không liên quan**. Mỗi thẻ trong cơ sở dữ liệu OpenWallet được gán nhãn với các lĩnh vực mà thẻ đó có khả năng hoàn tiền. Nếu bạn chi tiêu chủ yếu trên Shopee, nhưng một thẻ nào đó không có quy tắc cashback nào liên quan đến mua sắm online, thẻ đó sẽ không xuất hiện trong kết quả xếp hạng của bạn.
+
+Đây là một bảo vệ quan trọng: tránh trường hợp thẻ có dữ liệu không đầy đủ tự động leo lên top chỉ vì không có quy tắc nào bị khử trừ.
+
+### 2. Không chấp nhận quy tắc cashback trống
+
+Một số thẻ có quy tắc cashback được ghi nhận trong hồ sơ nhưng thiếu thông tin cụ thể: không rõ áp dụng cho danh mục nào, không rõ mức hoàn là bao nhiêu. Những quy tắc này sẽ bị loại khỏi việc tính điểm.
+
+Kết quả là: **thẻ nào có dữ liệu đầy đủ sẽ xếp hạng chính xác hơn**, không phải thẻ có tên đẹp hay quảng cáo nhiều.
+
+### 3. Mô phỏng dòng tiền thực tế (Spend Profile Engine)
+
+Đây là phần phức tạp nhất và cũng là phần tạo ra sự khác biệt lớn nhất.
+
+Thay vì chỉ nhìn vào % cashback cao nhất của mỗi thẻ rồi so sánh, hệ thống sẽ mô phỏng cách tiền thực sự di chuyển qua các quy tắc cashback của từng thẻ, dựa trên mức chi tiêu cụ thể của bạn.
+
+![Mô phỏng dòng tiền theo lĩnh vực chi tiêu](/images/posts/thuat-toan-xep-hang-the-openwallet/spend-profile-engine.png)
+
+Ví dụ: bạn chi 3 triệu/tháng trên Shopee và 2 triệu/tháng ở siêu thị.
+
+- **Thẻ A** hoàn 10% cho Shopee (cap 300k), 3% siêu thị
+- **Thẻ B** hoàn 5% cho cả mua sắm online và siêu thị, không cap
+
+Nếu chỉ nhìn vào % cashback, Thẻ A có vẻ tốt hơn (10% > 5%). Nhưng khi mô phỏng thực tế:
+
+| Thẻ | Shopee 3 triệu | Siêu thị 2 triệu | Tổng hoàn |
+|-----|----------------|-------------------|-----------|
+| Thẻ A | 300k (chạm cap tại 3 triệu) | 60k | **360k** |
+| Thẻ B | 150k | 100k | **250k** |
+
+Thẻ A vẫn thắng, nhưng tỉ lệ chênh lệch không còn là 10% vs 5% nữa. Và nếu bạn chi tiêu nhiều hơn vào siêu thị, kết quả có thể đảo ngược.
+
+**Thứ tự intent cũng quan trọng:** nếu bạn để `shopee` trước `ecommerce` trong danh sách intent, hệ thống sẽ phân bổ ngân sách vào Shopee trước đến khi đầy cap, phần còn lại mới chạy sang danh mục ecommerce rộng hơn. Thứ tự = mức độ ưu tiên chi tiêu của bạn.
+
+## Khi cashback bằng nhau, ai xếp trước?
+
+Nếu hai thẻ có mức hoàn tiền giống hệt nhau, hệ thống áp dụng tiebreaker theo thứ tự:
+
+1. **Phí thường niên thấp hơn** thắng
+2. **Network phổ biến hơn** thắng (Visa = Mastercard > Napas > JCB/UnionPay/Amex theo mức độ chấp nhận tại VN)
+3. **Không có điều kiện chi tiêu tối thiểu** thắng
+
+Kết quả xếp hạng sẽ hiển thị lý do cụ thể: "hoàn tiền cao hơn", "cùng hoàn tiền, phí ít hơn", "hoà toàn nhau"... giúp bạn hiểu tại sao một thẻ được xếp trước thẻ kia.
+
+## Điểm tổng hợp đa tiêu chí (MCDA Score)
+
+Ngoài việc xếp hạng theo cashback, mỗi thẻ trong OpenWallet còn có một **điểm tổng hợp** tính đến nhiều yếu tố:
+
+| Tiêu chí | Trọng số |
+|----------|----------|
+| Chi phí (phí thường niên, phí ngoại tệ, phí cấp thẻ) | 50% |
+| Lợi ích cashback | 30% |
+| Dễ mở thẻ | 10% |
+| Chất lượng dữ liệu | 10% |
+
+Điểm này giúp bạn so sánh thẻ khi không có thông tin cụ thể về chi tiêu của mình, hoặc khi muốn tìm thẻ có giá trị tổng thể tốt nhất chứ không chỉ tập trung vào một lĩnh vực. **Thẻ debit không bị phạt điểm vì không có cashback** — nếu phí bằng 0 và dễ mở, điểm tổng hợp vẫn có thể rất cao.
+
+## Bạn dùng thuật toán này ở đâu?
+
+### Trang Lĩnh vực
+
+[/linh-vuc](/linh-vuc) tổ chức các intent theo lĩnh vực chi tiêu. Chọn "Shopee", "Du lịch", "Ăn uống"... để xem bảng xếp hạng đã được tính sẵn cho persona tương ứng. Đây là cách nhanh nhất để tìm thẻ mà không cần nhập thủ công.
+
+### Card Match Tool
+
+[/card-match](/card-match) cho phép bạn điều chỉnh mức chi tiêu (slider) và chọn từng intent cụ thể. Bảng xếp hạng cập nhật theo thời gian thực khi bạn thay đổi thông số.
+
+### Owie Chat
+
+Hỏi Owie bằng ngôn ngữ tự nhiên:
+
+> "Tôi hay mua Shopee và đi ăn ngoài, thẻ nào cashback tốt nhất?"
+
+Owie gọi thuật toán xếp hạng phía sau và trả lời bằng danh sách thẻ cụ thể kèm giải thích.
+
+### MCP Tool (dành cho developer và AI agent)
+
+Nếu bạn là developer hoặc đang xây dựng AI agent, có thể gọi trực tiếp qua [OpenWallet MCP](https://openwallet.vn/owie-chat):
+
+```json
+{
+  "tool": "rank",
+  "intents": ["shopee", "dining"],
+  "monthly_spend": 5000000,
+  "limit": 5
+}
+```
+
+Kết quả trả về danh sách thẻ xếp hạng kèm cashback ước tính, lý do xếp hạng, và phân tích từng quy tắc.
+
+## Giới hạn hiện tại
+
+Thuật toán hiện chỉ tính **cashback**. Các lợi ích khác như phòng chờ VIP sân bay, bảo hiểm du lịch, ưu đãi nhà hàng... chưa được đưa vào mô hình xếp hạng. Đây là hướng phát triển tiếp theo của OpenWallet.
+
+Ngoài ra, dữ liệu xếp hạng chỉ chính xác khi thông tin cashback của thẻ được cập nhật đầy đủ. Nếu bạn thấy kết quả bất thường, có thể thẻ đó đang có dữ liệu thiếu. Hãy phản hồi để chúng tôi kiểm tra lại.
+
+## Tóm lại
+
+Thuật toán xếp hạng của OpenWallet không tìm "thẻ cashback cao nhất". Nó tìm **thẻ cashback cao nhất cho thói quen chi tiêu cụ thể của bạn**. Vì thế, cùng một bảng xếp hạng, hai người có cấu chi tiêu khác nhau có thể thấy hai thứ tự hoàn toàn khác nhau.
+
+Bước đầu tiên: xác định bạn đang chi tiêu nhiều nhất ở đâu, rồi để OpenWallet làm phần còn lại.
