@@ -348,25 +348,21 @@ Gap values: `1 2 3 4 5 6 8 10 12` (maps to Tailwind `gap-*`).
 
 ## Shapes (Border Radius)
 
-### CSS Variables
+**Use only `ow-rounded-large` and `ow-rounded-small` utility classes on components.** Never use raw `rounded-*`, `--radius-*` vars, or arbitrary values for component border radius.
+
+```css
+/* Defined in globals.css as @utility */
+ow-rounded-large: 1rem → 2rem (sm) → 2.5rem (lg)   /* cards, panels, large containers */
+ow-rounded-small: 0.5rem → 1rem (sm)                /* inputs, chips, small elements */
+```
+
+### CSS Variables (tokens only — do not use directly in components)
 
 ```css
 --radius-sm: 4px;     --radius-md: 8px;    --radius-lg: 16px;
 --radius-xl: 32px;    --radius-2xl: 40px;  --radius-pill: 48px;
 --radius-full: 96px;  --radius-circle: 112px;
 ```
-
-### Context Guide
-
-| Context | Value |
-|---------|-------|
-| Small image corners | `4px` (`radius-sm`) |
-| Input, card | `8px` (`radius-md`) |
-| Card / panel | `16px` (`radius-lg`) |
-| Large panel | `32px`, `40px` (`radius-xl`, `radius-2xl`) |
-| CTA button | `48px` (`radius-pill`) |
-| Badge / chip | `52px`, `96px` (`radius-full`) |
-| Navbar search, glass bar | `88px`, `112px` (`radius-circle`) |
 
 ---
 
@@ -435,18 +431,20 @@ border-radius: 8px;
 padding: 24px;
 ```
 
-### Metric / Stat Grid (Wobble Cards)
+### Grid Card Layout (required pattern)
 
-Use `OwWobbleCard` in a responsive grid for any group of stats, fees, or key figures. Never flat bordered cards for this pattern.
+For any grid of cards (persona hubs, stat groups, feature tiles, key figures) use `OwWobbleCard` in a responsive CSS grid. Never flat bordered cards for this pattern. Never dashed borders anywhere.
 
 ```tsx
-<div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-  <OwWobbleCard brandColor={brandColor}>
-    {/* stat content */}
+<div className="ow-my-section-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+  <OwWobbleCard brandColor={color}>
+    {/* content */}
   </OwWobbleCard>
   {/* … more cells */}
 </div>
 ```
+
+Reference: `ow-persona-hub-page-list` in `app/(marketing)/(persona)/linh-vuc/page.tsx`.
 
 ---
 
@@ -650,6 +648,17 @@ All shells include: `ow-container`, `Breadcrumbs`, `<h1>` title, optional `descr
 - Use `ow-container` — never `max-w-*`, `container mx-auto`, ad-hoc width combos
 - Use `cn()` — never template literals for conditional classes
 - Use Tailwind arbitrary values or `style={{}}` for dynamic values only
+- Grid of cards → `OwWobbleCard` in CSS grid — never flat bordered cards
+
+### Border Radius
+
+- Use only `ow-rounded-large` (cards/panels) and `ow-rounded-small` (inputs/chips)
+- Never `rounded-*`, raw `--radius-*` vars, or arbitrary radius values in components
+
+### Borders
+
+- Never dashed borders (`border-dashed`) anywhere in UI
+- No dashed dividers, no dashed separators, no dashed input styles
 
 ### Components
 
