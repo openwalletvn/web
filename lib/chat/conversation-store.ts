@@ -1,5 +1,7 @@
 import type { UIMessage } from 'ai';
 
+import { clearChatPref, getChatPrefs, setChatPref } from '@/lib/chat/chat-prefs';
+
 const CONVOS_KEY = 'ow-chat-convos';
 const LEGACY_KEY = 'ow-chat-history';
 
@@ -97,8 +99,21 @@ export function saveConversation(id: string, messages: UIMessage[]) {
     persist(convos);
 }
 
+export function getLastActiveId(): string | null {
+    return getChatPrefs().lastActiveId ?? null;
+}
+
+export function setLastActiveId(id: string) {
+    setChatPref('lastActiveId', id);
+}
+
 export function deleteConversation(id: string): string | null {
     const remaining = load().filter((c) => c.id !== id);
     persist(remaining);
+    if (getChatPrefs().lastActiveId === id) {
+        const next = remaining[0]?.id;
+        if (next) setChatPref('lastActiveId', next);
+        else clearChatPref('lastActiveId');
+    }
     return remaining[0]?.id ?? null;
 }

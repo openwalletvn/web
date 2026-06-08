@@ -2,6 +2,7 @@ import {MarkdownText} from "@/components/assistant-ui/markdown-text";
 import {OwLogo} from "@/components/ow-ui/ow-logo";
 import {ModelSelector} from "@/components/assistant-ui/model-selector";
 import {CHAT_MODELS, getDefaultModel, getVisibleModels} from "@/lib/chat/models";
+import {getChatPrefs, setChatPref} from "@/lib/chat/chat-prefs";
 import {ContextDisplay} from "@/components/assistant-ui/context-display";
 import {MovingBorder} from "@/components/phucbm/moving-border";
 import {
@@ -234,7 +235,7 @@ const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
     const defaultModelId = getDefaultModel().id;
     const [selectedModelId, setSelectedModelId] = useState(() => {
         if (typeof window === 'undefined') return defaultModelId;
-        return localStorage.getItem('ow-chat-model') ?? defaultModelId;
+        return getChatPrefs().modelId ?? defaultModelId;
     });
     const contextWindow = CHAT_MODELS.find((m) => m.id === selectedModelId)?.contextWindow ?? 128_000;
     const isRunning = useAuiState((s) => s.thread.isRunning);
@@ -242,7 +243,7 @@ const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
     const [hasInputValue, setHasInputValue] = useState(false);
 
     useEffect(() => {
-        localStorage.setItem('ow-chat-model', selectedModelId);
+        setChatPref('modelId', selectedModelId);
     }, [selectedModelId]);
 
     const currentPlaceholder = useContextPlaceholder(pageContext, isRunning, hasInputValue);

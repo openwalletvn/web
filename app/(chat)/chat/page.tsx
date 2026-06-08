@@ -12,6 +12,11 @@ export const metadata: Metadata = {
     },
 };
 
-export default function ChatPage() {
-    return <ChatPageClient />;
+export default async function ChatPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ id?: string }>;
+}) {
+    const { id } = await searchParams;
+    return <ChatPageClient initialId={id} />;
 }

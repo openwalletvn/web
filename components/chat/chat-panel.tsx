@@ -18,7 +18,7 @@ import {
 import {useChatContext} from '@/components/chat/chat-provider';
 import {ChatRuntime} from '@/components/chat/chat-runtime';
 import {getUserId} from '@/lib/chat/anonymous-user';
-import {type Conversation, createConversation, listConversations,} from '@/lib/chat/conversation-store';
+import {type Conversation, createConversation, getLastActiveId, listConversations, setLastActiveId,} from '@/lib/chat/conversation-store';
 import Link from 'next/link';
 import {OwLogo} from "@/components/ow-ui/ow-logo";
 import {IconArrowsMaximize, IconHome, IconMinus, IconPlus} from "@tabler/icons-react";
@@ -43,18 +43,25 @@ export function ChatPanel() {
     const [userIdCopied, setUserIdCopied] = useState(false);
 
     useEffect(() => {
+        setUserId(getUserId());
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isOpen) return;
         const list = listConversations();
+        setConvos(list);
         if (list.length > 0) {
-            setConvos(list);
-            setActiveId(list[0].id);
+            const lastId = getLastActiveId();
+            const resolvedId = (lastId && list.find((c) => c.id === lastId)) ? lastId : list[0].id;
+            setActiveId(resolvedId);
         } else {
             const fresh = createConversation();
             setConvos([fresh]);
             setActiveId(fresh.id);
+            setLastActiveId(fresh.id);
         }
-        setUserId(getUserId());
-        setMounted(true);
-    }, []);
+    }, [isOpen]);
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
@@ -69,11 +76,16 @@ export function ChatPanel() {
 
     const refresh = useCallback(() => setConvos(listConversations()), []);
 
+    const selectConvo = useCallback((id: string) => {
+        setActiveId(id);
+        setLastActiveId(id);
+    }, []);
+
     const handleNew = useCallback(() => {
         const convo = createConversation();
         setConvos(listConversations());
-        setActiveId(convo.id);
-    }, []);
+        selectConvo(convo.id);
+    }, [selectConvo]);
 
     const grouped = groupConversations(convos);
 
@@ -99,7 +111,7 @@ export function ChatPanel() {
 
                 <div className="flex gap-3 items-center">
                     {mounted && convos.length > 0 && (
-                        <Select value={activeId} onValueChange={setActiveId}>
+                        <Select value={activeId} onValueChange={selectConvo}>
                             <SelectTrigger className="h-8 w-40 text-xs">
                                 <SelectValue placeholder="Chọn cuộc trò chuyện"/>
                             </SelectTrigger>
@@ -207,7 +219,7 @@ export function ChatPanel() {
             )}
 
             {/* Thread */}
-            <div className="ow-chat-thread relative min-h-0 flex-1 overflow-hidden">
+            <div className="ow-chat-thread relative min-h-0 flex-1 overflow-hidden sm:rounded-b-xl">
                 {mounted && activeId && (
                     <ChatRuntime
                         key={activeId}
@@ -216,17 +228,6 @@ export function ChatPanel() {
                         pageContext={pageContext}
                     />
                 )}
-            </div>
-
-            {/* Footer */}
-            <div className="shrink-0 border-t px-3 py-2 sm:rounded-b-2xl">
-                <Link
-                    href="/"
-                    className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                    <IconHome className="size-3.5" stroke={2}/>
-                    Trang chủ
-                </Link>
             </div>
         </div>
     );

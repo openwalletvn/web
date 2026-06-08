@@ -3,6 +3,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import {useRouter} from 'next/navigation';
 import {ChatRuntime} from '@/components/chat/chat-runtime';
 import {SearchDialog} from '@/components/search/search-dialog';
 import {
@@ -27,7 +28,9 @@ import {
     type Conversation,
     createConversation,
     deleteConversation,
+    getLastActiveId,
     listConversations,
+    setLastActiveId,
 } from '@/lib/chat/conversation-store';
 
 function groupConversations(convos: Conversation[]) {
@@ -40,31 +43,43 @@ function groupConversations(convos: Conversation[]) {
     };
 }
 
-export function ChatPageClient() {
+export function ChatPageClient({ initialId }: { initialId?: string } = {}) {
+    const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [convos, setConvos] = useState<Conversation[]>([]);
     const [activeId, setActiveId] = useState<string>('');
 
     useEffect(() => {
         const list = listConversations();
+        let resolvedId: string;
         if (list.length > 0) {
             setConvos(list);
-            setActiveId(list[0].id);
+            const lastId = initialId ?? getLastActiveId();
+            resolvedId = (lastId && list.find((c) => c.id === lastId)) ? lastId : list[0].id;
         } else {
             const fresh = createConversation();
             setConvos([fresh]);
-            setActiveId(fresh.id);
+            resolvedId = fresh.id;
         }
+        setActiveId(resolvedId);
+        setLastActiveId(resolvedId);
+        router.replace(`/chat?id=${resolvedId}`, { scroll: false });
         setMounted(true);
-    }, []);
+    }, [initialId]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const refresh = useCallback(() => setConvos(listConversations()), []);
+
+    const selectConvo = useCallback((id: string) => {
+        setActiveId(id);
+        setLastActiveId(id);
+        router.replace(`/chat?id=${id}`, { scroll: false });
+    }, [router]);
 
     const handleNew = useCallback(() => {
         const convo = createConversation();
         setConvos(listConversations());
-        setActiveId(convo.id);
-    }, []);
+        selectConvo(convo.id);
+    }, [selectConvo]);
 
     const handleDelete = useCallback(
         (id: string) => {
@@ -73,13 +88,13 @@ export function ChatPageClient() {
             if (updated.length === 0) {
                 const fresh = createConversation();
                 setConvos([fresh]);
-                setActiveId(fresh.id);
+                selectConvo(fresh.id);
             } else {
                 setConvos(updated);
-                if (id === activeId) setActiveId(nextId ?? updated[0].id);
+                if (id === activeId) selectConvo(nextId ?? updated[0].id);
             }
         },
-        [activeId],
+        [activeId, selectConvo],
     );
 
     const grouped = groupConversations(convos);
@@ -141,7 +156,7 @@ export function ChatPageClient() {
                                     <ConvoList
                                         convos={grouped.today}
                                         activeId={activeId}
-                                        onSelect={setActiveId}
+                                        onSelect={selectConvo}
                                         onDelete={handleDelete}
                                     />
                                 </SidebarGroupContent>
@@ -154,7 +169,7 @@ export function ChatPageClient() {
                                     <ConvoList
                                         convos={grouped.yesterday}
                                         activeId={activeId}
-                                        onSelect={setActiveId}
+                                        onSelect={selectConvo}
                                         onDelete={handleDelete}
                                     />
                                 </SidebarGroupContent>
@@ -167,7 +182,7 @@ export function ChatPageClient() {
                                     <ConvoList
                                         convos={grouped.earlier}
                                         activeId={activeId}
-                                        onSelect={setActiveId}
+                                        onSelect={selectConvo}
                                         onDelete={handleDelete}
                                     />
                                 </SidebarGroupContent>
