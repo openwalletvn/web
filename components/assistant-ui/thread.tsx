@@ -140,7 +140,7 @@ const ThreadWelcome: FC = () => {
     return (
         <div className="aui-thread-welcome-root my-auto flex grow flex-col">
             <div className="aui-thread-welcome-center flex w-full grow flex-col items-center justify-center">
-                <div className="aui-thread-welcome-message flex size-full flex-col justify-center px-4">
+                <div className="aui-thread-welcome-message flex size-full flex-col justify-center">
                     <h1 className="aui-thread-welcome-message-inner heading-1 fade-in slide-in-from-bottom-1 animate-in fill-mode-both font-semibold text-2xl duration-200">
                         Chào bạn,
                     </h1>
@@ -268,7 +268,7 @@ const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
                     <ComposerPrimitive.Input
                         ref={inputRef}
                         placeholder={currentPlaceholder}
-                        className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-sm outline-none placeholder:text-muted-foreground/80"
+                        className="aui-composer-input ow-message-input disabled:cursor-not-allowed disabled:opacity-50 max-h-32 min-h-10 w-full resize-none bg-transparent px-1.75 py-1 text-body outline-none placeholder:text-muted-foreground/80"
                         rows={1}
                         autoFocus
                         aria-label="Message input"
