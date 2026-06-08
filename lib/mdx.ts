@@ -190,3 +190,13 @@ export function getAllTags(): Array<{ name: string; slug: string; count: number 
     .map(([slug, count]) => ({ name: nameMap.get(slug)!, slug, count }))
     .sort((a, b) => b.count - a.count);
 }
+
+/** Resolve a manual slug list to posts, or return the latest N posts. */
+export function resolvePosts(allPosts: Post[], slugs?: string[], limit = 5): Post[] {
+    if (slugs && slugs.length > 0) {
+        return slugs
+            .map((slug) => allPosts.find((p) => p.slug === slug))
+            .filter((p): p is Post => !!p);
+    }
+    return allPosts.slice(0, limit);
+}
