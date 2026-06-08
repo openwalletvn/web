@@ -31,14 +31,14 @@ function makeHeading(Tag: 'h2' | 'h3' | 'h4') {
 function BlogImage({ src, alt, title, ...props }: React.ComponentProps<'img'>) {
   const caption = title || alt;
   return (
-    <figure className="my-8">
-      <img src={src} alt={alt} title={title} {...props} className="w-full rounded" />
+      <span className="ow-mdx-image my-8 block lg:-mx-20">
+      <img src={src} alt={alt} title={title} {...props} className="w-full ow-rounded-small !my-0"/>
       {caption && (
-        <figcaption className="mt-2 text-center text-body-sm text-text-subtle italic">
+          <span className="mt-2 block text-center text-body-sm text-text-subtle italic">
           {caption}
-        </figcaption>
+        </span>
       )}
-    </figure>
+    </span>
   );
 }
 
@@ -48,7 +48,31 @@ function BlogLink({className, ...props}: React.ComponentProps<'a'>) {
 
 function BlogPre({className, ...props}: React.ComponentProps<'pre'>) {
     return <pre
-        className={cn('ow-pre ow-custom-scrollbar bg-bg-light text-text-primary rounded-md p-4 overflow-x-auto', className)} {...props} />;
+        className={cn('ow-mdx-pre ow-custom-scrollbar bg-bg-light text-text-primary rounded-md p-4 overflow-x-auto', className)} {...props} />;
+}
+
+function BlogTable({className, ...props}: React.ComponentProps<'table'>) {
+    return (
+        <div className="ow-mdx-table-wrapper my-6 overflow-x-auto ow-custom-scrollbar">
+            <table className={cn('w-full border-collapse text-body-sm !my-0 min-w-[420px]', className)} {...props} />
+        </div>
+    );
+}
+
+function BlogThead({className, ...props}: React.ComponentProps<'thead'>) {
+    return <thead className={cn('bg-bg-light', className)} {...props} />;
+}
+
+function BlogTh({className, ...props}: React.ComponentProps<'th'>) {
+    return <th className={cn('border-y border-border px-4 py-2 text-left font-semibold text-text-primary', className)} {...props} />;
+}
+
+function BlogTd({className, ...props}: React.ComponentProps<'td'>) {
+    return <td className={cn('border-y border-border px-4 py-2 text-text-secondary', className)} {...props} />;
+}
+
+function BlogTr({className, ...props}: React.ComponentProps<'tr'>) {
+    return <tr className={cn('even:bg-bg-light/50', className)} {...props} />;
 }
 
 export const mdxComponents = {
@@ -58,4 +82,9 @@ export const mdxComponents = {
   img: BlogImage,
     a: BlogLink,
     pre: BlogPre,
+    table: BlogTable,
+    thead: BlogThead,
+    th: BlogTh,
+    td: BlogTd,
+    tr: BlogTr,
 };
