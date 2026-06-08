@@ -123,12 +123,12 @@ API server chạy trên Cloudflare Workers. Lý do đầu tiên rất đơn gi�
 
 Ngoài ra Cloudflare Workers phù hợp về mặt kỹ thuật:
 
-- **Edge runtime:** response từ PoP gần nhất, không phải một server duy nhất ở một region
-- **Zero cold start:** code chạy trên V8 isolate, không có container spin-up
-- **Bundle constraint là ưu điểm ngụy trang:** Workers giới hạn 3 MiB per bundle, buộc phải chia JSON bundles theo entity type. Kết quả là mỗi bundle chỉ load phần data cần thiết
-- **`wrangler deploy` đơn giản:** tương đương `git push`, không có infrastructure phải quản lý
+- **Edge runtime:** response được phục vụ từ PoP gần người dùng nhất thay vì một server duy nhất ở một region
+- **Near-zero cold start:** code chạy trên V8 isolates thay vì container hoặc serverless function truyền thống, giúp giảm đáng kể startup latency
+- **Bundle size limit (3 MiB mỗi Worker bundle)** tạo động lực chia nhỏ dữ liệu theo entity type. Kết quả là mỗi bundle chỉ tải phần dữ liệu cần thiết
+- **`wrangler deploy` đơn giản:** gần tương đương `git push`, không cần quản lý server hay infrastructure riêng
 
-Web (Next.js) ở Vercel vì lý do kỹ thuật cụ thể: ISR (Incremental Static Regeneration) cần Node.js runtime để revalidate cache trong nền. Cloudflare Workers chỉ có edge runtime, không có Node.js đủ để chạy ISR. Không phải Vercel tốt hơn Cloudflare, mà là ISR cần Node.js và Cloudflare Workers không có Node.js. Mỗi platform một vai trò rõ ràng.
+Web (Next.js) được deploy trên Vercel vì lý do kỹ thuật cụ thể. ISR (Incremental Static Regeneration) được thiết kế và tối ưu trước tiên cho môi trường runtime của Next.js trên Vercel. Mặc dù Cloudflare Workers hiện hỗ trợ nhiều Node.js APIs và có thể chạy Next.js, mô hình runtime của Workers khác với môi trường Node.js truyền thống nên khả năng hỗ trợ ISR không hoàn toàn tương đương. Đây không phải vấn đề nền tảng nào tốt hơn, mà là mỗi platform phù hợp với workload khác nhau.
 
 Nguyên tắc chung: tối ưu cost trước, performance sau, không lock-in vào bất kỳ vendor nào. API build trên Hono, có thể chuyển sang bất kỳ edge runtime nào. Web build trên Next.js, có thể chuyển sang bất kỳ platform nào hỗ trợ Node.js.
 
