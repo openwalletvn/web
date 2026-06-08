@@ -1,22 +1,15 @@
 import {getAllPosts} from '@/lib/mdx';
-import {PostCard} from '@/components/blog/post-card';
+import {OwFeaturedPosts} from '@/components/ow-ui/ow-featured-posts';
 
 export function RecentPostsSection() {
-    const posts = getAllPosts().slice(0, 3);
+    const posts = getAllPosts().slice(0, 4);
 
     if (posts.length === 0) return null;
 
     return (
-        <section className="ow-recent-posts-section py-12 bg-bg-light">
+        <section className="ow-recent-posts-section md:py-16 py-12">
             <div className="ow-container">
-                <div className="mb-6">
-                    <h2>Kiến thức tài chính</h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {posts.map((post) => (
-                        <PostCard key={post.slug} post={post}/>
-                    ))}
-                </div>
+                <OwFeaturedPosts allPosts={posts} title="Thông tin"/>
             </div>
         </section>
     );
