@@ -10,7 +10,7 @@ tags:
   - openwallet
   - the tin dung
   - linh vuc chi tieu
-status: "published"
+status: "draft"
 ai_generated: true
 cover_image: "/images/posts/thuat-toan-xep-hang-the-openwallet/cover.png"
 image_prompts:
@@ -25,123 +25,160 @@ Có những thẻ cashback bao phủ nhiều lĩnh vực, nhưng mức hoàn ở
 
 Mục tiêu của thuật toán xếp hạng này là giúp bạn tìm được thẻ phù hợp với nhu cầu thực tế. Vì vậy, bước đầu tiên không phải là tìm thẻ, mà là xác định rõ thói quen chi tiêu của bạn hiện tại là gì.
 
-## Nhu cầu chi tiêu là điểm khởi đầu
+## Persona: điểm khởi đầu phía người dùng
 
-Trước khi xếp hạng bất kỳ thẻ nào, OpenWallet cần biết bạn đang chi tiêu chủ yếu vào đâu. Hệ thống sử dụng khái niệm **intent** (ý định chi tiêu) để mô tả từng loại chi tiêu cụ thể:
+Khi bạn vào trang [Lĩnh vực](/linh-vuc) hoặc dùng Card Match Tool, thứ bạn thấy đầu tiên không phải danh sách thẻ mà là câu hỏi: "Bạn hay chi tiêu ở đâu?" Kèm theo đó là các lựa chọn như Shopee, Du lịch, Ăn uống, Siêu thị, Dịch vụ số...
 
-- `shopee`, `lazada`, `tiktok-shop` cho mua sắm online
-- `grab`, `xanh-sm` cho di chuyển
-- `supermarket`, `groceries` cho siêu thị
-- `dining` cho ăn uống
-- `vietnam-airlines`, `vietjet` cho vé máy bay
-- `insurance`, `education` cho dịch vụ tài chính
+Mỗi lựa chọn đó là một **persona**, một nhóm hành vi chi tiêu đã được định nghĩa sẵn. Khi bạn chọn "Shopee", hệ thống không chỉ biết bạn hay mua sắm online mà còn biết cần tính điểm theo những danh mục cụ thể nào, và pool thẻ nào nên được đưa vào xét.
 
-Hiện tại có hơn 40 intent trong cơ sở dữ liệu OpenWallet, được tổ chức theo nhóm lĩnh vực (lĩnh vực di chuyển, lĩnh vực mua sắm, lĩnh vực ăn uống...). Khi bạn vào trang [Lĩnh vực](/linh-vuc) và chọn "Mua sắm online", hệ thống sẽ tự động kích hoạt các intent phù hợp và xếp hạng thẻ theo đó.
+Persona là thứ duy nhất người dùng cần chọn. Những thứ bên dưới là implementation detail.
 
-![Nhiều lĩnh vực chi tiêu, một thẻ khó bao phủ hết](/images/posts/thuat-toan-xep-hang-the-openwallet/the-khong-phu-hop-cho-tat-ca.png)
+## Intent: đơn vị tính điểm phía engine
 
-## Ba nguyên tắc cốt lõi của thuật toán
+Phía sau mỗi persona là một danh sách **intent**: các hành vi chi tiêu nguyên tử mà engine dùng để tính cashback.
 
-### 1. Chỉ xét thẻ phù hợp với lĩnh vực chi tiêu của bạn
+Persona "Shopee" map sang các intent như `shopee`, `ecommerce`, `digital`. Persona "Du lịch" map sang `travel`, `vietnam-airlines`, `vietjet`, `bamboo-airways`, `hotel`. Người dùng không thấy những slug này, nhưng engine dùng chúng để khớp với cashback rules trên từng thẻ.
 
-Bước đầu tiên là **lọc bỏ những thẻ không liên quan**. Mỗi thẻ trong cơ sở dữ liệu OpenWallet được gán nhãn với các lĩnh vực mà thẻ đó có khả năng hoàn tiền. Nếu bạn chi tiêu chủ yếu trên Shopee, nhưng một thẻ nào đó không có quy tắc cashback nào liên quan đến mua sắm online, thẻ đó sẽ không xuất hiện trong kết quả xếp hạng của bạn.
+Định nghĩa của một intent trong `data/intents.json`:
 
-Đây là một bảo vệ quan trọng: tránh trường hợp thẻ có dữ liệu không đầy đủ tự động leo lên top chỉ vì không có quy tắc nào bị khử trừ.
+```json
+{
+  "slug": "shopee",
+  "label": "Shopee",
+  "icon": "🛒",
+  "merchants": ["shopee"],
+  "categories": ["ecommerce"]
+}
+```
 
-### 2. Không chấp nhận quy tắc cashback trống
+Một cashback rule trên thẻ sẽ match intent này nếu rule đó có `merchants: ["shopee"]` hoặc `categories: ["ecommerce"]` trong danh sách. Đây là bridge giữa "tôi hay mua Shopee" và "thẻ này hoàn 10% cho ecommerce."
 
-Một số thẻ có quy tắc cashback được ghi nhận trong hồ sơ nhưng thiếu thông tin cụ thể: không rõ áp dụng cho danh mục nào, không rõ mức hoàn là bao nhiêu. Những quy tắc này sẽ bị loại khỏi việc tính điểm.
+Hiện tại có hơn 40 intent trong cơ sở dữ liệu OpenWallet. Chúng được tổ chức thành cây trong `lib/intent/intent-groups.ts`: mỗi persona là một node gốc (online-shopper, traveler, commuter, foodie...) với `intents[]` là danh sách slug engine dùng để tính điểm. Một số persona có `children[]` cho các ngữ cảnh cụ thể hơn, ví dụ persona "Du lịch" có sub-group "Chuyến bay" → `vietnam-airlines`, `bamboo-airways`.
 
-Kết quả là: **thẻ nào có dữ liệu đầy đủ sẽ xếp hạng chính xác hơn**, không phải thẻ có tên đẹp hay quảng cáo nhiều.
+## Ba bước của thuật toán xếp hạng
 
-### 3. Mô phỏng dòng tiền thực tế (Spend Profile Engine)
+### Bước 1: Lọc pool thẻ theo intent gate
 
-Đây là phần phức tạp nhất và cũng là phần tạo ra sự khác biệt lớn nhất.
+Trước khi tính bất kỳ số nào, hệ thống loại bỏ các thẻ không liên quan.
 
-Thay vì chỉ nhìn vào % cashback cao nhất của mỗi thẻ rồi so sánh, hệ thống sẽ mô phỏng cách tiền thực sự di chuyển qua các quy tắc cashback của từng thẻ, dựa trên mức chi tiêu cụ thể của bạn.
+Mỗi thẻ được gán `card.intents[]` là danh sách các lĩnh vực mà thẻ đó có cashback. Nếu persona của bạn dùng intents `["shopee", "ecommerce", "digital"]` nhưng một thẻ nào đó có `card.intents: ["dining", "travel"]`, thẻ đó bị loại khỏi pool ngay từ đầu, không tính điểm, không xuất hiện trong kết quả.
+
+Ngoài ra, bất kỳ cashback rule nào có `categories: []` và `merchants: []` đều bị skip trong khi tính điểm. Rule trống không được phép cho điểm, tránh trường hợp thẻ có data thiếu sót tự động leo top vì không có rule nào bị trừ.
+
+### Bước 2: Mô phỏng dòng tiền thực tế
+
+Đây là phần tạo ra sự khác biệt lớn nhất so với cách xếp hạng đơn giản.
+
+Thay vì nhìn vào % cashback cao nhất của mỗi thẻ, engine mô phỏng cách ngân sách chi tiêu hàng tháng thực sự di chuyển qua từng cashback rule.
 
 ![Mô phỏng dòng tiền theo lĩnh vực chi tiêu](/images/posts/thuat-toan-xep-hang-the-openwallet/spend-profile-engine.png)
 
-Ví dụ: bạn chi 3 triệu/tháng trên Shopee và 2 triệu/tháng ở siêu thị.
+Ví dụ cụ thể với MSB mDigi, thẻ này có `max_active_rules: 1`, nghĩa là chỉ một rule được kích hoạt mỗi tháng:
 
-- **Thẻ A** hoàn 10% cho Shopee (cap 300k), 3% siêu thị
-- **Thẻ B** hoàn 5% cho cả mua sắm online và siêu thị, không cap
+```json
+{
+  "cashback": {
+    "max_active_rules": 1,
+    "rules": [
+      { "rate": 0.20, "cap": { "amount": 300000 }, "intents": ["dining"] },
+      { "rate": 0.20, "cap": { "amount": 300000 }, "intents": ["ecommerce"] },
+      { "rate": 0.20, "cap": { "amount": 300000 }, "intents": ["digital"] }
+    ],
+    "global_cap": { "amount": 300000 }
+  }
+}
+```
 
-Nếu chỉ nhìn vào % cashback, Thẻ A có vẻ tốt hơn (10% > 5%). Nhưng khi mô phỏng thực tế:
+Khi bạn chọn persona "Shopee" với monthly spend 3 triệu, engine không cộng cả ba rule lại. Nó chọn rule có cashback cao nhất cho spend profile của bạn. Trong trường hợp này là rule `ecommerce` với 3 triệu × 20% = 600k, nhưng bị cap tại 300k. Kết quả: 300k cashback.
 
-| Thẻ | Shopee 3 triệu | Siêu thị 2 triệu | Tổng hoàn |
-|-----|----------------|-------------------|-----------|
-| Thẻ A | 300k (chạm cap tại 3 triệu) | 60k | **360k** |
-| Thẻ B | 150k | 100k | **250k** |
+So sánh với Sacombank UnionPay Unique, thẻ này không có `max_active_rules`, hoàn 10% cho ecommerce không cap:
 
-Thẻ A vẫn thắng, nhưng tỉ lệ chênh lệch không còn là 10% vs 5% nữa. Và nếu bạn chi tiêu nhiều hơn vào siêu thị, kết quả có thể đảo ngược.
+- mDigi (chọn ecommerce rule): 300k (hit cap tại 1.5 triệu)
+- Sacom Unique: 3 triệu × 10% = 300k
 
-**Thứ tự intent cũng quan trọng:** nếu bạn để `shopee` trước `ecommerce` trong danh sách intent, hệ thống sẽ phân bổ ngân sách vào Shopee trước đến khi đầy cap, phần còn lại mới chạy sang danh mục ecommerce rộng hơn. Thứ tự = mức độ ưu tiên chi tiêu của bạn.
+Bằng nhau về cashback. Tiebreaker sẽ quyết định thứ tự.
 
-## Khi cashback bằng nhau, ai xếp trước?
+**Ranking API chia đều ngân sách cho từng intent trước khi vào engine.** Khi `rankCards()` gọi engine, toàn bộ monthly spend được chia đều cho tất cả intent trong persona (`spend / số_intent`). Engine sau đó sắp xếp rule theo score (rate × ngân sách intent) từ cao xuống thấp, rule cụ thể hơn ưu tiên hơn catch-all. Rule score cao hơn "nhận" intent tương ứng trước, phần còn lại rơi vào rule tiếp theo.
 
-Nếu hai thẻ có mức hoàn tiền giống hệt nhau, hệ thống áp dụng tiebreaker theo thứ tự:
+### Bước 3: Tiebreaker chain
+
+Nếu hai thẻ có cashback bằng nhau sau bước 2, hệ thống so tiếp theo thứ tự:
 
 1. **Phí thường niên thấp hơn** thắng
-2. **Network phổ biến hơn** thắng (Visa = Mastercard > Napas > JCB/UnionPay/Amex theo mức độ chấp nhận tại VN)
+2. **Network phổ biến hơn** thắng (Visa = Mastercard (cùng mức 1) > Napas (2) > JCB/UnionPay/Amex (3)
 3. **Không có điều kiện chi tiêu tối thiểu** thắng
 
-Kết quả xếp hạng sẽ hiển thị lý do cụ thể: "hoàn tiền cao hơn", "cùng hoàn tiền, phí ít hơn", "hoà toàn nhau"... giúp bạn hiểu tại sao một thẻ được xếp trước thẻ kia.
+Kết quả xếp hạng kèm `rank_reason` cụ thể: `"higher_cashback"`, `"lower_annual_fee"`, `"better_network"`, `"no_min_spend"`, hoặc `"tied"` (ngang điểm). Nếu nhiều thẻ có cashback giống hệt nhau, `tiebreaker_delta` cho biết thẻ đó thắng hay thua bao nhiêu peer trong nhóm tied `+2` nghĩa là thắng 2 thẻ khác qua tiebreaker, `-1` nghĩa là thua 1 thẻ có cashback bằng nhau.
 
-## Điểm tổng hợp đa tiêu chí (MCDA Score)
+## Điểm tổng hợp MCDA: khi cashback không phải tất cả
 
-Ngoài việc xếp hạng theo cashback, mỗi thẻ trong OpenWallet còn có một **điểm tổng hợp** tính đến nhiều yếu tố:
+Song song với xếp hạng theo cashback, mỗi thẻ còn có một `mcda_score` điểm tổng hợp đa tiêu chí tính sẵn tại build time:
 
-| Tiêu chí | Trọng số |
-|----------|----------|
-| Chi phí (phí thường niên, phí ngoại tệ, phí cấp thẻ) | 50% |
-| Lợi ích cashback | 30% |
-| Dễ mở thẻ | 10% |
-| Chất lượng dữ liệu | 10% |
+```
+mcda_score (0–100)
+├── Chi phí (50%): phí thường niên, phí ngoại tệ, phí cấp thẻ
+├── Lợi ích cashback (30%): max cashback earning, persona coverage, min spend hurdle
+├── Dễ mở thẻ (10%): loại thẻ, có digital issuance không, mức độ khó duyệt
+└── Chất lượng dữ liệu (10%): data completeness score
+```
 
-Điểm này giúp bạn so sánh thẻ khi không có thông tin cụ thể về chi tiêu của mình, hoặc khi muốn tìm thẻ có giá trị tổng thể tốt nhất chứ không chỉ tập trung vào một lĩnh vực. **Thẻ debit không bị phạt điểm vì không có cashback** — nếu phí bằng 0 và dễ mở, điểm tổng hợp vẫn có thể rất cao.
+Phí thường niên được normalize theo percentile trong cùng loại thẻ (credit vs credit, debit vs debit) thẻ có phí thấp nhất trong nhóm được 100 điểm, không phải so sánh tuyệt đối. Một thẻ debit phí 0 không bị phạt điểm vì không có cashback nếu benefit group trả về null, weight của nó được phân phối lại cho các group còn lại.
+
+`mcda_score` không thay đổi theo persona. Nó là đánh giá giá trị tổng thể của thẻ, độc lập với nhu cầu chi tiêu cụ thể.
+
+## Hai lớp dữ liệu độc lập
+
+Một điểm dễ nhầm trong thiết kế: mỗi thẻ có **hai lớp dữ liệu cashback hoàn toàn độc lập**.
+
+| Lớp | Field | Mục đích |
+|-----|-------|----------|
+| Discovery | `card.intents[]` | Lọc pool: "thẻ này liên quan đến những lĩnh vực nào" |
+| Scoring | `cashback.rules[].categories[]` + `.merchants[]` | Tính điểm: "rule này áp dụng cho chi tiêu nào" |
+
+Một thẻ tagged `travel` trong `card.intents[]` có thể hoàn tiền qua `categories: ["travel"]` rule hoặc qua universal catchall rule. Hai lớp này không phụ thuộc nhau. Hậu quả khi dữ liệu thiếu: nếu `card.intents[]` đúng nhưng `cashback.rules[].categories[]` trống, thẻ vào được pool nhưng tính ra 0 cashback, kết quả là "không tìm thấy thẻ phù hợp" cho dù thẻ thật ra có hoàn tiền.
 
 ## Bạn dùng thuật toán này ở đâu?
 
 ### Trang Lĩnh vực
 
-[/linh-vuc](/linh-vuc) tổ chức các intent theo lĩnh vực chi tiêu. Chọn "Shopee", "Du lịch", "Ăn uống"... để xem bảng xếp hạng đã được tính sẵn cho persona tương ứng. Đây là cách nhanh nhất để tìm thẻ mà không cần nhập thủ công.
+[/linh-vuc](/linh-vuc) tổ chức persona theo nhóm chi tiêu. Chọn "Shopee", "Du lịch", "Ăn uống"... để xem bảng xếp hạng đã được tính sẵn với ISR cache 1 giờ không có server computation mỗi request.
 
 ### Card Match Tool
 
-[/card-match](/card-match) cho phép bạn điều chỉnh mức chi tiêu (slider) và chọn từng intent cụ thể. Bảng xếp hạng cập nhật theo thời gian thực khi bạn thay đổi thông số.
+[/card-match](/card-match) cho phép điều chỉnh monthly spend (slider từ 1 đến 20 triệu) và thay đổi sort axis (cashback cao nhất hoặc phí thấp nhất). Ranking gọi `POST /api/ranking` Next.js proxy route chuyển tiếp sang API. Kết quả debounce 200ms để tránh gọi API liên tục khi kéo slider.
 
 ### Owie Chat
 
-Hỏi Owie bằng ngôn ngữ tự nhiên:
+Hỏi tự nhiên:
 
 > "Tôi hay mua Shopee và đi ăn ngoài, thẻ nào cashback tốt nhất?"
 
-Owie gọi thuật toán xếp hạng phía sau và trả lời bằng danh sách thẻ cụ thể kèm giải thích.
+Owie resolve intent từ câu hỏi, gọi rank API, trả lời bằng danh sách cụ thể kèm số liệu.
 
-### MCP Tool (dành cho developer và AI agent)
+### MCP Tool
 
-Nếu bạn là developer hoặc đang xây dựng AI agent, có thể gọi trực tiếp qua [OpenWallet MCP](https://openwallet.vn/owie-chat):
+Developer và AI agent có thể gọi trực tiếp qua OpenWallet MCP:
 
 ```json
 {
   "tool": "rank",
   "intents": ["shopee", "dining"],
   "monthly_spend": 5000000,
+  "sort_by": "cashback",
   "limit": 5
 }
 ```
 
-Kết quả trả về danh sách thẻ xếp hạng kèm cashback ước tính, lý do xếp hạng, và phân tích từng quy tắc.
+Response trả về `rank`, `rank_reason`, `rank_reason_type`, `tiebreaker_delta`, và `cashback_result` với breakdown per-rule.
 
 ## Giới hạn hiện tại
 
-Thuật toán hiện chỉ tính **cashback**. Các lợi ích khác như phòng chờ VIP sân bay, bảo hiểm du lịch, ưu đãi nhà hàng... chưa được đưa vào mô hình xếp hạng. Đây là hướng phát triển tiếp theo của OpenWallet.
+Thuật toán chỉ tính **cashback**. Lợi ích khác như phòng chờ sân bay, bảo hiểm du lịch, ưu đãi nhà hàng đối tác chưa được đưa vào mô hình trong code, `c2` (travel benefit) và `c3` (lifestyle benefit) đang stub với `weight: 0.00`.
 
-Ngoài ra, dữ liệu xếp hạng chỉ chính xác khi thông tin cashback của thẻ được cập nhật đầy đủ. Nếu bạn thấy kết quả bất thường, có thể thẻ đó đang có dữ liệu thiếu. Hãy phản hồi để chúng tôi kiểm tra lại.
+Ngoài ra, xếp hạng giả định spend phân bổ đều qua các intent của persona (`spend / intents.length` trước khi vào engine từng thẻ). Nếu thói quen chi tiêu thực tế của bạn lệch mạnh so với persona mặc định ví dụ bạn chọn persona "Shopee" nhưng thực ra chi nhiều hơn cho dining kết quả sẽ không phản ánh đúng. Card Match Tool cho phép điều chỉnh total spend nhưng chưa cho phép split thủ công theo từng danh mục.
 
 ## Tóm lại
 
-Thuật toán xếp hạng của OpenWallet không tìm "thẻ cashback cao nhất". Nó tìm **thẻ cashback cao nhất cho thói quen chi tiêu cụ thể của bạn**. Vì thế, cùng một bảng xếp hạng, hai người có cấu chi tiêu khác nhau có thể thấy hai thứ tự hoàn toàn khác nhau.
+Thuật toán xếp hạng của OpenWallet không tìm "thẻ cashback cao nhất". Nó tìm **thẻ cashback cao nhất cho persona cụ thể với mức spend cụ thể của bạn**. Vì thế, cùng một bảng xếp hạng, hai người có thói quen chi tiêu khác nhau có thể thấy hai thứ tự hoàn toàn khác nhau.
 
-Bước đầu tiên: xác định bạn đang chi tiêu nhiều nhất ở đâu, rồi để OpenWallet làm phần còn lại.
+Bước đầu tiên: chọn đúng persona. Phần còn lại là toán.
