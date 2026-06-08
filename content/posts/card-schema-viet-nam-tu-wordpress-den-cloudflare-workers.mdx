@@ -1,8 +1,8 @@
 ---
-title: "Card schema cho thẻ tín dụng Việt Nam: từ WordPress đến Cloudflare Workers"
+title: "Card schema cho thẻ tín dụng Việt Nam: từ SQL-in-WordPress đến JSON files trên edge"
 description: >-
-  Hành trình thiết kế data schema cho thẻ tín dụng Việt Nam, từ WordPress custom
-  post type và WPGraphQL đến Zod schema, JSON database và Cloudflare Workers edge API.
+  Hành trình thiết kế data schema cho thẻ tín dụng Việt Nam, từ ACF fields trong
+  WordPress SQL database đến Zod schema, JSON files và Cloudflare Workers edge API.
   Không phải dự án làm trong vài tuần mà là quá trình iterate qua từng thẻ thật.
 date: '2026-06-08'
 category: Case study
@@ -17,13 +17,13 @@ status: published
 
 Khi bắt đầu xây dựng OpenWallet, câu hỏi đầu tiên không phải là "dùng framework nào" mà là "làm sao lưu thông tin một cái thẻ tín dụng cho đúng." Nghe đơn giản, nhưng mất gần ba tháng iterate mới ra được schema hiện tại. Bài này kể lại hành trình đó, từ điểm xuất phát đến kiến trúc đang chạy hôm nay.
 
-## Điểm xuất phát: WordPress và 7 năm thói quen
+## Điểm xuất phát: tich.vn và WordPress
 
-Trước OpenWallet là tich.vn, một dự án so sánh thẻ tín dụng tôi xây khi đang chuyển từ WordPress sang Next.js. Bảy năm làm WP, nên công cụ quen tay nhất là Custom Post Type, ACF, WPGraphQL.
+Trước OpenWallet là tich.vn, một dự án so sánh thẻ tín dụng xây trên WordPress. Data thẻ lưu trong SQL database của WP thông qua ACF (Advanced Custom Fields) và Custom Post Type. WPGraphQL đứng ở giữa để Next.js có thể query dữ liệu qua GraphQL. Lúc đó WPGraphQL trông khá fancy, và đó cũng là lý do chính để chọn nó, nhưng nhìn lại thì đây là overengineering rõ ràng.
 
 Cấu trúc lúc đó:
 
-- Mỗi thẻ là một CPT (`cpt_card`) trong WordPress
+- Mỗi thẻ là một CPT (`cpt_card`) trong WordPress, data lưu trong MySQL thông qua ACF
 - Network và tier encode chung trong một taxonomy slug: `visa-signature`, `mastercard-platinum`
 - Bank, loại thẻ, số ngày miễn lãi đều là taxonomy term
 
@@ -42,7 +42,7 @@ Trông ổn cho đến khi gặp American Express. Slug `"american-express-plati
 $card_network = $raw_network === 'american' ? 'amex' : $raw_network;
 ```
 
-Đây là dấu hiệu đầu tiên: data model đang bị nhồi vào WP taxonomy, không phải được thiết kế từ đầu.
+Đây là dấu hiệu đầu tiên: data model đang bị nhồi vào WP taxonomy thay vì được thiết kế từ đầu cho mục đích cụ thể.
 
 Cashback lúc đó nằm trong ACF fields của một CPT riêng (`cpt_reward`), liên kết với thẻ qua GraphQL resolver. MCC code lưu dưới dạng string `"3000, 3001, 3002"` trong một ACF field, rồi query bằng `meta_query REGEXP` để tìm reward nào chứa mã MCC đó.
 
@@ -65,17 +65,21 @@ JSON xuất ra từ mỗi thẻ trông như thế này:
 
 Phần cashback không có trong JSON này. Nó nằm ở WPGraphQL, cần query riêng. Mỗi lần cập nhật một thẻ: sửa trong WP admin, click "Generate All JSONs", commit file, deploy. Ba bước tay cho mỗi lần thay đổi.
 
-### Vấn đề thật sự
+### Tại sao tich.vn chết
 
-WordPress là tool đúng cho blog. Nó là tool sai cho data API.
+Không phải vì WordPress tệ. Mà vì cấu trúc này không thể scale khi số lượng thẻ tăng và cashback rules trở nên phức tạp hơn. Mỗi lần thêm loại rule mới cần sửa ACF field group, sửa GraphQL resolver, sửa Next.js query, deploy cả WP lẫn frontend. Bốn điểm thay đổi cho một feature. Khi API không theo kịp tốc độ cần thiết để thêm thẻ mới và model cashback đúng, dự án bị đình lại.
 
-WPGraphQL thêm overhead cả về runtime lẫn mental model. GraphQL resolver cho cashback ngày càng phức tạp khi số lượng rule tăng lên. Taxonomy term không phải schema, nó là label. Khi cần validate data, không có contract nào cả, bất kỳ field nào cũng có thể có bất kỳ shape nào.
+Sau đó chuyển sang các dự án Next.js khác, tích lũy thêm kinh nghiệm, rồi quay lại xây OpenWallet từ đầu với kiến trúc hoàn toàn khác. tich.vn chính thức deprecated.
 
-Và quan trọng hơn: GraphQL tốt khi client cần chọn field linh hoạt. Nhưng với card comparison, ranking, và cashback calculation là các computed operation phức tạp, REST endpoint với typed response rõ ràng hơn nhiều.
+### Vấn đề của WPGraphQL
 
-## Quyết định rebuild: không SQL, không GraphQL
+WordPress là tool đúng cho blog. Nó là tool sai cho data API với business logic phức tạp.
 
-### Tại sao không dùng relational database?
+WPGraphQL thêm overhead cả về runtime lẫn mental model. Taxonomy term không phải schema, nó là label. Khi cần validate data, không có contract nào cả, bất kỳ field nào cũng có thể có bất kỳ shape nào. GraphQL tốt khi client cần chọn field linh hoạt theo từng query. Nhưng với card comparison, ranking, và cashback calculation là các computed operation phức tạp, REST endpoint với typed response rõ ràng và dễ cache hơn nhiều.
+
+## Quyết định rebuild: JSON files thay vì SQL, REST thay vì GraphQL
+
+### Tại sao bỏ SQL?
 
 Card data không có transaction. Không có concurrent write. Không có user session. "Relational" duy nhất thật sự cần là hai quan hệ: `bank_id` trỏ đến bank, `card_network` trỏ đến network entity. Hai foreign key này xử lý được bằng enrichment tại generate time, kết quả bundle vào JSON trước khi deploy.
 
@@ -111,20 +115,22 @@ Mỗi bước là file trung gian được lưu lại. LLM đọc được, sử
 
 Đây là lý do cốt lõi giữ JSON files làm database: best DX cho coding assistant. Khi tool hiểu được cả schema lẫn data trong cùng một repo, iteration nhanh hơn hẳn.
 
-### Tại sao Cloudflare Workers?
+### Cloudflare Workers cho API, Vercel cho web
 
-Lý do đầu tiên thực tế hơn nhiều người nghĩ: Cloudflare cho phép deploy từ private GitHub organization repository. Vercel chỉ cho phép private personal repo ở plan miễn phí. OpenWallet là org repo, nên Cloudflare là lựa chọn tự nhiên cho API.
+Khi chọn hosting, câu hỏi không phải "platform nào tốt hơn" mà là "platform nào phù hợp nhất cho từng phần, với cost thấp nhất."
 
-Ngoài ra:
+API chạy trên Cloudflare Workers. Lý do đầu tiên rất thực tế: Cloudflare cho phép deploy từ private GitHub organization repository ở plan miễn phí. Vercel chỉ cho phép private personal repo. OpenWallet là org repo, nên đây là yếu tố quyết định ngay từ đầu.
 
-- **Edge runtime:** API response từ PoP gần nhất, không phải một server duy nhất ở một region
-- **Zero cold start với Workers:** code chạy trên V8 isolate, không có container spin-up
-- **Bundle constraint là ưu điểm ngụy trang:** Cloudflare Workers giới hạn 3 MiB per bundle, buộc phải chia nhỏ JSON bundles theo từng entity type. Kết quả là mỗi bundle chỉ load phần data cần thiết
-- **`wrangler deploy` là quy trình đơn giản:** tương đương `git push`, không có infrastructure phải quản lý
+Ngoài ra Cloudflare Workers phù hợp về mặt kỹ thuật:
 
-Web (Next.js) vẫn ở Vercel vì một lý do kỹ thuật cụ thể: Next.js ISR (Incremental Static Regeneration) cần Node.js runtime để revalidate cache trong nền. Cloudflare Workers chỉ có edge runtime, không có Node.js, nên ISR không hoạt động được. Web cần ISR để tránh timeout khi API cold start trên Vercel. Mỗi platform một vai trò rõ ràng.
+- **Edge runtime:** response từ PoP gần nhất, không phải một server duy nhất ở một region
+- **Zero cold start:** code chạy trên V8 isolate, không có container spin-up
+- **Bundle constraint là ưu điểm ngụy trang:** Workers giới hạn 3 MiB per bundle, buộc phải chia JSON bundles theo entity type. Kết quả là mỗi bundle chỉ load phần data cần thiết
+- **`wrangler deploy` đơn giản:** tương đương `git push`, không có infrastructure phải quản lý
 
-Nguyên tắc chung trong mọi quyết định hosting: tối ưu cost trước, performance sau, không bị lock-in vào bất kỳ vendor nào. API có thể chuyển sang bất kỳ edge runtime nào hỗ trợ Hono. Web có thể chuyển sang bất kỳ platform nào hỗ trợ Next.js.
+Web (Next.js) ở Vercel vì lý do kỹ thuật cụ thể: ISR (Incremental Static Regeneration) cần Node.js runtime để revalidate cache trong nền. Cloudflare Workers chỉ có edge runtime, không có Node.js đủ để chạy ISR. Không phải Vercel tốt hơn Cloudflare, mà là ISR cần Node.js và Cloudflare Workers không có Node.js. Mỗi platform một vai trò rõ ràng.
+
+Nguyên tắc chung: tối ưu cost trước, performance sau, không lock-in vào bất kỳ vendor nào. API build trên Hono, có thể chuyển sang bất kỳ edge runtime nào. Web build trên Next.js, có thể chuyển sang bất kỳ platform nào hỗ trợ Node.js.
 
 ## Schema evolution: cashback là phần khó nhất
 
