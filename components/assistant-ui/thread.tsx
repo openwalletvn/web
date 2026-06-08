@@ -1,4 +1,5 @@
 import {MarkdownText} from "@/components/assistant-ui/markdown-text";
+import {OwLogo} from "@/components/ow-ui/ow-logo";
 import {ModelSelector} from "@/components/assistant-ui/model-selector";
 import {CHAT_MODELS, getDefaultModel, getVisibleModels} from "@/lib/chat/models";
 import {ContextDisplay} from "@/components/assistant-ui/context-display";
@@ -366,6 +367,20 @@ const MessageError: FC = () => {
     );
 };
 
+const TypingBubble: FC = () => {
+    const isRunning = useAuiState((s) => s.message.status?.type === "running");
+    const hasText = useAuiState((s) => s.message.parts.some((p) => p.type === "text" && "text" in p && !!(p as {text: string}).text));
+    if (!isRunning || hasText) return null;
+    return (
+        <div className="flex items-center gap-2 px-2 py-1">
+            <OwLogo variant="full" color="red" href={null} className="h-5 w-auto animate-bounce"/>
+            <span className="size-1.5 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:0ms]"/>
+            <span className="size-1.5 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:150ms]"/>
+            <span className="size-1.5 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:300ms]"/>
+        </div>
+    );
+};
+
 const AssistantMessage: FC = () => {
     // reserves space for action bar and compensates with `-mb` for consistent msg spacing
     // keeps hovered action bar from shifting layout (autohide doesn't support absolute positioning well)
@@ -379,6 +394,7 @@ const AssistantMessage: FC = () => {
             data-role="assistant"
             className="fade-in slide-in-from-bottom-1 relative animate-in duration-150 [contain-intrinsic-size:auto_300px] [content-visibility:auto]"
         >
+            <TypingBubble/>
             <div
                 data-slot="aui_assistant-message-content"
                 className="wrap-break-word px-2 text-foreground leading-relaxed space-y-4"
