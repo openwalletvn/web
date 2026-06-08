@@ -31,7 +31,7 @@
     font-size: 24px;
     line-height: 120%;
     letter-spacing: -1px;
-    @apply tracking-wide sm:text-[30px] lg:text-[36px] xl:text-[46px];
+    @apply tracking-wide sm:text-[30px] lg:text-[36px] xl:text-[40px];
 }
 
 @utility heading-3 {
@@ -39,7 +39,7 @@
     font-weight: 400;
     font-size: 20px;
     line-height: 120%;
-    @apply tracking-wide sm:text-[24px] lg:text-[28px] xl:text-[36px];
+    @apply tracking-wide sm:text-[24px] lg:text-[28px] xl:text-[32px];
 }
 
 @utility heading-4 {
@@ -47,7 +47,7 @@
     font-weight: 400;
     font-size: 18px;
     line-height: 130%;
-    @apply tracking-wide sm:text-[20px] lg:text-[22px] xl:text-[28px];
+    @apply tracking-wide sm:text-[20px] lg:text-[22px] xl:text-[26px];
 }
 
 @utility heading-5 {
