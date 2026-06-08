@@ -5,7 +5,7 @@ import {CardsGrid} from '@/components/cards/cards-grid';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {OpenOwieButton} from '@/components/chat/open-owie-button';
-import {OwBadge} from '@/components/ow-ui/ow-badge';
+import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
 import {PersonaModel} from '@/lib/persona-model';
 import {ROUTES} from '@/lib/routes';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
@@ -53,29 +53,45 @@ export default async function CardsPage() {
     });
 
     return (
-        <MarketingPageShell title="Thẻ ngân hàng Việt Nam" breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}>
-            <div className="mb-8 space-y-4">
-                <p className="">
-                    Tra cứu danh sách {allCards.length}+ các loại thẻ ngân hàng tại Việt Nam. Với sự phát triển của
-                    thanh toán không tiền mặt và hưởng ứng chủ trương của chính phủ, OpenWallet thu thập danh sách thẻ
-                    từ {banks.length}+ ngân hàng đang hoạt động tại Việt Nam với thông tin được kiểm duyệt thận trọng.
-                    Mục tiêu mang đến cho mọi người một công cụ tra cứu thẻ phù hợp với nhu cầu tiêu dùng.
-                </p>
-                <p className="">
-                    Bạn có thể bắt đầu với bảng xếp hạng thẻ theo lĩnh vực chi tiêu được tổng hợp tại đây:
-                </p>
-                <div className="flex flex-wrap gap-2">
-                    {personas.map((p) => (
-                        <Link key={p.slug} href={new PersonaModel(p).getHref()}>
-                            <OwBadge variant="persona" personaData={p}/>
-                        </Link>
-                    ))}
+        <MarketingPageShell hideHeader breadcrumbItems={breadcrumbItems} jsonLd={jsonLd}
+                            className="space-y-12 md:space-y-16">
+            <div className="intro grid grid-cols-12 gap-y-3 gap-x-4">
+                <h1 className="col-span-12">Thẻ ngân hàng</h1>
+                <div className="md:col-span-6 col-span-12 space-y-4">
+                    <p className="">
+                        Dưới đây là danh sách thẻ ngân hàng được phân loại theo nhu cầu sử dụng thực tế phổ biến. Mỗi
+                        nhóm bao gồm thẻ tín dụng và thẻ ghi nợ từ nhiều ngân hàng, được xếp hạng tự động bằng thuật
+                        toán của OpenWallet dựa trên các tiêu chí như cashback, phí và điều kiện thực tế.
+                    </p>
+                    <p className="">
+                        Tra cứu danh sách {allCards.length}+ các loại thẻ ngân hàng tại Việt Nam. Với sự phát triển của
+                        thanh toán không tiền mặt và hưởng ứng chủ trương của chính phủ, OpenWallet thu thập danh sách
+                        thẻ
+                        từ {banks.length}+ ngân hàng đang hoạt động tại Việt Nam với thông tin được kiểm duyệt thận
+                        trọng.
+                        Mục tiêu mang đến cho mọi người một công cụ tra cứu thẻ phù hợp với nhu cầu tiêu dùng.
+                    </p>
                 </div>
-                <p className="">
-                    Bạn muốn được tư vấn? Hãy đặt câu hỏi với Owie.
-                </p>
-                <OpenOwieButton label="Hỏi Owie ngay" size="sm"/>
+                <div className="md:col-span-6 col-span-12 space-y-4">
+                    <p className="">
+                        Bạn có thể bắt đầu với bảng xếp hạng thẻ theo lĩnh vực chi tiêu được tổng hợp tại đây:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        <OwBadges>
+                            {personas.map((p) => (
+                                <Link key={p.slug} href={new PersonaModel(p).getHref()}>
+                                    <OwBadge variant="persona" personaData={p}/>
+                                </Link>
+                            ))}
+                        </OwBadges>
+                    </div>
+                    <p className="">
+                        Bạn muốn được tư vấn? Hãy đặt câu hỏi với Owie.
+                    </p>
+                    <OpenOwieButton label="Hỏi Owie ngay" size="sm"/>
+                </div>
             </div>
+
             <section className="space-y-6">
                 <div className="border-t border-border pt-4 mt-2">
                     <h2 className="heading-5">Bộ lọc thẻ</h2>
@@ -85,6 +101,8 @@ export default async function CardsPage() {
                     banks={banks}
                     noCardsLabel='Không tìm thấy thẻ nào.'
                     useUrlState={true}
+                    max={24}
+                    defaultFilters="fee=under_500k&sort=tier_asc"
                 />
             </section>
         </MarketingPageShell>

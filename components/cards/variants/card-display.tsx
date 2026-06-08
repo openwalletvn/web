@@ -128,9 +128,9 @@ function CardDisplayTile({ card, bank: bankProp, badges = {}, href, badge, showA
                 </Link>
             </div>
 
-            <div className="relative min-h-[80px]">
+            <div className="relative min-h-20">
                 <div className="transition-opacity duration-150 group-hover:opacity-0 space-y-1">
-                    <p className="heading-6 text-base">{card.name}</p>
+                    <p className="heading-6 text-black">{card.name}</p>
                     {fee && card.fees?.annual != null && (
                         <p className="">
                             {card.fees.annual.amount > 0 ?

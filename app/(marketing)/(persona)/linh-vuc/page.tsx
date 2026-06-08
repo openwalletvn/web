@@ -57,11 +57,11 @@ export default async function PersonaHubPage() {
         >
             <section className="ow-persona-hub-page flex flex-col gap-10">
 
-                <div className="intro grid sm:grid-cols-12 gap-y-3 gap-x-4">
-                    <div className="col-span-6">
+                <div className="intro grid grid-cols-12 gap-y-3 gap-x-4">
+                    <div className="md:col-span-6 col-span-12">
                         <h1 className="">Lĩnh vực chi tiêu</h1>
                     </div>
-                    <div className="col-span-6 text-base text-text-muted sm:pt-4">
+                    <div className="md:col-span-6 col-span-12 text-base text-text-muted sm:pt-4">
                         Dưới đây là danh sách thẻ ngân hàng được phân loại theo nhu cầu sử dụng thực tế phổ biến. Mỗi nhóm bao gồm thẻ tín dụng và thẻ ghi nợ từ nhiều ngân hàng, được xếp hạng tự động bằng thuật toán của OpenWallet dựa trên các tiêu chí như cashback, phí và điều kiện thực tế.
                     </div>
                 </div>
