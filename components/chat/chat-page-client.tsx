@@ -1,32 +1,33 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChatRuntime } from '@/components/chat/chat-runtime';
+import {ChatRuntime} from '@/components/chat/chat-runtime';
+import {SearchDialog} from '@/components/search/search-dialog';
 import {
-    SidebarProvider,
     Sidebar,
-    SidebarHeader,
     SidebarContent,
     SidebarFooter,
-    SidebarMenu,
-    SidebarMenuItem,
-    SidebarMenuButton,
-    SidebarMenuAction,
-    SidebarInset,
-    SidebarTrigger,
     SidebarGroup,
-    SidebarGroupLabel,
     SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarInset,
+    SidebarMenu,
+    SidebarMenuAction,
+    SidebarMenuButton,
+    SidebarMenuItem,
+    SidebarProvider,
+    SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { HomeIcon, MailIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {HomeIcon, MailIcon, PlusIcon, Trash2Icon} from 'lucide-react';
 import {
-    listConversations,
+    type Conversation,
     createConversation,
     deleteConversation,
-    type Conversation,
+    listConversations,
 } from '@/lib/chat/conversation-store';
 
 function groupConversations(convos: Conversation[]) {
@@ -87,8 +88,8 @@ export function ChatPageClient() {
         <div className="ow-chat-page-client">
             <SidebarProvider defaultOpen>
                 <Sidebar collapsible="offcanvas">
-                    <SidebarHeader className="border-b border-sidebar-border">
-                        <div className="flex items-center justify-between gap-2 px-2 py-2">
+                    <SidebarHeader className="ow-chat-page-sidebar-header border-b border-sidebar-border min-h-12.5 flex items-center justify-center">
+                        <div className="w-full flex items-center justify-between gap-2 px-2">
                             <Link href="/" className="flex items-center gap-2 min-w-0">
                                 <Image
                                     src="/icon.png"
@@ -181,9 +182,15 @@ export function ChatPageClient() {
                     </SidebarFooter>
                 </Sidebar>
 
-                <SidebarInset className="flex h-svh flex-col overflow-hidden">
-                    <header className="flex h-12 shrink-0 items-center gap-2 border-b px-3">
-                        <SidebarTrigger />
+                <SidebarInset className="ow-chat-sidebar-inset flex h-svh flex-col overflow-hidden">
+                    <header className="ow-chat-sidebar-header min-h-12.5 flex justify-between shrink-0 items-center gap-2 border-b px-3 py-1">
+                        <div>
+                            <SidebarTrigger/>
+                        </div>
+                        <div>
+                            <div className="hidden sm:flex"><SearchDialog/></div>
+                            <div className="flex sm:hidden"><SearchDialog mobileOnly/></div>
+                        </div>
                     </header>
                     <div className="min-h-0 flex-1 h-full">
                         {mounted && activeId && (
