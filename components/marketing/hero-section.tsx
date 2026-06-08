@@ -4,6 +4,8 @@ import {IconCircleCheck, IconCreditCard, IconSettings} from '@tabler/icons-react
 import {ROUTES} from '@/lib/routes';
 import {OwBadgeNumberIcon} from '@/components/ow-ui/ow-badge-number-icon';
 import {OwCardImage} from '@/components/ow-ui/ow-card-image';
+import {OwButton} from '@/components/ow-ui/ow-button';
+import {OpenOwieButton} from '@/components/chat/open-owie-button';
 
 export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCount: number }) {
     return (
@@ -21,7 +23,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
 
             {/* Heading */}
             <h1 className="heading-1 text-center mb-10 px-4 relative z-20">
-                OpenWallet<br/>Dùng thẻ mỗi ngày cùng Owie.
+                OpenWallet<br/>Tra cứu thẻ ngân hàng. Hỏi Owie.
             </h1>
 
             {/*
@@ -79,7 +81,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
                 <div
                     className="ow-headline z-20 absolute left-1/2 -translate-x-1/2 md:top-1/2 max-md:bottom-0 w-full md:max-w-[500px] max-w-[320px] flex items-center justify-center md:p-6 p-4 bg-[rgba(124,124,124,0.4)] border border-[rgba(236,236,236,0.3)] backdrop-blur-[14px] rounded-full">
                     <p className="font-body font-medium md:text-[22px] leading-[130%] text-white text-center">
-                        So sánh thẻ tín dụng. Tìm thẻ phù hợp. <br/>Độc lập, minh bạch, không quảng cáo.
+                        Dữ liệu thực. Tư vấn AI. Độc lập, không quảng cáo.
                     </p>
                 </div>
 
@@ -134,19 +136,11 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
             </div>
 
             {/* CTA */}
-            <div className="hidden flex-col sm:flex-row gap-3 items-center mt-2">
-                <Link
-                    href={ROUTES.app}
-                    className="inline-flex items-center gap-2 bg-black text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-primary transition-colors"
-                >
-                    Tìm hiểu Thẻ Phú App
-                </Link>
-                <Link
-                    href={ROUTES.cards}
-                    className="text-sm font-medium text-text-muted hover:text-black transition-colors px-2 py-3"
-                >
-                    Khám phá thẻ →
-                </Link>
+            <div className="flex flex-col sm:flex-row gap-3 items-center mt-6 mb-4 relative z-20">
+                <OwButton asChild color="default">
+                    <Link href={ROUTES.cardMatch}>Tìm thẻ phù hợp</Link>
+                </OwButton>
+                <OpenOwieButton color="outline"/>
             </div>
         </section>
     );

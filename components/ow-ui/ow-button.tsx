@@ -3,7 +3,7 @@ import {Button, type buttonVariants} from "@/components/ui/button"
 import {cn} from "@/lib/utils"
 import {type VariantProps} from "class-variance-authority"
 
-type OwButtonColor = "default" | "outline"
+export type OwButtonColor = "default" | "outline"
 export type OwButtonSize = "md" | "sm" | "full"
 
 const colorClasses: Record<OwButtonColor, string> = {

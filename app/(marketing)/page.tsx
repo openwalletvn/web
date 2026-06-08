@@ -1,20 +1,18 @@
 import type {Metadata} from 'next';
-import {Suspense} from 'react';
 import {getBanks, getCards, getIntents, getPersonas} from '@/lib/api';
 import {SITE_NAME} from '@/lib/page-meta/title';
+import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
+import {GradientShader} from '@/components/shared/gradient-shader';
+import {HeroSection} from '@/components/marketing/hero-section';
+import {CardMatchSection} from '@/components/marketing/card-match-section';
+import {CardsCatalogTeaser} from '@/components/marketing/cards-catalog-teaser';
+import {ToolsSection} from '@/components/marketing/tools-section';
+import {RecentPostsSection} from '@/components/marketing/recent-posts-section';
 
 export const metadata: Metadata = {
     title: SITE_NAME,
-    description: 'Tra cứu và so sánh thẻ ngân hàng Việt Nam một cách độc lập và minh bạch. Card Match, Card Battle, Owie AI, và OpenWallet MCP.',
+    description: 'Tra cứu và so sánh thẻ ngân hàng Việt Nam. Tư vấn AI với Owie, dữ liệu thực, độc lập, không quảng cáo.',
 };
-import {BanksSection, BanksSectionSkeleton} from '@/components/marketing/banks-section';
-import {CardsSection, CardsSectionSkeleton} from '@/components/cards/cards-section';
-import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
-import {HeroSection} from '@/components/marketing/hero-section';
-import {PersonaCategories} from '@/components/marketing/persona-categories';
-import {GradientShader} from "@/components/shared/gradient-shader";
-import {CardMatchFinder} from '@/components/match/card-match-finder';
-import {ToolsOverview} from '@/components/marketing/tools-overview';
 
 export const revalidate = 3600;
 
@@ -53,37 +51,24 @@ export default async function HomePage() {
                 dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}}
             />
 
+            {/* Hero */}
             <div className="relative">
                 <GradientShader/>
                 <div className="lg:p-3 p-2">
                     <HeroSection cardCount={cards.length} bankCount={banks.length}/>
                 </div>
-                <PersonaCategories/>
+                {/* Tools */}
+                <ToolsSection/>
             </div>
 
-            <section className="border-t border-dashed border-border py-12">
-                <div className="ow-container">
-                    <CardMatchFinder personas={personas} intents={intents}/>
-                </div>
-            </section>
+            {/* Card Match */}
+            <CardMatchSection personas={personas} intents={intents}/>
 
-            <section className="border-t border-dashed border-border py-12">
-                <div className="ow-container">
-                    <ToolsOverview/>
-                </div>
-            </section>
+            {/* Cards catalog entry point */}
+            <CardsCatalogTeaser cards={cards} banks={banks} totalCount={cards.length}/>
 
-            <div className="hidden">
-                <Suspense fallback={<BanksSectionSkeleton/>}>
-                    <BanksSection limit={10} showViewAll/>
-                </Suspense>
-            </div>
-
-            <div className="hidden border-t border-dashed border-border">
-                <Suspense fallback={<CardsSectionSkeleton/>}>
-                    <CardsSection limit={10} showViewAll/>
-                </Suspense>
-            </div>
+            {/* Blog */}
+            <RecentPostsSection/>
         </div>
     );
 }
