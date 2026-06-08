@@ -81,7 +81,7 @@ export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCou
                 <div
                     className="ow-headline z-20 absolute left-1/2 -translate-x-1/2 md:top-1/2 max-md:bottom-0 w-full md:max-w-[500px] max-w-[320px] flex items-center justify-center md:p-6 p-4 bg-[rgba(124,124,124,0.4)] border border-[rgba(236,236,236,0.3)] backdrop-blur-[14px] rounded-full">
                     <p className="font-body font-medium md:text-[22px] leading-[130%] text-white text-center">
-                        Dữ liệu thực. Tư vấn AI. Độc lập, không quảng cáo.
+                        AI tư vấn dựa trên dữ liệu thẻ được chuẩn hoá.<br/>Gợi ý thẻ khách quan theo nhu cầu.
                     </p>
                 </div>
 
