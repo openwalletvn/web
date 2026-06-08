@@ -18,7 +18,7 @@ export interface PostFrontmatter {
   updated?: string;
   author?: string;
   category: string;
-  tags: string[];
+  tags?: string[];
   card_slugs?: string[];
   cover_image?: string;
   ai_generated?: boolean;
@@ -32,7 +32,7 @@ export interface Post {
   readingTime: string;
   excerpt: string;
   categorySlug: string;
-  tagSlugs: string[];
+
 }
 
 // ─── Vietnamese slugifier ───────────────────────────────────────────────────
@@ -109,7 +109,6 @@ function parsePost(filename: string): Post {
     readingTime: `${Math.ceil(stats.minutes)} phút đọc`,
     excerpt: frontmatter.description || getExcerpt(content),
     categorySlug: slugify(frontmatter.category),
-    tagSlugs: frontmatter.tags.map(slugify),
   };
 }
 
@@ -134,19 +133,11 @@ export function getPostsByCategory(categorySlug: string): Post[] {
   return getAllPosts().filter((p) => p.categorySlug === categorySlug);
 }
 
-/** Match by slugified tag */
-export function getPostsByTag(tagSlug: string): Post[] {
-  return getAllPosts().filter((p) => p.tagSlugs.includes(tagSlug));
-}
-
 export function getRelatedPosts(post: Post, limit = 3): Post[] {
   return getAllPosts()
     .filter((p) => p.slug !== post.slug)
     .map((p) => {
-      let score = 0;
-      if (p.categorySlug === post.categorySlug) score += 2;
-      const sharedTags = p.tagSlugs.filter((t) => post.tagSlugs.includes(t));
-      score += sharedTags.length;
+      const score = p.categorySlug === post.categorySlug ? 2 : 0;
       return { post: p, score };
     })
     .filter((p) => p.score > 0)
@@ -171,23 +162,6 @@ export function getAllCategories(): Array<{ name: string; slug: string; count: n
   });
   return Array.from(map.entries())
     .map(([slug, { name, count }]) => ({ name, slug, count }))
-    .sort((a, b) => b.count - a.count);
-}
-
-export function getAllTags(): Array<{ name: string; slug: string; count: number }> {
-  const posts = getAllPosts();
-  // Maintain slug → display-name mapping
-  const nameMap = new Map<string, string>();
-  const countMap = new Map<string, number>();
-  posts.forEach((p) => {
-    p.frontmatter.tags.forEach((tag, i) => {
-      const slug = p.tagSlugs[i];
-      if (!nameMap.has(slug)) nameMap.set(slug, tag);
-      countMap.set(slug, (countMap.get(slug) ?? 0) + 1);
-    });
-  });
-  return Array.from(countMap.entries())
-    .map(([slug, count]) => ({ name: nameMap.get(slug)!, slug, count }))
     .sort((a, b) => b.count - a.count);
 }
 

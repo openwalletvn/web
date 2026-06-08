@@ -3,7 +3,6 @@ import {getAllPosts} from '@/lib/mdx';
 import {ROUTES} from '@/lib/routes';
 // import {PostList} from '@/components/blog/post-list';
 // import {CategoryFilter} from '@/components/blog/category-filter';
-// import {TagList} from '@/components/blog/tag-list';
 import {BlogPageShell} from '@/components/layout/blog-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {OwFeaturedPosts} from '@/components/ow-ui/ow-featured-posts';

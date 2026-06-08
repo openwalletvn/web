@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: '/tin-tuc/tag/:tag',
+        destination: '/tin-tuc',
+        permanent: true,
+      },
+      {
         source: '/:pair([^/]*-vs-[^/]*)',
         destination: `${cardBattleHref}/:pair`,
         permanent: true,

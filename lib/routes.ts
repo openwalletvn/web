@@ -33,7 +33,6 @@ export const ROUTES = {
     card: (slug: string) => `/the/${slug}`,
     bank: (slug: string) => `/ngan-hang/${slug}`,
     blogPost: (slug: string) => `/tin-tuc/${slug}`,
-    blogTag: (tag: string) => `/tin-tuc/tag/${tag}`,
     blogCategory: (category: string) => `/tin-tuc/category/${category}`,
     cardBattlePair: (pair: string) => `/card-battle/${pair}`,
     personaPage: (slug: string) => `/linh-vuc/${slug}`,

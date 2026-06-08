@@ -33,7 +33,6 @@ const mockPost = (slug: string, overrides: Partial<Post['frontmatter']> = {}, ex
     readingTime: '5 phút đọc',
     excerpt: '',
     categorySlug: 'huong-dan',
-    tagSlugs: ['the-tin-dung'],
     content: '',
     frontmatter: {
         title: 'Hướng dẫn chọn thẻ tín dụng phù hợp với nhu cầu chi tiêu',
