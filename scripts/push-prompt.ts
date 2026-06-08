@@ -22,10 +22,11 @@ if (!LANGFUSE_PUBLIC_KEY || !LANGFUSE_SECRET_KEY) {
 const auth = 'Basic ' + Buffer.from(`${LANGFUSE_PUBLIC_KEY}:${LANGFUSE_SECRET_KEY}`).toString('base64');
 
 async function main() {
-    // Import after env is loaded so LANGFUSE_* vars are set (fetchSystemPrompt reads them)
-    // Pass no pageContext - push base prompt only, no page-specific context
-    const { getSystemPrompt } = await import('@/lib/chat/system-prompt');
-    const { text: promptText } = await getSystemPrompt();
+    // Push only the base SYSTEM_PROMPT — static lists (personas, merchants, banks) are
+    // appended at runtime by getSystemPrompt() to stay in sync with live data.
+    // Pushing the assembled version causes duplicates when getSystemPrompt() appends again.
+    const { SYSTEM_PROMPT } = await import('@/lib/chat/system-prompt');
+    const promptText = SYSTEM_PROMPT;
 
     console.log(`Pushing chat-system-prompt to ${LANGFUSE_BASE_URL}`);
     console.log(`Length: ${promptText.length} chars`);
