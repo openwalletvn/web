@@ -48,7 +48,7 @@ function BlogLink({className, ...props}: React.ComponentProps<'a'>) {
 
 function BlogPre({className, ...props}: React.ComponentProps<'pre'>) {
     return <pre
-        className={cn('bg-bg-light text-text-primary rounded-md p-4 overflow-x-auto', className)} {...props} />;
+        className={cn('ow-pre ow-custom-scrollbar bg-bg-light text-text-primary rounded-md p-4 overflow-x-auto', className)} {...props} />;
 }
 
 export const mdxComponents = {
