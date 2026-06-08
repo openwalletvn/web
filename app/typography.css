@@ -1,55 +1,13 @@
 @layer base {
-    h1, .heading-1,
-    h2, .heading-2,
-    h3, .heading-3,
-    h4, .heading-4,
-    h5, .heading-5,
-    h6, .heading-6 {
-        font-family: var(--font-display), sans-serif;
-        font-weight: 400;
-        @apply tracking-wide leading-[1.15];
-    }
-
-    h1, .heading-1 {
-        font-size: 40px;
-        line-height: 100%;
-        letter-spacing: -1.5px;
-        @apply sm:text-[48px] lg:text-[56px] xl:text-[72px];
-    }
-
-    h2, .heading-2 {
-        font-size: 31px;
-        line-height: 120%;
-        letter-spacing: -1px;
-        @apply sm:text-[37px] lg:text-[44px] xl:text-[56px];
-    }
-
-    h3, .heading-3 {
-        font-size: 23px;
-        line-height: 120%;
-        @apply sm:text-[28px] lg:text-[33px] xl:text-[42px];
-    }
-
-    h4, .heading-4 {
-        font-size: 20px;
-        line-height: 130%;
-        @apply sm:text-[24px] lg:text-[28px] xl:text-[36px];
-    }
-
-    h5, .heading-5 {
-        font-size: 17px;
-        line-height: 130%;
-        @apply sm:text-[20px] lg:text-[23px] xl:text-[30px];
-    }
-
-    h6, .heading-6 {
-        font-size: 14px;
-        line-height: 130%;
-        @apply sm:text-[17px] lg:text-[20px] xl:text-[20px];
-    }
+    h1 { @apply heading-1; }
+    h2 { @apply heading-2; }
+    h3 { @apply heading-3; }
+    h4 { @apply heading-4; }
+    h5 { @apply heading-5; }
+    h6 { @apply heading-6; }
 }
 
-@utility heading-1 {
+@utility heading-hero {
     font-family: var(--font-display), sans-serif;
     font-weight: 400;
     font-size: 40px;
@@ -58,29 +16,38 @@
     @apply tracking-wide sm:text-[48px] lg:text-[56px] xl:text-[72px];
 }
 
+@utility heading-1 {
+    font-family: var(--font-display), sans-serif;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 100%;
+    letter-spacing: -1.5px;
+    @apply tracking-wide sm:text-[38px] lg:text-[46px] xl:text-[60px];
+}
+
 @utility heading-2 {
     font-family: var(--font-display), sans-serif;
     font-weight: 400;
-    font-size: 31px;
+    font-size: 24px;
     line-height: 120%;
     letter-spacing: -1px;
-    @apply tracking-wide sm:text-[37px] lg:text-[44px] xl:text-[56px];
+    @apply tracking-wide sm:text-[30px] lg:text-[36px] xl:text-[46px];
 }
 
 @utility heading-3 {
     font-family: var(--font-display), sans-serif;
     font-weight: 400;
-    font-size: 23px;
+    font-size: 20px;
     line-height: 120%;
-    @apply tracking-wide sm:text-[28px] lg:text-[33px] xl:text-[42px];
+    @apply tracking-wide sm:text-[24px] lg:text-[28px] xl:text-[36px];
 }
 
 @utility heading-4 {
     font-family: var(--font-display), sans-serif;
     font-weight: 400;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 130%;
-    @apply tracking-wide sm:text-[24px] lg:text-[28px] xl:text-[36px];
+    @apply tracking-wide sm:text-[20px] lg:text-[22px] xl:text-[28px];
 }
 
 @utility heading-5 {
@@ -88,15 +55,15 @@
     font-weight: 400;
     font-size: 17px;
     line-height: 130%;
-    @apply tracking-wide sm:text-[20px] lg:text-[23px] xl:text-[30px];
+    @apply tracking-wide sm:text-[18px] lg:text-[19px] xl:text-[22px];
 }
 
 @utility heading-6 {
     font-family: var(--font-display), sans-serif;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 130%;
-    @apply tracking-wide sm:text-[17px] lg:text-[20px] xl:text-[20px];
+    @apply tracking-wide sm:text-[16px] lg:text-[16px] xl:text-[16px];
 }
 
 @layer utilities {

@@ -14,7 +14,7 @@ export function OwButtonHeader({asChild = false, icon, kbd, className, children,
     return (
         <Comp
             className={cn(
-                "ow-button-header cursor-pointer inline-flex items-center gap-2 rounded-2xl border-2 border-black bg-slate-50 p-0.5 pr-2 transition-colors",
+                "ow-button-header cursor-pointer inline-flex items-center gap-2 rounded-[8px] border-2 border-black bg-slate-50 p-0.5 pr-2 transition-colors",
                 "hover:border-primary hover:bg-white",
                 className,
             )}
