@@ -67,7 +67,8 @@ const handler = async (req: Request) => {
     const lastUserMessage = uiMessages.findLast((m) => m.role === 'user')?.parts
         ?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? '';
 
-    const { text: systemPrompt } = await getSystemPrompt(body.pageContext);
+    const { text: systemPrompt, version: promptVersion } = await getSystemPrompt(body.pageContext);
+    const messageCount = uiMessages.length;
 
     setActiveTraceIO({ input: lastUserMessage });
 
@@ -77,7 +78,7 @@ const handler = async (req: Request) => {
             sessionId: body.sessionId,
             userId: body.userId,
             tags: ['web-chat'],
-            metadata: { model, ip },
+            metadata: { model, ip, promptVersion: String(promptVersion), messageCount: String(messageCount) },
         },
         async () => {
             let mcpClient: Awaited<ReturnType<typeof createMCPClient>> | null = null;
