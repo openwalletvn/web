@@ -112,6 +112,20 @@ export const Empty: Story = {
     args: {allPosts: [], slugs: []},
 };
 
+export const GridVariant: Story = {
+    name: 'Grid variant (3 cards)',
+    args: {allPosts: ALL_POSTS, variant: 'grid', title: 'Bài viết mới nhất'},
+};
+
+export const GridVariantNoImages: Story = {
+    name: 'Grid variant (no cover images)',
+    args: {
+        allPosts: ALL_POSTS,
+        slugs: ['huong-dan-chon-the', 'so-sanh-cashback', 'meo-toi-uu-diem-thuong'],
+        variant: 'grid',
+    },
+};
+
 export const AllVariants: Story = {
     render: () => (
         <OwStories>
@@ -130,6 +144,16 @@ export const AllVariants: Story = {
             </OwStorySection>
             <OwStorySection title="Single post (no sidebar)">
                 <OwFeaturedPosts allPosts={ALL_POSTS} slugs={['review-msb-visa']}/>
+            </OwStorySection>
+            <OwStorySection title="Grid variant">
+                <OwFeaturedPosts allPosts={ALL_POSTS} variant="grid" title="Bài viết mới nhất"/>
+            </OwStorySection>
+            <OwStorySection title="Grid variant (no images)">
+                <OwFeaturedPosts
+                    allPosts={ALL_POSTS}
+                    slugs={['huong-dan-chon-the', 'so-sanh-cashback', 'meo-toi-uu-diem-thuong']}
+                    variant="grid"
+                />
             </OwStorySection>
             <OwStorySection title="Empty (renders nothing)">
                 <div className="border border-dashed border-border rounded p-4 text-text-muted text-sm text-center">
