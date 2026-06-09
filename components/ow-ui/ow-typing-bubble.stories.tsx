@@ -1,8 +1,9 @@
 import type {Meta, StoryObj} from '@storybook/nextjs-vite';
-import {OwLogo} from './ow-logo';
+import {OwTypingBubble} from './ow-typing-bubble';
 import {OwStories, OwStorySection} from './ow-story-section';
 
-const meta: Meta = {
+const meta: Meta<typeof OwTypingBubble> = {
+    component: OwTypingBubble,
     title: 'Assistant UI/OwTypingBubble',
     tags: ['autodocs'],
     parameters: {
@@ -15,24 +16,26 @@ const meta: Meta = {
 };
 export default meta;
 
-type Story = StoryObj;
+type Story = StoryObj<typeof OwTypingBubble>;
 
 // ─── Overview ────────────────────────────────────────────────────────────────
-// OwTypingBubble reads from assistant-ui thread state (useAuiState) and renders
-// only when the message is running and has no text yet — it cannot be rendered
-// standalone without a thread context. Show the visual output as a static mock.
 
 export const Overview: Story = {
     render: () => (
         <OwStories>
-            <OwStorySection title="Typing state (visual mock)">
-                <div className="ow-typing-bubble flex items-center gap-2 px-2 py-1">
-                    <OwLogo variant="full" color="red" href={null} className="h-5 w-auto animate-bounce"/>
-                    <span className="size-1.5 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:0ms]"/>
-                    <span className="size-1.5 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:150ms]"/>
-                    <span className="size-1.5 rounded-full bg-muted-foreground/40 animate-bounce [animation-delay:300ms]"/>
-                </div>
+            <OwStorySection title="Visible">
+                <OwTypingBubble visible={true}/>
+            </OwStorySection>
+            <OwStorySection title="Hidden">
+                <span className="text-muted-foreground text-sm">renders nothing</span>
+                <OwTypingBubble visible={false}/>
             </OwStorySection>
         </OwStories>
     ),
 };
+
+// ─── Individual ──────────────────────────────────────────────────────────────
+
+export const Visible: Story = {args: {visible: true}};
+
+export const Hidden: Story = {args: {visible: false}};

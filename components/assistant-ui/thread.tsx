@@ -376,6 +376,8 @@ const AssistantMessage: FC = () => {
     // for pt-[n] use -mb-[n + 6] & min-h-[n + 6] to preserve compensation
     const ACTION_BAR_PT = "pt-1.5";
     const ACTION_BAR_HEIGHT = `min-h-7.5 ${ACTION_BAR_PT}`;
+    const isRunning = useAuiState((s) => s.message.status?.type === "running");
+    const hasText = useAuiState((s) => s.message.parts.some((p) => p.type === "text" && "text" in p && !!(p as {text: string}).text));
 
     return (
         <MessagePrimitive.Root
@@ -383,7 +385,7 @@ const AssistantMessage: FC = () => {
             data-role="assistant"
             className="fade-in slide-in-from-bottom-1 group relative animate-in duration-150 [contain-intrinsic-size:auto_300px] [content-visibility:auto]"
         >
-            <OwTypingBubble/>
+            <OwTypingBubble visible={isRunning && !hasText}/>
             <div
                 data-slot="aui_assistant-message-content"
                 className="wrap-break-word px-2 text-foreground leading-relaxed space-y-4"
