@@ -1,5 +1,6 @@
 import {slugify} from '@/lib/mdx';
 import {cn} from "@/lib/utils";
+import {OwButton} from '@/components/ow-ui/ow-button';
 
 function extractText(children: React.ReactNode): string {
   if (typeof children === 'string') return children;
@@ -28,11 +29,41 @@ function makeHeading(Tag: 'h2' | 'h3' | 'h4') {
   };
 }
 
-function BlogImage({ src, alt, title, ...props }: React.ComponentProps<'img'>) {
+function BlogImage({ src, alt, title, slug = '', ...props }: React.ComponentProps<'img'> & { slug?: string }) {
   const caption = title || alt;
+  const resolvedSrc = resolveImageSrc(src, slug);
   return (
       <span className="ow-mdx-image my-8 block lg:-mx-20">
-      <img src={src} alt={alt} title={title} {...props} className="w-full ow-rounded-small !my-0"/>
+      <img src={resolvedSrc} alt={alt} title={title} {...props} className="w-full ow-rounded-small border !my-0"/>
+      {caption && (
+          <span className="mt-2 block text-center text-body-sm text-text-subtle italic">
+          {caption}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function BlogContactButton() {
+  return (
+    <OwButton asChild color="primary">
+      <a href="/lien-he">Liên hệ với OpenWallet</a>
+    </OwButton>
+  );
+}
+
+function resolveImageSrc(src: string | undefined, slug: string): string | undefined {
+  if (!src) return src;
+  if (src.startsWith('/') || src.startsWith('http')) return src;
+  return `/images/posts/${slug}/${src}`;
+}
+
+export function BlogInlineImage({ src, alt, title, slug = '', ...props }: React.ComponentProps<'img'> & { slug?: string }) {
+  const caption = title || alt;
+  const resolvedSrc = resolveImageSrc(src, slug);
+  return (
+      <span className="ow-mdx-inline-image block">
+      <img src={resolvedSrc} alt={alt} title={title} {...props} className="ow-rounded-small border !my-0"/>
       {caption && (
           <span className="mt-2 block text-center text-body-sm text-text-subtle italic">
           {caption}
@@ -75,11 +106,14 @@ function BlogTr({className, ...props}: React.ComponentProps<'tr'>) {
     return <tr className={cn('even:bg-bg-light/50', className)} {...props} />;
 }
 
-export const mdxComponents = {
-  h2: makeHeading('h2'),
-  h3: makeHeading('h3'),
-  h4: makeHeading('h4'),
-  img: BlogImage,
+export function makeMdxComponents(slug: string) {
+  return {
+    BlogInlineImage: (props: React.ComponentProps<'img'>) => <BlogInlineImage {...props} slug={slug} />,
+    BlogContactButton,
+    h2: makeHeading('h2'),
+    h3: makeHeading('h3'),
+    h4: makeHeading('h4'),
+    img: (props: React.ComponentProps<'img'>) => <BlogImage {...props} slug={slug} />,
     a: BlogLink,
     pre: BlogPre,
     table: BlogTable,
@@ -87,4 +121,7 @@ export const mdxComponents = {
     th: BlogTh,
     td: BlogTd,
     tr: BlogTr,
-};
+  };
+}
+
+export const mdxComponents = makeMdxComponents('');

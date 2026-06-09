@@ -8,7 +8,7 @@ import {RelatedPosts} from '@/components/blog/related-posts';
 import {OwButton} from '@/components/ow-ui/ow-button';
 import {OwBadge} from '@/components/ow-ui/ow-badge';
 import {SidebarRelatedCards} from '@/components/blog/sidebar-related-cards';
-import {mdxComponents} from '@/components/blog/mdx-components';
+import {makeMdxComponents} from '@/components/blog/mdx-components';
 import {remarkAutoLink} from '@/lib/remark-auto-link';
 import remarkGfm from 'remark-gfm';
 import {buildBlogPostPageMeta} from '@/lib/page-meta/blog-post';
@@ -102,7 +102,7 @@ export default async function BlogPostPage({params}: Props) {
                     className="prose prose-slate max-w-none prose-headings:font-normal prose-headings:text-text-primary prose-p:text-text-muted prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline prose-strong:text-text-primary prose-code:text-primary prose-code:before:content-none prose-code:after:content-none prose-li:text-text-muted prose-hr:border-dashed prose-hr:border-border prose-table:text-sm prose-th:text-text-muted prose-th:bg-bg-light prose-td:text-text-muted">
                     <MDXRemote
                         source={content}
-                        components={mdxComponents}
+                        components={makeMdxComponents(slug)}
                         options={{mdxOptions: {remarkPlugins: [remarkGfm, remarkAutoLink]}}}
                     />
                 </article>
