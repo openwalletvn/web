@@ -1,8 +1,9 @@
+import React from 'react';
 import Link from 'next/link';
 import {ROUTES} from '@/lib/routes';
 import {OwWobbleCard} from '@/components/ow-ui/ow-wobble-card';
 
-const TOOLS = [
+const TOOLS: {name: string; href: string; description: React.ReactNode; color: string}[] = [
     {
         name: 'Card Match',
         href: ROUTES.cardMatch,
@@ -18,7 +19,9 @@ const TOOLS = [
     {
         name: 'Owie Chat',
         href: ROUTES.owieChat,
-        description: 'Trợ lý AI tư vấn thẻ, trả lời dựa trên dữ liệu thực từ OpenWallet. Miễn phí, không cần đăng ký.',
+        description: <>
+          Trợ lý AI tư vấn thẻ, trả lời dựa trên dữ liệu thực từ OpenWallet. <span className="inline-block">Miễn phí, không cần đăng ký.</span>
+        </>,
         color: '#2563eb',
     },
     {
@@ -38,9 +41,9 @@ export function ToolsSection() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {TOOLS.map((tool) => (
                         <Link key={tool.href} href={tool.href}>
-                            <OwWobbleCard brandColor={tool.color} className="items-start text-left gap-3 min-h-[160px]">
-                                <h3 className="text-white">{tool.name} →</h3>
-                                <p className="text-body text-white/70">{tool.description}</p>
+                            <OwWobbleCard brandColor={tool.color} className="items-start text-left gap-3 sm:min-h-52 min-h-40">
+                                <h3 className="text-white">{tool.name}</h3>
+                                <p className="text-white/70">{tool.description}</p>
                             </OwWobbleCard>
                         </Link>
                     ))}
