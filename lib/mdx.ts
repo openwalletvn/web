@@ -165,12 +165,4 @@ export function getAllCategories(): Array<{ name: string; slug: string; count: n
     .sort((a, b) => b.count - a.count);
 }
 
-/** Resolve a manual slug list to posts, or return the latest N posts. */
-export function resolvePosts(allPosts: Post[], slugs?: string[], limit = 5): Post[] {
-    if (slugs && slugs.length > 0) {
-        return slugs
-            .map((slug) => allPosts.find((p) => p.slug === slug))
-            .filter((p): p is Post => !!p);
-    }
-    return allPosts.slice(0, limit);
-}
+export {resolvePosts} from '@/lib/posts-utils';
