@@ -46,7 +46,7 @@ function BlogImage({ src, alt, title, slug = '', ...props }: React.ComponentProp
 
 function BlogContactButton() {
   return (
-    <OwButton asChild color="primary">
+    <OwButton asChild color="default">
       <a href="/lien-he">Liên hệ với OpenWallet</a>
     </OwButton>
   );
