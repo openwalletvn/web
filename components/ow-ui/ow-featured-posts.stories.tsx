@@ -8,6 +8,10 @@ const meta: Meta<typeof OwFeaturedPosts> = {
     title: 'OW UI/OwFeaturedPosts',
     tags: ['autodocs'],
     parameters: {
+        nextjs: {
+            appDirectory: true,
+            navigation: {pathname: '/tin-tuc'},
+        },
         docs: {
             description: {
                 component: [

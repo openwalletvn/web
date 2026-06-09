@@ -7,6 +7,10 @@ const meta: Meta<typeof OwOwieFab> = {
     title: 'OW UI/OwOwieFab',
     tags: ['autodocs'],
     parameters: {
+        nextjs: {
+            appDirectory: true,
+            navigation: {pathname: '/'},
+        },
         docs: {
             description: {
                 component: 'Persistent floating action button. Fixed bottom-right (`bottom-3 right-3 z-50`). Hover shows "Chào CT!" tooltip.',
