@@ -5,13 +5,13 @@ import {usePathname} from 'next/navigation';
 import {cn} from '@/lib/utils';
 import {TOOLS} from '@/lib/tools';
 import {ROUTES} from '@/lib/routes';
+import {NAV_LINKS} from '@/lib/nav-links';
 import {
     NavigationMenu,
     NavigationMenuContent,
     NavigationMenuItem,
     NavigationMenuList,
     NavigationMenuTrigger,
-    NavigationMenuLink,
 } from '@/components/ui/navigation-menu';
 
 
@@ -43,50 +43,19 @@ export function Nav2() {
             active ? 'text-brand-red' : 'text-text-muted hover:text-brand-red'
         );
 
-    const PLAIN_LEFT = [{label: 'Ngân hàng', href: ROUTES.banks}];
-    const PLAIN_RIGHT = [
-        {label: 'Tin tức', href: ROUTES.blog},
-        {label: 'Về chúng tôi', href: '/ve-openwallet'},
-    ];
-
     return (
         <NavigationMenu className="ow-nav2 max-w-none xl:gap-8 gap-4" viewport={false}>
             <NavigationMenuList className="gap-8">
 
-                {/* Ngân hàng */}
-                {PLAIN_LEFT.map((item) => (
+                {NAV_LINKS.map((item) => (
                     <NavigationMenuItem key={item.href}>
                         <Link
                             href={item.href}
-                            className={plainLinkClass(pathname.startsWith(item.href))}
-                            style={textStyle}
-                        >
-                            <span style={{opacity: 0.3}}>{'{'}</span>
-                            <span>{item.label}</span>
-                            <span style={{opacity: 0.3}}>{'}'}</span>
-                        </Link>
-                    </NavigationMenuItem>
-                ))}
-
-                {/* Thẻ */}
-                <NavigationMenuItem>
-                    <Link
-                        href={ROUTES.cards}
-                        className={plainLinkClass(cardsActive)}
-                        style={textStyle}
-                    >
-                        <span style={{opacity: 0.3}}>{'{'}</span>
-                        <span>Thẻ</span>
-                        <span style={{opacity: 0.3}}>{'}'}</span>
-                    </Link>
-                </NavigationMenuItem>
-
-                {/* Tin tức, Về chúng tôi */}
-                {PLAIN_RIGHT.map((item) => (
-                    <NavigationMenuItem key={item.href}>
-                        <Link
-                            href={item.href}
-                            className={plainLinkClass(pathname.startsWith(item.href))}
+                            className={plainLinkClass(
+                                item.href === ROUTES.cards
+                                    ? cardsActive
+                                    : pathname.startsWith(item.href)
+                            )}
                             style={textStyle}
                         >
                             <span style={{opacity: 0.3}}>{'{'}</span>
@@ -110,19 +79,17 @@ export function Nav2() {
                         <ul className="w-[180px] p-2">
                             {TOOLS.map((tool) => (
                                 <li key={tool.href}>
-                                    <NavigationMenuLink asChild>
-                                        <Link
-                                            href={tool.href}
-                                            className={cn(
-                                                'block px-3 py-2 rounded-2xl text-sm font-medium transition-colors',
-                                                pathname.startsWith(tool.href)
-                                                    ? 'text-brand-red'
-                                                    : 'text-slate-700 hover:text-brand-red hover:bg-slate-50'
-                                            )}
-                                        >
-                                            {tool.name}
-                                        </Link>
-                                    </NavigationMenuLink>
+                                    <Link
+                                        href={tool.href}
+                                        className={cn(
+                                            'block px-3 py-2 rounded-2xl text-sm font-medium transition-colors',
+                                            pathname.startsWith(tool.href)
+                                                ? 'text-brand-red'
+                                                : 'text-slate-700 hover:text-brand-red hover:bg-slate-50'
+                                        )}
+                                    >
+                                        {tool.name}
+                                    </Link>
                                 </li>
                             ))}
                         </ul>

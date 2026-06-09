@@ -9,15 +9,7 @@ import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/
 import {cn} from '@/lib/utils';
 import {ROUTES} from '@/lib/routes';
 import {TOOLS} from '@/lib/tools';
-import {PersonaModel} from '@/lib/persona-model';
-
-const PERSONA_ITEMS = PersonaModel.all().slice(0, 6);
-
-const PLAIN_LINKS = [
-    {label: 'Ngân hàng', href: ROUTES.banks},
-    {label: 'Tin tức', href: ROUTES.blog},
-    {label: 'Về chúng tôi', href: '/ve-openwallet'},
-];
+import {NAV_LINKS} from '@/lib/nav-links';
 
 export function MobileNav() {
     const pathname = usePathname();
@@ -43,78 +35,16 @@ export function MobileNav() {
 
                 <nav className="mt-6 flex flex-col gap-1">
 
-                    {/* Ngân hàng */}
-                    <Link
-                        href={ROUTES.banks}
-                        onClick={close}
-                        className={cn(
-                            'px-3 py-2 rounded-2xl text-base font-medium transition-colors',
-                            pathname.startsWith(ROUTES.banks) ? 'text-brand-red' : 'text-slate-700 hover:bg-slate-100'
-                        )}
-                    >
-                        Ngân hàng
-                    </Link>
-
-                    {/* Thẻ - collapsible */}
-                    <Collapsible defaultOpen={cardsActive}>
-                        <CollapsibleTrigger className="flex items-center justify-between w-full px-3 py-2 rounded-2xl text-base font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                            <span className={cn(cardsActive && 'text-brand-red')}>Thẻ</span>
-                            <IconChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true"/>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                            <div className="mt-1 ml-3 flex flex-col gap-1">
-                                <p className="px-2 pt-1 text-xs font-semibold text-slate-400 uppercase tracking-widest">
-                                    Lĩnh vực
-                                </p>
-                                {PERSONA_ITEMS.map((persona) => (
-                                    <Link
-                                        key={persona.getSlug()}
-                                        href={persona.getHref()}
-                                        onClick={close}
-                                        className={cn(
-                                            'px-2 py-1.5 rounded-2xl text-sm transition-colors',
-                                            pathname.startsWith(persona.getHref())
-                                                ? 'text-brand-red'
-                                                : 'text-slate-700 hover:text-brand-red'
-                                        )}
-                                    >
-                                        {persona.getName()}
-                                    </Link>
-                                ))}
-                                <Link
-                                    href="/linh-vuc"
-                                    onClick={close}
-                                    className="px-2 py-1.5 text-sm font-semibold text-brand-red hover:underline"
-                                >
-                                    Xem tất cả nhu cầu →
-                                </Link>
-                                <div className="border-t border-slate-100 mt-1 pt-1">
-                                    <Link
-                                        href={ROUTES.cards}
-                                        onClick={close}
-                                        className={cn(
-                                            'block px-2 py-1.5 rounded-2xl text-sm transition-colors',
-                                            pathname === ROUTES.cards
-                                                ? 'text-brand-red'
-                                                : 'text-slate-700 hover:text-brand-red'
-                                        )}
-                                    >
-                                        Xem tất cả thẻ
-                                    </Link>
-                                </div>
-                            </div>
-                        </CollapsibleContent>
-                    </Collapsible>
-
-                    {/* Tin tức, Về chúng tôi */}
-                    {PLAIN_LINKS.slice(1).map((item) => (
+                    {NAV_LINKS.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
                             onClick={close}
                             className={cn(
                                 'px-3 py-2 rounded-2xl text-base font-medium transition-colors',
-                                pathname.startsWith(item.href) ? 'text-brand-red' : 'text-slate-700 hover:bg-slate-100'
+                                (item.href === ROUTES.cards ? cardsActive : pathname.startsWith(item.href))
+                                    ? 'text-brand-red'
+                                    : 'text-slate-700 hover:bg-slate-100'
                             )}
                         >
                             {item.label}
