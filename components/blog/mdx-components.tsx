@@ -52,7 +52,8 @@ function BlogContactButton() {
   );
 }
 
-function resolveImageSrc(src: string | undefined, slug: string): string | undefined {
+function resolveImageSrc(src: string | Blob | undefined, slug: string): string | undefined {
+  if (src instanceof Blob) return undefined;
   if (!src) return src;
   if (src.startsWith('/') || src.startsWith('http')) return src;
   return `/images/posts/${slug}/${src}`;
