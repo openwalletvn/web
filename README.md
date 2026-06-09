@@ -2,14 +2,21 @@
 
 # OpenWallet
 
-[![Vercel Deployment](https://img.shields.io/github/deployments/openwalletvn/web/Production?logo=vercel&label=vercel&color=black)](https://openwallet.vn)
 [![MCP v0.1.0](https://img.shields.io/endpoint?url=https%3A%2F%2Fmcp.openwallet.vn%2Fbadge&cacheSeconds=60)](https://mcp.openwallet.vn/health)
 [![API v1.0.0](https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.openwallet.vn%2Fbadge&cacheSeconds=60)](https://api.openwallet.vn/health)
 [![Storybook](https://img.shields.io/badge/storybook-FF4785?logo=storybook&logoColor=white)](https://storybook.openwallet.vn)
 
+**OpenWallet** là công cụ so sánh và tư vấn thẻ ngân hàng Việt Nam, xây dựng trên nguyên tắc độc lập về biên tập: thuật toán xếp hạng và gợi ý thẻ không bị chi phối bởi quan hệ thương mại với bất kỳ ngân hàng nào.
+
 Không cần lướt hàng chục trang web. Gợi ý khách quan theo nhu cầu của bạn.
 
-Tra cứu và so sánh thẻ ngân hàng Việt Nam. Tư vấn AI với Owie, dữ liệu thực, độc lập, không quảng cáo. Mã nguồn mở, độc lập về biên tập.
+## Tính năng
+
+- **[Card Match](https://openwallet.vn/card-match)** — Nhập thói quen chi tiêu, hệ thống xếp hạng và gợi ý thẻ phù hợp nhất theo nhu cầu cụ thể của bạn.
+- **[Card Battle](https://openwallet.vn/card-battle)** — So sánh hai thẻ bất kỳ cạnh nhau, dựa trên dữ liệu thực về phí, hoàn tiền và ưu đãi.
+- **[Owie Chat](https://openwallet.vn/owie-chat)** — Trợ lý AI tư vấn thẻ, trả lời dựa trên dữ liệu thực từ OpenWallet. Miễn phí, không cần đăng ký.
+- **[OpenWallet MCP](https://openwallet.vn/mcp)** — Tích hợp dữ liệu thẻ OpenWallet vào AI assistant của bạn như Claude hay ChatGPT qua giao thức MCP.
+- **Cơ sở dữ liệu thẻ** — Tra cứu thông tin chi tiết về 300+ thẻ từ 20+ ngân hàng tại Việt Nam.
 
 **Site:** https://openwallet.vn
 
