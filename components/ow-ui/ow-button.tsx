@@ -42,7 +42,7 @@ export function OwButton({
             variant="default"
             disabled={disabled}
             className={cn(
-                "ow-button cursor-pointer rounded-[8px] tracking-wide max-w-[320px] w-auto !whitespace-normal h-auto inline-flex items-center justify-center text-center font-display !leading-[1.15] capitalize",
+                "ow-button cursor-pointer no-underline! hover:no-underline! rounded-lg tracking-wide max-w-[320px] w-auto whitespace-normal! h-auto inline-flex items-center justify-center text-center font-display leading-[1.15]! capitalize",
                 sizeClasses["sm"],
                 sizeClasses[size],
                 active ? activeColorClasses[color] : colorClasses[color],

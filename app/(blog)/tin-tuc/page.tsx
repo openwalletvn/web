@@ -39,7 +39,7 @@ export default async function BlogPage() {
     return (
         <BlogPageShell
             title="Tin tức"
-            description="Kiến thức tài chính cá nhân, hướng dẫn sử dụng thẻ và mẹo quản lý chi tiêu."
+            description="Theo dõi các bài viết về OpenWallet, thông báo về các tính năng cũng như chia sẻ về cách sử dụng thẻ cho chi tiêu hàng ngày."
             breadcrumbItems={breadcrumbItems}
             jsonLd={jsonLd}
         >

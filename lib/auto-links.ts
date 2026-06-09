@@ -7,7 +7,10 @@
  *   (e.g. "thẻ tín dụng" before "thẻ").
  * - Keywords are matched case-sensitively as written here.
  */
-export const AUTO_LINKS: [keyword: string, url: string][] = [
+// Temporarily disabled — set to [] to skip all auto-linking.
+export const AUTO_LINKS: [keyword: string, url: string][] = [];
+/* DISABLED
+export const AUTO_LINKS_BACKUP: [keyword: string, url: string][] = [
   // Card networks
   ['American Express', '/the-tin-dung-amex'],
   ['Mastercard', '/the-tin-dung-mastercard'],
@@ -42,3 +45,4 @@ export const AUTO_LINKS: [keyword: string, url: string][] = [
   ['HSBC', '/ngan-hang/hsbc'],
   ['UOB', '/ngan-hang/uob'],
 ];
+*/

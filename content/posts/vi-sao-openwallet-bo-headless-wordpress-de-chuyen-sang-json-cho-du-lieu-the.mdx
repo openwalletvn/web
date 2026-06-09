@@ -1,20 +1,29 @@
 ---
-title: "Card schema cho thẻ tín dụng Việt Nam: từ SQL-in-WordPress đến JSON files"
+title: "Vì sao OpenWallet bỏ Headless WordPress để chuyển sang JSON cho dữ liệu thẻ"
 description: >-
-    Hành trình thiết kế data schema cho thẻ tín dụng Việt Nam, từ ACF fields trong
-    WordPress SQL database đến Zod schema, JSON files và Cloudflare Workers edge API.
-    Không phải dự án làm trong vài tuần mà là quá trình iterate qua từng thẻ thật.
+  Hành trình thiết kế data schema cho thẻ tín dụng Việt Nam, từ ACF fields trong
+  WordPress SQL database đến Zod schema, JSON files và Cloudflare Workers edge API.
+  Quá trình thay đổi để đáp ứng từng thể lệ hoàn tiền của từng thẻ.
 date: '2026-06-08'
-cover_image: /images/posts/card-schema-viet-nam-tu-wordpress-den-cloudflare-workers/openwallet-card-json.png
+cover_image: /images/posts/vi-sao-openwallet-bo-headless-wordpress-de-chuyen-sang-json-cho-du-lieu-the/openwallet-card-json.png
 category: Case study
 status: published
 ---
 
-Khi bắt đầu xây dựng OpenWallet, câu hỏi đầu tiên của mình không còn là "dùng framework nào" mà là "làm sao lưu thông tin một cái thẻ tín dụng cho đúng." Nghe đơn giản, nhưng mất nhiều vòng iterate mới ra được schema hiện tại. Bài này kể lại hành trình đó, từ điểm xuất phát đến kiến trúc đang chạy hôm nay.
+Khi bắt đầu xây dựng OpenWallet, câu hỏi đầu tiên của mình không còn là "_dùng framework nào_" mà là "_làm sao lưu
+thông tin một cái thẻ tín dụng cho đủ và đúng._" Nghe có vẻ đơn giản thôi, mình cũng từng nghĩ vậy cho đến khi
+phải dừng lại và quyết định drop project với tổng cộng hơn 500 commits + 268 working hours.
+Bài này kể lại hành trình đó, từ điểm xuất phát đến kiến trúc đang chạy hôm nay.
 
-## Điểm xuất phát: tich.vn và WordPress
+<BlogInlineImage src="/images/posts/vi-sao-openwallet-bo-headless-wordpress-de-chuyen-sang-json-cho-du-lieu-the/tichvn-tmetric.png" alt="268 giờ làm việc trên tich.vn" />
 
-Trước OpenWallet là tich.vn, một dự án so sánh thẻ tín dụng xây trên WordPress. Data thẻ lưu trong SQL database của WP thông qua ACF (Advanced Custom Fields) và Custom Post Type. WPGraphQL đứng ở giữa để Next.js có thể query dữ liệu qua GraphQL. Lúc đó WPGraphQL trông khá fancy (ít nhất là với mình), và đó cũng là lý do chính để chọn nó, nhưng nhìn lại thì đó là đặt product vào stack mình muốn chứ không phải chọn stack phù hợp với product.
+## Bắt đầu với tich.vn và WordPress
+
+Trước OpenWallet là tich.vn, một dự án tra cứu thẻ, tra cứu MCC xây dựng trên nền tảng Headless WordPress CMS. 
+Data thẻ lưu trong SQL database của WP thông qua ACF (Advanced Custom Fields) và Custom Post Type. 
+WPGraphQL đứng ở giữa để Next.js có thể query dữ liệu qua GraphQL. 
+Lúc đó WPGraphQL trông khá fancy (ít nhất là với mình), và đó cũng là lý do chính để chọn nó, 
+nhưng nhìn lại thì đó là một lựa chọn đặt product vào stack mình muốn chứ không phải chọn stack phù hợp với product.
 
 Cấu trúc lúc đó:
 
@@ -22,24 +31,9 @@ Cấu trúc lúc đó:
 - Network và tier encode chung trong một taxonomy slug: `visa-signature`, `mastercard-platinum`
 - Bank, loại thẻ, số ngày miễn lãi đều là taxonomy term
 
-Khi export ra JSON để Next.js dùng, có một đoạn PHP như thế này:
-
-```php
-$net_slug  = get_the_terms($post_id, 'tax-network')[0]->slug; // "visa-signature"
-$net_parts = explode('-', $net_slug, 2);
-$card_network = $net_parts[0]; // "visa"
-$card_tier    = $net_parts[1]; // "signature"
-```
-
-Trông ổn cho đến khi gặp American Express. Slug `"american-express-platinum"` → `network = "american"`, tier = `"express-platinum"`. Fix bằng một dòng hardcode:
-
-```php
-$card_network = $raw_network === 'american' ? 'amex' : $raw_network;
-```
-
-Đây là dấu hiệu đầu tiên: data model đang bị nhồi vào WP taxonomy thay vì được thiết kế từ đầu cho mục đích cụ thể.
-
-Cashback lúc đó nằm trong ACF fields của một CPT riêng (`cpt_reward`), liên kết với thẻ qua GraphQL resolver. MCC code lưu dưới dạng string `"3000, 3001, 3002"` trong một ACF field, rồi query bằng `meta_query REGEXP` để tìm reward nào chứa mã MCC đó.
+Cashback lúc đó nằm trong ACF fields của một CPT riêng (`cpt_reward`), liên kết với thẻ qua GraphQL resolver. 
+MCC code lưu dưới dạng string `"3000, 3001, 3002"` trong một ACF field, 
+rồi query bằng `meta_query REGEXP` để tìm ưu đãi nào chứa mã MCC đó.
 
 JSON xuất ra từ mỗi thẻ trông như thế này:
 
@@ -58,27 +52,42 @@ JSON xuất ra từ mỗi thẻ trông như thế này:
 }
 ```
 
-Phần cashback không có trong JSON này. Nó nằm ở WPGraphQL, cần query riêng. Mỗi lần cập nhật một thẻ: sửa trong WP admin, click "Generate All JSONs", commit file, deploy. Nhiều step và rất thủ công.
+Phần cashback không có trong JSON này mà nằm ở WPGraphQL, cần query riêng. 
+Mỗi lần cập nhật một thẻ cần sửa trong WP admin, revalidate Next.js từ WP admin. Process khá là rườm rà.
 
-### Tại sao tich.vn chết
+### Vấn đề của WordPress Headless CMS
 
-Không phải vì WordPress tệ. Mà vì cấu trúc này không thể scale khi số lượng thẻ tăng và cashback rules trở nên phức tạp hơn. Mỗi lần thêm loại rule mới cần sửa ACF field group, sửa GraphQL resolver, sửa Next.js query, deploy cả WP lẫn frontend. Bốn điểm thay đổi cho một feature. Khi API không theo kịp tốc độ cần thiết để thêm thẻ mới và model cashback đúng, dự án bị đình lại.
+![WordPress Headless CMS on Google order](/images/posts/vi-sao-openwallet-bo-headless-wordpress-de-chuyen-sang-json-cho-du-lieu-the/headless-wp.png)
 
-Sau đó mình chuyển sang các dự án Next.js khác, tích lũy thêm kinh nghiệm, rồi quay lại xây OpenWallet từ đầu với kiến trúc hoàn toàn khác. Tháng 6/2025, tich.vn chính thức deprecated.
+Không phải vì WordPress tệ. Mà vì cấu trúc này khó để scale khi số lượng thẻ tăng và cashback rules trở nên phức tạp hơn. 
+Mỗi lần thêm loại rule mới cần sửa ACF field group, sửa GraphQL resolver, sửa Next.js query, 
+deploy cả WP lẫn frontend. Và workflow này cũng **không thân thiện với AI coding assistant** - thứ mà một solo engineer như mình sử dụng mỗi ngày.
+Khi API không theo kịp tốc độ cần thiết để thêm thẻ mới và model cashback đúng, dự án bị đình lại.
 
-### Vấn đề của WPGraphQL
+Sau đó mình chuyển sang các dự án Next.js khác, tích lũy thêm kinh nghiệm, 
+rồi quay lại xây OpenWallet từ đầu với kiến trúc hoàn toàn khác. Tháng 6/2025, tich.vn chính thức deprecated, khi OpenWallet đã
+bắt đầu đủ ổn định.
 
-WordPress là tool đúng cho blog hoặc commercial website. Nhưng nó lại là tool sai cho data API với business logic phức tạp. Mặc dù bản thân Automattic cũng cố gắng tích hợp RESTful API, GraphQL API vào Wordpress nhưng thật sự vẫn chỉ là những chắp vá ở phần ngọn.
+### Vấn đề của GraphQL
 
-WPGraphQL thêm overhead cả về runtime lẫn mental model. Taxonomy term không phải schema, nó là label. Khi cần validate data, không có contract nào cả, không thể chạy test, bất kỳ field nào cũng có thể có bất kỳ shape nào. GraphQL tốt khi client cần chọn field linh hoạt theo từng query. Nhưng với card comparison, ranking, và cashback calculation là các computed operation phức tạp, REST endpoint với typed response rõ ràng và dễ cache hơn nhiều.
+WordPress là tool đúng cho blog hoặc commercial website. 
+Nhưng nó lại là tool sai cho data API với business logic phức tạp. 
+Mặc dù bản thân Automattic cũng cố gắng tích hợp RESTful API, GraphQL API (bằng một plugin của bên thứ ba là [WPGraphQL](https://github.com/wp-graphql/wp-graphql)) vào Wordpress nhưng thật sự vẫn chỉ là những 
+chắp vá ở phần ngọn.
+
+WPGraphQL thêm overhead cả về runtime lẫn mental model. Taxonomy term không phải schema, nó là label. 
+Khi cần validate data, không có contract nào cả, không thể chạy test, bất kỳ field nào cũng có thể có bất kỳ shape nào. GraphQL tốt khi client cần chọn field linh hoạt theo từng query. Nhưng với card comparison, ranking, và cashback calculation là các computed operation phức tạp, REST endpoint với typed response rõ ràng và dễ cache hơn nhiều.
 
 ## Quyết định rebuild: JSON files thay vì SQL, REST thay vì GraphQL
 
 ### Tại sao bỏ relational database như SQL?
 
-Card data không có transaction. Không có concurrent write. Không có user session. "Relational" duy nhất thật sự cần là hai quan hệ: `bank_id` trỏ đến bank, `card_network` trỏ đến network entity. Hai foreign key này xử lý được bằng enrichment tại generate time, kết quả bundle vào JSON trước khi deploy.
+Card data không có transaction. Không có concurrent write. Không có user session. 
+"Relational" duy nhất thật sự cần là hai quan hệ: `bank_id` trỏ đến bank, `card_network` trỏ đến network entity. 
+Hai foreign key này xử lý được bằng enrichment tại generate time, kết quả bundle vào JSON trước khi deploy.
 
-SQL có nghĩa là server, connection pool, migration files, backup strategy. Với dữ liệu của 23 ngân hàng và 321 thẻ, đây là overhead không cần thiết.
+SQL có nghĩa là server, connection pool, migration files, backup strategy. 
+Với dữ liệu của 23 ngân hàng và 321 thẻ, đây là overhead không cần thiết.
 
 JSON files trong git làm được tất cả: mỗi commit là một migration, git history là audit trail, diff đọc được bằng mắt thường.
 
@@ -94,7 +103,7 @@ data/cards/
 
 ### JSON database và DX với coding assistant
 
-Đây là điểm ít nói đến nhưng thực tế ảnh hưởng lớn nhất đến cách làm việc hàng ngày của dev: toàn bộ API server chạy được hoàn toàn local, kể cả database.
+Đây là điểm ảnh hưởng lớn nhất đến cách làm việc hàng ngày của dev: toàn bộ API server chạy được hoàn toàn local, kể cả database.
 
 Không cần kết nối đến server nào. Không cần seed script. Không cần Docker compose. Clone repo, `pnpm install`, chạy được ngay.
 
@@ -112,14 +121,12 @@ Mỗi bước là file trung gian được lưu lại. LLM đọc được, sử
 
 ### Cloudflare Workers cho API, Vercel cho web
 
-Khi chọn hosting, câu hỏi không phải "platform nào tốt hơn" mà là "platform nào phù hợp nhất cho từng phần, với cost thấp nhất."
+Khi chọn hosting, câu hỏi không phải "platform nào tốt hơn" mà là "_**platform nào phù hợp nhất cho từng phần, với cost thấp nhất**_."
 
 API server chạy trên Cloudflare Workers. Lý do đầu tiên rất đơn giản thôi: Cloudflare cho phép deploy từ private GitHub organization repository ở plan miễn phí. Vercel chỉ cho phép private personal repo. OpenWallet API vẫn đang là một org private repo, nên đây là yếu tố quyết định ngay từ đầu.
 
 Ngoài ra Cloudflare Workers phù hợp về mặt kỹ thuật:
 
-- **Edge runtime:** response được phục vụ từ PoP gần người dùng nhất thay vì một server duy nhất ở một region
-- **Near-zero cold start:** code chạy trên V8 isolates thay vì container hoặc serverless function truyền thống, giúp giảm đáng kể startup latency
 - **Bundle size limit (3 MiB mỗi Worker bundle)** tạo động lực chia nhỏ dữ liệu theo entity type. Kết quả là mỗi bundle chỉ tải phần dữ liệu cần thiết
 - **`wrangler deploy` đơn giản:** gần tương đương `git push`, không cần quản lý server hay infrastructure riêng
 
@@ -128,6 +135,8 @@ Web (Next.js) được deploy trên Vercel vì lý do kỹ thuật cụ thể. I
 Nguyên tắc chung: tối ưu cost trước, performance sau, không lock-in vào bất kỳ vendor nào. API build trên Hono, có thể chuyển sang bất kỳ edge runtime nào. Web build trên Next.js, có thể chuyển sang bất kỳ platform nào hỗ trợ Node.js.
 
 ## Schema evolution: cashback là phần khó nhất
+
+> Nội dung từ phần này trở xuống được tổng hợp bởi LLM.
 
 Phần còn lại của bài này đi vào chi tiết kỹ thuật: schema cashback đã thay đổi như thế nào qua từng lần gặp thẻ thật không fit vào model cũ.
 
@@ -323,4 +332,7 @@ Schema đủ expressive để model được hầu hết rule cashback từ ngâ
 
 Đây không phải schema tổng quát cho mọi thị trường. Nó là schema được calibrate cho thị trường thẻ tín dụng Việt Nam, với các pattern phổ biến nhất ở đây: waiver năm đầu theo điều kiện chi tiêu, pick-one-category-per-cycle, tiered rate theo tổng chi tiêu, và giao dịch nước ngoài với rate riêng.
 
-Đủ để dùng. Vẫn còn chỗ để grow.
+Hiện tại OpenWallet API là một private repo và mình chưa có kế hoạch public nó trong thời gian gần, tuy nhiên mình rất sẵn lòng add mọi người vào repo để
+tham khảo. Liên hệ mình qua discord nhé.
+
+<BlogContactButton />
