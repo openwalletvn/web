@@ -3,6 +3,7 @@ import {MobileNav} from './mobile-nav';
 import {SearchDialog} from '@/components/search/search-dialog';
 import {Nav2} from "@/components/layout/nav2";
 import {OwLogo} from "@/components/ow-ui/ow-logo";
+import {DiscordButton} from "@/components/layout/discord-button";
 
 const NETWORK_TIER_FILTER = 'visa:infinite,visa:signature,mastercard:world-elite,mastercard:world,amex:platinum,jcb:ultimate';
 
@@ -80,10 +81,12 @@ export async function Header() {
                 {/* Right: search + chat + mobile trigger */}
                 <div className="flex items-center gap-2 justify-end">
                     <div className="hidden xl:flex items-center gap-2">
-                        <SearchDialog/>
+                      <SearchDialog/>
+                      <DiscordButton/>
                     </div>
                     <div className="xl:hidden flex items-center">
                         <SearchDialog mobileOnly/>
+                        <DiscordButton iconOnly/>
                         <MobileNav/>
                     </div>
                 </div>
