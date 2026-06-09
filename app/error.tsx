@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { IconAlertTriangle, IconWifi } from '@tabler/icons-react';
-import { OwLogo } from '@/components/ow-ui/ow-logo';
+import {IconAlertTriangle, IconWifi} from '@tabler/icons-react';
+import {OwLogo} from '@/components/ow-ui/ow-logo';
+import {OwButton} from "@/components/ow-ui/ow-button";
 
 function isApiConnectionError(error: Error): boolean {
   const msg = error.message.toLowerCase();
@@ -48,7 +49,7 @@ export default function ErrorPage({
               ? <>API local (<code className="font-mono text-xs">{apiUrl}</code>) chưa chạy.</>
               : <>Không kết nối được tới <code className="font-mono text-xs">{apiUrl}</code>.</>}
           </p>
-          <div className="mb-10 w-full max-w-md rounded-[32px] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-left">
+          <div className="mb-10 w-full max-w-md ow-rounded-small bg-white border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-left">
             <p className="text-body-sm mb-3 font-semibold">Khắc phục (dev only):</p>
             <ol className="text-body-sm list-inside list-decimal space-y-2 text-[var(--color-text-muted)]">
               {isLocalApi && (
@@ -73,33 +74,31 @@ export default function ErrorPage({
       ) : (
         <>
           <h2 className="heading-3 mb-3">Đã xảy ra lỗi</h2>
-          <p className="text-body-sm mb-6 max-w-sm text-[var(--color-text-muted)]">
-            Đã có lỗi xảy ra khi tải trang này. Vui lòng thử lại hoặc quay về trang chủ.
+          <p className="text-body-sm mb-6 max-w-sm text-text-muted">
+            Đã có lỗi xảy ra khi tải trang này. <br/>Vui lòng thử lại hoặc quay về trang chủ.
           </p>
-          <div className="mb-10 w-full max-w-md rounded-[32px] border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 text-left">
+          <div className="mb-10 w-full max-w-md ow-rounded-small border border-(--color-border) bg-white p-4 text-left">
             {error.message && (
-              <p className="font-mono text-xs text-[var(--color-text-muted)] break-all mb-1">{error.message}</p>
+              <p className="font-mono text-xs text-text-muted break-all mb-1">{error.message}</p>
             )}
             {error.digest && (
-              <p className="font-mono text-xs text-[var(--color-text-muted)] opacity-60">digest: {error.digest}</p>
+              <p className="font-mono text-xs text-text-muted opacity-60">digest: {error.digest}</p>
             )}
           </div>
         </>
       )}
 
       <div className="flex items-center gap-4">
-        <button
-          onClick={reset}
-          className="text-body-md inline-flex items-center rounded-[48px] bg-black px-6 py-4 text-white transition-opacity hover:opacity-80"
-        >
+        <OwButton onClick={reset}>
           Thử lại
-        </button>
-        <Link
-          href="/"
-          className="text-body-sm text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text-primary)]"
-        >
-          Về trang chủ
-        </Link>
+        </OwButton>
+        <OwButton asChild color="outline">
+          <Link
+            href="/"
+          >
+            Về trang chủ
+          </Link>
+        </OwButton>
       </div>
     </div>
   );
