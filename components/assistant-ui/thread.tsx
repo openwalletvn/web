@@ -42,6 +42,8 @@ import {
     PencilIcon,
     RefreshCwIcon,
     SquareIcon,
+    ThumbsDownIcon,
+    ThumbsUpIcon,
 } from "lucide-react";
 import {type FC, useEffect, useRef, useState} from "react";
 import {getContextPlaceholders, type PageContext} from "@/lib/chat/page-context";
@@ -387,13 +389,13 @@ const AssistantMessage: FC = () => {
     // keeps hovered action bar from shifting layout (autohide doesn't support absolute positioning well)
     // for pt-[n] use -mb-[n + 6] & min-h-[n + 6] to preserve compensation
     const ACTION_BAR_PT = "pt-1.5";
-    const ACTION_BAR_HEIGHT = `-mb-7.5 min-h-7.5 ${ACTION_BAR_PT}`;
+    const ACTION_BAR_HEIGHT = `min-h-7.5 ${ACTION_BAR_PT}`;
 
     return (
         <MessagePrimitive.Root
             data-slot="aui_assistant-message-root"
             data-role="assistant"
-            className="fade-in slide-in-from-bottom-1 relative animate-in duration-150 [contain-intrinsic-size:auto_300px] [content-visibility:auto]"
+            className="fade-in slide-in-from-bottom-1 group relative animate-in duration-150 [contain-intrinsic-size:auto_300px] [content-visibility:auto]"
         >
             <TypingBubble/>
             <div
@@ -466,7 +468,8 @@ const AssistantActionBar: FC = () => {
         <ActionBarPrimitive.Root
             hideWhenRunning
             autohide="not-last"
-            className="aui-assistant-action-bar-root col-start-3 row-start-2 -ms-1 flex gap-1 text-muted-foreground"
+            autohideFloat="always"
+            className="aui-assistant-action-bar-root col-start-3 row-start-2 -ms-1 flex gap-1 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
         >
             <ActionBarPrimitive.Copy asChild>
                 <TooltipIconButton tooltip="Copy">
@@ -497,6 +500,21 @@ const AssistantActionBar: FC = () => {
                     align="start"
                     className="aui-action-bar-more-content z-50 min-w-32 overflow-hidden rounded-2xl border bg-popover p-1 text-popover-foreground shadow-md"
                 >
+                    <ActionBarMorePrimitive.Item asChild>
+                        <ActionBarPrimitive.FeedbackPositive
+                            className="aui-action-bar-more-item flex w-full cursor-pointer select-none items-center gap-2 rounded px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                            <ThumbsUpIcon className="size-4"/>
+                            Helpful
+                        </ActionBarPrimitive.FeedbackPositive>
+                    </ActionBarMorePrimitive.Item>
+                    <ActionBarMorePrimitive.Item asChild>
+                        <ActionBarPrimitive.FeedbackNegative
+                            className="aui-action-bar-more-item flex w-full cursor-pointer select-none items-center gap-2 rounded px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                            <ThumbsDownIcon className="size-4"/>
+                            Not helpful
+                        </ActionBarPrimitive.FeedbackNegative>
+                    </ActionBarMorePrimitive.Item>
+                    <ActionBarMorePrimitive.Separator/>
                     <ActionBarPrimitive.ExportMarkdown asChild>
                         <ActionBarMorePrimitive.Item
                             className="aui-action-bar-more-item flex cursor-pointer select-none items-center gap-2 rounded px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">

@@ -32,63 +32,26 @@ export async function fetchSystemPrompt(): Promise<{ text: string; version: numb
         promptCache = { text: data.prompt, version: data.version, fetchedAt: Date.now() };
         return { text: data.prompt, version: data.version };
     } catch {
-        // fallback: return cached if exists, else null signals caller to use hardcoded
         if (promptCache) return { text: promptCache.text, version: promptCache.version };
         return { text: '', version: 0 };
     }
 }
 
-// ─── Tracing ──────────────────────────────────────────────────────────────────
+// ─── User feedback scores ─────────────────────────────────────────────────────
 
-export interface ChatTraceOptions {
-    input: string;
-    output: string;
-    model: string;
-    tokens: { input: number; output: number };
-    latencyMs: number;
-    finishReason: string;
-    steps: number;
-    promptVersion?: number;
-    userId?: string;
-    sessionId?: string;
-}
-
-export async function sendChatTrace(opts: ChatTraceOptions): Promise<void> {
-    await fetch(`${baseUrl()}/api/public/ingestion`, {
+export async function postFeedbackScore(traceId: string, value: 0 | 1, comment?: string): Promise<void> {
+    await fetch(`${baseUrl()}/api/public/scores`, {
         method: 'POST',
         headers: {
             'Authorization': basicAuth(),
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            batch: [{
-                id: crypto.randomUUID(),
-                type: 'trace-create',
-                timestamp: new Date().toISOString(),
-                body: {
-                    id: crypto.randomUUID(),
-                    name: 'chat',
-                    input: opts.input,
-                    output: opts.output,
-                    usage: {
-                        input: opts.tokens.input,
-                        output: opts.tokens.output,
-                        total: opts.tokens.input + opts.tokens.output,
-                        unit: 'TOKENS',
-                    },
-                    ...(opts.userId ? { userId: opts.userId } : {}),
-                    ...(opts.sessionId ? { sessionId: opts.sessionId } : {}),
-                    metadata: {
-                        model: opts.model,
-                        tokens: opts.tokens,
-                        latencyMs: opts.latencyMs,
-                        finishReason: opts.finishReason,
-                        steps: opts.steps,
-                        promptVersion: opts.promptVersion,
-                    },
-                    tags: ['web-chat'],
-                },
-            }],
+            traceId,
+            name: 'user-feedback',
+            value,
+            dataType: 'NUMERIC',
+            ...(comment ? { comment } : {}),
         }),
     });
 }

@@ -135,33 +135,21 @@ pnpm chatlog:id <sessionId>     # stream one session
 
 ## Observability (Langfuse)
 
-All observability uses Langfuse direct HTTP ingestion — no SDK (JS SDK silently fails in CF Workers, GitHub issue
-#11984).
+Uses OTEL approach: `instrumentation.ts` → `NodeTracerProvider` + `LangfuseSpanProcessor` → `observe()` in route handler → `experimental_telemetry: { isEnabled: true }` on `streamText`.
 
-**File:** `lib/langfuse.ts`
+**Full details:** `.claude/docs/learnings/langfuse-otel-tracing.md`
 
-- `fetchSystemPrompt()` — fetches `chat-system-prompt?label=production`, 60s in-memory cache, falls back to hardcoded
-  `SYSTEM_PROMPT` on error
-- `sendChatTrace()` — sends trace with input/output/model/tokens/latency/finishReason/steps/promptVersion
+**Files:**
+- `instrumentation.ts` — registers OTEL provider at Next.js startup
+- `lib/langfuse.ts` — `fetchSystemPrompt()` (prompt management) + `postFeedbackScore()` (user feedback scores)
+- `app/api/chat/route.ts` — `observe()` wrapper, `propagateAttributes()`, `getActiveTraceId()`
+- `app/api/chat/feedback/route.ts` — server proxy for posting feedback scores (keeps secret key server-side)
 
-**Trace fields:**
-
-| Field           | Source                                     |
-|-----------------|--------------------------------------------|
-| `input`         | Last user message text                     |
-| `output`        | Full assistant response                    |
-| `model`         | `CHAT_MODEL` / `DEFAULT_MODEL` env var     |
-| `tokens.input`  | `usage.inputTokens` from AI SDK `onFinish` |
-| `tokens.output` | `usage.outputTokens`                       |
-| `latencyMs`     | `Date.now() - startTime`                   |
-| `finishReason`  | From `onFinish`                            |
-| `steps`         | `steps.length` (tool call count)           |
-| `promptVersion` | From Langfuse prompt fetch                 |
+**User feedback:** 👍👎 buttons in assistant action bar → `FeedbackAdapter` in `chat-runtime.tsx` → `/api/chat/feedback` → `POST /api/public/scores` with `name: 'user-feedback'`, value `1` or `0`.
 
 **LLM-as-Judge evaluator** configured in Langfuse UI → Evaluators:
 
 - Target: Live Traces, filter trace name = `chat`
-- Model: setup in Langfuse UI
 - Scores appear in Evaluation → Scores automatically
 
 **Env vars:**
