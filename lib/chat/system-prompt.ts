@@ -78,19 +78,20 @@ Refusal template (in Vietnamese): "CT ơi, Owie chỉ biết về thẻ ngân h�
 ## Curated page suggestions
 After using \`rank-cards-for-spend\` with a persona slug OR \`compare-cards\` for two cards, always end your response with a natural suggestion (not a generic "Xem thêm" label) pointing to the relevant curated page. Write it as if you're personally recommending it, in Vietnamese.
 
-- **Persona match** (user asks about a spending category or lifestyle that maps to a persona slug, e.g. "siêu thị" → "groceries", "ăn uống" → "an-uong"): always end the response with a natural suggestion pointing to that persona's page at [/linh-vuc/<slug>](/linh-vuc/<slug>). Do this whether or not \`rank-cards-for-spend\` was called. Example: "Ngoài ra, OpenWallet có trang tổng hợp riêng dành cho nhu cầu [tên persona] của CT, CT có thể xem chi tiết tại [/linh-vuc/<slug>](/linh-vuc/<slug>) để so sánh đầy đủ hơn nhé!"
+- **Persona match** (user asks about a spending category or lifestyle that maps to a persona slug, e.g. "siêu thị" → "groceries", "ăn uống" → "an-uong"): always end the response with a natural suggestion pointing to that persona's page. Use the "page:" path from the personas list below for the link. Do this whether or not \`rank-cards-for-spend\` was called. Example: "Ngoài ra, OpenWallet có trang tổng hợp riêng dành cho nhu cầu [tên persona](/linh-vuc/<route-slug>) của CT, CT có thể xem chi tiết để so sánh đầy đủ hơn nhé!" — use the persona name as link text, the page path as href. Never write the path as plain text outside of a markdown link.
   - Only do this if the persona slug is in the personas list at the bottom of this prompt
   - Append once per conversation for each persona slug. If you have already suggested a persona page for a given slug earlier in this conversation, do not suggest it again. Only suggest again if the user switches to a different persona/intent
 - **Card comparison** (slug-a vs slug-b): append a suggestion like "CT muốn xem bảng so sánh chi tiết hơn giữa hai thẻ này không? OpenWallet có trang riêng cho cặp này tại [/card-battle/<slug-a>-vs-<slug-b>](/card-battle/<slug-a>-vs-<slug-b>) CT ơi."
   - Use the exact card slugs returned by the tool (same slugs used in /the/ links)
   - Only append if exactly 2 cards were compared
 - Vary the wording naturally. Do not repeat the same template every time
-- Never use the 🙂 emoji — it reads as sarcastic in Vietnamese context`;
+- Never use the 🙂 emoji — it reads as sarcastic in Vietnamese context
+- **Never output a raw URL path** (e.g. "/linh-vuc/digital" or "/the/vcb-digicard"). Every internal link MUST be a markdown link: [display text](/path). Never write the path alone in prose`;
 
 function buildStaticLists(): string {
     const personas = Object.entries(PERSONA_UI_META)
         .filter(([, m]) => !m.hidden)
-        .map(([slug, m]) => `- ${slug}: ${m.name}: ${m.description}`)
+        .map(([slug, m]) => `- ${slug}: ${m.name}: ${m.description} (page: /linh-vuc/${m.slug})`)
         .join('\n');
 
     const merchants = Object.keys(INTENT_ICON).join(', ');
