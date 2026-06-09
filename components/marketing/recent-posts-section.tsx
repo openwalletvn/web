@@ -9,7 +9,7 @@ export function RecentPostsSection() {
     return (
         <section className="ow-recent-posts-section md:py-16 py-12">
             <div className="ow-container">
-                <OwFeaturedPosts allPosts={posts} title="Thông tin"/>
+              <OwFeaturedPosts allPosts={posts} title="Thông tin" variant="grid"/>
             </div>
         </section>
     );

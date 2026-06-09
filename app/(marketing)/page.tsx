@@ -7,11 +7,12 @@ import {HeroSection} from '@/components/marketing/hero-section';
 import {CardsCatalogTeaser} from '@/components/marketing/cards-catalog-teaser';
 import {ToolsSection} from '@/components/marketing/tools-section';
 import {RecentPostsSection} from '@/components/marketing/recent-posts-section';
+import {FaqSection} from '@/components/marketing/faq-section';
 import {getPersonaTopCards} from '@/lib/persona-top-cards';
 
 export const metadata: Metadata = {
-    title: SITE_NAME,
-    description: 'Tra cứu và so sánh thẻ ngân hàng Việt Nam. Tư vấn AI với Owie, dữ liệu thực, độc lập, không quảng cáo.',
+    title: 'OpenWallet - Which card fits you?',
+  description: 'Không cần lướt hàng chục trang web. Gợi ý khách quan theo nhu cầu của bạn. Tra cứu và so sánh thẻ ngân hàng Việt Nam. Tư vấn AI với Owie, dữ liệu thực, độc lập, không quảng cáo.',
 };
 
 export const revalidate = 3600;
@@ -71,6 +72,9 @@ export default async function HomePage() {
                     <CardsCatalogTeaser cards={personaTopCards} banks={banks} totalCount={cards.length}/>
                 </div>
             </section>
+
+          {/* FAQ */}
+          <FaqSection/>
 
             {/* Blog */}
             <RecentPostsSection/>
