@@ -30,6 +30,7 @@ import type {
     IntentGroupNode,
     Persona,
 } from './api-types.generated'
+import {BASE_URL} from './page-meta/constants'
 
 export type CardNetwork = 'visa' | 'mastercard' | 'jcb' | 'napas' | 'amex' | 'unionpay';
 export type CardType = 'credit' | 'debit' | 'prepaid' | 'transit' | 'atm' | 'hybrid' | 'co-branded';
@@ -136,7 +137,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
         } else {
             headers.set('X-OpenWallet-Key', apiKey);
         }
-        headers.set('Origin', 'https://openwallet.vn');
+        headers.set('Origin', BASE_URL);
     }
     const res = await fetch(`${apiUrl}${path}`, {
         ...fetchOptions,

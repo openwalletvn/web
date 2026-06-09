@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import localFont from "next/font/local";
 import {Inter_Tight} from "next/font/google";
+import {SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL} from '@/lib/page-meta/title';
 import {GoogleAnalytics} from '@next/third-parties/google';
 import {BodyClass} from '@/components/layout/body-class';
 import {OverlayScrollbarsBody} from '@/components/layout/overlay-scrollbars-body';
@@ -31,10 +32,10 @@ const isPreview = process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview';
 
 export function generateMetadata(): Metadata {
   return {
-    metadataBase: new URL('https://openwallet.vn'),
+    metadataBase: new URL(SITE_URL),
     ...(isPreview && { robots: { index: false, follow: false } }),
-    title: 'OpenWallet – Tra cứu thẻ. Quản lý thẻ.',
-    description: 'Tra cứu thông tin thẻ ngân hàng Việt Nam và quản lý ngày sao kê, nhắc hạn thanh toán. Miễn phí, bảo mật, mã nguồn mở.',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     alternates: {
       canonical: '/',
       languages: {
@@ -43,18 +44,18 @@ export function generateMetadata(): Metadata {
       },
     },
     openGraph: {
-      title: 'OpenWallet – Tra cứu thẻ. Quản lý thẻ.',
-      description: 'Tra cứu thông tin thẻ tín dụng, thẻ ghi nợ Việt Nam. Theo dõi ngày sao kê, quản lý thẻ cá nhân.',
-      url: 'https://openwallet.vn',
-      siteName: 'OpenWallet',
+      title: SITE_TITLE,
+      description: SITE_DESCRIPTION,
+      url: SITE_URL,
+      siteName: SITE_NAME,
       locale: 'vi_VN',
       type: 'website',
       images: [{ url: '/og.png' }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'OpenWallet – Tra cứu thẻ. Quản lý thẻ.',
-      description: 'Tra cứu thông tin thẻ tín dụng, thẻ ghi nợ Việt Nam. Theo dõi ngày sao kê, quản lý thẻ cá nhân.',
+      title: SITE_TITLE,
+      description: SITE_DESCRIPTION,
       images: ['/og.png'],
     },
     icons: {

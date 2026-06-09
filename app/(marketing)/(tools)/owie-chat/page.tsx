@@ -3,17 +3,16 @@ import Link from 'next/link';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {getTool} from '@/lib/tools';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
-import {buildTitle} from '@/lib/page-meta/title';
+import {buildTitle, SITE_NAME} from '@/lib/page-meta/title';
+import {BASE_URL} from '@/lib/page-meta/constants';
 import {OpenOwieButton} from '@/components/chat/open-owie-button';
-
-const BASE_URL = 'https://openwallet.vn';
 const tool = getTool('Owie Chat');
 
 export const metadata: Metadata = {
     title: buildTitle('Owie - Trợ lý tư vấn thẻ AI'),
-    description: 'Owie là trợ lý AI của OpenWallet, giúp bạn tìm thẻ ngân hàng phù hợp, so sánh hoàn tiền, và tra cứu phí. Hoàn toàn miễn phí, không cần đăng ký.',
+    description: `Owie là trợ lý AI của ${SITE_NAME}, giúp bạn tìm thẻ ngân hàng phù hợp, so sánh hoàn tiền, và tra cứu phí. Hoàn toàn miễn phí, không cần đăng ký.`,
     openGraph: {
-        title: 'Owie - Trợ lý tư vấn thẻ AI của OpenWallet',
+        title: `Owie - Trợ lý tư vấn thẻ AI của ${SITE_NAME}`,
         description: 'Hỏi Owie về thẻ ngân hàng Việt Nam: hoàn tiền, phí thường niên, thẻ tốt nhất cho nhu cầu của bạn.',
         url: `${BASE_URL}${tool.href}`,
     },
@@ -45,7 +44,7 @@ export default function OwieChatPage() {
         '@graph': [
             {
                 '@type': 'SoftwareApplication',
-                name: 'Owie - Trợ lý tư vấn thẻ AI OpenWallet',
+                name: `Owie - Trợ lý tư vấn thẻ AI ${SITE_NAME}`,
                 url: `${BASE_URL}${tool.href}`,
                 description: 'Trợ lý AI giúp tìm và so sánh thẻ ngân hàng Việt Nam. Miễn phí, không cần tài khoản.',
                 applicationCategory: 'FinanceApplication',

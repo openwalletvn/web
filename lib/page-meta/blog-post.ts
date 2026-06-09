@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import type {Post} from '@/lib/mdx';
 import {buildBreadcrumbJsonLd, type BreadcrumbItem} from './breadcrumb';
 import {BASE_URL} from './constants';
+import {SITE_NAME} from './title';
 import {ROUTES} from '@/lib/routes';
 
 export interface BlogPostPageMeta {
@@ -12,7 +13,7 @@ export interface BlogPostPageMeta {
 
 export function buildBlogPostPageMeta(post: Post): BlogPostPageMeta {
     const {frontmatter, slug, categorySlug} = post;
-    const title = `${frontmatter.title} | OpenWallet Blog`;
+    const title = `${frontmatter.title} | ${SITE_NAME} Blog`;
     const url = `${BASE_URL}/tin-tuc/${slug}`;
 
     const breadcrumbItems: BreadcrumbItem[] = [
@@ -37,12 +38,12 @@ export function buildBlogPostPageMeta(post: Post): BlogPostPageMeta {
                 inLanguage: 'vi-VN',
                 author: {
                     '@type': 'Organization',
-                    name: 'OpenWallet',
+                    name: SITE_NAME,
                     url: BASE_URL,
                 },
                 publisher: {
                     '@type': 'Organization',
-                    name: 'OpenWallet',
+                    name: SITE_NAME,
                     url: BASE_URL,
                 },
             },

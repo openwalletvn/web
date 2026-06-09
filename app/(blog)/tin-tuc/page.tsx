@@ -4,6 +4,7 @@ import {ROUTES} from '@/lib/routes';
 // import {PostList} from '@/components/blog/post-list';
 // import {CategoryFilter} from '@/components/blog/category-filter';
 import {BlogPageShell} from '@/components/layout/blog-page-shell';
+import {SITE_NAME} from '@/lib/page-meta/title';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {OwFeaturedPosts} from '@/components/ow-ui/ow-featured-posts';
 import {OwPostList} from '@/components/ow-ui/ow-post-list';
@@ -16,7 +17,7 @@ const BREADCRUMB_ITEMS = [
 export async function generateMetadata(): Promise<Metadata> {
     const posts = getAllPosts();
     const {metadata} = buildCollectionPageMeta({
-        title: 'Blog - Kiến thức tài chính cá nhân | OpenWallet',
+        title: `Blog - Kiến thức tài chính cá nhân | ${SITE_NAME}`,
         description: 'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.',
         url: ROUTES.blog,
         items: posts.map((p) => ({name: p.frontmatter.title, url: ROUTES.blogPost(p.slug)})),
@@ -29,7 +30,7 @@ export default async function BlogPage() {
     const posts = getAllPosts();
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
-        title: 'Blog - Kiến thức tài chính cá nhân | OpenWallet',
+        title: `Blog - Kiến thức tài chính cá nhân | ${SITE_NAME}`,
         description: 'Hướng dẫn quản lý thẻ ngân hàng, tối ưu điểm thưởng và kiến thức tài chính cá nhân dành cho người Việt.',
         url: ROUTES.blog,
         items: posts.map((p) => ({name: p.frontmatter.title, url: ROUTES.blogPost(p.slug)})),
@@ -39,7 +40,7 @@ export default async function BlogPage() {
     return (
         <BlogPageShell
             title="Tin tức"
-            description="Theo dõi các bài viết về OpenWallet, thông báo về các tính năng cũng như chia sẻ về cách sử dụng thẻ cho chi tiêu hàng ngày."
+            description={`Theo dõi các bài viết về ${SITE_NAME}, thông báo về các tính năng cũng như chia sẻ về cách sử dụng thẻ cho chi tiêu hàng ngày.`}
             breadcrumbItems={breadcrumbItems}
             jsonLd={jsonLd}
         >

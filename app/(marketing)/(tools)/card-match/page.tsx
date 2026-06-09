@@ -4,11 +4,10 @@ import {CardMatchFinder} from '@/components/match/card-match-finder';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {getTool} from '@/lib/tools';
 import {buildTitle} from '@/lib/page-meta/title';
+import {BASE_URL} from '@/lib/page-meta/constants';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 
 export const revalidate = 3600;
-
-const BASE_URL = 'https://openwallet.vn';
 const tool = getTool('Card Match');
 
 const BREADCRUMB_ITEMS = [

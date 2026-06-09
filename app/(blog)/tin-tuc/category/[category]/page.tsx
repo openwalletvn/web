@@ -6,6 +6,7 @@ import {ROUTES} from '@/lib/routes';
 import {BlogPageShell} from '@/components/layout/blog-page-shell';
 import {OwPostList} from '@/components/ow-ui/ow-post-list';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
+import {SITE_NAME} from '@/lib/page-meta/title';
 
 interface Props {
     params: Promise<{ category: string }>;
@@ -23,8 +24,8 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
     const displayName = cat?.name ?? slug;
     const posts = getPostsByCategory(slug);
     const {metadata} = buildCollectionPageMeta({
-        title: `${displayName} - Blog | OpenWallet`,
-        description: `Bài viết về chủ đề"${displayName}" trên OpenWallet Blog.`,
+        title: `${displayName} - Blog | ${SITE_NAME}`,
+        description: `Bài viết về chủ đề"${displayName}" trên ${SITE_NAME} Blog.`,
         url: ROUTES.blogCategory(slug),
         items: posts.map((p) => ({name: p.frontmatter.title, url: ROUTES.blogPost(p.slug)})),
         breadcrumbItems: [
@@ -45,8 +46,8 @@ export default async function CategoryPage({params}: Props) {
     const posts = getPostsByCategory(slug);
 
     const {jsonLd, breadcrumbItems} = buildCollectionPageMeta({
-        title: `${displayName} - Blog | OpenWallet`,
-        description: `Bài viết về chủ đề"${displayName}" trên OpenWallet Blog.`,
+        title: `${displayName} - Blog | ${SITE_NAME}`,
+        description: `Bài viết về chủ đề"${displayName}" trên ${SITE_NAME} Blog.`,
         url: ROUTES.blogCategory(slug),
         items: posts.map((p) => ({name: p.frontmatter.title, url: ROUTES.blogPost(p.slug)})),
         breadcrumbItems: [

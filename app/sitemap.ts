@@ -6,10 +6,11 @@ import { apiFetch } from '@/lib/api'
 // lib/compare-mdx + content/so-sanh/ MDX files - unused, remove when cleaning up
 import { getTool } from '@/lib/tools'
 import { getAllPosts } from '@/lib/mdx'
+import { SITE_URL } from '@/lib/page-meta/title'
 
 export const dynamic = 'force-static'
 
-const BASE_URL = 'https://openwallet.vn'
+const BASE_URL = SITE_URL
 const cardBattleHref = getTool('Card Battle').href
 
 // Folders handled separately or not pages

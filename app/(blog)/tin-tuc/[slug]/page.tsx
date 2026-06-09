@@ -12,6 +12,7 @@ import {makeMdxComponents} from '@/components/blog/mdx-components';
 import {remarkAutoLink} from '@/lib/remark-auto-link';
 import remarkGfm from 'remark-gfm';
 import {buildBlogPostPageMeta} from '@/lib/page-meta/blog-post';
+import {SITE_NAME} from '@/lib/page-meta/title';
 import {fmtIsoDateLong} from '@/lib/utils';
 import {IconArrowLeft, IconPencil} from '@tabler/icons-react';
 
@@ -27,7 +28,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({params}: Props): Promise<Metadata> {
     const {slug} = await params;
     const post = getPostBySlug(slug);
-    if (!post) return {title: 'Không tìm thấy | OpenWallet'};
+    if (!post) return {title: `Không tìm thấy | ${SITE_NAME}`};
     const {metadata} = buildBlogPostPageMeta(post);
     return metadata;
 }

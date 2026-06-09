@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {getBanks, getCards, getIntents, getPersonas} from '@/lib/api';
-import {SITE_NAME} from '@/lib/page-meta/title';
+import {SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL} from '@/lib/page-meta/title';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';
 import {GradientShader} from '@/components/shared/gradient-shader';
 import {HeroSection} from '@/components/marketing/hero-section';
@@ -11,8 +11,8 @@ import {FaqSection} from '@/components/marketing/faq-section';
 import {getPersonaTopCards} from '@/lib/persona-top-cards';
 
 export const metadata: Metadata = {
-    title: 'OpenWallet - Which card fits you?',
-  description: 'Không cần lướt hàng chục trang web. Gợi ý khách quan theo nhu cầu của bạn. Tra cứu và so sánh thẻ ngân hàng Việt Nam. Tư vấn AI với Owie, dữ liệu thực, độc lập, không quảng cáo.',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
 };
 
 export const revalidate = 3600;
@@ -31,15 +31,15 @@ export default async function HomePage() {
         '@graph': [
             {
                 '@type': 'WebSite',
-                name: 'OpenWallet',
-                url: 'https://openwallet.vn',
+                name: SITE_NAME,
+                url: SITE_URL,
                 description: 'Tra cứu và so sánh thẻ ngân hàng Việt Nam một cách độc lập và minh bạch. Thuật toán xếp hạng không bị chi phối bởi quan hệ thương mại với bất kỳ ngân hàng nào.',
             },
             {
                 '@type': 'Organization',
-                name: 'OpenWallet',
-                url: 'https://openwallet.vn',
-                logo: 'https://openwallet.vn/icon.png',
+                name: SITE_NAME,
+                url: SITE_URL,
+                logo: `${SITE_URL}/icon.png`,
                 description: 'Công cụ so sánh và tư vấn thẻ ngân hàng Việt Nam. Mã nguồn mở, độc lập về biên tập.',
             },
             buildBreadcrumbJsonLd([{label: 'Trang chủ', href: '/'}]),
