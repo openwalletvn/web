@@ -18,7 +18,7 @@ export function OwPostCategoryDate({
         <Link
             key="category"
             href={ROUTES.blogCategory(categorySlug)}
-            className="text-text-accent font-medium hover:underline"
+            className="text-label hover:underline"
         >
             {category}
         </Link>,
