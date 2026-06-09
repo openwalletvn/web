@@ -1,10 +1,13 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { createMCPClient } from '@ai-sdk/mcp';
 import { streamText, stepCountIs, convertToModelMessages, type UIMessage } from 'ai';
+import { after } from 'next/server';
+import { observe, propagateAttributes, setActiveTraceIO, getActiveTraceId } from '@langfuse/tracing';
+import { trace } from '@opentelemetry/api';
 import { getSystemPrompt } from '@/lib/chat/system-prompt';
-import { sendChatTrace } from '@/lib/langfuse';
-import { isAllowedModel, getDefaultModel, getModelById } from '@/lib/chat/models';
+import { isAllowedModel, getDefaultModel } from '@/lib/chat/models';
 import type { PageContext } from '@/lib/chat/page-context';
+import { langfuseSpanProcessor } from '@/instrumentation';
 import fs from 'fs';
 import path from 'path';
 
@@ -43,7 +46,7 @@ const openrouter = createOpenAI({
     apiKey: process.env.OPENROUTER_API_KEY,
 });
 
-export async function POST(req: Request) {
+const handler = async (req: Request) => {
     const forwarded = req.headers.get('x-forwarded-for');
     const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown';
 
@@ -64,86 +67,98 @@ export async function POST(req: Request) {
     const lastUserMessage = uiMessages.findLast((m) => m.role === 'user')?.parts
         ?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? '';
 
-    const { text: systemPrompt, version: promptVersion } = await getSystemPrompt(body.pageContext);
+    const { text: systemPrompt } = await getSystemPrompt(body.pageContext);
 
-    let mcpClient: Awaited<ReturnType<typeof createMCPClient>> | null = null;
+    setActiveTraceIO({ input: lastUserMessage });
 
-    try {
-        mcpClient = await createMCPClient({
-            transport: {
-                type: 'http',
-                url: process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8001',
-                headers: {
-                    'x-mcp-key': process.env.OPENWALLET_MCP_KEY ?? '',
-                },
-            },
-        });
+    return await propagateAttributes(
+        {
+            traceName: 'chat',
+            sessionId: body.sessionId,
+            userId: body.userId,
+            tags: ['web-chat'],
+            metadata: { model, ip },
+        },
+        async () => {
+            let mcpClient: Awaited<ReturnType<typeof createMCPClient>> | null = null;
 
-        const tools = await mcpClient.tools();
-
-        const result = streamText({
-            model: openrouter(model),
-            system: systemPrompt,
-            messages,
-            stopWhen: stepCountIs(5),
-            tools,
-            onFinish: async ({ usage, text, finishReason, steps }) => {
-                await mcpClient?.close();
-                appendChatLog({
-                    ts: new Date().toISOString(),
-                    sessionId: body.sessionId,
-                    userId: body.userId,
-                    ip,
-                    model,
-                    messages: uiMessages.slice(-12),
-                    steps: steps?.map((s) => ({
-                        text: s.text,
-                        toolCalls: s.toolCalls,
-                        toolResults: s.toolResults,
-                    })),
-                    finalText: text,
-                    inputTokens: usage?.inputTokens ?? 0,
-                    outputTokens: usage?.outputTokens ?? 0,
-                    latencyMs: Date.now() - startTime,
-                    finishReason: finishReason ?? 'unknown',
-                }, body.sessionId);
-                await sendChatTrace({
-                    input: lastUserMessage,
-                    output: text,
-                    model,
-                    tokens: {
-                        input: usage?.inputTokens ?? 0,
-                        output: usage?.outputTokens ?? 0,
+            try {
+                mcpClient = await createMCPClient({
+                    transport: {
+                        type: 'http',
+                        url: process.env.OPENWALLET_MCP_URL ?? 'http://localhost:8001',
+                        headers: {
+                            'x-mcp-key': process.env.OPENWALLET_MCP_KEY ?? '',
+                        },
                     },
-                    latencyMs: Date.now() - startTime,
-                    finishReason: finishReason ?? 'unknown',
-                    steps: steps?.length ?? 0,
-                    promptVersion,
-                    userId: body.userId,
-                    sessionId: body.sessionId,
                 });
-            },
-            onError: async ({ error }) => {
-                console.error('[chat] streamText error:', error);
+
+                const tools = await mcpClient.tools();
+                const traceId = getActiveTraceId();
+
+                const result = streamText({
+                    model: openrouter(model),
+                    system: systemPrompt,
+                    messages,
+                    stopWhen: stepCountIs(5),
+                    tools,
+                    experimental_telemetry: { isEnabled: true },
+                    onFinish: async ({ usage, text, finishReason, steps }) => {
+                        await mcpClient?.close();
+
+                        setActiveTraceIO({ output: text });
+                        trace.getActiveSpan()?.end();
+
+                        appendChatLog({
+                            ts: new Date().toISOString(),
+                            sessionId: body.sessionId,
+                            userId: body.userId,
+                            ip,
+                            model,
+                            messages: uiMessages.slice(-12),
+                            steps: steps?.map((s) => ({
+                                text: s.text,
+                                toolCalls: s.toolCalls,
+                                toolResults: s.toolResults,
+                            })),
+                            finalText: text,
+                            inputTokens: usage?.inputTokens ?? 0,
+                            outputTokens: usage?.outputTokens ?? 0,
+                            latencyMs: Date.now() - startTime,
+                            finishReason: finishReason ?? 'unknown',
+                        }, body.sessionId);
+                    },
+                    onError: async ({ error }) => {
+                        console.error('[chat] streamText error:', error);
+                        await mcpClient?.close();
+                        trace.getActiveSpan()?.end();
+                    },
+                });
+
+                result.consumeStream(); // no await - ensures onFinish fires even if client disconnects
+
+                after(async () => await langfuseSpanProcessor.forceFlush());
+
+                return result.toUIMessageStreamResponse({
+                    messageMetadata: ({ part }) => {
+                        if (part.type === 'finish') return { custom: { usage: part.totalUsage, traceId } };
+                        if (part.type === 'finish-step') return { modelId: part.response.modelId };
+                        return undefined;
+                    },
+                });
+            } catch (err) {
+                console.error('[chat] fatal error:', err);
                 await mcpClient?.close();
-            },
-        });
+                return new Response(
+                    JSON.stringify({ error: String(err) }),
+                    { status: 500, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
+        }
+    );
+};
 
-        result.consumeStream(); // no await - ensures onFinish fires even if client disconnects
-
-        return result.toUIMessageStreamResponse({
-            messageMetadata: ({ part }) => {
-                if (part.type === 'finish') return { custom: { usage: part.totalUsage } };
-                if (part.type === 'finish-step') return { modelId: part.response.modelId };
-                return undefined;
-            },
-        });
-    } catch (err) {
-        console.error('[chat] fatal error:', err);
-        await mcpClient?.close();
-        return new Response(
-            JSON.stringify({ error: String(err) }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
-        );
-    }
-}
+export const POST = observe(handler, {
+    name: 'handle-chat-message',
+    endOnExit: false,
+});

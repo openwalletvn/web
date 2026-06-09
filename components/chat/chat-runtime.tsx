@@ -10,7 +10,7 @@ import { getUserId, getSessionId } from '@/lib/chat/anonymous-user';
 import type { PageContext } from '@/lib/chat/page-context';
 import type { UIMessage } from 'ai';
 
-const chatMessageMetadataSchema = jsonSchema<{ usage?: { inputTokens?: number; outputTokens?: number; totalTokens?: number; reasoningTokens?: number; cachedInputTokens?: number }; modelId?: string }>({
+const chatMessageMetadataSchema = jsonSchema<{ usage?: { inputTokens?: number; outputTokens?: number; totalTokens?: number; reasoningTokens?: number; cachedInputTokens?: number }; modelId?: string; custom?: { usage?: object; traceId?: string } }>({
     type: 'object',
     properties: {
         usage: {
@@ -24,6 +24,13 @@ const chatMessageMetadataSchema = jsonSchema<{ usage?: { inputTokens?: number; o
             },
         },
         modelId: { type: 'string' },
+        custom: {
+            type: 'object',
+            properties: {
+                usage: { type: 'object' },
+                traceId: { type: 'string' },
+            },
+        },
     },
 });
 
@@ -72,6 +79,20 @@ export function ChatRuntime({
         }),
         messageMetadataSchema: chatMessageMetadataSchema,
         messages: initialMessages,
+        adapters: {
+            feedback: {
+                submit: async ({ type, message }) => {
+                    const traceId = (message.metadata as { custom?: { traceId?: string } } | undefined)
+                        ?.custom?.traceId;
+                    if (!traceId) return;
+                    await fetch('/api/chat/feedback', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ traceId, value: type === 'positive' ? 1 : 0 }),
+                    });
+                },
+            },
+        },
         onFinish: ({ messages }) => {
             setChatError(null);
             debouncedSave(messages);

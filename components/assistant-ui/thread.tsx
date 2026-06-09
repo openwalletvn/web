@@ -42,6 +42,8 @@ import {
     PencilIcon,
     RefreshCwIcon,
     SquareIcon,
+    ThumbsDownIcon,
+    ThumbsUpIcon,
 } from "lucide-react";
 import {type FC, useEffect, useRef, useState} from "react";
 import {getContextPlaceholders, type PageContext} from "@/lib/chat/page-context";
@@ -483,6 +485,16 @@ const AssistantActionBar: FC = () => {
                     <RefreshCwIcon/>
                 </TooltipIconButton>
             </ActionBarPrimitive.Reload>
+            <ActionBarPrimitive.FeedbackPositive asChild>
+                <TooltipIconButton tooltip="Helpful">
+                    <ThumbsUpIcon/>
+                </TooltipIconButton>
+            </ActionBarPrimitive.FeedbackPositive>
+            <ActionBarPrimitive.FeedbackNegative asChild>
+                <TooltipIconButton tooltip="Not helpful">
+                    <ThumbsDownIcon/>
+                </TooltipIconButton>
+            </ActionBarPrimitive.FeedbackNegative>
             <ActionBarMorePrimitive.Root>
                 <ActionBarMorePrimitive.Trigger asChild>
                     <TooltipIconButton
