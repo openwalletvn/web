@@ -14,7 +14,7 @@ import {
 } from "@/components/assistant-ui/reasoning";
 import {ToolGroupContent, ToolGroupRoot, ToolGroupTrigger,} from "@/components/assistant-ui/tool-group";
 import {ToolFallback} from "@/components/assistant-ui/tool-fallback";
-import {TooltipIconButton} from "@/components/assistant-ui/tooltip-icon-button";
+import {OwTooltipIconButton} from "@/components/owui/ow-tooltip-icon-button";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {useChatContext} from "@/components/chat/chat-provider";
@@ -129,13 +129,13 @@ const ThreadMessage: FC = () => {
 const ThreadScrollToBottom: FC = () => {
     return (
         <ThreadPrimitive.ScrollToBottom asChild>
-            <TooltipIconButton
+            <OwTooltipIconButton
                 tooltip="Scroll to bottom"
                 variant="outline"
                 className="aui-thread-scroll-to-bottom absolute -top-12 z-10 self-center rounded-full p-4 disabled:invisible dark:border-border dark:bg-background dark:hover:bg-accent"
             >
                 <ArrowDownIcon/>
-            </TooltipIconButton>
+            </OwTooltipIconButton>
         </ThreadPrimitive.ScrollToBottom>
     );
 };
@@ -327,7 +327,7 @@ const ComposerAction: FC<{
                 )}
                 <AuiIf condition={(s) => !s.thread.isRunning}>
                     <ComposerPrimitive.Send asChild disabled={notReady}>
-                        <TooltipIconButton
+                        <OwTooltipIconButton
                             tooltip={notReady ? unavailableLabel : "Send message"}
                             side="bottom"
                             type="button"
@@ -338,7 +338,7 @@ const ComposerAction: FC<{
                             disabled={notReady}
                         >
                             <ArrowUpIcon className="aui-composer-send-icon size-4"/>
-                        </TooltipIconButton>
+                        </OwTooltipIconButton>
                     </ComposerPrimitive.Send>
                 </AuiIf>
                 <AuiIf condition={(s) => s.thread.isRunning}>
@@ -460,28 +460,28 @@ const AssistantActionBar: FC = () => {
             className="aui-assistant-action-bar-root col-start-3 row-start-2 -ms-1 flex gap-1 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
         >
             <ActionBarPrimitive.Copy asChild>
-                <TooltipIconButton tooltip="Copy">
+                <OwTooltipIconButton tooltip="Copy">
                     <AuiIf condition={(s) => s.message.isCopied}>
                         <CheckIcon/>
                     </AuiIf>
                     <AuiIf condition={(s) => !s.message.isCopied}>
                         <CopyIcon/>
                     </AuiIf>
-                </TooltipIconButton>
+                </OwTooltipIconButton>
             </ActionBarPrimitive.Copy>
             <ActionBarPrimitive.Reload asChild>
-                <TooltipIconButton tooltip="Refresh">
+                <OwTooltipIconButton tooltip="Refresh">
                     <RefreshCwIcon/>
-                </TooltipIconButton>
+                </OwTooltipIconButton>
             </ActionBarPrimitive.Reload>
             <ActionBarMorePrimitive.Root>
                 <ActionBarMorePrimitive.Trigger asChild>
-                    <TooltipIconButton
+                    <OwTooltipIconButton
                         tooltip="More"
                         className="data-[state=open]:bg-accent"
                     >
                         <MoreHorizontalIcon/>
-                    </TooltipIconButton>
+                    </OwTooltipIconButton>
                 </ActionBarMorePrimitive.Trigger>
                 <ActionBarMorePrimitive.Content
                     side="bottom"
@@ -550,9 +550,9 @@ const UserActionBar: FC = () => {
             className="aui-user-action-bar-root flex flex-col items-end"
         >
             <ActionBarPrimitive.Edit asChild>
-                <TooltipIconButton tooltip="Edit" className="aui-user-action-edit p-4">
+                <OwTooltipIconButton tooltip="Edit" className="aui-user-action-edit p-4">
                     <PencilIcon/>
-                </TooltipIconButton>
+                </OwTooltipIconButton>
             </ActionBarPrimitive.Edit>
         </ActionBarPrimitive.Root>
     );
@@ -599,17 +599,17 @@ const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({
             {...rest}
         >
             <BranchPickerPrimitive.Previous asChild>
-                <TooltipIconButton tooltip="Previous">
+                <OwTooltipIconButton tooltip="Previous">
                     <ChevronLeftIcon/>
-                </TooltipIconButton>
+                </OwTooltipIconButton>
             </BranchPickerPrimitive.Previous>
             <span className="aui-branch-picker-state font-medium">
         <BranchPickerPrimitive.Number /> / <BranchPickerPrimitive.Count />
       </span>
             <BranchPickerPrimitive.Next asChild>
-                <TooltipIconButton tooltip="Next">
+                <OwTooltipIconButton tooltip="Next">
                     <ChevronRightIcon/>
-                </TooltipIconButton>
+                </OwTooltipIconButton>
             </BranchPickerPrimitive.Next>
         </BranchPickerPrimitive.Root>
     );

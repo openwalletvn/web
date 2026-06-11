@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/assistant-ui/avatar";
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
+import {OwTooltipIconButton} from "@/components/owui/ow-tooltip-icon-button";
 import { cn } from "@/lib/utils";
 
 const useFileSrc = (file: File | undefined) => {
@@ -174,13 +174,13 @@ const AttachmentUI: FC = () => {
 const AttachmentRemove: FC = () => {
   return (
     <AttachmentPrimitive.Remove asChild>
-      <TooltipIconButton
+      <OwTooltipIconButton
         tooltip="Remove file"
         className="aui-attachment-tile-remove absolute end-1.5 top-1.5 size-3.5 rounded-full bg-white text-muted-foreground opacity-100 shadow-sm hover:bg-white! [&_svg]:text-black hover:[&_svg]:text-destructive"
         side="top"
       >
         <XIcon className="aui-attachment-remove-icon size-3 dark:stroke-[2.5px]" />
-      </TooltipIconButton>
+      </OwTooltipIconButton>
     </AttachmentPrimitive.Remove>
   );
 };
@@ -208,7 +208,7 @@ export const ComposerAttachments: FC = () => {
 export const ComposerAddAttachment: FC = () => {
   return (
     <ComposerPrimitive.AddAttachment asChild>
-      <TooltipIconButton
+      <OwTooltipIconButton
         tooltip="Add Attachment"
         side="bottom"
         variant="ghost"
@@ -217,7 +217,7 @@ export const ComposerAddAttachment: FC = () => {
         aria-label="Add Attachment"
       >
         <PlusIcon className="aui-attachment-add-icon size-5 stroke-[1.5px]" />
-      </TooltipIconButton>
+      </OwTooltipIconButton>
     </ComposerPrimitive.AddAttachment>
   );
 };

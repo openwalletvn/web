@@ -13,7 +13,7 @@ import {type FC, memo, useState} from "react";
 import {CheckIcon, CopyIcon} from "lucide-react";
 import Link from "next/link";
 
-import {TooltipIconButton} from "@/components/assistant-ui/tooltip-icon-button";
+import {OwTooltipIconButton} from "@/components/owui/ow-tooltip-icon-button";
 import {cn} from "@/lib/utils";
 
 const MarkdownTextImpl = () => {
@@ -40,10 +40,10 @@ const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
       <span className="aui-code-header-language font-medium text-muted-foreground lowercase">
         {language}
       </span>
-      <TooltipIconButton tooltip="Copy" onClick={onCopy}>
+      <OwTooltipIconButton tooltip="Copy" onClick={onCopy}>
         {!isCopied && <CopyIcon />}
         {isCopied && <CheckIcon />}
-      </TooltipIconButton>
+      </OwTooltipIconButton>
     </div>
   );
 };
