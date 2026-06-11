@@ -329,7 +329,6 @@ const ComposerAction: FC<{
                     <ComposerPrimitive.Send asChild disabled={notReady}>
                         <OwTooltipIconButton
                             tooltip={notReady ? unavailableLabel : "Send message"}
-                            side="bottom"
                             type="button"
                             variant="default"
                             size="icon"
