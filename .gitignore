@@ -48,3 +48,4 @@ search-console-page-indexing/
 storybook-static
 logs/
 .claude/settings.local.json
+.claude/docs/learnings/base-concepts/

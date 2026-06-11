@@ -1,0 +1,59 @@
+name: Sync Owie system prompt to Langfuse
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  push-prompt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Push prompt
+        id: push
+        run: |
+          output=$(pnpm push:prompt 2>&1)
+          echo "$output"
+          if echo "$output" | grep -q "::pushed::"; then
+            version=$(echo "$output" | grep "::pushed::" | sed 's/.*version=//')
+            echo "pushed=true" >> $GITHUB_OUTPUT
+            echo "version=$version" >> $GITHUB_OUTPUT
+          else
+            echo "pushed=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_BASE_URL: ${{ secrets.LANGFUSE_BASE_URL }}
+          OPENWALLET_API_KEY: ${{ secrets.OPENWALLET_API_KEY }}
+
+      - name: Notify Discord
+        if: steps.push.outputs.pushed == 'true'
+        run: |
+          curl -s -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "🤖 Owie system prompt updated",
+                "description": "New version **${{ steps.push.outputs.version }}** pushed to Langfuse.",
+                "color": 5814783,
+                "fields": [
+                  { "name": "Triggered by", "value": "${{ github.actor }}", "inline": true },
+                  { "name": "Branch", "value": "${{ github.ref_name }}", "inline": true }
+                ],
+                "url": "${{ secrets.LANGFUSE_BASE_URL }}/prompts/chat-system-prompt"
+              }]
+            }'
