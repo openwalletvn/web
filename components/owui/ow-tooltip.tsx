@@ -1,16 +1,16 @@
 "use client";
 
-import React, {useId} from "react";
+import React, {useEffect, useId, useState} from "react";
 import {cn} from "@/lib/utils";
 
 type TooltipAlign = "top" | "bottom";
 
 export interface OwTooltipProps {
-    children: React.ReactNode;
-    tooltip?: string | React.ReactNode;
-    tooltipAlign?: TooltipAlign;
-    className?: string;
-    classNameTooltip?: string;
+  children: React.ReactNode;
+  tooltip?: string | React.ReactNode;
+  tooltipAlign?: TooltipAlign;
+  className?: string;
+  classNameTooltip?: string;
 }
 
 const TOOLTIP_STYLES = `
@@ -40,52 +40,45 @@ const TOOLTIP_STYLES = `
 `;
 
 export function OwTooltip({
-    tooltip,
-    tooltipAlign = "top",
-    className,
-    classNameTooltip,
-    children,
-}: OwTooltipProps) {
-    const id = useId();
+                            tooltip,
+                            tooltipAlign = "top",
+                            className,
+                            classNameTooltip,
+                            children,
+                          }: OwTooltipProps) {
+  const id = useId();
+  const [rotation, setRotation] = useState(0);
+  useEffect(() => {
+    setRotation(Math.floor(Math.random() * 11) - 5);
+  }, []);
 
-    const rotation = React.useMemo(
-        () => Math.floor(Math.random() * 11) - 5,
-        []
-    );
+  return (
+    <>
+      <style>{TOOLTIP_STYLES}</style>
+      <div
+        className={cn("ow-tooltip tooltip-wrapper relative inline-block", className)}
+        data-tooltip-align={tooltipAlign}
+      >
+        <div className="relative z-20" aria-describedby={tooltip ? id : undefined}>
+          {children}
+        </div>
 
-    const tooltipStyle = React.useMemo(
-        () => ({"--tooltip-rotation": `${rotation}deg`} as React.CSSProperties),
-        [rotation]
-    );
-
-    return (
-        <>
-            <style>{TOOLTIP_STYLES}</style>
-            <div
-                className={cn("ow-tooltip tooltip-wrapper relative inline-block", className)}
-                data-tooltip-align={tooltipAlign}
-            >
-                <div className="relative z-20" aria-describedby={tooltip ? id : undefined}>
-                    {children}
-                </div>
-
-                {tooltip && (
-                    <div
-                        id={id}
-                        suppressHydrationWarning
-                        role="tooltip"
-                        style={tooltipStyle}
-                        className={cn(
-                            "tooltip absolute z-10 left-1/2 -translate-x-1/2 px-1 py-0.5 text-xs font-bold rounded bg-black text-white pointer-events-none whitespace-nowrap origin-center",
-                            tooltipAlign === "top" && "bottom-full mb-1",
-                            tooltipAlign === "bottom" && "top-full mt-1",
-                            classNameTooltip
-                        )}
-                    >
-                        {tooltip}
-                    </div>
-                )}
-            </div>
-        </>
-    );
+        {tooltip && (
+          <div
+            id={id}
+            role="tooltip"
+            style={{"--tooltip-rotation": `${rotation}deg`} as React.CSSProperties}
+            className={cn(
+              "tooltip absolute z-10 left-1/2 -translate-x-1/2 px-1 py-0.5 text-xs font-bold rounded bg-black text-white pointer-events-none whitespace-nowrap origin-center",
+              tooltipAlign === "top" && "bottom-full mb-1",
+              tooltipAlign === "bottom" && "top-full mt-1",
+              classNameTooltip
+            )}
+          >
+            {tooltip}
+          </div>
+        )}
+      </div>
+    </>
+  );
 }
