@@ -1,9 +1,10 @@
 /**
- * Push full system prompt → Langfuse as 'chat-system-prompt' (label: production).
- * Uses getSystemPrompt() - same SSOT as the chat route - so Langfuse reflects exactly what the LLM receives.
+ * Push system prompt → Langfuse as 'chat-system-prompt' (label: production).
+ * Builds full prompt via buildLocalPrompt() (slots filled with live data), compares
+ * with current Langfuse version, and skips push if unchanged.
  * Run: pnpm push:prompt
  *
- * Requires LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL in .env.local
+ * Requires LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL in env
  */
 import * as dotenv from 'dotenv';
 import * as path from 'node:path';
@@ -15,21 +16,39 @@ const LANGFUSE_SECRET_KEY = process.env.LANGFUSE_SECRET_KEY ?? '';
 const LANGFUSE_BASE_URL = process.env.LANGFUSE_BASE_URL ?? 'https://cloud.langfuse.com';
 
 if (!LANGFUSE_PUBLIC_KEY || !LANGFUSE_SECRET_KEY) {
-    console.error('Missing LANGFUSE_PUBLIC_KEY or LANGFUSE_SECRET_KEY in .env.local');
+    console.error('Missing LANGFUSE_PUBLIC_KEY or LANGFUSE_SECRET_KEY in env');
     process.exit(1);
 }
 
 const auth = 'Basic ' + Buffer.from(`${LANGFUSE_PUBLIC_KEY}:${LANGFUSE_SECRET_KEY}`).toString('base64');
 
-async function main() {
-    // Push only the base SYSTEM_PROMPT — static lists (personas, merchants, banks) are
-    // appended at runtime by getSystemPrompt() to stay in sync with live data.
-    // Pushing the assembled version causes duplicates when getSystemPrompt() appends again.
-    const { SYSTEM_PROMPT } = await import('@/lib/chat/system-prompt');
-    const promptText = SYSTEM_PROMPT;
+async function fetchCurrentPrompt(): Promise<string | null> {
+    try {
+        const res = await fetch(
+            `${LANGFUSE_BASE_URL}/api/public/v2/prompts/chat-system-prompt?label=production`,
+            { headers: { Authorization: auth } },
+        );
+        if (!res.ok) return null;
+        const data = await res.json() as { prompt: string };
+        return data.prompt;
+    } catch {
+        return null;
+    }
+}
 
-    console.log(`Pushing chat-system-prompt to ${LANGFUSE_BASE_URL}`);
-    console.log(`Length: ${promptText.length} chars`);
+async function main() {
+    const { buildLocalPrompt } = await import('@/lib/chat/system-prompt');
+    const promptText = await buildLocalPrompt();
+
+    console.log(`Built prompt: ${promptText.length} chars`);
+
+    const current = await fetchCurrentPrompt();
+    if (current === promptText) {
+        console.log('✓ Prompt unchanged, skipping push');
+        return;
+    }
+
+    console.log(current === null ? 'No existing prompt found, pushing...' : 'Prompt changed, pushing...');
 
     const res = await fetch(`${LANGFUSE_BASE_URL}/api/public/v2/prompts`, {
         method: 'POST',
@@ -49,6 +68,8 @@ async function main() {
         console.log(`✓ Pushed version ${body.version} (id: ${body.id})`);
         console.log(`  Labels: ${body.labels?.join(', ')}`);
         console.log(`  View: ${LANGFUSE_BASE_URL}/prompts/chat-system-prompt`);
+        // Signal to CI that a new version was pushed
+        console.log(`::pushed::version=${body.version}`);
     } else {
         console.error(`✗ Failed ${res.status}: ${JSON.stringify(body)}`);
         process.exit(1);

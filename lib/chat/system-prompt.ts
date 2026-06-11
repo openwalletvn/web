@@ -11,24 +11,6 @@ export const SYSTEM_PROMPT = fs.readFileSync(
     'utf-8',
 );
 
-function buildSlots(): Record<string, string> {
-    const personas = Object.entries(PERSONA_UI_META)
-        .filter(([, m]) => !m.hidden)
-        .map(([slug, m]) => `- ${slug}: ${m.name}: ${m.description} (page: /linh-vuc/${m.slug})`)
-        .join('\n');
-
-    const merchants = Object.keys(INTENT_ICON).join(', ');
-
-    return { personas, merchants };
-}
-
-function fillSlots(text: string, slots: Record<string, string>): string {
-    return Object.entries(slots).reduce(
-        (t, [key, val]) => t.replaceAll(`{{${key}}}`, val),
-        text,
-    );
-}
-
 function applyPageContext(base: string, pageContext?: PageContext): string {
     if (!pageContext) return base;
     if (pageContext.type === 'card') {
@@ -40,18 +22,33 @@ function applyPageContext(base: string, pageContext?: PageContext): string {
     return base;
 }
 
-/** SSOT for the full system prompt sent to the LLM. */
-export async function getSystemPrompt(pageContext?: PageContext): Promise<{ text: string; version: number }> {
-    const [{ text: langfuseText, version }, banks] = await Promise.all([
-        fetchSystemPrompt(),
-        getBanks().catch(() => []),
-    ]);
+function buildSlots(): Record<string, string> {
+    const personas = Object.entries(PERSONA_UI_META)
+        .filter(([, m]) => !m.hidden)
+        .map(([slug, m]) => `- ${slug}: ${m.name}: ${m.description} (page: /linh-vuc/${m.slug})`)
+        .join('\n');
+    const merchants = Object.keys(INTENT_ICON).join(', ');
+    return { personas, merchants };
+}
 
+function fillSlots(text: string, slots: Record<string, string>): string {
+    return Object.entries(slots).reduce(
+        (t, [key, val]) => t.replaceAll(`{{${key}}}`, val),
+        text,
+    );
+}
+
+/** Build full prompt from local .md — used only by push-prompt script. */
+export async function buildLocalPrompt(): Promise<string> {
+    const banks = await getBanks().catch(() => []);
     const bankList = banks.map((b: { id: string; name: string }) => `- ${b.id}: ${b.name}`).join('\n');
     const slots = { ...buildSlots(), banks: bankList };
+    return fillSlots(SYSTEM_PROMPT, slots);
+}
 
-    const baseText = langfuseText || SYSTEM_PROMPT;
-    const filled = fillSlots(baseText, slots);
-
-    return { text: applyPageContext(filled, pageContext), version };
+/** Fetch prompt from Langfuse (SSOT). Falls back to local build if Langfuse unavailable. Page context appended per-request only. */
+export async function getSystemPrompt(pageContext?: PageContext): Promise<{ text: string; version: number }> {
+    const { text: langfuseText, version } = await fetchSystemPrompt();
+    const text = langfuseText || await buildLocalPrompt();
+    return { text: applyPageContext(text, pageContext), version };
 }
