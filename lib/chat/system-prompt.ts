@@ -11,7 +11,7 @@ export const SYSTEM_PROMPT = fs.readFileSync(
     'utf-8',
 );
 
-function buildStaticLists(): string {
+function buildSlots(): Record<string, string> {
     const personas = Object.entries(PERSONA_UI_META)
         .filter(([, m]) => !m.hidden)
         .map(([slug, m]) => `- ${slug}: ${m.name}: ${m.description} (page: /linh-vuc/${m.slug})`)
@@ -19,10 +19,15 @@ function buildStaticLists(): string {
 
     const merchants = Object.keys(INTENT_ICON).join(', ');
 
-    return `\n\n## Personas (use slug directly in rank-cards-for-spend)\n${personas}\n\n## Merchant/intent slugs (use directly in rank-cards-for-spend)\n${merchants}`;
+    return { personas, merchants };
 }
 
-const STATIC_LISTS = buildStaticLists();
+function fillSlots(text: string, slots: Record<string, string>): string {
+    return Object.entries(slots).reduce(
+        (t, [key, val]) => t.replaceAll(`{{${key}}}`, val),
+        text,
+    );
+}
 
 function applyPageContext(base: string, pageContext?: PageContext): string {
     if (!pageContext) return base;
@@ -35,29 +40,18 @@ function applyPageContext(base: string, pageContext?: PageContext): string {
     return base;
 }
 
-/**
- * SSOT for the full system prompt sent to the LLM.
- * Fetches base text from Langfuse (falls back to SYSTEM_PROMPT), appends static lists, injects page context.
- * Returns prompt text + Langfuse version for tracing.
- */
-async function buildBankList(): Promise<string> {
-    try {
-        const banks = await getBanks();
-        const list = banks.map(b => `- ${b.id}: ${b.name}`).join('\n');
-        return `\n\n## Banks (resolve abbreviations from this list. Do NOT call find-bank just to look up an ID)\n${list}`;
-    } catch {
-        return '';
-    }
-}
-
+/** SSOT for the full system prompt sent to the LLM. */
 export async function getSystemPrompt(pageContext?: PageContext): Promise<{ text: string; version: number }> {
-    const [{ text: langfuseText, version }, bankList] = await Promise.all([
+    const [{ text: langfuseText, version }, banks] = await Promise.all([
         fetchSystemPrompt(),
-        buildBankList(),
+        getBanks().catch(() => []),
     ]);
-    const base = (langfuseText || SYSTEM_PROMPT) + STATIC_LISTS + bankList;
-    return { text: applyPageContext(base, pageContext), version };
-}
 
-export const REFUSAL_TEMPLATE =
-    'Bạn ơi, Owie chỉ biết về thẻ ngân hàng thôi nha, câu này nằm ngoài chuyên môn của Owie rồi. Bạn có muốn Owie giúp tìm thẻ phù hợp nhu cầu chi tiêu của bạn không?';
+    const bankList = banks.map((b: { id: string; name: string }) => `- ${b.id}: ${b.name}`).join('\n');
+    const slots = { ...buildSlots(), banks: bankList };
+
+    const baseText = langfuseText || SYSTEM_PROMPT;
+    const filled = fillSlots(baseText, slots);
+
+    return { text: applyPageContext(filled, pageContext), version };
+}

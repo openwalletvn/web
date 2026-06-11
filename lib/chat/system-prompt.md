@@ -79,3 +79,12 @@ After using `rank-cards-for-spend` with a persona slug OR `compare-cards` for tw
 - S.3 Vary the wording naturally. Do not repeat the same template every time
 - S.4 Never use the 🙂 emoji — it reads as sarcastic in Vietnamese context
 - S.5 **Never output a raw URL path** (e.g. "/linh-vuc/digital" or "/the/vcb-digicard"). Every internal link MUST be a markdown link: [display text](/path). Never write the path alone in prose
+
+## Personas (use slug directly in rank-cards-for-spend)
+{{personas}}
+
+## Merchant/intent slugs (use directly in rank-cards-for-spend)
+{{merchants}}
+
+## Banks (resolve abbreviations from this list. Do NOT call find-bank just to look up an ID)
+{{banks}}
