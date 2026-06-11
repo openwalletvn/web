@@ -4,11 +4,11 @@ import type {RankedCard} from '@/lib/card-ranker';
 import {CATCHALL_SLUGS} from '@/lib/card-display-utils';
 import {IconAlertTriangle, IconBulb, IconCaretDownFilled, IconCaretUpFilled} from '@tabler/icons-react';
 import {CardModel} from '@/lib/card-model';
-import {OwCardImage} from '@/components/ow-ui/ow-card-image';
-import {OwRankBadge} from '@/components/ow-ui/ow-rank-badge';
-import {OwAmount} from '@/components/ow-ui/ow-amount';
-import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
-import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
+import {OwCardImage} from '@/components/owui/ow-card-image';
+import {OwRankBadge} from '@/components/owui/ow-rank-badge';
+import {OwAmount} from '@/components/owui/ow-amount';
+import {OwBadge, OwBadges} from '@/components/owui/ow-badge';
+import {OwCardIntentBadges} from '@/components/owui/ow-card-intent-badges';
 
 type IntentMap = Map<string, Pick<Intent, 'slug' | 'label' | 'icon'>>;
 

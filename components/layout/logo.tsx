@@ -1,1 +1,1 @@
-export { OwLogo as Logo } from '@/components/ow-ui/ow-logo';
+export { OwLogo as Logo } from '@/components/owui/ow-logo';

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { OwAccordion } from '@/components/ow-ui/ow-accordion';
+import { OwAccordion } from '@/components/owui/ow-accordion';
 
 export function PersonaIntro({intro}: {intro: ReactNode}) {
     return (

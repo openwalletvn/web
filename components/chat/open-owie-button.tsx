@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useChatContext } from '@/components/chat/chat-provider';
-import { OwButton, type OwButtonSize } from '@/components/ow-ui/ow-button';
-import type { OwButtonColor } from '@/components/ow-ui/ow-button';
+import { OwButton, type OwButtonSize } from '@/components/owui/ow-button';
+import type { OwButtonColor } from '@/components/owui/ow-button';
 
 interface Props {
     label?: string;

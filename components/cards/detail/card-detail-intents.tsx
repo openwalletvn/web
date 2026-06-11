@@ -1,6 +1,6 @@
 import {getIntents} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
-import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
+import {OwCardIntentBadges} from '@/components/owui/ow-card-intent-badges';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 
 interface Props {

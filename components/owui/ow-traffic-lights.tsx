@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {cn} from '@/lib/utils';
-import {OwTooltip} from '@/components/ow-ui/ow-tooltip';
+import {OwTooltip} from '@/components/owui/ow-tooltip';
 
 export type TrafficLightButton = {
     id: string;

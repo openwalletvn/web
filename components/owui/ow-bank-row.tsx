@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import type {Bank} from '@/lib/api';
 import {BankModel} from '@/lib/bank-model';
-import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
-import {OwButton} from '@/components/ow-ui/ow-button';
+import {OwBankImage} from '@/components/owui/ow-bank-image';
+import {OwButton} from '@/components/owui/ow-button';
 import {IconAffiliateFilled, IconCreditCardFilled} from "@tabler/icons-react";
-import {OwBadge} from "@/components/ow-ui/ow-badge";
+import {OwBadge} from "@/components/owui/ow-badge";
 
 interface Props {
     bank: Bank;

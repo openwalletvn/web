@@ -3,7 +3,7 @@
 import type {Card, Intent} from '@/lib/api';
 import {IntentModel} from '@/lib/intent-model';
 import {CardModel} from '@/lib/card-model';
-import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
+import {OwBadge, OwBadges} from '@/components/owui/ow-badge';
 import {useIntentMap} from '@/lib/intent-map-context';
 
 export interface IntentItem {

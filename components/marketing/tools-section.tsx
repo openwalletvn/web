@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import {ROUTES} from '@/lib/routes';
-import {OwWobbleCard} from '@/components/ow-ui/ow-wobble-card';
+import {OwWobbleCard} from '@/components/owui/ow-wobble-card';
 
 const TOOLS: {name: string; href: string; description: React.ReactNode; color: string}[] = [
     {

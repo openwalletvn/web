@@ -2,7 +2,7 @@
 
 import {useState} from 'react';
 import type {RankedCard} from '@/lib/card-ranker';
-import {OwCardRankedRow} from '@/components/ow-ui/ow-card-ranked-row';
+import {OwCardRankedRow} from '@/components/owui/ow-card-ranked-row';
 import {IconInfoCircle} from '@tabler/icons-react';
 
 interface Props {

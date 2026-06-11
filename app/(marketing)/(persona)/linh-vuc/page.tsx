@@ -5,8 +5,8 @@ import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import Link from 'next/link';
-import {OwButton} from '@/components/ow-ui/ow-button';
-import {OwWobbleCard} from '@/components/ow-ui/ow-wobble-card';
+import {OwButton} from '@/components/owui/ow-button';
+import {OwWobbleCard} from '@/components/owui/ow-wobble-card';
 
 export const revalidate = 3600;
 

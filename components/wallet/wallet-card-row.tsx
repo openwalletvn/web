@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { type Bank, type Card } from '@/lib/api';
 import { getMyCardUrl } from '@/lib/routes';
-import {OwCardImage} from '@/components/ow-ui/ow-card-image';
+import {OwCardImage} from '@/components/owui/ow-card-image';
 import type { CardStatus, WalletCard } from '@/lib/db';
 import { WalletCardBadges } from './wallet-card-badges';
 

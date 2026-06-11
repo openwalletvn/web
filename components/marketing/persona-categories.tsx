@@ -1,5 +1,5 @@
 import {PersonaModel} from '@/lib/persona-model';
-import {OwButton} from '@/components/ow-ui/ow-button';
+import {OwButton} from '@/components/owui/ow-button';
 
 function CategoryLink({persona}: {persona: PersonaModel}) {
     if (!persona.isAvailable()) {

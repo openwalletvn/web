@@ -1,5 +1,5 @@
 import {getAllPosts} from '@/lib/mdx';
-import {OwFeaturedPosts} from '@/components/ow-ui/ow-featured-posts';
+import {OwFeaturedPosts} from '@/components/owui/ow-featured-posts';
 
 export function RecentPostsSection() {
     const posts = getAllPosts().slice(0, 4);

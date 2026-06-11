@@ -3,7 +3,7 @@ import type {Post} from '@/lib/mdx';
 import {resolvePosts} from '@/lib/posts-utils';
 import {ROUTES} from '@/lib/routes';
 import {OwPostCategoryDate} from './ow-post-category-date';
-import {OwButton} from "@/components/ow-ui/ow-button";
+import {OwButton} from "@/components/owui/ow-button";
 
 function FeaturedGridItem({post}: { post: Post }) {
   return (

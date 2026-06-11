@@ -2,12 +2,12 @@
 import * as React from 'react';
 import type {CashbackBenefit, CashbackResult, Merchant} from '@/lib/api';
 import {IconAlertTriangle, IconLoader2} from '@tabler/icons-react';
-import {OwRangeSlider} from '@/components/ow-ui/ow-range-slider';
-import {formatOwAmount, OwAmount} from '@/components/ow-ui/ow-amount';
-import {OwCardCashbackRule} from '@/components/ow-ui/ow-card-cashback-rule';
+import {OwRangeSlider} from '@/components/owui/ow-range-slider';
+import {formatOwAmount, OwAmount} from '@/components/owui/ow-amount';
+import {OwCardCashbackRule} from '@/components/owui/ow-card-cashback-rule';
 import {IntentModel} from '@/lib/intent-model';
 import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
-import {OwAlert} from "@/components/ow-ui/ow-alert";
+import {OwAlert} from "@/components/owui/ow-alert";
 
 export type SerializedIntentMap = Record<string, {label: string; icon: string}>;
 export type SerializedMerchantMap = Record<string, {label: string; slug: string}>;

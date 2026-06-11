@@ -1,8 +1,8 @@
 import type {Bank, FeeEntry} from '@/lib/api';
 import {BankModel} from '@/lib/bank-model';
 import type {CardModel} from '@/lib/card-model';
-import {OwAmount} from '@/components/ow-ui/ow-amount';
-import {OwWobbleCard} from '@/components/ow-ui/ow-wobble-card';
+import {OwAmount} from '@/components/owui/ow-amount';
+import {OwWobbleCard} from '@/components/owui/ow-wobble-card';
 
 function NoteLines({ note }: { note: string }) {
     const lines = note.split('|').map((l) => l.trim()).filter(Boolean);

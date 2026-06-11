@@ -8,7 +8,7 @@ import {OverlayScrollbarsBody} from '@/components/layout/overlay-scrollbars-body
 import {PreviewBanner} from '@/components/layout/preview-banner';
 import {cn} from '@/lib/utils';
 import {TooltipProvider} from '@/components/ui/tooltip';
-import {OwOwieFab} from '@/components/ow-ui/ow-owie-fab';
+import {OwOwieFab} from '@/components/owui/ow-owie-fab';
 import {ChatProvider} from '@/components/chat/chat-provider';
 import {ChatPanel} from '@/components/chat/chat-panel';
 import "./globals.css";

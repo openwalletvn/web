@@ -4,7 +4,7 @@ import {ROUTES} from '@/lib/routes';
 // import {PostList} from '@/components/blog/post-list';
 // import {CategoryFilter} from '@/components/blog/category-filter';
 import {BlogPageShell} from '@/components/layout/blog-page-shell';
-import {OwPostList} from '@/components/ow-ui/ow-post-list';
+import {OwPostList} from '@/components/owui/ow-post-list';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {SITE_NAME} from '@/lib/page-meta/title';
 

@@ -1,6 +1,6 @@
 import {slugify} from '@/lib/mdx';
 import {cn} from "@/lib/utils";
-import {OwButton} from '@/components/ow-ui/ow-button';
+import {OwButton} from '@/components/owui/ow-button';
 
 function extractText(children: React.ReactNode): string {
   if (typeof children === 'string') return children;

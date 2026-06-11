@@ -1,5 +1,5 @@
 import {IconBrandDiscord} from '@tabler/icons-react';
-import {OwButtonHeader} from '@/components/ow-ui/ow-button-header';
+import {OwButtonHeader} from '@/components/owui/ow-button-header';
 
 interface DiscordButtonProps {
     iconOnly?: boolean;

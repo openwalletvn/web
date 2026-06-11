@@ -3,7 +3,7 @@ import {CardModel} from '@/lib/card-model';
 import type {WalletCard} from '@/lib/db';
 import {cn} from '@/lib/utils';
 import {CardTimeline, CardTimelineSummary} from './card-timeline';
-import {OwCardImage} from '@/components/ow-ui/ow-card-image';
+import {OwCardImage} from '@/components/owui/ow-card-image';
 import React from "react";
 
 /**

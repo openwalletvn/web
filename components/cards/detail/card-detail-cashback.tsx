@@ -3,9 +3,9 @@ import type {Merchant} from '@/lib/api';
 import {getIntents, getMerchants} from '@/lib/api';
 import {IntentModel} from '@/lib/intent-model';
 import type {CardModel} from '@/lib/card-model';
-import {OwAmount} from '@/components/ow-ui/ow-amount';
+import {OwAmount} from '@/components/owui/ow-amount';
 import {IconInfoCircle} from '@tabler/icons-react';
-import {OwAlert} from '@/components/ow-ui/ow-alert';
+import {OwAlert} from '@/components/owui/ow-alert';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 import {fmtIsoDate, fmtIsoDateLifespan} from '@/lib/utils';
 import {

@@ -1,6 +1,6 @@
 import { IconCheck } from '@tabler/icons-react';
 import { getBankImageUrl, type Bank, type Card } from '@/lib/api';
-import {OwCardImage} from '@/components/ow-ui/ow-card-image';
+import {OwCardImage} from '@/components/owui/ow-card-image';
 
 export function CardSelectionStep({
   bank,

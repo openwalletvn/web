@@ -1,5 +1,5 @@
 import {MarkdownText} from "@/components/assistant-ui/markdown-text";
-import {OwTypingBubble} from "@/components/ow-ui/ow-typing-bubble";
+import {OwTypingBubble} from "@/components/owai/ow-typing-bubble";
 import {ModelSelector} from "@/components/assistant-ui/model-selector";
 import {CHAT_MODELS, getDefaultModel, getVisibleModels} from "@/lib/chat/models";
 import {getChatPrefs, setChatPref} from "@/lib/chat/chat-prefs";

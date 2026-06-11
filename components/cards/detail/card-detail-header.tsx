@@ -3,8 +3,8 @@ import {BankModel} from '@/lib/bank-model';
 import {normalizeCardTypes} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
 import {CoBrandDisplay} from '@/components/cards/co-brand-display';
-import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
-import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
+import {OwBankImage} from '@/components/owui/ow-bank-image';
+import {OwBadge, OwBadges} from '@/components/owui/ow-badge';
 
 interface Props {
     card: CardModel;

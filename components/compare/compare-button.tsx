@@ -2,7 +2,7 @@
 
 import {IconScale} from '@tabler/icons-react';
 import {useCompareList} from '@/lib/use-compare-list';
-import {OwButton} from '@/components/ow-ui/ow-button';
+import {OwButton} from '@/components/owui/ow-button';
 
 interface Props {
     card: {

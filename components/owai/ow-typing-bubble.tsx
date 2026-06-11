@@ -1,4 +1,4 @@
-import {OwLogo} from "@/components/ow-ui/ow-logo";
+import {OwLogo} from "@/components/owui/ow-logo";
 import type {FC} from "react";
 
 export const OwTypingBubble: FC<{ visible?: boolean }> = ({visible = true}) => {

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type {Bank, Card} from '@/lib/api';
 import {CardDisplay} from '@/components/cards/variants/card-display';
-import {OwButton} from '@/components/ow-ui/ow-button';
+import {OwButton} from '@/components/owui/ow-button';
 import {ROUTES} from '@/lib/routes';
 
 interface Props {
