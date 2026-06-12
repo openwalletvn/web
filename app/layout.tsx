@@ -11,6 +11,7 @@ import {TooltipProvider} from '@/components/ui/tooltip';
 import {OwOwieFab} from '@/components/owui/ow-owie-fab';
 import {ChatProvider} from '@/components/chat/chat-provider';
 import {ChatPanel} from '@/components/chat/chat-panel';
+import {HashScroll} from '@/components/layout/hash-scroll';
 import "./globals.css";
 
 const calSans = localFont({
@@ -77,6 +78,7 @@ export default function RootLayout({
           <ChatProvider>
             <BodyClass />
             <OverlayScrollbarsBody />
+            <HashScroll />
             {children}
             <OwOwieFab/>
             <ChatPanel/>

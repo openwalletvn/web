@@ -3,15 +3,12 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {cn} from '@/lib/utils';
-import {TOOLS} from '@/lib/tools';
 import {ROUTES} from '@/lib/routes';
 import {NAV_LINKS} from '@/lib/nav-links';
 import {
     NavigationMenu,
-    NavigationMenuContent,
     NavigationMenuItem,
     NavigationMenuList,
-    NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 
 
@@ -34,7 +31,7 @@ const triggerClass = cn(
 
 export function Nav2() {
     const pathname = usePathname();
-    const toolsActive = TOOLS.some((t) => pathname.startsWith(t.href));
+    const toolsActive = [ROUTES.cardMatch, ROUTES.cardBattle, ROUTES.owieChat, ROUTES.openwalletMcp].some((href) => pathname.startsWith(href));
     const cardsActive = pathname.startsWith(ROUTES.cards) || pathname.startsWith('/linh-vuc');
 
     const plainLinkClass = (active: boolean) =>
@@ -67,33 +64,15 @@ export function Nav2() {
 
                 {/* Công cụ */}
                 <NavigationMenuItem>
-                    <NavigationMenuTrigger
+                    <Link
+                        href="/#cong-cu"
                         className={cn(triggerClass, toolsActive && 'text-brand-red')}
                         style={textStyle}
                     >
                         <span style={{opacity: 0.3}}>{'{'}</span>
                         <span>Công cụ</span>
                         <span style={{opacity: 0.3}}>{'}'}</span>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent className="left-1/2 -translate-x-1/2">
-                        <ul className="w-[180px] p-2">
-                            {TOOLS.map((tool) => (
-                                <li key={tool.href}>
-                                    <Link
-                                        href={tool.href}
-                                        className={cn(
-                                            'block px-3 py-2 rounded-2xl text-sm font-medium transition-colors',
-                                            pathname.startsWith(tool.href)
-                                                ? 'text-brand-red'
-                                                : 'text-slate-700 hover:text-brand-red hover:bg-slate-50'
-                                        )}
-                                    >
-                                        {tool.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </NavigationMenuContent>
+                    </Link>
                 </NavigationMenuItem>
 
             </NavigationMenuList>

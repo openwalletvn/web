@@ -53,7 +53,7 @@ const DEV_TOOLS: {name: string; href: string; description: string}[] = [
 
 export function ToolsSection() {
     return (
-        <section className="ow-tools-section md:py-16 py-12 relative z-1">
+        <section id="cong-cu" className="ow-tools-section md:py-16 py-12 relative z-1 min-h-screen flex flex-col justify-center items-center">
             <div className="ow-container flex flex-col gap-8">
                 <h2>Công cụ</h2>
 
@@ -68,7 +68,7 @@ export function ToolsSection() {
                     ))}
                 </div>
 
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 md:pt-8 pt-4">
                     <p className="text-sm font-medium text-foreground/40 uppercase tracking-wider">Dành cho developer</p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         {DEV_TOOLS.map((tool) => (
