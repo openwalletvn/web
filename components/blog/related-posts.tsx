@@ -1,5 +1,5 @@
 import type { Post } from '@/lib/mdx';
-import { OwPostList } from '@/components/ow-ui/ow-post-list';
+import { OwPostList } from '@/components/owui/ow-post-list';
 
 interface Props {
     posts: Post[];

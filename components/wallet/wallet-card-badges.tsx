@@ -1,5 +1,5 @@
 import { DashedBadge } from '@/components/ui/dashed-badge';
-import { OwAmount } from '@/components/ow-ui/ow-amount';
+import { OwAmount } from '@/components/owui/ow-amount';
 import type { WalletCard } from '@/lib/db';
 import type { Card } from '@/lib/api';
 import type { CreditBadge } from './wallet-card-row';

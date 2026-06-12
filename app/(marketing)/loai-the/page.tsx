@@ -5,7 +5,7 @@ import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';
 import {ROUTES} from '@/lib/routes';
 import {CARD_TYPE_LABELS, CARD_TYPE_HEX, CARD_TYPE_ICON, CARD_TYPE_SLUGS} from '@/lib/card-model';
-import {OwWobbleCard} from '@/components/ow-ui/ow-wobble-card';
+import {OwWobbleCard} from '@/components/owui/ow-wobble-card';
 import type {CardType} from '@/lib/api';
 import {getBanks, getCards} from '@/lib/api';
 import {getPersonaTopCards} from '@/lib/persona-top-cards';

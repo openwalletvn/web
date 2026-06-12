@@ -1,6 +1,6 @@
 import {IconSearch} from '@tabler/icons-react';
 import {cn} from '@/lib/utils';
-import {OwButtonHeader} from '@/components/ow-ui/ow-button-header';
+import {OwButtonHeader} from '@/components/owui/ow-button-header';
 
 interface SearchTriggerProps {
   onClick: () => void;

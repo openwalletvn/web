@@ -5,10 +5,10 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {getTool} from '@/lib/tools';
 import type {Intent, Persona} from '@/lib/api';
 import type {RankedCard} from '@/lib/card-ranker';
-import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
-import {OwCardRankedRow} from '@/components/ow-ui/ow-card-ranked-row';
+import {OwBadge, OwBadges} from '@/components/owui/ow-badge';
+import {OwCardRankedRow} from '@/components/owui/ow-card-ranked-row';
 import {cn} from "@/lib/utils";
-import {OwRangeSlider} from '@/components/ow-ui/ow-range-slider';
+import {OwRangeSlider} from '@/components/owui/ow-range-slider';
 
 const STORAGE_KEY = 'ow-rec-prefs';
 const cardMatchHref = getTool('Card Match').href;

@@ -4,7 +4,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {CheckIcon} from 'lucide-react';
 import {cn} from '@/lib/utils';
-import {OwTrafficLights} from '@/components/ow-ui/ow-traffic-lights';
+import {OwTrafficLights} from '@/components/owui/ow-traffic-lights';
 import {
     Select,
     SelectContent,
@@ -20,7 +20,7 @@ import {ChatRuntime} from '@/components/chat/chat-runtime';
 import {getUserId} from '@/lib/chat/anonymous-user';
 import {type Conversation, createConversation, getLastActiveId, listConversations, setLastActiveId,} from '@/lib/chat/conversation-store';
 import Link from 'next/link';
-import {OwLogo} from "@/components/ow-ui/ow-logo";
+import {OwLogo} from "@/components/owui/ow-logo";
 import {IconArrowsMaximize, IconHome, IconMinus, IconPlus} from "@tabler/icons-react";
 
 function groupConversations(convos: Conversation[]) {

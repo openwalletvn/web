@@ -3,8 +3,8 @@
 import * as React from 'react';
 import {usePathname, useRouter} from 'next/navigation';
 import {cn} from '@/lib/utils';
-import {OwLogo} from '@/components/ow-ui/ow-logo';
-import {OwTooltip} from '@/components/ow-ui/ow-tooltip';
+import {OwLogo} from '@/components/owui/ow-logo';
+import {OwTooltip} from '@/components/owui/ow-tooltip';
 import {useChatContext} from '@/components/chat/chat-provider';
 import {MovingBorder} from '@/components/phucbm/moving-border';
 

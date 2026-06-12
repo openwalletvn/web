@@ -2,9 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {IconCircleCheck, IconCreditCard, IconSettings} from '@tabler/icons-react';
 import {ROUTES} from '@/lib/routes';
-import {OwBadgeNumberIcon} from '@/components/ow-ui/ow-badge-number-icon';
-import {OwCardImage} from '@/components/ow-ui/ow-card-image';
-import {OwButton} from '@/components/ow-ui/ow-button';
+import {OwBadgeNumberIcon} from '@/components/owui/ow-badge-number-icon';
+import {OwCardImage} from '@/components/owui/ow-card-image';
+import {OwButton} from '@/components/owui/ow-button';
 import {OpenOwieButton} from '@/components/chat/open-owie-button';
 
 export function HeroSection({cardCount, bankCount}: { cardCount: number; bankCount: number }) {

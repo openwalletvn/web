@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {OwLogo} from '@/components/ow-ui/ow-logo';
+import {OwLogo} from '@/components/owui/ow-logo';
 import {TOOLS} from '@/lib/tools';
 import {cn} from '@/lib/utils';
 import {ROUTES} from '@/lib/routes';

@@ -12,14 +12,14 @@ import { appDb } from '@/lib/app-db';
 import { type Card, type Bank } from '@/lib/api';
 import type { WalletCard, CreditAccount, CardStatus } from '@/lib/db';
 import type { AppWallet } from '@/lib/app-db';
-import {OwCardImage} from '@/components/ow-ui/ow-card-image';
+import {OwCardImage} from '@/components/owui/ow-card-image';
 import { FormField } from '@/components/ui/form-field';
 import { CreditPoolSelector, type PoolSelection } from './credit-pool-selector';
 import { MoveToWalletPicker } from './move-to-wallet-picker';
 import { useWalletDb, useActiveWallet } from '@/providers/wallet-db-provider';
 import { useLiveQuery } from 'dexie-react-hooks';
 import posthog from 'posthog-js';
-import { OwAmount } from '@/components/ow-ui/ow-amount';
+import { OwAmount } from '@/components/owui/ow-amount';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

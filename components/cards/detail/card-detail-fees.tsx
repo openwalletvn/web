@@ -1,6 +1,6 @@
 import type {Bank, FeeEntry, FeeEntryWithWaiver, FeeWaiver} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
-import {OwAmount} from '@/components/ow-ui/ow-amount';
+import {OwAmount} from '@/components/owui/ow-amount';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 
 function FeeValue({ entry }: { entry?: FeeEntry | null }) {

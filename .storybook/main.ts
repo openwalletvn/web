@@ -9,7 +9,9 @@ const config: StorybookConfig = {
     "@storybook/addon-vitest",
     "@storybook/addon-a11y",
     "@storybook/addon-docs",
-    "@storybook/addon-mcp"
+    "@storybook/addon-mcp",
+    "@github-ui/storybook-addon-performance-panel",
+    "@chromatic-com/storybook"
   ],
   "framework": "@storybook/nextjs-vite",
   "staticDirs": [

@@ -1,4 +1,4 @@
-import {OwButton} from '@/components/ow-ui/ow-button';
+import {OwButton} from '@/components/owui/ow-button';
 
 const TO = 'hello@openwallet.vn';
 

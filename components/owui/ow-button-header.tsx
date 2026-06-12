@@ -1,7 +1,7 @@
 import * as React from "react"
 import Link from "next/link"
 import {cn} from "@/lib/utils"
-import {OwLogo} from "@/components/ow-ui/ow-logo"
+import {OwLogo} from "@/components/owui/ow-logo"
 
 type Props = React.ComponentProps<"button"> & {
     icon?: React.ReactNode

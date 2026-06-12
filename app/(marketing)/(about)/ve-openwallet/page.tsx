@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import Link from 'next/link';
-import {OwButton} from '@/components/ow-ui/ow-button';
+import {OwButton} from '@/components/owui/ow-button';
 import {ProsePageShell} from '@/components/layout/prose-page-shell';
 import {buildTitle} from '@/lib/page-meta/title';
 import {buildBreadcrumbJsonLd} from '@/lib/page-meta/breadcrumb';

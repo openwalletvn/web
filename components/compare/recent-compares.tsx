@@ -6,7 +6,7 @@ import {IconX} from '@tabler/icons-react';
 import {normalizePair, useRecentCompares} from '@/lib/use-recent-compares';
 import {useCardSearch} from '@/lib/use-card-search';
 import {getTool} from '@/lib/tools';
-import {OwCardImage} from '@/components/ow-ui/ow-card-image';
+import {OwCardImage} from '@/components/owui/ow-card-image';
 
 const cardBattleHref = getTool('Card Battle').href;
 

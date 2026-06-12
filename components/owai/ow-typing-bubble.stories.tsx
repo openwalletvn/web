@@ -1,10 +1,10 @@
 import type {Meta, StoryObj} from '@storybook/nextjs-vite';
 import {OwTypingBubble} from './ow-typing-bubble';
-import {OwStories, OwStorySection} from './ow-story-section';
+import {OwStories, OwStorySection} from "@/components/owui/ow-story-section";
 
 const meta: Meta<typeof OwTypingBubble> = {
     component: OwTypingBubble,
-    title: 'Assistant UI/OwTypingBubble',
+    title: 'OW AI/OwTypingBubble',
     tags: ['autodocs'],
     parameters: {
         docs: {

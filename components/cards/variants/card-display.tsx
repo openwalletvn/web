@@ -9,9 +9,9 @@ import {normalizeCardTypes} from '@/lib/api';
 import type {Bank} from '@/lib/api';
 import {BankModel} from '@/lib/bank-model';
 import {CardModel} from '@/lib/card-model';
-import {OwCardImage} from '@/components/ow-ui/ow-card-image';
-import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
-import {OwAmount} from '@/components/ow-ui/ow-amount';
+import {OwCardImage} from '@/components/owui/ow-card-image';
+import {OwBadge, OwBadges} from '@/components/owui/ow-badge';
+import {OwAmount} from '@/components/owui/ow-amount';
 import {useCompareList} from '@/lib/use-compare-list';
 
 interface BadgeConfig {

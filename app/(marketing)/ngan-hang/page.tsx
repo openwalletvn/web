@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {getBanks} from '@/lib/api';
-import {OwBankRow} from '@/components/ow-ui/ow-bank-row';
+import {OwBankRow} from '@/components/owui/ow-bank-row';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {ROUTES} from '@/lib/routes';

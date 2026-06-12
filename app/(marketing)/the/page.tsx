@@ -5,7 +5,7 @@ import {CardsGrid} from '@/components/cards/cards-grid';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
 import {MarketingPageShell} from '@/components/layout/marketing-page-shell';
 import {OpenOwieButton} from '@/components/chat/open-owie-button';
-import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
+import {OwBadge, OwBadges} from '@/components/owui/ow-badge';
 import {PersonaModel} from '@/lib/persona-model';
 import {ROUTES} from '@/lib/routes';
 import {buildTitle, SECTION_TITLES} from '@/lib/page-meta/title';

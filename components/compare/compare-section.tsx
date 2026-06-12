@@ -8,7 +8,7 @@ import {cn} from '@/lib/utils';
 import type {SearchCard} from '@/lib/search-types';
 import type {Card, CompareResult} from '@/lib/api';
 import {compareCards, getCard} from '@/lib/api';
-import {OwCardImage} from '@/components/ow-ui/ow-card-image';
+import {OwCardImage} from '@/components/owui/ow-card-image';
 import {CardSearchInput} from '@/components/compare/card-search-input';
 import {CompareTable} from '@/components/compare/compare-table';
 import {RecentCompares} from '@/components/compare/recent-compares';

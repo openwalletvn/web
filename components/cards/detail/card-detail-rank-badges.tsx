@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {getPersonas, getRankedCards} from '@/lib/api';
 import type {CardModel} from '@/lib/card-model';
 import {PersonaModel} from '@/lib/persona-model';
-import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
+import {OwBadge, OwBadges} from '@/components/owui/ow-badge';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 
 interface RankBadge {

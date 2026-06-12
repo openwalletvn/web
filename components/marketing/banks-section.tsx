@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import {getBanks} from '@/lib/api';
-import {OwBankRow} from '@/components/ow-ui/ow-bank-row';
+import {OwBankRow} from '@/components/owui/ow-bank-row';
 import {ROUTES} from '@/lib/routes';
 
 interface Props {

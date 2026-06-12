@@ -2,7 +2,7 @@ import {getBanks, getCards, getNetworks, isHybridCard} from '@/lib/api';
 import {MobileNav} from './mobile-nav';
 import {SearchDialog} from '@/components/search/search-dialog';
 import {Nav2} from "@/components/layout/nav2";
-import {OwLogo} from "@/components/ow-ui/ow-logo";
+import {OwLogo} from "@/components/owui/ow-logo";
 import {DiscordButton} from "@/components/layout/discord-button";
 
 const NETWORK_TIER_FILTER = 'visa:infinite,visa:signature,mastercard:world-elite,mastercard:world,amex:platinum,jcb:ultimate';

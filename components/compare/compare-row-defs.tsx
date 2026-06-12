@@ -1,9 +1,9 @@
 import type {Card, CompareResult, CompareTableRow as ApiRow} from '@/lib/api';
 import {normalizeCardTypes} from '@/lib/api';
-import {OwBankImage} from '@/components/ow-ui/ow-bank-image';
-import {OwBadge, OwBadges} from '@/components/ow-ui/ow-badge';
-import {OwCardIntentBadges} from '@/components/ow-ui/ow-card-intent-badges';
-import {OwAmount} from "@/components/ow-ui/ow-amount";
+import {OwBankImage} from '@/components/owui/ow-bank-image';
+import {OwBadge, OwBadges} from '@/components/owui/ow-badge';
+import {OwCardIntentBadges} from '@/components/owui/ow-card-intent-badges';
+import {OwAmount} from "@/components/owui/ow-amount";
 import {formatDueDate} from '@/lib/card-dates';
 
 // ─── Context ──────────────────────────────────────────────────────────────────

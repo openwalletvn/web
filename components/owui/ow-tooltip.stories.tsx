@@ -37,7 +37,7 @@ export const Overview: Story = {
                 </OwTooltip>
             </OwStorySection>
             <OwStorySection title="Bottom">
-                <OwTooltip tooltip="Tooltip on bottom" tooltipAlign="bottom">
+                <OwTooltip tooltip="Tooltip on bottom" side="bottom">
                     <button className="px-3 py-1.5 rounded bg-neutral-100 text-sm font-medium">Hover me</button>
                 </OwTooltip>
             </OwStorySection>
@@ -65,7 +65,7 @@ export const Top: Story = {
 export const Bottom: Story = {
     args: {
         tooltip: 'Tooltip on bottom',
-        tooltipAlign: 'bottom',
+        side: 'bottom',
         children: <button className="px-3 py-1.5 rounded bg-neutral-100 text-sm font-medium">Hover me</button>,
     },
 };

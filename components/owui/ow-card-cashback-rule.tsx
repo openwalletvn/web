@@ -1,8 +1,8 @@
 import type {CashbackRule, Merchant, SpendTier} from '@/lib/api';
 import {IntentModel} from '@/lib/intent-model';
 import {cn} from '@/lib/utils';
-import {OwBadge} from '@/components/ow-ui/ow-badge';
-import {OwAmount} from '@/components/ow-ui/ow-amount';
+import {OwBadge} from '@/components/owui/ow-badge';
+import {OwAmount} from '@/components/owui/ow-amount';
 import {CATCHALL_SLUGS} from '@/lib/cashback-utils';
 import {
     IconBuildingStore,

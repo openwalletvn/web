@@ -4,7 +4,7 @@ import {useState} from 'react';
 import Masonry from 'react-masonry-css';
 import type {Card} from '@/lib/api';
 import {CardDisplay} from '@/components/cards/variants/card-display';
-import {OwButton} from '@/components/ow-ui/ow-button';
+import {OwButton} from '@/components/owui/ow-button';
 
 const breakpointCols = { default: 5, 1023: 4, 767: 3, 639: 2 };
 

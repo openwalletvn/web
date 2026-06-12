@@ -6,8 +6,8 @@ import {ROUTES} from '@/lib/routes';
 import {BlogPageShell} from '@/components/layout/blog-page-shell';
 import {SITE_NAME} from '@/lib/page-meta/title';
 import {buildCollectionPageMeta} from '@/lib/page-meta/collection';
-import {OwFeaturedPosts} from '@/components/ow-ui/ow-featured-posts';
-import {OwPostList} from '@/components/ow-ui/ow-post-list';
+import {OwFeaturedPosts} from '@/components/owui/ow-featured-posts';
+import {OwPostList} from '@/components/owui/ow-post-list';
 
 const BREADCRUMB_ITEMS = [
     {label: 'Trang chủ', href: '/'},

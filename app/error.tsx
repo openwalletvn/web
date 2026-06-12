@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import {IconAlertTriangle, IconWifi} from '@tabler/icons-react';
-import {OwLogo} from '@/components/ow-ui/ow-logo';
-import {OwButton} from "@/components/ow-ui/ow-button";
+import {OwLogo} from '@/components/owui/ow-logo';
+import {OwButton} from "@/components/owui/ow-button";
 
 function isApiConnectionError(error: Error): boolean {
   const msg = error.message.toLowerCase();

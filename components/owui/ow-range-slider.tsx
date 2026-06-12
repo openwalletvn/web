@@ -2,7 +2,7 @@
 
 import {Slider, Tooltip} from 'radix-ui';
 import {cn} from '@/lib/utils';
-import {OwLogo} from '@/components/ow-ui/ow-logo';
+import {OwLogo} from '@/components/owui/ow-logo';
 
 export interface OwRangeSliderProps {
     min?: number;

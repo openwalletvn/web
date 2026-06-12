@@ -1,4 +1,4 @@
-import {OwAccordion} from '@/components/ow-ui/ow-accordion';
+import {OwAccordion} from '@/components/owui/ow-accordion';
 import NeuralBackground from "@/components/ui/flow-field-background";
 import Link from 'next/link';
 
