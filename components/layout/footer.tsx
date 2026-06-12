@@ -30,6 +30,11 @@ const LINKS = {
         {label: 'Liên hệ', href: ROUTES.contact},
         {label: 'Changelog', href: ROUTES.changelog},
     ],
+    developer: [
+        {label: 'Dashboard', href: 'https://dash.openwallet.vn', external: true},
+        {label: 'Storybook', href: 'https://storybook.openwallet.vn', external: true},
+        {label: 'MCP Inspector', href: 'https://inspector.openwallet.vn', external: true},
+    ],
     personas: [
         ...['shopee', 'groceries', 'family', 'commuter', 'traveler', 'digital']
             .map(slug => new PersonaModel(slug))
@@ -61,15 +66,16 @@ export function Footer() {
                             {/* Link columns */}
                             <div className="md:col-span-10 col-span-12 grid grid-cols-12 gap-x-4 gap-y-8">
                                 <div className="sm:col-span-4 col-span-6 flex flex-col gap-8">
-                                    <LinkColumn heading="Lĩnh vực" links={LINKS.personas}/>
-                                    <LinkColumn heading="Loại thẻ" links={LINKS.cardTypes}/>
+                                  <LinkColumn heading="Công cụ" links={LINKS.tools}/>
+                                  <LinkColumn heading="Developer" links={LINKS.developer}/>
+                                  <LinkColumn heading="Danh mục" links={LINKS.directories}/>
                                 </div>
                                 <div className="sm:col-span-4 col-span-6 flex flex-col gap-8">
-                                    <LinkColumn heading="Danh mục" links={LINKS.directories}/>
-                                    <LinkColumn heading="Công cụ" links={LINKS.tools}/>
+                                  <LinkColumn heading="Lĩnh vực" links={LINKS.personas}/>
+                                  <LinkColumn heading="Loại thẻ" links={LINKS.cardTypes}/>
                                 </div>
                                 <div className="sm:col-span-4 col-span-12 flex flex-col gap-8">
-                                    <LinkColumn heading="Về chúng tôi" links={LINKS.about}/>
+                                  <LinkColumn heading="Về chúng tôi" links={LINKS.about}/>
                                     <LinkColumn heading="Pháp lý" links={LINKS.legal}/>
                                 </div>
                             </div>
@@ -112,18 +118,18 @@ function LinkColumn({
                         links,
                     }: {
     heading: string;
-    links: { label: string; href: string; disabled?: boolean; suffix?: string }[];
+    links: { label: string; href: string; disabled?: boolean; suffix?: string; external?: boolean }[];
 }) {
     return (
         <div className="flex flex-col xl:gap-4 gap-2">
             <p className="text-label text-neutral-400">{heading}</p>
             <ul className="flex flex-col gap-2">
-                {links.map(({label, href, disabled, suffix}) => (
+                {links.map(({label, href, disabled, suffix, external}) => (
                     <li key={label} className="flex flex-wrap items-baseline gap-2">
                         {disabled ? (
                             <span className={cn(linkCls, 'opacity-40 cursor-default')}>{label}</span>
                         ) : (
-                            <Link href={href} className={linkCls}>{label}</Link>
+                            <Link href={href} className={linkCls} {...(external ? {target: '_blank', rel: 'noopener noreferrer'} : {})}>{label}</Link>
                         )}
                         {suffix && (
                             <span className="text-[10px] sm:text-[11px] font-medium tracking-wide uppercase text-white/40">{suffix}</span>
