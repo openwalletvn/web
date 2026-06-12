@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/nextjs-vite';
+import perfPanelPreview from '@github-ui/storybook-addon-performance-panel/preview';
 import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 import { Title, Subtitle, Description, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
 import '../app/globals.css';
@@ -40,4 +41,11 @@ const preview: Preview = {
   },
 };
 
-export default preview;
+export default {
+  ...perfPanelPreview,
+  ...preview,
+  decorators: [
+    ...(perfPanelPreview.decorators ?? []),
+    ...(preview.decorators ?? []),
+  ],
+} satisfies Preview;
