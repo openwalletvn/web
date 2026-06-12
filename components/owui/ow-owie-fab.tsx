@@ -26,7 +26,7 @@ export function OwOwieFab({className}: { className?: string }) {
         <div className={cn(
             'ow-owie-fab fixed sm:bottom-4 sm:right-4 bottom-1 right-1 z-50 transition-all ease-bounce duration-200 is-chat-open:translate-x-full is-chat-open:-right-1',
             className)}>
-            <OwTooltip tooltip="Chào CT!" tooltipAlign="top">
+            <OwTooltip tooltip="Chào CT!" side="top">
                 <MovingBorder
                     borderWidth={2}
                     radius={8}
