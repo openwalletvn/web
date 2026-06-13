@@ -89,6 +89,8 @@ export interface CardFilters {
     rule_channel?: string;
     rule_geography?: string;
     rule_intent?: string;
+    annual_fee_free?: boolean;
+    has_cashback?: boolean;
 }
 
 export const SEGMENT_FILTERS: Record<string, Pick<CardFilters, 'type'>> = {
