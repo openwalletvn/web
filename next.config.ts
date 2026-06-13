@@ -69,7 +69,7 @@ const nextConfig: NextConfig = {
       { source: '/the-2-trong-1', destination: '/loai-the/the-hybrid', permanent: true },
       { source: '/the-kim-loai', destination: '/loai-the/the-hybrid', permanent: true },
       { source: '/the-tin-dung-amex', destination: '/the', permanent: true },
-      { source: '/the-tin-dung-phi-thuong-nien-thap', destination: '/the', permanent: true },
+      { source: '/the-tin-dung-phi-thuong-nien-thap', destination: '/loai-the/the-tin-dung-mien-phi-thuong-nien', permanent: true },
       { source: '/openwallet-app', destination: '/', permanent: true },
       { source: '/llms/:path*', destination: '/', permanent: true },
       { source: '/api/patches/:path*', destination: '/', permanent: true },

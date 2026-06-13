@@ -1,4 +1,4 @@
-// AUTO-GENERATED — do not edit manually
+// AUTO-GENERATED - do not edit manually
 // Run: pnpm generate:types
 // Source: https://api.openwallet.vn/openapi.json
 
