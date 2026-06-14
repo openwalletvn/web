@@ -1641,6 +1641,8 @@ export interface operations {
                 rule_intent?: "shopee" | "lazada" | "tiktok-shop" | "tiki" | "ecommerce" | "grab" | "transport" | "dining" | "shopee-food" | "grab-food" | "vietnam-airlines" | "bamboo-airways" | "agoda" | "travel" | "groceries" | "shopping" | "digital" | "insurance" | "education" | "health" | "cinema" | "entertainment" | "golf" | "ads" | "telecom" | "fashion" | "pets" | "books" | "all";
                 /** @description Filter by cashback benefit. "true" returns only cards with ≥1 cashback rule. "false" returns only cards with no cashback rules. */
                 has_cashback?: "true" | "false";
+                /** @description Filter by annual fee. "true" returns only cards with no annual fee (amount === 0 or unset). "false" returns only cards with a non-zero annual fee. */
+                annual_fee_free?: "true" | "false";
             };
             header?: never;
             path?: never;

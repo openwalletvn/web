@@ -90,6 +90,7 @@ const nextConfig: NextConfig = {
         destination: '/ngan-hang/:slug*',
         permanent: true,
       },
+      { source: '/changelog', destination: '/roadmap', permanent: true },
       { source: '/openwallet-chat', destination: '/owie-chat', permanent: true },
       { source: '/openwallet-mcp', destination: '/mcp', permanent: true },
       { source: '/blog', destination: '/tin-tuc', permanent: true },

@@ -16,7 +16,8 @@ export const ROUTES = {
     openwalletApp: '/openwallet-app',
 
     // Info pages
-    changelog: '/changelog',
+    changelog: '/roadmap',
+    roadmap: '/roadmap',
     contact: '/lien-he',
     terms: '/dieu-khoan',
     privacy: '/chinh-sach-bao-mat',
