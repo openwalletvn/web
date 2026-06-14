@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/nextjs-vite';
+import path from 'path';
 
 const config: StorybookConfig = {
   "stories": [
@@ -19,6 +20,14 @@ const config: StorybookConfig = {
   ],
   "env": () => ({
     NEXT_PUBLIC_API_URL: '',
-  })
+  }),
+  viteFinal: (config) => {
+    config.resolve ??= {};
+    config.resolve.alias = {
+      ...(config.resolve.alias ?? {}),
+      'next-mdx-remote/rsc': path.resolve(__dirname, './__mocks__/next-mdx-remote-rsc.tsx'),
+    };
+    return config;
+  },
 };
 export default config;
