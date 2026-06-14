@@ -17,6 +17,7 @@ export const ROUTES = {
 
     // Info pages
     changelog: '/changelog',
+    roadmap: '/roadmap',
     contact: '/lien-he',
     terms: '/dieu-khoan',
     privacy: '/chinh-sach-bao-mat',

@@ -29,6 +29,7 @@ const LINKS = {
         {label: 'Về OpenWallet', href: '/ve-openwallet'},
         {label: 'Liên hệ', href: ROUTES.contact},
         {label: 'Changelog', href: ROUTES.changelog},
+        {label: 'Roadmap', href: ROUTES.roadmap},
     ],
     developer: [
         {label: 'Dashboard', href: 'https://dash.openwallet.vn', external: true},

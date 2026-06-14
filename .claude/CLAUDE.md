@@ -131,6 +131,7 @@ See `@.claude/DESIGN.md` for container conventions, CSS/typography rules, and fu
 | `/commit-all`         | `commands/commit-all.md`         | Stage + commit all changes in logical groups with conventional commit messages |
 | `/sync-api-types`     | `commands/sync-api-types.md`     | Regenerate types from API schema, diff changes, scan codebase, suggest updates |
 | `/edit-system-prompt` | `commands/edit-system-prompt.md` | Edit Owie's system prompt, enforce invariants, push to Langfuse                |
+| `/roadmap`            | `commands/roadmap.md`            | Add/move/delete items in GitHub Projects roadmap via gh CLI                    |
 
 @.claude/docs/openwallet-brain.md
 @.claude/docs/architecture.md
