@@ -26,6 +26,8 @@ const config: StorybookConfig = {
     config.resolve.alias = {
       ...(config.resolve.alias ?? {}),
       'next-mdx-remote/rsc': path.resolve(__dirname, './__mocks__/next-mdx-remote-rsc.tsx'),
+      '@/components/blog/mdx-components': path.resolve(__dirname, './__mocks__/mdx-components.tsx'),
+      '@/lib/remark-auto-link': path.resolve(__dirname, './__mocks__/remark-auto-link.ts'),
     };
     return config;
   },
