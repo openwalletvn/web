@@ -11,6 +11,7 @@ export interface GithubProjectItem {
     state: 'OPEN' | 'CLOSED' | null;
     labels: GithubProjectLabel[];
     isDraft: boolean;
+    shippedDate: string | null;
 }
 
 export interface GithubProjectColumn {
@@ -78,6 +79,10 @@ query($org: String!, $number: Int!) {
                 name
                 field { ... on ProjectV2SingleSelectField { name } }
               }
+              ... on ProjectV2ItemFieldDateValue {
+                date
+                field { ... on ProjectV2Field { name } }
+              }
             }
           }
         }
@@ -103,6 +108,7 @@ interface RawItemContent {
 
 interface RawFieldValue {
     name?: string;
+    date?: string;
     field?: { name?: string };
 }
 
@@ -177,6 +183,13 @@ export async function fetchGitHubProject(
         const content = rawItem.content;
         const isDraft = !('url' in content);
 
+        const statusValue = rawItem.fieldValues.nodes.find(
+            (fv) => fv.field?.name === 'Status',
+        );
+        const shippedValue = rawItem.fieldValues.nodes.find(
+            (fv) => fv.field?.name === 'Shipped',
+        );
+
         const item: GithubProjectItem = {
             id: rawItem.id,
             title: content.title ?? '',
@@ -185,11 +198,8 @@ export async function fetchGitHubProject(
             state: 'state' in content ? (content.state ?? null) : null,
             labels: 'labels' in content ? (content.labels?.nodes ?? []) : [],
             isDraft,
+            shippedDate: shippedValue?.date ?? null,
         };
-
-        const statusValue = rawItem.fieldValues.nodes.find(
-            (fv) => fv.field?.name === 'Status',
-        );
         const colName = statusValue?.name;
         const col = colName ? columnMap.get(colName) : null;
 

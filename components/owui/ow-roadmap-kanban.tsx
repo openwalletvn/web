@@ -24,7 +24,12 @@ export function OwRoadmapKanban({board, columns, completedCol}: OwRoadmapKanbanP
         .filter((x): x is {cfg: OwRoadmapColConfig; col: NonNullable<typeof x.col>} => x.col !== undefined);
 
     const completedData = colMap.get(completedCol.name);
-    const completedItems = completedData?.items ?? [];
+    const completedItems = [...(completedData?.items ?? [])].sort((a, b) => {
+        if (!a.shippedDate && !b.shippedDate) return 0;
+        if (!a.shippedDate) return 1;
+        if (!b.shippedDate) return -1;
+        return b.shippedDate.localeCompare(a.shippedDate);
+    });
 
     return (
         <div className="mt-8 space-y-12">

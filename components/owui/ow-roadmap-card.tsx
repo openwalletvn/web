@@ -1,4 +1,11 @@
+import {IconCircleCheckFilled} from '@tabler/icons-react';
 import type {GithubProjectItem} from '@/lib/github-project';
+import {OwBadge} from './ow-badge';
+
+function formatShippedDate(dateStr: string): string {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric'});
+}
 
 function hexToRgb(hex: string): string {
     const h = hex.replace('#', '');
@@ -19,12 +26,17 @@ export function OwRoadmapCard({item}: {item: GithubProjectItem}) {
             {...wrapperProps}
             className="block bg-white border border-border rounded-lg p-4 hover:border-border-mid transition-colors group no-underline"
         >
-            <p className="text-sm font-medium text-text-primary leading-snug group-hover:text-text-accent transition-colors mb-3">
+            <p className="text-sm font-medium text-text-primary leading-snug group-hover:text-text-accent transition-colors">
                 {item.title}
             </p>
 
-            {item.labels.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
+            {(item.shippedDate || item.labels.length > 0) && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                    {item.shippedDate && (
+                        <OwBadge small colorHex="#2da44e">
+                            <IconCircleCheckFilled size={12}/> {formatShippedDate(item.shippedDate)}
+                        </OwBadge>
+                    )}
                     {item.labels.map((label) => {
                         const hex = label.color.startsWith('#') ? label.color : `#${label.color}`;
                         return (
@@ -41,12 +53,6 @@ export function OwRoadmapCard({item}: {item: GithubProjectItem}) {
                         );
                     })}
                 </div>
-            )}
-
-            {item.isDraft && (
-                <span className="inline-flex items-center mt-2 px-2 py-0.5 rounded-full text-xs font-medium bg-bg-muted text-text-muted">
-                    Draft
-                </span>
             )}
         </Wrapper>
     );
