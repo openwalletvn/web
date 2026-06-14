@@ -14,7 +14,6 @@ const meta: Meta<typeof OwRoadmapKanban> = {
                     'Kanban board for displaying a GitHub Projects roadmap. Read-only, no actions.',
                     '',
                     '**`columns`** — ordered list of `{ name, label }` mapping GitHub column names to display labels.',
-                    '**`completedCol`** — same shape; items shown as grid below the kanban, hidden if empty.',
                     '',
                     '```tsx',
                     'const board = await fetchGitHubProject("openwalletvn", 1)',
@@ -25,7 +24,6 @@ const meta: Meta<typeof OwRoadmapKanban> = {
                     '    { name: "Todo", label: "Planned" },',
                     '    { name: "Future Ideas", label: "Future Ideas" },',
                     '  ]}',
-                    '  completedCol={{ name: "Done", label: "Recently Completed" }}',
                     '/>',
                     '```',
                 ].join('\n'),
@@ -67,16 +65,6 @@ const MOCK_BOARD: GithubProjectBoard = {
                 {id: '4', title: 'App mobile OpenWallet', body: '', url: null, state: null, labels: [], isDraft: true, shippedDate: null},
             ],
         },
-        {
-            id: 'c4',
-            name: 'Done',
-            color: '#8250df',
-            items: [
-                {id: '5', title: 'Tích hợp Owie Chat', body: '', url: 'https://github.com/openwalletvn/web/issues/4', state: 'CLOSED', labels: [{name: 'feature', color: '#0075ca'}], isDraft: false, shippedDate: '2026-05-22'},
-                {id: '6', title: 'Trang so sánh thẻ', body: '', url: 'https://github.com/openwalletvn/web/issues/5', state: 'CLOSED', labels: [], isDraft: false, shippedDate: '2026-03-22'},
-                {id: '7', title: 'SEO cơ bản cho trang thẻ', body: '', url: null, state: 'CLOSED', labels: [{name: 'seo', color: '#e4e669'}], isDraft: false, shippedDate: null},
-            ],
-        },
     ],
 };
 
@@ -85,7 +73,6 @@ const COLUMNS = [
     {name: 'Todo', label: 'Planned'},
     {name: 'Future Ideas', label: 'Future Ideas'},
 ];
-const COMPLETED_COL = {name: 'Done', label: 'Recently Completed'};
 
 const EMPTY_BOARD: GithubProjectBoard = {
     ...MOCK_BOARD,
@@ -95,17 +82,17 @@ const EMPTY_BOARD: GithubProjectBoard = {
 export const Overview: Story = {
     render: () => (
         <OwStories>
-            <OwStorySection title="With items + completed section">
-                <OwRoadmapKanban board={MOCK_BOARD} columns={COLUMNS} completedCol={COMPLETED_COL}/>
+            <OwStorySection title="With items">
+                <OwRoadmapKanban board={MOCK_BOARD} columns={COLUMNS}/>
             </OwStorySection>
         </OwStories>
     ),
 };
 
 export const WithItems: Story = {
-    args: {board: MOCK_BOARD, columns: COLUMNS, completedCol: COMPLETED_COL},
+    args: {board: MOCK_BOARD, columns: COLUMNS},
 };
 
 export const EmptyBoard: Story = {
-    args: {board: EMPTY_BOARD, columns: COLUMNS, completedCol: COMPLETED_COL},
+    args: {board: EMPTY_BOARD, columns: COLUMNS},
 };

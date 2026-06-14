@@ -124,14 +124,13 @@ See `@.claude/DESIGN.md` for container conventions, CSS/typography rules, and fu
 |-----------------------|----------------------------------|--------------------------------------------------------------------------------|
 | `/write-post`         | `commands/write-post.md`         | Write a new blog post                                                          |
 | `/generate-images`    | `commands/generate-images.md`    | Add images to blog posts + Gemini prompts                                      |
-| `/add-changelog`      | `commands/add-changelog.md`      | Add a changelog entry                                                          |
+| `/roadmap-changelog`  | `commands/roadmap-changelog.md`  | Add/move/delete roadmap items and changelog entries in GitHub Projects         |
 | `/persona-page`       | `commands/persona-page.md`       | Create or update persona page (scaffold + intro + FAQs from live API data)     |
 | `/create-story`       | `commands/create-story.md`       | Create Storybook story for a component                                         |
 | `/add-ow-ui`          | `commands/add-ow-ui.md`          | Move component to `ow-ui/`, rename to `Ow*`, create story, report usages       |
 | `/commit-all`         | `commands/commit-all.md`         | Stage + commit all changes in logical groups with conventional commit messages |
 | `/sync-api-types`     | `commands/sync-api-types.md`     | Regenerate types from API schema, diff changes, scan codebase, suggest updates |
 | `/edit-system-prompt` | `commands/edit-system-prompt.md` | Edit Owie's system prompt, enforce invariants, push to Langfuse                |
-| `/roadmap`            | `commands/roadmap.md`            | Add/move/delete items in GitHub Projects roadmap via gh CLI                    |
 
 @.claude/docs/openwallet-brain.md
 @.claude/docs/architecture.md
