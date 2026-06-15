@@ -13,7 +13,7 @@ Currently: zero auth, zero DB, all anonymous. Chat uses OpenRouter via `app/api/
 already has comment `// Replace with auth userId when auth lands.`. Zustand v5 already installed and used (
 `lib/use-compare-list.ts`). Wallet cards in IndexedDB (local, stays local).
 
-Stack: Next.js App Router on Vercel + Hono CF Worker API (no DB). Adding Neon for both auth and Postgres.
+Stack: Next.js 16.2.6 App Router on Vercel + Hono CF Worker API (no DB). Adding Neon for both auth and Postgres.
 
 ---
 
@@ -122,7 +122,7 @@ INSERT INTO tiers VALUES
 CREATE SEQUENCE user_signup_seq;
 
 CREATE TABLE users (
-  id TEXT PRIMARY KEY,              -- = neon_auth.users.id
+  id TEXT PRIMARY KEY,              -- = neon_auth.users.id (UUID stored as TEXT)
   email TEXT,
   display_name TEXT,
   tier TEXT DEFAULT 'free' REFERENCES tiers(id),
@@ -240,17 +240,18 @@ interface UserStore {
   tier: string              // 'free' | 'early_adopter' | 'pro' | 'unlimited'
   canUsePaidModel: boolean
   bonusCredits: number      // persistent balance
+  traceId: string | null    // pseudonymous ID for Langfuse, never PII
   isOutOfCredits: boolean   // bonusCredits === 0
   isLoaded: boolean
   setUser: (user: AuthUser | null, dbData: UserDbRow | null, tierData: TierRow | null) => void
 }
 ```
 
-Provider in `app/layout.tsx`:
+Provider in `app/(app)/layout.tsx`:
 
 ```tsx
-const session = await getServerSession()
-const dbUser = session ? await getUserFromDb(session.id) : null
+const session = await auth.api.getSession({ headers: await headers() })
+const dbUser = session ? await getUserFromDb(session.user.id) : null
 const tierData = dbUser ? await getTier(dbUser.tier) : null
 <UserStoreProvider
   initialUser={session}
@@ -302,34 +303,45 @@ Add `traceId: string | null` to `UserStore` interface. Populate from `users.trac
 ```
 app/
   (marketing)/                          ← public SEO pages, no auth, existing
-  (auth)/                               ← minimal layout, no shell
+  (auth)/                               ← minimal layout, no app sidebar
     layout.tsx
     auth/
       sign-in/page.tsx                  ← /auth/sign-in — email input, calls magicLink()
       verify/page.tsx                   ← /auth/verify — "check your email" static screen
-  (shell)/                              ← shared AppShell (nav/header), NO auth gate
-    layout.tsx                          ← UserStoreProvider + AppShell; session may be null
-    chat/page.tsx                       ← /chat — public, always works
+  (app)/                                ← shared app sidebar (shadcn Sidebar), NO auth gate
+    layout.tsx                          ← UserStoreProvider + SidebarProvider + AppSidebar
+    (chat)/
+      chat/page.tsx                     ← /chat — public, always works (moved from current (chat)/)
     account/page.tsx                    ← /account — self-redirects to /auth/sign-in if no session
     wallet/                             ← /wallet — TBD, not implemented yet
       layout.tsx                        ← notFound() until decided
   api/
-    auth/[...path]/route.ts             ← Neon Auth handler
-    chat/route.ts                       ← existing
-  layout.tsx                            ← root: fonts, analytics only
+    auth/[...path]/route.ts             ← Better Auth handler (replaces any Neon Auth handler)
+    chat/route.ts                       ← existing — add credit check in Phase 1
+  layout.tsx                            ← root: fonts, analytics (NO UserStoreProvider here)
 ```
+
+**Current state:** Chat lives in `app/(chat)/chat/`. Must move to `app/(app)/(chat)/chat/`. URL stays `/chat`.
+
+**Root layout (`app/layout.tsx`) change:** Currently wraps `ChatProvider` + `ChatPanel` + `OwOwieFab`. These stay in root layout — they're marketing-page overlays. `UserStoreProvider` goes in `(app)/layout.tsx` only, NOT root layout (avoids DB reads on marketing pages).
+
+**Sidebar architecture:**
+- ONE sidebar across chat/account/wallet — shadcn `Sidebar` lifted to `(app)/layout.tsx`
+- `chat-page-client.tsx` currently owns `SidebarProvider` + `Sidebar` — must strip these out
+- Conversation list state moves to `useChatSidebarStore` (Zustand) so `AppSidebar` can render it
+- `chat-page-client.tsx` keeps only `SidebarInset` inner content (header bar + `ChatRuntime`)
 
 **Auth model:**
 - `/chat` — public, no auth required; auth = optional upgrade (unlocks paid model)
 - `/account` — self-guards: `if (!session) redirect('/auth/sign-in?next=/account')`
 - `/wallet` — TBD
-- `proxy.ts` middleware — no routes protected globally; add per-route as needed
+- `proxy.ts` — no routes protected globally; add per-route as needed
 
 **Routes:**
 
 | Feature | URL | Notes |
 |---|---|---|
-| Chat | `/chat` | moved from `app/(chat)/chat/`, URL unchanged |
+| Chat | `/chat` | moves to `app/(app)/(chat)/chat/` — URL unchanged |
 | Account | `/account` | new |
 | Wallet | `/wallet` | TBD; redirect `/app/*` → `/wallet` in `next.config.ts` |
 | Sign in | `/auth/sign-in` | magic link only, no password |
@@ -337,61 +349,272 @@ app/
 
 ---
 
+## Pre-flight: What's Already Done (verified via Neon MCP 2026-06-15)
+
+- Neon project: `steep-voice-40755571` (region: `aws-ap-southeast-1`, pg v18)
+- Neon Auth: provisioned on branch `production` (`br-noisy-cloud-aoac1ag3`)
+- Better Auth schema (`neon_auth.*`): tables `user`, `session`, `account`, `verification`, `jwks`, `member`, `organization`, `invitation`, `project_config` all exist
+- Email provider: Neon shared SMTP (`auth@mail.myneon.app`) — **no Resend/custom SMTP needed**
+- `neon_auth.user.id` type: **UUID** — `users.id TEXT` stores it cast as text
+- `allow_localhost: true` already set
+- Google OAuth currently enabled (shared, no custom client) — disable per plan
+- `email_password` currently enabled — disable per plan
+- Magic link: NOT yet enabled — must add via `configure_neon_auth`
+- Trusted origins: empty — must add `https://openwallet.vn`
+
+---
+
 ## Phase 0: Auth + DB Setup [ ]
 
 **Goal:** Magic-link email sign-in. User row created on first login.
 
-### Neon Auth config
-- [ ] Neon MCP: enable magic link plugin (`expires_in: 15`, `disable_sign_up: false`)
-- [ ] Neon MCP: disable `email_password` auth method
-- [ ] Neon MCP: remove Google OAuth provider
+### 1. Neon Auth config (via Neon MCP)
+- [ ] Enable magic link: `configure_neon_auth` → `update_auth_methods`, set magic link `expires_in: 900` (15 min in seconds)
+- [ ] Disable email/password: `configure_neon_auth` → `update_auth_methods` → `email_password.enabled: false`
+- [ ] Remove Google OAuth: `configure_neon_auth` → `remove_oauth_provider` → `google`
+- [ ] Add trusted origin: `configure_neon_auth` → `add_trusted_origin` → `https://openwallet.vn`
+- [ ] `allow_localhost` already true — no action needed
 
-### Packages + env
-- [ ] `pnpm add @neondatabase/auth @neondatabase/serverless`
-- [ ] Add env vars: `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET`, `DATABASE_URL`
+### 2. Packages
+- [ ] `pnpm add better-auth @neondatabase/serverless`
+  - **NOT** `@neondatabase/auth` (doesn't exist) — Neon Auth IS Better Auth, use `better-auth` directly
+  - `@neondatabase/serverless` for the Postgres client
+  - Install `better-auth@latest` (currently 1.6.x) — check release notes before pinning, magic link plugin API may differ from `0.x` docs online
 
-### DB
-- [ ] Run full DB migration (SQL above)
+### 3. Env vars
+- [ ] Add to `.env.local` + Vercel:
+  ```
+  # Better Auth (Neon Auth)
+  BETTER_AUTH_URL=https://openwallet.vn              # prod; localhost:3000 for local
+  BETTER_AUTH_SECRET=<random 32+ char string>
+  NEXT_PUBLIC_BETTER_AUTH_URL=https://openwallet.vn  # public, client-side
 
-### Auth wiring
-- [ ] Create `lib/auth/server.ts` — `createNeonAuth` server instance
-- [ ] Create `lib/auth/client.ts` — `createAuthClient` client instance
-- [ ] Create `app/api/auth/[...path]/route.ts` — auth handler (`auth.handler()`)
-- [ ] Create `proxy.ts` — middleware stub (no protected routes yet, ready to extend)
+  # Neon DB
+  DATABASE_URL=<direct connection string>             # NOT pooled — auth ops use direct
+  DATABASE_URL_POOL=<pooled connection string>        # for read-heavy queries
+  ```
 
-### DB queries
-- [ ] Create `lib/neon-db.ts` (server-only) — Postgres client + `getUserFromDb()`, `getTier()`
-- [ ] On-first-login hook: insert `users` row, assign tier by `signup_number`
+### 4. DB migration
+- [ ] Run full schema SQL via Neon MCP `run_sql` on branch `production`
+- [ ] `neon_auth.user.id` is UUID — store as `TEXT` in `public.users`, insert with `id = neon_auth_user_id::text`
+- [ ] Add `updated_at` trigger (auto-sets on UPDATE — don't rely on app-level):
+  ```sql
+  CREATE OR REPLACE FUNCTION set_updated_at()
+  RETURNS trigger AS $$
+  BEGIN NEW.updated_at = now(); RETURN NEW; END;
+  $$ LANGUAGE plpgsql;
 
-### Credits config
-- [ ] Create `lib/credits.ts` — `CREDIT_CONVERSION` config + `tokensToCreditCost()`
+  CREATE TRIGGER users_updated_at
+    BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+  ```
+- [ ] Assign tier atomically at INSERT via DB trigger (avoids race: two concurrent signups both reading count ≤ 20):
+  ```sql
+  CREATE OR REPLACE FUNCTION assign_tier_on_signup()
+  RETURNS trigger AS $$
+  BEGIN
+    IF NEW.signup_number <= 20 THEN
+      NEW.tier := 'early_adopter';
+    END IF;
+    RETURN NEW;
+  END;
+  $$ LANGUAGE plpgsql;
 
-### User state
-- [ ] Create `lib/stores/user-store.ts` — Zustand store (user, tier, bonusCredits, traceId, isLoaded)
-- [ ] Create `components/auth/user-store-provider.tsx`
+  CREATE TRIGGER users_assign_tier
+    BEFORE INSERT ON users
+    FOR EACH ROW EXECUTE FUNCTION assign_tier_on_signup();
+  ```
+- [ ] Wrap every query in `lib/neon-db.ts` that touches `user_cards` with session var for RLS:
+  ```sql
+  SET LOCAL app.current_user_id = '<user_id>';
+  SELECT * FROM user_cards WHERE ...;
+  ```
+  Use `withUserContext(userId, fn)` helper. Otherwise RLS blocks all queries.
 
-### App restructure
-- [ ] Move `app/(chat)/chat/` → `app/(shell)/chat/` (URL `/chat` unchanged)
-- [ ] Create `app/(shell)/layout.tsx` — reads session + dbUser, wraps `UserStoreProvider` + `AppShell`
-- [ ] Create `app/(shell)/account/page.tsx` — self-redirects if no session
-- [ ] Create `app/(shell)/wallet/layout.tsx` — `notFound()` placeholder
+### 5. Auth wiring
+- [ ] Create `lib/auth/server.ts`:
+  ```ts
+  import { betterAuth } from 'better-auth'
+  import { magicLink } from 'better-auth/plugins'
+  import { Pool } from '@neondatabase/serverless'
+
+  export const auth = betterAuth({
+    database: new Pool({ connectionString: process.env.DATABASE_URL }),
+    baseURL: process.env.BETTER_AUTH_URL,
+    secret: process.env.BETTER_AUTH_SECRET,
+    plugins: [
+      magicLink({
+        sendMagicLink: async ({ email, url }) => {
+          // Neon shared SMTP sends automatically — leave as no-op or log
+          console.log('[magic-link]', email, url)
+        },
+        expiresIn: 900,   // 15 min
+        disableSignUp: false,
+      }),
+    ],
+    databaseHooks: {
+      user: {
+        create: {
+          after: async (user) => {
+            // fires once per new user, server-side, before response returns — no race
+            await insertUserRow(user.id, user.email, user.name)
+          },
+        },
+      },
+    },
+  })
+  ```
+  > `insertUserRow` imported from `lib/neon-db.ts`. `neon-db.ts` must NOT import from `lib/auth/server.ts` — no circular deps.
+
+- [ ] Create `lib/auth/client.ts`:
+  ```ts
+  import { createAuthClient } from 'better-auth/client'
+  import { magicLinkClient } from 'better-auth/client/plugins'
+
+  export const authClient = createAuthClient({
+    baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+    plugins: [magicLinkClient()],
+  })
+  ```
+
+- [ ] Create `app/api/auth/[...path]/route.ts`:
+  ```ts
+  import { auth } from '@/lib/auth/server'
+  import { toNextJsHandler } from 'better-auth/next-js'
+  export const { GET, POST } = toNextJsHandler(auth)
+  ```
+  > Verify no existing `app/api/auth/` route before creating. Remove any pre-existing one.
+
+- [ ] Create `proxy.ts` at project root (Next.js 16 preferred name over `middleware.ts`):
+  ```ts
+  // proxy.ts — stub, no routes protected yet
+  import { NextResponse } from 'next/server'
+  import type { NextRequest } from 'next/server'
+  export function proxy(req: NextRequest) { return NextResponse.next() }
+  export const config = { matcher: [] }  // extend as needed
+  ```
+
+### 6. DB queries (`lib/neon-db.ts`, server-only)
+- [ ] Add `'server-only'` import at top — prevents accidental client bundle inclusion
+- [ ] Postgres client using `@neondatabase/serverless` with `DATABASE_URL` (direct)
+  > Use `neon()` tagged template for one-off reads, `Pool` in `betterAuth` config. Don't mix patterns.
+- [ ] `insertUserRow(id, email, name)` — called from Better Auth hook:
+  ```ts
+  await sql`
+    INSERT INTO users (id, email, display_name)
+    VALUES (${id}, ${email}, ${name})
+    ON CONFLICT (id) DO NOTHING
+  `
+  ```
+- [ ] `getUserFromDb(id)` — returns full user row incl. `tier`, `bonus_credits`, `trace_id`
+- [ ] `getTier(tierId)` — returns tier row (`can_use_paid_model` etc.)
+- [ ] `withUserContext(userId, fn)` — wraps queries needing RLS:
+  ```ts
+  async function withUserContext<T>(userId: string, fn: () => Promise<T>): Promise<T> {
+    return sql.begin(async (tx) => {
+      await tx`SET LOCAL app.current_user_id = ${userId}`
+      return fn()  // fn uses tx, not global sql
+    })
+  }
+  ```
+
+### 7. Credits config
+- [ ] Create `lib/credits.ts` — unchanged from plan
+
+### 8. User state (Zustand)
+- [ ] Create `lib/stores/user-store.ts`:
+  ```ts
+  interface UserStore {
+    user: AuthUser | null
+    tier: string
+    canUsePaidModel: boolean
+    bonusCredits: number
+    traceId: string | null       // pseudonymous Langfuse ID
+    isOutOfCredits: boolean
+    isLoaded: boolean            // false until client hydration done
+    setUser: (user, dbData, tierData) => void
+  }
+  // isLoaded starts false; set true inside setUser after hydration
+  ```
+- [ ] Create `components/auth/user-store-provider.tsx` — call `setUser` in `useEffect`, not directly from server props, to avoid hydration mismatch
+- [ ] Zustand v5 requires `createStore` + context for SSR-safe providers (avoids shared singleton between requests). Use `createStore` in provider, not global `create()`. See `lib/use-compare-list.ts` for existing pattern.
+
+### 9. App restructure
+- [ ] Move `app/(chat)/chat/` → `app/(app)/(chat)/chat/` (URL `/chat` unchanged)
+- [ ] Delete `app/(chat)/layout.tsx` after move (currently just wraps in `ow-chat-layout` div — move that class into `(app)/layout.tsx` or `chat-page-client.tsx`)
+- [ ] Create `app/(app)/layout.tsx` — shared sidebar shell:
+  ```tsx
+  // server component: read session + db user, pass to UserStoreProvider
+  // auth.api.getSession from lib/auth/server.ts; headers() from next/headers — must be awaited
+  const session = await auth.api.getSession({ headers: await headers() })
+  const dbUser = session ? await getUserFromDb(session.user.id) : null
+  const tierData = dbUser ? await getTier(dbUser.tier) : null
+
+  return (
+    <UserStoreProvider initialUser={session} initialDbUser={dbUser} initialTier={tierData}>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>{children}</SidebarInset>
+      </SidebarProvider>
+    </UserStoreProvider>
+  )
+  ```
+- [ ] Refactor `chat-page-client.tsx`:
+  - Remove `SidebarProvider`, `Sidebar`, `SidebarHeader`, `SidebarContent`, `SidebarFooter` — move to `AppSidebar`
+  - Keep only `SidebarInset` inner content (header bar + `ChatRuntime`)
+  - Conversation list (`convos`, `activeId`, handlers) — expose via `useChatSidebarStore` so `AppSidebar` can render it
+  - `(app)/layout.tsx` provides `SidebarProvider` — `chat-page-client.tsx` must NOT have its own (double-nesting breaks sidebar state)
+- [ ] Create `app/(app)/account/page.tsx` — `if (!session) redirect('/auth/sign-in?next=/account')`
+- [ ] Create `app/(app)/wallet/layout.tsx` — `notFound()` placeholder
 - [ ] Add redirect `/app/*` → `/wallet` in `next.config.ts`
 
-### Auth UI
-- [ ] Create `app/(auth)/layout.tsx` — minimal centered layout
-- [ ] Create `app/(auth)/auth/sign-in/page.tsx` — email input + `authClient.signIn.magicLink()`
+### 10. Auth UI
+- [ ] Create `app/(auth)/layout.tsx` — minimal centered layout, no sidebar
+- [ ] Create `app/(auth)/auth/sign-in/page.tsx`:
+  ```tsx
+  // await before redirecting — show error in UI if it throws (e.g. rate limit)
+  await authClient.signIn.magicLink({ email, callbackURL: '/chat' })
+  // then redirect to /auth/verify
+  ```
+  > `callbackURL: '/chat'` is relative — Better Auth resolves against `baseURL`. In dev, verify this works; if not, pass full URL: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/chat`.
 - [ ] Create `app/(auth)/auth/verify/page.tsx` — "check your email" static screen
 
-### Shell + nav
-- [ ] Create `components/shell/app-shell.tsx` — nav sidebar (desktop) + bottom bar (mobile)
-- [ ] Nav items: Chat always visible; Account shows if session exists else Sign in link
-- [ ] Create `components/auth/user-menu.tsx` — avatar, name, credit balance, sign out
+### 11. App sidebar (`components/app/app-sidebar.tsx`)
+- [ ] Create `components/app/app-sidebar.tsx` — replaces inline sidebar in `chat-page-client.tsx`:
+  - `SidebarHeader`: logo + new chat button (visible on all pages)
+  - `SidebarContent`: nav links (Home, Chat, Account) + conversation list (from `useChatSidebarStore`, only populated when on `/chat`)
+  - `SidebarFooter`: `UserMenu` (avatar, credits, sign out)
+- [ ] Create `lib/stores/chat-sidebar-store.ts` — Zustand store: `convos`, `activeId`, `selectConvo`, `deleteConvo` — populated by chat page, read by `AppSidebar`
+  > Chat page populates store in `useEffect`. `AppSidebar` renders before that fires — guard with empty state, shows no convos until effect runs. Correct behavior.
+- [ ] Create `components/auth/user-menu.tsx` — avatar, name, credit balance, sign out:
+  ```tsx
+  await authClient.signOut()
+  router.push('/')
+  ```
 
-### Langfuse trace ID
-- [ ] Update `lib/chat/anonymous-user.ts` — `getUserId()` returns `trace_id` (logged-in) or localStorage anon ID (guest)
-- [ ] Add `traceId` to `UserStore` — populated from `users.trace_id` via `getUserFromDb()`
+### 12. Langfuse trace ID
+- [ ] Update `lib/chat/anonymous-user.ts` — `getUserId()` client-only:
+  ```ts
+  export function getUserId(): string {
+    if (typeof window === 'undefined') return 'anon-ssr'  // client-only guard
+    const traceId = useUserStore.getState().traceId
+    if (traceId) return traceId
+    // fallback: localStorage anon ID
+    ...
+  }
+  ```
+  > If `useUserStore` uses context pattern (Zustand v5 SSR), `getState()` won't work outside React tree. Instead export a module-level ref the provider writes to on mount: `export let traceIdRef: string | null = null`. `getUserId()` reads `traceIdRef`.
+- [ ] Add `traceId` to `UserStore` — populated from `users.trace_id` in `getUserFromDb()`
 
-### Privacy policy
+### 13. Chat route: integrate userId from session
+- [ ] `app/api/chat/route.ts` — server reads session, never trusts body for credit authority:
+  ```ts
+  // userId from request body is client-controlled — untrusted for credit deduction
+  const session = await auth.api.getSession({ headers: req.headers })
+  const userId = session?.user.id ?? body.userId  // fallback to anon for unauthenticated
+  ```
+
+### 14. Privacy policy
 - [ ] Update `app/(marketing)/(legal)/chinh-sach-bao-mat/page.tsx` — clarify Langfuse receives pseudonymous `trace_id` only, not email/auth ID
 
 ---
@@ -400,8 +623,11 @@ app/
 
 **Goal:** `can_use_paid_model` tier flag + credit balance gates paid model access.
 
+- [ ] Add paid model entry to `CHAT_MODELS` in `lib/chat/models.ts` — add `paid: true` flag (not just `free: false`) so server can identify it unambiguously
 - [ ] Hardcode OW-curated paid model ID in config after testing
 - [ ] `app/api/chat/route.ts` — server-side check: reject paid model if `!canUsePaidModel || bonusCredits === 0`
+  - Read session → query `getUserFromDb` + `getTier`
+  - DB query per request adds latency — accept for now (sub-50ms on Neon), optimize later if needed
 - [ ] Model selector UI — paid model item disabled + tooltip when ineligible
 
 ---
@@ -414,6 +640,7 @@ app/
 - [ ] `app/api/chat/route.ts` `onFinish`:
   - `deductCredits()` using `tokensToCreditCost()` (paid model only)
   - log to `credit_usage_log` (all models, `credits_used = 0` for free)
+  - Use `after()` from `next/server` (already imported) for fire-and-forget DB writes — ensures credit deduction runs even on client disconnect
 - [ ] Credit balance display in `UserMenu`
 
 ---
@@ -474,3 +701,6 @@ Audit trail: write to `user_audit_log` on tier changes
 12. Free model message → `credit_usage_log` row with `credits_used = 0`
 13. Sign out → `getUserId()` returns anon localStorage ID
 14. Langfuse: signed-in traces use `users.trace_id`, not email/auth ID
+15. Client disconnect mid-stream → credit still deducted (via `after()`)
+16. Two simultaneous signups at user #20 → only one gets `early_adopter` (DB trigger atomic)
+17. Paid model request with no session → rejected server-side (not just UI-disabled)
