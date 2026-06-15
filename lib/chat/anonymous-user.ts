@@ -26,15 +26,17 @@ function generateUserId(): string {
 
 const USER_ID_KEY = 'ow_chat_user_id';
 
-// Returns stable userId for this browser. Replace with auth userId when auth lands.
+import { traceId } from '@/lib/stores/user-store'
+
 export function getUserId(): string {
-    if (typeof window === 'undefined') return 'ssr';
-    let id = localStorage.getItem(USER_ID_KEY);
+    if (typeof window === 'undefined') return 'anon-ssr'
+    if (traceId.current) return traceId.current
+    let id = localStorage.getItem(USER_ID_KEY)
     if (!id) {
-        id = generateUserId();
-        localStorage.setItem(USER_ID_KEY, id);
+        id = generateUserId()
+        localStorage.setItem(USER_ID_KEY, id)
     }
-    return id;
+    return id
 }
 
 // New sessionId per tab (not persisted).

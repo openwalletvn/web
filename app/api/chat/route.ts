@@ -8,6 +8,8 @@ import { getSystemPrompt } from '@/lib/chat/system-prompt';
 import { isAllowedModel, getDefaultModel } from '@/lib/chat/models';
 import type { PageContext } from '@/lib/chat/page-context';
 import { langfuseSpanProcessor } from '@/instrumentation';
+import { auth } from '@/lib/auth/server';
+import { getUserFromDb } from '@/lib/neon-db';
 import fs from 'fs';
 import path from 'path';
 
@@ -57,9 +59,15 @@ const handler = async (req: Request) => {
         );
     }
 
+    const session = await auth.api.getSession({ headers: req.headers });
+    const dbUser = session ? await getUserFromDb(session.user.id) : null;
+
     const body = await req.json() as { messages?: UIMessage[]; pageContext?: PageContext; userId?: string; sessionId?: string; config?: { modelName?: string } };
     const uiMessages: UIMessage[] = body.messages ?? [];
     const messages = await convertToModelMessages(uiMessages);
+
+    // traceUserId: prefer pseudonymous trace_id from DB; fall back to anon body.userId
+    const traceUserId = dbUser?.trace_id ?? body.userId;
 
     const requestedModel = body.config?.modelName;
     const model = isAllowedModel(requestedModel) ? requestedModel! : getDefaultModel().id;
@@ -76,7 +84,7 @@ const handler = async (req: Request) => {
         {
             traceName: 'chat',
             sessionId: body.sessionId,
-            userId: body.userId,
+            userId: traceUserId,
             tags: ['web-chat'],
             metadata: { model, ip, promptVersion: String(promptVersion), messageCount: String(messageCount) },
         },

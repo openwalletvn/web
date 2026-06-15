@@ -91,6 +91,7 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       { source: '/changelog', destination: '/roadmap', permanent: true },
+      { source: '/app/:path*', destination: '/wallet', permanent: false },
       { source: '/openwallet-chat', destination: '/owie-chat', permanent: true },
       { source: '/openwallet-mcp', destination: '/mcp', permanent: true },
       { source: '/blog', destination: '/tin-tuc', permanent: true },
