@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChatRuntime } from '@/components/chat/chat-runtime';
 import { SearchDialog } from '@/components/search/search-dialog';
-import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { AppShell } from '@/components/app/app-shell';
 import {
     type Conversation,
     createConversation,
@@ -47,21 +47,20 @@ export function ChatPageClient({ initialId }: { initialId?: string } = {}) {
     const refresh = useCallback(() => setConvos(listConversations()), [setConvos]);
 
     return (
-        <SidebarInset className="ow-chat-sidebar-inset flex h-svh flex-col overflow-hidden">
-            <header className="ow-chat-sidebar-header min-h-12.5 flex justify-between shrink-0 items-center gap-2 border-b px-3 py-1">
-                <div>
-                    <SidebarTrigger />
-                </div>
-                <div>
+        <AppShell
+            className="ow-chat-sidebar-inset"
+            headerRight={
+                <>
                     <div className="hidden sm:flex"><SearchDialog /></div>
                     <div className="flex sm:hidden"><SearchDialog mobileOnly /></div>
-                </div>
-            </header>
-            <div className="min-h-0 flex-1 h-full">
+                </>
+            }
+        >
+            <div className="h-full">
                 {mounted && activeId && (
                     <ChatRuntime key={activeId} convoId={activeId} onSaved={refresh} />
                 )}
             </div>
-        </SidebarInset>
+        </AppShell>
     );
 }

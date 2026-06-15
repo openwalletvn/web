@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
     Sidebar,
@@ -16,18 +16,19 @@ import {
     SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarRail,
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { HomeIcon, MailIcon, PlusIcon, Trash2Icon } from 'lucide-react'
-import { UserMenu } from '@/components/auth/user-menu'
+import { UserMenuSidebarFooter } from '@/components/auth/user-menu'
 import { useChatSidebarStore } from '@/lib/stores/chat-sidebar-store'
 import {
     createConversation,
     deleteConversation,
     listConversations,
+    setLastActiveId,
 } from '@/lib/chat/conversation-store'
 import type { Conversation } from '@/lib/chat/conversation-store'
-import { setLastActiveId } from '@/lib/chat/conversation-store'
 
 function groupConversations(convos: Conversation[]) {
     const todayStart = new Date().setHours(0, 0, 0, 0)
@@ -47,7 +48,7 @@ export function AppSidebar() {
         (id: string) => {
             setActiveId(id)
             setLastActiveId(id)
-            router.replace(`/chat?id=${id}`, { scroll: false })
+            router.push(`/chat?id=${id}`)
         },
         [router, setActiveId],
     )
@@ -74,32 +75,34 @@ export function AppSidebar() {
         [activeId, selectConvo, setConvos],
     )
 
+    useEffect(() => {
+        if (convos.length === 0) setConvos(listConversations())
+    }, [])
+
     const grouped = groupConversations(convos)
 
     return (
-        <Sidebar collapsible="offcanvas">
-            <SidebarHeader className="ow-chat-page-sidebar-header border-b border-sidebar-border min-h-12.5 flex items-center justify-center">
-                <div className="w-full flex items-center justify-between gap-2 px-2">
-                    <Link href="/" className="flex items-center gap-2 min-w-0">
-                        <Image
-                            src="/icon.png"
-                            alt="OpenWallet"
-                            width={28}
-                            height={28}
-                            className="shrink-0 rounded-md"
-                        />
-                        <span className="truncate font-semibold text-sm">Owie</span>
-                    </Link>
-                    <Button
-                        size="icon"
-                        variant="ghost"
-                        className="size-7 shrink-0"
-                        onClick={handleNew}
-                        title="Cuộc trò chuyện mới"
-                    >
-                        <PlusIcon className="size-4" />
-                    </Button>
-                </div>
+        <Sidebar collapsible="icon">
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton size="lg" asChild>
+                            <Link href="/">
+                                <Image
+                                    src="/icon.png"
+                                    alt="OpenWallet"
+                                    width={28}
+                                    height={28}
+                                    className="rounded-md"
+                                />
+                                <span className="font-semibold">Owie</span>
+                            </Link>
+                        </SidebarMenuButton>
+                        <SidebarMenuAction onClick={handleNew} title="Cuộc trò chuyện mới">
+                            <PlusIcon />
+                        </SidebarMenuAction>
+                    </SidebarMenuItem>
+                </SidebarMenu>
             </SidebarHeader>
 
             <SidebarContent>
@@ -120,7 +123,7 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                {convos.length > 0 && grouped.today.length > 0 && (
+                {grouped.today.length > 0 && (
                     <SidebarGroup>
                         <SidebarGroupLabel>Hôm nay</SidebarGroupLabel>
                         <SidebarGroupContent>
@@ -128,7 +131,7 @@ export function AppSidebar() {
                         </SidebarGroupContent>
                     </SidebarGroup>
                 )}
-                {convos.length > 0 && grouped.yesterday.length > 0 && (
+                {grouped.yesterday.length > 0 && (
                     <SidebarGroup>
                         <SidebarGroupLabel>Hôm qua</SidebarGroupLabel>
                         <SidebarGroupContent>
@@ -136,7 +139,7 @@ export function AppSidebar() {
                         </SidebarGroupContent>
                     </SidebarGroup>
                 )}
-                {convos.length > 0 && grouped.earlier.length > 0 && (
+                {grouped.earlier.length > 0 && (
                     <SidebarGroup>
                         <SidebarGroupLabel>Trước đó</SidebarGroupLabel>
                         <SidebarGroupContent>
@@ -146,12 +149,10 @@ export function AppSidebar() {
                 )}
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-sidebar-border">
-                <UserMenu />
-                <p className="text-center text-muted-foreground text-xs px-2 py-1">
-                    Lịch sử lưu trên thiết bị của bạn
-                </p>
+            <SidebarFooter>
+                <UserMenuSidebarFooter />
             </SidebarFooter>
+            <SidebarRail />
         </Sidebar>
     )
 }

@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth/server'
-import { getUserFromDb } from '@/lib/neon-db'
+import { getUserFromDb, getTier } from '@/lib/neon-db'
+import { AppShell } from '@/components/app/app-shell'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,16 +10,35 @@ export default async function AccountPage() {
     if (!session) redirect('/auth/sign-in?next=/account')
 
     const dbUser = await getUserFromDb(session.user.id)
+    const tier = dbUser ? await getTier(dbUser.tier) : null
 
     return (
-        <div className="p-6 max-w-lg mx-auto">
-            <h1 className="text-xl font-semibold mb-4">Tài khoản</h1>
-            <div className="space-y-2 text-sm">
-                <p><span className="text-muted-foreground">Email:</span> {session.user.email}</p>
-                <p><span className="text-muted-foreground">Tên:</span> {session.user.name ?? '—'}</p>
-                <p><span className="text-muted-foreground">Tier:</span> {dbUser?.tier ?? '—'}</p>
-                <p><span className="text-muted-foreground">Credits:</span> {dbUser ? Number(dbUser.bonus_credits).toFixed(0) : '—'}</p>
+        <AppShell headerLeft={<span className="text-sm font-medium">Tài khoản</span>}>
+            <div className="p-6 max-w-lg mx-auto space-y-6">
+                <section className="space-y-2 text-sm">
+                    <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Thông tin</h2>
+                    <Row label="Email" value={session.user.email} />
+                    <Row label="Tên" value={session.user.name ?? '—'} />
+                    <Row label="Số thứ tự" value={dbUser ? `#${dbUser.signup_number}` : '—'} />
+                    <Row label="Thành viên từ" value={dbUser ? new Date(dbUser.created_at).toLocaleDateString('vi-VN') : '—'} />
+                </section>
+
+                <section className="space-y-2 text-sm">
+                    <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Gói & Credits</h2>
+                    <Row label="Gói" value={tier?.label ?? dbUser?.tier ?? '—'} />
+                    <Row label="Credits" value={dbUser ? Number(dbUser.bonus_credits).toFixed(0) : '—'} />
+                    <Row label="Access to paid models" value={tier ? (tier.can_use_paid_model ? 'Có' : 'Không') : '—'} />
+                </section>
             </div>
+        </AppShell>
+    )
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="flex justify-between gap-4">
+            <span className="text-muted-foreground">{label}</span>
+            <span className="font-medium text-right">{value}</span>
         </div>
     )
 }
