@@ -3,12 +3,22 @@ export type ChatModel = {
     label: string;
     provider: string;
     free: boolean;
+    paid?: true;
     contextWindow: number;
     default?: true;
     localOnly?: true;
 };
 
 export const CHAT_MODELS: ChatModel[] = [
+    // https://openrouter.ai/google/gemini-2.5-flash
+    {
+        id: 'google/gemini-2.5-flash',
+        label: 'OW Pick: Gemini 2.5 Flash',
+        provider: 'Google',
+        free: false,
+        paid: true,
+        contextWindow: 1_048_576,
+    },
     // https://openrouter.ai/poolside/laguna-m.1:free
     {
         id: 'poolside/laguna-m.1:free',
@@ -98,4 +108,9 @@ export function isAllowedModel(id: string | undefined): boolean {
     if (!id) return false;
     const isDev = process.env.NODE_ENV === 'development';
     return CHAT_MODELS.some((m) => m.id === id && (isDev || !m.localOnly));
+}
+
+export function isPaidModel(id: string | undefined): boolean {
+    if (!id) return false;
+    return CHAT_MODELS.some((m) => m.id === id && m.paid === true);
 }

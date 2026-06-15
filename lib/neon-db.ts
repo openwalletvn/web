@@ -53,6 +53,27 @@ export async function getTier(tierId: string): Promise<TierRow | null> {
     return (rows[0] as TierRow) ?? null
 }
 
+export async function logCreditUsage(
+    userId: string,
+    modelId: string,
+    inputTokens: number,
+    outputTokens: number,
+    creditsUsed: number,
+) {
+    await sql`
+        INSERT INTO credit_usage_log (user_id, model_id, input_tokens, output_tokens, credits_used)
+        VALUES (${userId}, ${modelId}, ${inputTokens}, ${outputTokens}, ${creditsUsed})
+    `
+}
+
+export async function deductCredits(userId: string, amount: number) {
+    await sql`
+        UPDATE users
+        SET bonus_credits = GREATEST(0, bonus_credits - ${amount})
+        WHERE id = ${userId}
+    `
+}
+
 export async function withUserContext<T>(userId: string, fn: (client: Pool) => Promise<T>): Promise<T> {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL })
     const client = await pool.connect()
