@@ -484,7 +484,7 @@ app/
 - [x] Create `lib/stores/chat-sidebar-store.ts` — global `create()` (client-only safe): `convos`, `activeId`, `setConvos`, `setActiveId`
 
 ### 9. App restructure
-- [x] `app/(chat)/chat/` → `app/(app)/(chat)/chat/` (URL `/chat` unchanged)
+- [x] `app/(chat)/chat/` → `app/(app)/(chat)/chat/` → `app/(app)/chat/` (redundant `(chat)` group removed; URL `/chat` unchanged)
 - [x] `app/(chat)/layout.tsx` deleted
 - [x] `app/(app)/layout.tsx` created — server component reads session + DB user + tier, wraps in `UserStoreProvider` → `SidebarProvider` → `AppSidebar` + children
 - [x] `chat-page-client.tsx` refactored — removed all sidebar components, populates `useChatSidebarStore` via useEffect, renders only `SidebarInset` content
@@ -498,9 +498,11 @@ app/
 - [x] Create `app/(auth)/auth/verify/page.tsx` — static "check your email" screen
 
 ### 11. App sidebar (`components/app/app-sidebar.tsx`)
-- [x] Create `components/app/app-sidebar.tsx` — `AppSidebar`, `ConvoList`, conversation grouping logic; `SidebarFooter` has `UserMenu`
+- [x] Create `components/app/app-sidebar.tsx` — sidebar-04 style: header (logo + new-chat action), persistent convo list grouped by day, `SidebarRail`, `collapsible="icon"`; hydrates chat store on mount so history shows on all `(app)` routes
 - [x] `lib/stores/chat-sidebar-store.ts` created (done in step 8)
-- [x] Create `components/auth/user-menu.tsx` — sign-in button if no user, else name + credits + sign out via `authClient.signOut()` → `router.push('/')`
+- [x] Create `components/auth/user-menu.tsx` — `UserMenuSidebarFooter`: avatar row with `DropdownMenu` (account + sign out); legacy `UserMenu` kept as deprecated export
+- [x] Add `components/app/app-shell.tsx` — `SidebarInset` + header with `headerLeft`/`headerRight` slots; used by `/chat` and `/account`
+- [x] Install shadcn `avatar` + `dropdown-menu` components
 
 ### 12. Langfuse trace ID
 - [x] `lib/chat/anonymous-user.ts` — `getUserId()` reads `traceId.current` (module-level object ref) if set, else falls back to localStorage anon ID; SSR guard returns `'anon-ssr'`
@@ -515,40 +517,39 @@ app/
 
 ---
 
-## Phase 1: Paid Model Selection [ ]
+## Phase 1: Paid Model Selection [x]
 
 **Goal:** `can_use_paid_model` tier flag + credit balance gates paid model access.
 
-- [ ] Add paid model entry to `CHAT_MODELS` in `lib/chat/models.ts` — add `paid: true` flag (not just `free: false`) so server can identify it unambiguously
-- [ ] Hardcode OW-curated paid model ID in config after testing
-- [ ] `app/api/chat/route.ts` — server-side check: reject paid model if `!canUsePaidModel || bonusCredits === 0`
-  - Read session → query `getUserFromDb` + `getTier`
-  - DB query per request adds latency — accept for now (sub-50ms on Neon), optimize later if needed
-- [ ] Model selector UI — paid model item disabled + tooltip when ineligible
+- [x] Add paid model entry to `CHAT_MODELS` in `lib/chat/models.ts` — added `paid: true` flag; model ID inlined as string (no exported constant needed — use `CHAT_MODELS.find(m => m.paid)?.id` to get it)
+- [x] Hardcode OW-curated paid model: `google/gemini-2.5-flash` (192% ROI) — change `id` in `CHAT_MODELS` paid entry to switch model; zero schema changes
+- [x] `app/api/chat/route.ts` — server-side check: reject paid model if `!canUsePaidModel || bonusCredits === 0` (403 + Vietnamese error message)
+- [x] Model selector UI — `composer.tsx` reads `useUserStore` → `canUsePaidModel` + `isOutOfCredits` → paid model item `disabled` + description "Hết credit"; auto-falls back to default model if paid model becomes unavailable
 
 ---
 
-## Phase 2: Credit Tracking [ ]
+## Phase 2: Credit Tracking [x]
 
 **Goal:** Deduct credits on paid model messages. Log all messages.
 
-- [ ] `lib/neon-db.ts` — add `getUserCredits()`, `deductCredits()`
-- [ ] `app/api/chat/route.ts` `onFinish`:
-  - `deductCredits()` using `tokensToCreditCost()` (paid model only)
-  - log to `credit_usage_log` (all models, `credits_used = 0` for free)
-  - Use `after()` from `next/server` (already imported) for fire-and-forget DB writes — ensures credit deduction runs even on client disconnect
-- [ ] Credit balance display in `UserMenu`
+- [x] `lib/neon-db.ts` — added `logCreditUsage()` + `deductCredits()` (GREATEST(0, ...) prevents negative balance)
+- [x] `app/api/chat/route.ts` `onFinish`:
+  - `tokensToCreditCost()` for paid model; `0` for free
+  - `after()` wraps both `logCreditUsage` + `deductCredits` — fire-and-forget, survives client disconnect
+  - logs to `credit_usage_log` for all models
+- [x] Credit balance display in `UserMenuSidebarFooter` — already shows `bonusCredits` from Zustand store (was done in Phase 0)
 
 ---
 
-## Phase 3: Packages + Vouchers [ ]
+## Phase 3: Vouchers (no payment gateway) [ ]
 
-**Goal:** Admin creates voucher codes. Users apply at checkout to get credits.
+**Goal:** Admin creates 100%-off voucher codes. Users redeem to get credits. No payment gateway needed.
 
-- [ ] Seed `packages` table
-- [ ] `app/api/vouchers/redeem/route.ts` — validate + redeem → insert `credit_topups` + increment `bonus_credits`
-- [ ] Voucher input UI (simple code field)
-- [ ] Payment gateway wired later — `payment_id` + `payment_provider` nullable, zero migration
+> Payment gateway is out of scope until further notice. Voucher redemption is the only way to grant credits pre-payment.
+
+- [ ] `app/api/vouchers/redeem/route.ts` — POST `{ code }` → validate voucher (`vouchers` table) → check `max_redemptions` + `expires_at` → insert `voucher_redemptions` + insert `credit_topups` + `UPDATE users SET bonus_credits = bonus_credits + X`
+- [ ] Voucher input UI — simple text field + submit button (e.g. on `/account` page)
+- [ ] Admin: create vouchers via direct SQL (`INSERT INTO vouchers ...`) — no admin UI needed yet
 
 ---
 
