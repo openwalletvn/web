@@ -4,7 +4,7 @@
 
 OpenWallet needs user accounts to:
 
-1. Gate paid AI model (first 100 users get free paid access, dev pays)
+1. Gate paid AI model (first 20 users get free paid access, dev pays)
 2. Track per-user credit balance
 3. Store user's saved card IDs (feed to Owie for personalized responses)
 
@@ -31,7 +31,7 @@ Formula lives in `lib/credits.ts` (config only, not DB):
 // lib/credits.ts
 export const CREDIT_CONVERSION = {
   input_tokens_per_credit: 4000,
-  output_tokens_per_credit: 1000,  // output 4x more expensive
+  output_tokens_per_credit: 1000,
 }
 
 export function tokensToCreditCost(input: number, output: number): number {
@@ -46,6 +46,54 @@ Formula change → update config only → past `credits_used` rows untouched →
 
 **Paid model = one OW-curated model** (hardcoded after testing). Model selector shows `[OW Pick: <model name>]` + free
 models. When out of credits → paid model item disabled + tooltip "Hết credit". Server rejects as safety net only.
+
+---
+
+## Credit Economics (finalized 2026-06-15)
+
+### Real usage data (from `logs/` — 9 turns across 3 convos)
+
+```
+Avg input/turn:  7,664 tokens  (system prompt ~7k dominates)
+Avg output/turn:    299 tokens
+Credits/turn: 7664/4000 + 299/1000 = 1.916 + 0.299 = ~2.2 credits
+Cost/turn at base model: ~$0.005
+```
+
+### Starter pack: 50k VND ≈ $2
+
+```
+500 credits / 2.2 credits per msg = ~225 messages = ~22 convos (10 msg avg)
+```
+
+### ROI by model (225 msg/pack)
+
+| Model | $/1M in | $/1M out | Cost/msg | 225msg cost | ROI |
+|---|---|---|---|---|---|
+| Gemini 2.5 Flash Lite | $0.10 | $0.40 | $0.00089 | $0.20 | **904%** |
+| Gemini 3.1 Flash Lite | $0.25 | $1.50 | $0.00236 | $0.53 | **276%** |
+| Gemini 2.5 Flash | $0.30 | $2.50 | $0.00305 | $0.69 | **192%** |
+| Gemini 3 Flash Preview | $0.50 | $3.00 | $0.00473 | $1.06 | **88%** |
+| Gemini 2.5 Pro | $1.25 | $10.00 | $0.01257 | $2.83 | **-29%** ❌ |
+
+**Min ROI target: 60%** (max cost $1.25 per $2 pack)
+
+**Current pick: Gemini 2.5 Flash** (`google/gemini-2.5-flash`) → 192% ROI, strong quality.
+
+### Mental model
+
+ROI slider = model quality knob. More expensive model → better answers → lower ROI. Switch model anytime — zero schema changes. Stay above 60% floor.
+
+```
+Gemini 2.5 Flash Lite  → 276% ROI  (cheapest)
+Gemini 2.5 Flash       → 192% ROI  ← current pick
+Gemini 3 Flash         →  88% ROI  (premium feel)
+[floor]                →  60% ROI  ($1.25 max cost/pack)
+```
+
+### TODO: internal ROI tool
+
+Build simple internal page/script: input model prices → outputs cost/msg, cost/pack, ROI. Needed for quick model-switch decisions. Not urgent — add to backlog.
 
 ---
 
@@ -66,7 +114,7 @@ CREATE TABLE tiers (
 
 INSERT INTO tiers VALUES
   ('free',          'Free',          false, 'Basic users'),
-  ('early_adopter', 'Early Adopter', true,  'First 100 signups'),
+  ('early_adopter', 'Early Adopter', true,  'First 20 signups'),
   ('pro',           'Pro',           true,  'Paid users'),
   ('unlimited',     'Unlimited',     true,  'Dev / internal');
 
@@ -80,6 +128,7 @@ CREATE TABLE users (
   tier TEXT DEFAULT 'free' REFERENCES tiers(id),
   signup_number INTEGER DEFAULT nextval('user_signup_seq'),
   bonus_credits NUMERIC(12,4) DEFAULT 0,  -- purchased/voucher balance, persistent, never expires
+  trace_id UUID DEFAULT gen_random_uuid() UNIQUE, -- pseudonymous ID sent to Langfuse (no PII)
   preferences JSONB DEFAULT '{}',
   deleted_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT now(),
@@ -172,7 +221,7 @@ CREATE POLICY user_cards_isolation ON user_cards
 Tier assignment on first login:
 
 ```sql
--- signup_number <= 100 → tier = 'early_adopter', else 'free'
+-- signup_number <= 20 → tier = 'early_adopter', else 'free'
 ```
 
 ---
@@ -214,20 +263,26 @@ const tierData = dbUser ? await getTier(dbUser.tier) : null
 
 ---
 
-## Anonymous ID → Auth ID
+## Anonymous ID → Trace ID (Langfuse)
+
+**Privacy policy:** Langfuse receives `trace_id` (random UUID), never auth ID or email. Pseudonymous — no third party can identify user. OpenWallet team can reverse `trace_id → email` via DB if needed for abuse/legal, but never exposed in dashboards by default.
 
 Update `getUserId()` in `lib/chat/anonymous-user.ts`:
 
 ```ts
 export function getUserId(): string {
-  const authUserId = useUserStore.getState().user?.id
-  if (authUserId) return authUserId
-  // fallback: anon localStorage ID
+  const traceId = useUserStore.getState().traceId  // users.trace_id from DB
+  if (traceId) return traceId
+  // fallback: anon localStorage ID (unauthenticated)
   ...
 }
 ```
 
-Called from `chat-runtime.tsx:76`. Past anon traces in Langfuse stay anonymous — acceptable.
+Called from `chat-runtime.tsx:76`. Past anon traces in Langfuse stay as localStorage IDs — acceptable. On login, future traces use stable `trace_id`.
+
+Add `traceId: string | null` to `UserStore` interface. Populate from `users.trace_id` in `getUserFromDb()`.
+
+**Admin policy:** never join `trace_id → email` in public dashboards. Lookup only with documented reason.
 
 ---
 
@@ -242,26 +297,102 @@ Called from `chat-runtime.tsx:76`. Past anon traces in Langfuse stay anonymous �
 
 ---
 
+## App Structure
+
+```
+app/
+  (marketing)/                          ← public SEO pages, no auth, existing
+  (auth)/                               ← minimal layout, no shell
+    layout.tsx
+    auth/
+      sign-in/page.tsx                  ← /auth/sign-in — email input, calls magicLink()
+      verify/page.tsx                   ← /auth/verify — "check your email" static screen
+  (shell)/                              ← shared AppShell (nav/header), NO auth gate
+    layout.tsx                          ← UserStoreProvider + AppShell; session may be null
+    chat/page.tsx                       ← /chat — public, always works
+    account/page.tsx                    ← /account — self-redirects to /auth/sign-in if no session
+    wallet/                             ← /wallet — TBD, not implemented yet
+      layout.tsx                        ← notFound() until decided
+  api/
+    auth/[...path]/route.ts             ← Neon Auth handler
+    chat/route.ts                       ← existing
+  layout.tsx                            ← root: fonts, analytics only
+```
+
+**Auth model:**
+- `/chat` — public, no auth required; auth = optional upgrade (unlocks paid model)
+- `/account` — self-guards: `if (!session) redirect('/auth/sign-in?next=/account')`
+- `/wallet` — TBD
+- `proxy.ts` middleware — no routes protected globally; add per-route as needed
+
+**Routes:**
+
+| Feature | URL | Notes |
+|---|---|---|
+| Chat | `/chat` | moved from `app/(chat)/chat/`, URL unchanged |
+| Account | `/account` | new |
+| Wallet | `/wallet` | TBD; redirect `/app/*` → `/wallet` in `next.config.ts` |
+| Sign in | `/auth/sign-in` | magic link only, no password |
+| Verify | `/auth/verify` | static "check your email" screen |
+
+---
+
 ## Phase 0: Auth + DB Setup [ ]
 
-**Goal:** Sign in with Google or GitHub. User row created on first login.
+**Goal:** Magic-link email sign-in. User row created on first login.
 
-- [ ] Neon MCP: `provision_neon_auth` on project `steep-voice-40755571`
+### Neon Auth config
+- [ ] Neon MCP: enable magic link plugin (`expires_in: 15`, `disable_sign_up: false`)
+- [ ] Neon MCP: disable `email_password` auth method
+- [ ] Neon MCP: remove Google OAuth provider
+
+### Packages + env
 - [ ] `pnpm add @neondatabase/auth @neondatabase/serverless`
-- [ ] Add env vars: `NEON_AUTH_BASE_URL`, `AUTH_SECRET`, `DATABASE_URL`
+- [ ] Add env vars: `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET`, `DATABASE_URL`
+
+### DB
 - [ ] Run full DB migration (SQL above)
-- [ ] Create `lib/auth/server.ts` — Neon Auth server client
-- [ ] Create `app/api/auth/[...path]/route.ts` — auth handler
-- [ ] Create `lib/neon-db.ts` (server-only) — Postgres client + user/tier queries
-- [ ] On-first-login: insert `users` row, assign tier by `signup_number`
+
+### Auth wiring
+- [ ] Create `lib/auth/server.ts` — `createNeonAuth` server instance
+- [ ] Create `lib/auth/client.ts` — `createAuthClient` client instance
+- [ ] Create `app/api/auth/[...path]/route.ts` — auth handler (`auth.handler()`)
+- [ ] Create `proxy.ts` — middleware stub (no protected routes yet, ready to extend)
+
+### DB queries
+- [ ] Create `lib/neon-db.ts` (server-only) — Postgres client + `getUserFromDb()`, `getTier()`
+- [ ] On-first-login hook: insert `users` row, assign tier by `signup_number`
+
+### Credits config
 - [ ] Create `lib/credits.ts` — `CREDIT_CONVERSION` config + `tokensToCreditCost()`
-- [ ] Create `lib/stores/user-store.ts` — Zustand store
+
+### User state
+- [ ] Create `lib/stores/user-store.ts` — Zustand store (user, tier, bonusCredits, traceId, isLoaded)
 - [ ] Create `components/auth/user-store-provider.tsx`
-- [ ] Update `app/layout.tsx` — wrap with `UserStoreProvider`
-- [ ] Update `lib/chat/anonymous-user.ts` — `getUserId()` checks auth store first
-- [ ] Create `components/auth/sign-in-button.tsx`
-- [ ] Create `components/auth/user-menu.tsx` (credit balance inside)
-- [ ] Add `UserMenu` to header
+
+### App restructure
+- [ ] Move `app/(chat)/chat/` → `app/(shell)/chat/` (URL `/chat` unchanged)
+- [ ] Create `app/(shell)/layout.tsx` — reads session + dbUser, wraps `UserStoreProvider` + `AppShell`
+- [ ] Create `app/(shell)/account/page.tsx` — self-redirects if no session
+- [ ] Create `app/(shell)/wallet/layout.tsx` — `notFound()` placeholder
+- [ ] Add redirect `/app/*` → `/wallet` in `next.config.ts`
+
+### Auth UI
+- [ ] Create `app/(auth)/layout.tsx` — minimal centered layout
+- [ ] Create `app/(auth)/auth/sign-in/page.tsx` — email input + `authClient.signIn.magicLink()`
+- [ ] Create `app/(auth)/auth/verify/page.tsx` — "check your email" static screen
+
+### Shell + nav
+- [ ] Create `components/shell/app-shell.tsx` — nav sidebar (desktop) + bottom bar (mobile)
+- [ ] Nav items: Chat always visible; Account shows if session exists else Sign in link
+- [ ] Create `components/auth/user-menu.tsx` — avatar, name, credit balance, sign out
+
+### Langfuse trace ID
+- [ ] Update `lib/chat/anonymous-user.ts` — `getUserId()` returns `trace_id` (logged-in) or localStorage anon ID (guest)
+- [ ] Add `traceId` to `UserStore` — populated from `users.trace_id` via `getUserFromDb()`
+
+### Privacy policy
+- [ ] Update `app/(marketing)/(legal)/chinh-sach-bao-mat/page.tsx` — clarify Langfuse receives pseudonymous `trace_id` only, not email/auth ID
 
 ---
 
@@ -315,14 +446,31 @@ Audit trail: write to `user_audit_log` on tier changes
 
 ---
 
+## Phase 4: Announcement [ ]
+
+**Goal:** Blog post announcing first-100-users early adopter campaign, published after auth is live.
+
+- [ ] Create blog post in category `Thong bao` (create category if none exists)
+  - Title: announce the first 20 users get free paid AI model access (early adopter campaign)
+  - Content: what Owie is, what the campaign offers, how to sign up, what happens after 20 users
+  - Use `/write-post` command
+- [ ] Verify category `Thong bao` appears in blog listing
+
+---
+
 ## Verification
 
-1. Sign in with Google → row in `users` with `signup_number` from sequence
-2. 101st signup → `tier = 'free'`, `can_use_paid_model = false`
-3. SQL: `UPDATE users SET tier = 'early_adopter'` → paid model unlocks in selector
-4. `bonus_credits = 0` → paid model disabled in selector, free models still work
-5. Redeem 100%-off voucher → `bonus_credits` increments → paid model re-enables
-6. Send message with paid model → `credit_usage_log` row + `bonus_credits` decrements
-7. Free model message → `credit_usage_log` row with `credits_used = 0`
-8. Sign out → `getUserId()` returns anon localStorage ID
-9. Langfuse: signed-in traces tagged with Neon Auth user ID
+1. `/chat` loads without login → free models work, paid model disabled
+2. Enter email at `/auth/sign-in` → redirect to `/auth/verify` → email arrives
+3. Click magic link → session created → redirect to `/chat`
+4. `/account` while logged in → shows profile + credits
+5. `/account` while logged out → redirects to `/auth/sign-in?next=/account`
+6. First 20 signups → `tier = 'early_adopter'`, `can_use_paid_model = true`
+7. 21st signup → `tier = 'free'`, `can_use_paid_model = false`
+8. SQL: `UPDATE users SET tier = 'early_adopter'` → paid model unlocks in selector
+9. `bonus_credits = 0` → paid model disabled in selector, free models still work
+10. Redeem 100%-off voucher → `bonus_credits` increments → paid model re-enables
+11. Send message with paid model → `credit_usage_log` row + `bonus_credits` decrements
+12. Free model message → `credit_usage_log` row with `credits_used = 0`
+13. Sign out → `getUserId()` returns anon localStorage ID
+14. Langfuse: signed-in traces use `users.trace_id`, not email/auth ID
