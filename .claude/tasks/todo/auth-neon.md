@@ -364,25 +364,25 @@ app/
 
 ---
 
-## Phase 0: Auth + DB Setup [ ]
+## Phase 0: Auth + DB Setup [x]
 
 **Goal:** Magic-link email sign-in. User row created on first login.
 
 ### 1. Neon Auth config (via Neon MCP)
-- [ ] Enable magic link: `configure_neon_auth` → `update_auth_methods`, set magic link `expires_in: 900` (15 min in seconds)
-- [ ] Disable email/password: `configure_neon_auth` → `update_auth_methods` → `email_password.enabled: false`
-- [ ] Remove Google OAuth: `configure_neon_auth` → `remove_oauth_provider` → `google`
-- [ ] Add trusted origin: `configure_neon_auth` → `add_trusted_origin` → `https://openwallet.vn`
-- [ ] `allow_localhost` already true — no action needed
+- [x] Enable magic link: handled via `magicLink()` plugin in `lib/auth/server.ts` (MCP tool doesn't support magic_link key directly)
+- [x] Disable email/password: `configure_neon_auth` → `update_auth_methods` → `email_password.enabled: false`
+- [x] Remove Google OAuth: `configure_neon_auth` → `remove_oauth_provider` → `google`
+- [x] Add trusted origin: `configure_neon_auth` → `add_trusted_origin` → `https://openwallet.vn`
+- [x] `allow_localhost` already true — no action needed
 
 ### 2. Packages
-- [ ] `pnpm add better-auth @neondatabase/serverless`
+- [x] `pnpm add better-auth @neondatabase/serverless`
   - **NOT** `@neondatabase/auth` (doesn't exist) — Neon Auth IS Better Auth, use `better-auth` directly
   - `@neondatabase/serverless` for the Postgres client
   - Install `better-auth@latest` (currently 1.6.x) — check release notes before pinning, magic link plugin API may differ from `0.x` docs online
 
 ### 3. Env vars
-- [ ] Add to `.env.local` + Vercel:
+- [x] Add to `.env.local` + Vercel:
   ```
   # Better Auth (Neon Auth)
   BETTER_AUTH_URL=https://openwallet.vn              # prod; localhost:3000 for local
@@ -393,46 +393,19 @@ app/
   DATABASE_URL=<direct connection string>             # NOT pooled — auth ops use direct
   DATABASE_URL_POOL=<pooled connection string>        # for read-heavy queries
   ```
+  > `.env.local` done. Vercel env vars still pending — must add before deploying.
 
 ### 4. DB migration
-- [ ] Run full schema SQL via Neon MCP `run_sql` on branch `production`
-- [ ] `neon_auth.user.id` is UUID — store as `TEXT` in `public.users`, insert with `id = neon_auth_user_id::text`
-- [ ] Add `updated_at` trigger (auto-sets on UPDATE — don't rely on app-level):
-  ```sql
-  CREATE OR REPLACE FUNCTION set_updated_at()
-  RETURNS trigger AS $$
-  BEGIN NEW.updated_at = now(); RETURN NEW; END;
-  $$ LANGUAGE plpgsql;
-
-  CREATE TRIGGER users_updated_at
-    BEFORE UPDATE ON users
-    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-  ```
-- [ ] Assign tier atomically at INSERT via DB trigger (avoids race: two concurrent signups both reading count ≤ 20):
-  ```sql
-  CREATE OR REPLACE FUNCTION assign_tier_on_signup()
-  RETURNS trigger AS $$
-  BEGIN
-    IF NEW.signup_number <= 20 THEN
-      NEW.tier := 'early_adopter';
-    END IF;
-    RETURN NEW;
-  END;
-  $$ LANGUAGE plpgsql;
-
-  CREATE TRIGGER users_assign_tier
-    BEFORE INSERT ON users
-    FOR EACH ROW EXECUTE FUNCTION assign_tier_on_signup();
-  ```
-- [ ] Wrap every query in `lib/neon-db.ts` that touches `user_cards` with session var for RLS:
-  ```sql
-  SET LOCAL app.current_user_id = '<user_id>';
-  SELECT * FROM user_cards WHERE ...;
-  ```
-  Use `withUserContext(userId, fn)` helper. Otherwise RLS blocks all queries.
+- [x] Run full schema SQL via Neon MCP `run_sql_transaction` on production branch
+  > `run_sql` rejected multi-statement; switched to `run_sql_transaction` with array of individual SQL strings
+- [x] Users stored with Better Auth UUID as TEXT primary key; `insertUserRow` in `lib/neon-db.ts` called from `databaseHooks.user.create.after`
+- [x] `set_updated_at` trigger applied — auto-updates `users.updated_at` on every UPDATE
+- [x] `assign_tier_on_signup` trigger applied — atomically sets `tier = 'early_adopter'` for `signup_number <= 20`
+- [x] `withUserContext(userId, fn)` in `lib/neon-db.ts` — uses `Pool`, gets client, BEGIN → SET LOCAL → fn(pool) → COMMIT/ROLLBACK
+  > Plan spec used `neon().begin()` API which doesn't exist on `NeonQueryFunction`; implemented with explicit `client.query()` calls instead
 
 ### 5. Auth wiring
-- [ ] Create `lib/auth/server.ts`:
+- [x] Create `lib/auth/server.ts`:
   ```ts
   import { betterAuth } from 'better-auth'
   import { magicLink } from 'better-auth/plugins'
@@ -466,7 +439,7 @@ app/
   ```
   > `insertUserRow` imported from `lib/neon-db.ts`. `neon-db.ts` must NOT import from `lib/auth/server.ts` — no circular deps.
 
-- [ ] Create `lib/auth/client.ts`:
+- [x] Create `lib/auth/client.ts`:
   ```ts
   import { createAuthClient } from 'better-auth/client'
   import { magicLinkClient } from 'better-auth/client/plugins'
@@ -477,7 +450,7 @@ app/
   })
   ```
 
-- [ ] Create `app/api/auth/[...path]/route.ts`:
+- [x] Create `app/api/auth/[...path]/route.ts`:
   ```ts
   import { auth } from '@/lib/auth/server'
   import { toNextJsHandler } from 'better-auth/next-js'
@@ -485,7 +458,7 @@ app/
   ```
   > Verify no existing `app/api/auth/` route before creating. Remove any pre-existing one.
 
-- [ ] Create `proxy.ts` at project root (Next.js 16 preferred name over `middleware.ts`):
+- [x] Create `proxy.ts` at project root (Next.js 16 preferred name over `middleware.ts`):
   ```ts
   // proxy.ts — stub, no routes protected yet
   import { NextResponse } from 'next/server'
@@ -495,127 +468,50 @@ app/
   ```
 
 ### 6. DB queries (`lib/neon-db.ts`, server-only)
-- [ ] Add `'server-only'` import at top — prevents accidental client bundle inclusion
-- [ ] Postgres client using `@neondatabase/serverless` with `DATABASE_URL` (direct)
-  > Use `neon()` tagged template for one-off reads, `Pool` in `betterAuth` config. Don't mix patterns.
-- [ ] `insertUserRow(id, email, name)` — called from Better Auth hook:
-  ```ts
-  await sql`
-    INSERT INTO users (id, email, display_name)
-    VALUES (${id}, ${email}, ${name})
-    ON CONFLICT (id) DO NOTHING
-  `
-  ```
-- [ ] `getUserFromDb(id)` — returns full user row incl. `tier`, `bonus_credits`, `trace_id`
-- [ ] `getTier(tierId)` — returns tier row (`can_use_paid_model` etc.)
-- [ ] `withUserContext(userId, fn)` — wraps queries needing RLS:
-  ```ts
-  async function withUserContext<T>(userId: string, fn: () => Promise<T>): Promise<T> {
-    return sql.begin(async (tx) => {
-      await tx`SET LOCAL app.current_user_id = ${userId}`
-      return fn()  // fn uses tx, not global sql
-    })
-  }
-  ```
+- [x] `'server-only'` import at top
+- [x] `neon()` tagged template for reads, `Pool` for `withUserContext` and `betterAuth` config
+- [x] `insertUserRow`, `getUserFromDb`, `getTier`, `withUserContext` all implemented
+  > `withUserContext` uses `Pool` + `client.query()` (not `neon().begin()` — that API doesn't exist)
 
 ### 7. Credits config
-- [ ] Create `lib/credits.ts` — unchanged from plan
+- [x] Create `lib/credits.ts` — `CREDIT_CONVERSION` + `tokensToCreditCost()`, unchanged from plan
 
 ### 8. User state (Zustand)
-- [ ] Create `lib/stores/user-store.ts`:
-  ```ts
-  interface UserStore {
-    user: AuthUser | null
-    tier: string
-    canUsePaidModel: boolean
-    bonusCredits: number
-    traceId: string | null       // pseudonymous Langfuse ID
-    isOutOfCredits: boolean
-    isLoaded: boolean            // false until client hydration done
-    setUser: (user, dbData, tierData) => void
-  }
-  // isLoaded starts false; set true inside setUser after hydration
-  ```
-- [ ] Create `components/auth/user-store-provider.tsx` — call `setUser` in `useEffect`, not directly from server props, to avoid hydration mismatch
-- [ ] Zustand v5 requires `createStore` + context for SSR-safe providers (avoids shared singleton between requests). Use `createStore` in provider, not global `create()`. See `lib/use-compare-list.ts` for existing pattern.
+- [x] Create `lib/stores/user-store.ts` — `createStore` + `UserStoreContext` + `useUserStore` hook (SSR-safe, no global singleton)
+  - `AuthUser`, `UserStore` interfaces; `traceId = { current: null }` module-level mutable ref for non-React access
+  > Plan proposed `export let traceIdRef` — module namespace exports are read-only when mutated externally; fixed with object ref pattern
+- [x] Create `components/auth/user-store-provider.tsx` — `setUser` in `useEffect`, `traceId.current` set from `initialDbUser.trace_id`
+- [x] Create `lib/stores/chat-sidebar-store.ts` — global `create()` (client-only safe): `convos`, `activeId`, `setConvos`, `setActiveId`
 
 ### 9. App restructure
-- [ ] Move `app/(chat)/chat/` → `app/(app)/(chat)/chat/` (URL `/chat` unchanged)
-- [ ] Delete `app/(chat)/layout.tsx` after move (currently just wraps in `ow-chat-layout` div — move that class into `(app)/layout.tsx` or `chat-page-client.tsx`)
-- [ ] Create `app/(app)/layout.tsx` — shared sidebar shell:
-  ```tsx
-  // server component: read session + db user, pass to UserStoreProvider
-  // auth.api.getSession from lib/auth/server.ts; headers() from next/headers — must be awaited
-  const session = await auth.api.getSession({ headers: await headers() })
-  const dbUser = session ? await getUserFromDb(session.user.id) : null
-  const tierData = dbUser ? await getTier(dbUser.tier) : null
-
-  return (
-    <UserStoreProvider initialUser={session} initialDbUser={dbUser} initialTier={tierData}>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>{children}</SidebarInset>
-      </SidebarProvider>
-    </UserStoreProvider>
-  )
-  ```
-- [ ] Refactor `chat-page-client.tsx`:
-  - Remove `SidebarProvider`, `Sidebar`, `SidebarHeader`, `SidebarContent`, `SidebarFooter` — move to `AppSidebar`
-  - Keep only `SidebarInset` inner content (header bar + `ChatRuntime`)
-  - Conversation list (`convos`, `activeId`, handlers) — expose via `useChatSidebarStore` so `AppSidebar` can render it
-  - `(app)/layout.tsx` provides `SidebarProvider` — `chat-page-client.tsx` must NOT have its own (double-nesting breaks sidebar state)
-- [ ] Create `app/(app)/account/page.tsx` — `if (!session) redirect('/auth/sign-in?next=/account')`
-- [ ] Create `app/(app)/wallet/layout.tsx` — `notFound()` placeholder
-- [ ] Add redirect `/app/*` → `/wallet` in `next.config.ts`
+- [x] `app/(chat)/chat/` → `app/(app)/(chat)/chat/` (URL `/chat` unchanged)
+- [x] `app/(chat)/layout.tsx` deleted
+- [x] `app/(app)/layout.tsx` created — server component reads session + DB user + tier, wraps in `UserStoreProvider` → `SidebarProvider` → `AppSidebar` + children
+- [x] `chat-page-client.tsx` refactored — removed all sidebar components, populates `useChatSidebarStore` via useEffect, renders only `SidebarInset` content
+- [x] `app/(app)/account/page.tsx` created — redirects to `/auth/sign-in?next=/account` if no session
+- [x] `app/(app)/wallet/layout.tsx` created — `notFound()` placeholder
+- [x] `/app/:path*` → `/wallet` redirect added to `next.config.ts`
 
 ### 10. Auth UI
-- [ ] Create `app/(auth)/layout.tsx` — minimal centered layout, no sidebar
-- [ ] Create `app/(auth)/auth/sign-in/page.tsx`:
-  ```tsx
-  // await before redirecting — show error in UI if it throws (e.g. rate limit)
-  await authClient.signIn.magicLink({ email, callbackURL: '/chat' })
-  // then redirect to /auth/verify
-  ```
-  > `callbackURL: '/chat'` is relative — Better Auth resolves against `baseURL`. In dev, verify this works; if not, pass full URL: `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/chat`.
-- [ ] Create `app/(auth)/auth/verify/page.tsx` — "check your email" static screen
+- [x] Create `app/(auth)/layout.tsx` — minimal centered layout, no sidebar
+- [x] Create `app/(auth)/auth/sign-in/page.tsx` — email input → `authClient.signIn.magicLink({ email, callbackURL: '/chat' })` → redirect to `/auth/verify`; error displayed inline on throw
+- [x] Create `app/(auth)/auth/verify/page.tsx` — static "check your email" screen
 
 ### 11. App sidebar (`components/app/app-sidebar.tsx`)
-- [ ] Create `components/app/app-sidebar.tsx` — replaces inline sidebar in `chat-page-client.tsx`:
-  - `SidebarHeader`: logo + new chat button (visible on all pages)
-  - `SidebarContent`: nav links (Home, Chat, Account) + conversation list (from `useChatSidebarStore`, only populated when on `/chat`)
-  - `SidebarFooter`: `UserMenu` (avatar, credits, sign out)
-- [ ] Create `lib/stores/chat-sidebar-store.ts` — Zustand store: `convos`, `activeId`, `selectConvo`, `deleteConvo` — populated by chat page, read by `AppSidebar`
-  > Chat page populates store in `useEffect`. `AppSidebar` renders before that fires — guard with empty state, shows no convos until effect runs. Correct behavior.
-- [ ] Create `components/auth/user-menu.tsx` — avatar, name, credit balance, sign out:
-  ```tsx
-  await authClient.signOut()
-  router.push('/')
-  ```
+- [x] Create `components/app/app-sidebar.tsx` — `AppSidebar`, `ConvoList`, conversation grouping logic; `SidebarFooter` has `UserMenu`
+- [x] `lib/stores/chat-sidebar-store.ts` created (done in step 8)
+- [x] Create `components/auth/user-menu.tsx` — sign-in button if no user, else name + credits + sign out via `authClient.signOut()` → `router.push('/')`
 
 ### 12. Langfuse trace ID
-- [ ] Update `lib/chat/anonymous-user.ts` — `getUserId()` client-only:
-  ```ts
-  export function getUserId(): string {
-    if (typeof window === 'undefined') return 'anon-ssr'  // client-only guard
-    const traceId = useUserStore.getState().traceId
-    if (traceId) return traceId
-    // fallback: localStorage anon ID
-    ...
-  }
-  ```
-  > If `useUserStore` uses context pattern (Zustand v5 SSR), `getState()` won't work outside React tree. Instead export a module-level ref the provider writes to on mount: `export let traceIdRef: string | null = null`. `getUserId()` reads `traceIdRef`.
-- [ ] Add `traceId` to `UserStore` — populated from `users.trace_id` in `getUserFromDb()`
+- [x] `lib/chat/anonymous-user.ts` — `getUserId()` reads `traceId.current` (module-level object ref) if set, else falls back to localStorage anon ID; SSR guard returns `'anon-ssr'`
+  > Plan suggested `export let traceIdRef` — read-only module export; fixed with `export const traceId = { current: null }` object ref
+- [x] `traceId` in `UserStore`; `traceId.current` set by `UserStoreProvider` on mount from `initialDbUser.trace_id`
 
 ### 13. Chat route: integrate userId from session
-- [ ] `app/api/chat/route.ts` — server reads session, never trusts body for credit authority:
-  ```ts
-  // userId from request body is client-controlled — untrusted for credit deduction
-  const session = await auth.api.getSession({ headers: req.headers })
-  const userId = session?.user.id ?? body.userId  // fallback to anon for unauthenticated
-  ```
+- [x] `app/api/chat/route.ts` reads session at handler start; `traceUserId = dbUser?.trace_id ?? body.userId`; `propagateAttributes` uses `traceUserId`
 
 ### 14. Privacy policy
-- [ ] Update `app/(marketing)/(legal)/chinh-sach-bao-mat/page.tsx` — clarify Langfuse receives pseudonymous `trace_id` only, not email/auth ID
+- [ ] Update `app/(marketing)/(legal)/chinh-sach-bao-mat/page.tsx` — pending; clarify Langfuse receives pseudonymous `trace_id` only, not email/auth ID
 
 ---
 

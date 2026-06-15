@@ -1,10 +1,11 @@
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth/server'
 import { getUserFromDb } from '@/lib/neon-db'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AccountPage() {
-    const session = await auth.api.getSession({ headers: await headers() })
+    const { data: session } = await auth.getSession()
     if (!session) redirect('/auth/sign-in?next=/account')
 
     const dbUser = await getUserFromDb(session.user.id)

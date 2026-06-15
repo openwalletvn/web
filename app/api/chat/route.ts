@@ -59,7 +59,7 @@ const handler = async (req: Request) => {
         );
     }
 
-    const session = await auth.api.getSession({ headers: req.headers });
+    const { data: session } = await auth.getSession();
     const dbUser = session ? await getUserFromDb(session.user.id) : null;
 
     const body = await req.json() as { messages?: UIMessage[]; pageContext?: PageContext; userId?: string; sessionId?: string; config?: { modelName?: string } };

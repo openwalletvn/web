@@ -1,9 +1,5 @@
 'use client'
 
-import { createAuthClient } from 'better-auth/client'
-import { magicLinkClient } from 'better-auth/client/plugins'
+import { createAuthClient } from '@neondatabase/auth/next'
 
-export const authClient = createAuthClient({
-    baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
-    plugins: [magicLinkClient()],
-})
+export const authClient = createAuthClient()
