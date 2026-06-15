@@ -5,11 +5,12 @@ import { after } from 'next/server';
 import { observe, propagateAttributes, setActiveTraceIO, getActiveTraceId } from '@langfuse/tracing';
 import { trace } from '@opentelemetry/api';
 import { getSystemPrompt } from '@/lib/chat/system-prompt';
-import { isAllowedModel, getDefaultModel } from '@/lib/chat/models';
+import { isAllowedModel, getDefaultModel, isPaidModel } from '@/lib/chat/models'
+import { tokensToCreditCost } from '@/lib/credits'
+import { getUserFromDb, getTier, logCreditUsage, deductCredits } from '@/lib/neon-db'
 import type { PageContext } from '@/lib/chat/page-context';
 import { langfuseSpanProcessor } from '@/instrumentation';
 import { auth } from '@/lib/auth/server';
-import { getUserFromDb } from '@/lib/neon-db';
 import fs from 'fs';
 import path from 'path';
 
@@ -71,6 +72,19 @@ const handler = async (req: Request) => {
 
     const requestedModel = body.config?.modelName;
     const model = isAllowedModel(requestedModel) ? requestedModel! : getDefaultModel().id;
+
+    // Server-side paid model guard (UI also disables, this is the safety net)
+    if (isPaidModel(model)) {
+        const tier = dbUser ? await getTier(dbUser.tier) : null
+        const canUsePaidModel = tier?.can_use_paid_model ?? false
+        const hasCredits = dbUser ? Number(dbUser.bonus_credits) > 0 : false
+        if (!canUsePaidModel || !hasCredits) {
+            return new Response(
+                JSON.stringify({ error: 'Bạn không đủ credits để dùng model này.' }),
+                { status: 403, headers: { 'Content-Type': 'application/json' } }
+            )
+        }
+    }
     const startTime = Date.now();
     const lastUserMessage = uiMessages.findLast((m) => m.role === 'user')?.parts
         ?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? '';
@@ -136,6 +150,21 @@ const handler = async (req: Request) => {
                             latencyMs: Date.now() - startTime,
                             finishReason: finishReason ?? 'unknown',
                         }, body.sessionId);
+
+                        // Credit logging + deduction (fire-and-forget via after())
+                        if (dbUser) {
+                            const inputTokens = usage?.inputTokens ?? 0
+                            const outputTokens = usage?.outputTokens ?? 0
+                            const creditsUsed = isPaidModel(model)
+                                ? tokensToCreditCost(inputTokens, outputTokens)
+                                : 0
+                            after(async () => {
+                                await logCreditUsage(dbUser.id, model, inputTokens, outputTokens, creditsUsed)
+                                if (creditsUsed > 0) {
+                                    await deductCredits(dbUser.id, creditsUsed)
+                                }
+                            })
+                        }
                     },
                     onError: async ({ error }) => {
                         console.error('[chat] streamText error:', error);
