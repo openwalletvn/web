@@ -1,5 +1,6 @@
 import {ModelSelector} from "@/components/assistant-ui/model-selector";
 import {CHAT_MODELS, getDefaultModel, getVisibleModels} from "@/lib/chat/models";
+import {useUserStore} from "@/lib/stores/user-store";
 import {getChatPrefs, setChatPref} from "@/lib/chat/chat-prefs";
 import {ContextDisplay} from "@/components/assistant-ui/context-display";
 import {MovingBorder} from "@/components/phucbm/moving-border";
@@ -70,7 +71,15 @@ const ComposerAction: FC<{
 }> = ({health, selectedModelId, onModelChange, contextWindow}) => {
     const notReady = health !== null && !health.ready;
     const unavailableLabel = health && !health.mcp ? "MCP unavailable" : "API unavailable";
-    const visibleModels = getVisibleModels().map((m) => ({id: m.id, name: m.label}));
+    const canUsePaidModel = useUserStore((s) => s.canUsePaidModel);
+    const isOutOfCredits = useUserStore((s) => s.isOutOfCredits);
+    const paidModelDisabled = !canUsePaidModel || isOutOfCredits;
+    const visibleModels = getVisibleModels().map((m) => ({
+        id: m.id,
+        name: m.label,
+        disabled: m.paid ? paidModelDisabled : false,
+        description: m.paid && paidModelDisabled ? 'Hết credit' : undefined,
+    }));
     const defaultModelId = getDefaultModel().id;
     return (
         <div className="ow-composer-action-wrapper relative flex justify-between items-center gap-1">
@@ -132,10 +141,20 @@ export const Composer: FC<{ pageContext?: PageContext }> = ({pageContext}) => {
         if (typeof window === 'undefined') return defaultModelId;
         return getChatPrefs().modelId ?? defaultModelId;
     });
+    const canUsePaidModel = useUserStore((s) => s.canUsePaidModel);
+    const isOutOfCredits = useUserStore((s) => s.isOutOfCredits);
     const contextWindow = CHAT_MODELS.find((m) => m.id === selectedModelId)?.contextWindow ?? 128_000;
     const isRunning = useAuiState((s) => s.thread.isRunning);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const [hasInputValue, setHasInputValue] = useState(false);
+
+    // If selected paid model becomes unavailable, fall back to default
+    useEffect(() => {
+        const model = CHAT_MODELS.find((m) => m.id === selectedModelId);
+        if (model?.paid && (!canUsePaidModel || isOutOfCredits)) {
+            setSelectedModelId(defaultModelId);
+        }
+    }, [canUsePaidModel, isOutOfCredits, selectedModelId, defaultModelId]);
 
     useEffect(() => {
         setChatPref('modelId', selectedModelId);
