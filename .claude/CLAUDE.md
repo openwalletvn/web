@@ -131,6 +131,7 @@ See `@.claude/DESIGN.md` for container conventions, CSS/typography rules, and fu
 | `/commit-all`         | `commands/commit-all.md`         | Stage + commit all changes in logical groups with conventional commit messages |
 | `/sync-api-types`     | `commands/sync-api-types.md`     | Regenerate types from API schema, diff changes, scan codebase, suggest updates |
 | `/edit-system-prompt` | `commands/edit-system-prompt.md` | Edit Owie's system prompt, enforce invariants, push to Langfuse                |
+| `/neon`               | `commands/neon.md`               | Interact with Neon Postgres: reads, migrations, triggers, backfills            |
 
 @.claude/docs/openwallet-brain.md
 @.claude/docs/architecture.md
