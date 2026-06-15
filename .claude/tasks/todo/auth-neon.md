@@ -4,8 +4,8 @@
 
 OpenWallet needs user accounts to:
 
-1. Gate paid AI models (first 100 users get free paid access, dev pays)
-2. Track per-user credit usage/limits
+1. Gate paid AI model (first 100 users get free paid access, dev pays)
+2. Track per-user credit balance
 3. Store user's saved card IDs (feed to Owie for personalized responses)
 
 Currently: zero auth, zero DB, all anonymous. Chat uses OpenRouter via `app/api/chat/route.ts`. Models defined in
@@ -14,15 +14,18 @@ already has comment `// Replace with auth userId when auth lands.`. Zustand v5 a
 `lib/use-compare-list.ts`). Wallet cards in IndexedDB (local, stays local).
 
 Stack: Next.js App Router on Vercel + Hono CF Worker API (no DB). Adding Neon for both auth and Postgres.
-c
+
 ---
 
 ## Credit System
 
 **Credits = stable external unit. Tokens = internal implementation detail.**
 
-- Users buy/earn credits. App consumes credits per message.
-- Formula lives in `lib/credits.ts` (config only, not DB):
+- Free models → zero credit cost, no limit, usage still logged for analytics
+- Paid model → deducts `bonus_credits` per message
+- Credits never expire, never reset
+
+Formula lives in `lib/credits.ts` (config only, not DB):
 
 ```ts
 // lib/credits.ts
@@ -33,23 +36,16 @@ export const CREDIT_CONVERSION = {
 
 export function tokensToCreditCost(input: number, output: number): number {
   return input / CREDIT_CONVERSION.input_tokens_per_credit
-    + output / CREDIT_CONVERSION.output_tokens_per_credit
+       + output / CREDIT_CONVERSION.output_tokens_per_credit
 }
 ```
 
-- Formula change → update config only → past `credits_used` rows untouched (locked at request time) →
-  packages/vouchers/balances unaffected.
+Formula change → update config only → past `credits_used` rows untouched → packages/vouchers/balances unaffected.
 
-**Two credit pools per user:**
+**Out of credits:** `bonus_credits === 0` → paid model disabled in selector. Free models always available.
 
-1. `monthly_free_credits` — from tier, resets monthly (lazy reset, no cron)
-2. `bonus_credits` — purchased or voucher-granted, persistent, never expire
-
-Consumption order: monthly free first → bonus when free exhausted.
-
-**Paid model = one OW-curated model** (not a list). Model selector shows `[OW Pick: <model name>]` + free models. When
-user exceeds credits → paid model item disabled in selector, free models still usable. Server rejects as safety net
-only.
+**Paid model = one OW-curated model** (hardcoded after testing). Model selector shows `[OW Pick: <model name>]` + free
+models. When out of credits → paid model item disabled + tooltip "Hết credit". Server rejects as safety net only.
 
 ---
 
@@ -59,21 +55,20 @@ only.
 -- Credit formula (config only, NOT in DB — lives in lib/credits.ts)
 -- 1 credit = 4000 input tokens OR 1000 output tokens
 
--- Tiers: free monthly credit allocation
+-- Tiers: access control only, no credit limits
 CREATE TABLE tiers (
-  id TEXT PRIMARY KEY,                    -- 'free' | 'early_adopter' | 'pro' | 'unlimited'
+  id TEXT PRIMARY KEY,                     -- 'free' | 'early_adopter' | 'pro' | 'unlimited'
   label TEXT NOT NULL,
-  monthly_credit_limit INTEGER DEFAULT 0, -- 0 = unlimited
   can_use_paid_model BOOLEAN DEFAULT false,
   description TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
 INSERT INTO tiers VALUES
-  ('free',          'Free',          0,    false, 'Anonymous or basic users'),
-  ('early_adopter', 'Early Adopter', 500,  true,  'First 100 signups'),
-  ('pro',           'Pro',           500,  true,  'Paid users'),
-  ('unlimited',     'Unlimited',     0,    true,  'Dev / internal / no limits');
+  ('free',          'Free',          false, 'Basic users'),
+  ('early_adopter', 'Early Adopter', true,  'First 100 signups'),
+  ('pro',           'Pro',           true,  'Paid users'),
+  ('unlimited',     'Unlimited',     true,  'Dev / internal');
 
 -- Users
 CREATE SEQUENCE user_signup_seq;
@@ -84,14 +79,9 @@ CREATE TABLE users (
   display_name TEXT,
   tier TEXT DEFAULT 'free' REFERENCES tiers(id),
   signup_number INTEGER DEFAULT nextval('user_signup_seq'),
-  bonus_credits NUMERIC(12,4) DEFAULT 0,         -- purchased/voucher, persistent
-  monthly_credits_used NUMERIC(12,4) DEFAULT 0,  -- resets monthly
-  credit_reset_at TIMESTAMPTZ,
+  bonus_credits NUMERIC(12,4) DEFAULT 0,  -- purchased/voucher balance, persistent, never expires
   preferences JSONB DEFAULT '{}',
   deleted_at TIMESTAMPTZ,
-  -- raw token counters for analytics/Langfuse only (not used for limit checks)
-  total_input_tokens INTEGER DEFAULT 0,
-  total_output_tokens INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -106,14 +96,15 @@ CREATE TABLE user_cards (
 );
 
 -- Credit usage log (one row per chat message)
+-- Free models: credits_used = 0, still logged for analytics
+-- Paid model: credits_used computed from tokensToCreditCost()
 CREATE TABLE credit_usage_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id TEXT REFERENCES users(id),
   model_id TEXT,
   input_tokens INTEGER,
   output_tokens INTEGER,
-  credits_used NUMERIC(10,4) NOT NULL,  -- locked at request time, formula changes don't affect past rows
-  pool TEXT NOT NULL,                   -- 'monthly_free' | 'bonus'
+  credits_used NUMERIC(10,4) NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -147,17 +138,17 @@ CREATE TABLE voucher_redemptions (
   UNIQUE(voucher_id, user_id)       -- prevent double redeem
 );
 
--- All credit grants (purchase, voucher-to-free, future payment)
+-- All credit grants (purchase or voucher)
 CREATE TABLE credit_topups (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id TEXT REFERENCES users(id),
   package_id TEXT REFERENCES packages(id),
   credits_granted INTEGER NOT NULL,
-  amount_paid INTEGER NOT NULL,           -- VND actually charged after discount
+  amount_paid INTEGER NOT NULL,            -- VND actually charged after discount
   voucher_id UUID REFERENCES vouchers(id), -- nullable
-  payment_id TEXT,                        -- nullable now, filled when gateway lands
-  payment_provider TEXT,                  -- nullable now: 'payos' | 'vnpay' etc
-  status TEXT DEFAULT 'pending',          -- 'pending' | 'completed' | 'failed'
+  payment_id TEXT,                         -- nullable now, filled when gateway lands
+  payment_provider TEXT,                   -- nullable now: 'payos' | 'vnpay' etc
+  status TEXT DEFAULT 'pending',           -- 'pending' | 'completed' | 'failed'
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -197,12 +188,10 @@ Client → Zustand store useUserStore → available everywhere, no prop drilling
 // lib/stores/user-store.ts
 interface UserStore {
   user: AuthUser | null
-  tier: string                  // 'free' | 'early_adopter' | 'pro' | 'unlimited'
+  tier: string              // 'free' | 'early_adopter' | 'pro' | 'unlimited'
   canUsePaidModel: boolean
-  monthlyCreditsUsed: number
-  monthlyCreditsLimit: number   // from tiers.monthly_credit_limit (0 = unlimited)
-  bonusCredits: number          // persistent purchased balance
-  isOverLimit: boolean          // computed: monthlyCreditsUsed >= limit && bonusCredits === 0
+  bonusCredits: number      // persistent balance
+  isOutOfCredits: boolean   // bonusCredits === 0
   isLoaded: boolean
   setUser: (user: AuthUser | null, dbData: UserDbRow | null, tierData: TierRow | null) => void
 }
@@ -214,11 +203,11 @@ Provider in `app/layout.tsx`:
 const session = await getServerSession()
 const dbUser = session ? await getUserFromDb(session.id) : null
 const tierData = dbUser ? await getTier(dbUser.tier) : null
-  < UserStoreProvider
-initialUser = {session}
-initialDbUser = {dbUser}
-initialTier = {tierData}
-  >
+<UserStoreProvider
+  initialUser={session}
+  initialDbUser={dbUser}
+  initialTier={tierData}
+>
   {children}
 </UserStoreProvider>
 ```
@@ -234,7 +223,7 @@ export function getUserId(): string {
   const authUserId = useUserStore.getState().user?.id
   if (authUserId) return authUserId
   // fallback: anon localStorage ID
-...
+  ...
 }
 ```
 
@@ -246,10 +235,10 @@ Called from `chat-runtime.tsx:76`. Past anon traces in Langfuse stay anonymous �
 
 - One OW-curated paid model (hardcoded after testing)
 - Selector shows: `[OW Pick: <model name>]` + free models
-- Paid model item disabled when `!canUsePaidModel || isOverLimit`
-- Tooltip on disabled: "Đã hết lượt tháng này" (out of monthly credits)
-- Server rejects paid model if over limit (safety net, not primary UX)
-- No 429 error thrown to user — graceful degradation in UI only
+- Paid model item disabled when `!canUsePaidModel || isOutOfCredits`
+- Tooltip on disabled: "Hết credit"
+- Server rejects paid model if no credits (safety net, not primary UX)
+- Free models always available regardless of credit balance
 
 ---
 
@@ -271,7 +260,7 @@ Called from `chat-runtime.tsx:76`. Past anon traces in Langfuse stay anonymous �
 - [ ] Update `app/layout.tsx` — wrap with `UserStoreProvider`
 - [ ] Update `lib/chat/anonymous-user.ts` — `getUserId()` checks auth store first
 - [ ] Create `components/auth/sign-in-button.tsx`
-- [ ] Create `components/auth/user-menu.tsx` (credit meter inside)
+- [ ] Create `components/auth/user-menu.tsx` (credit balance inside)
 - [ ] Add `UserMenu` to header
 
 ---
@@ -281,41 +270,39 @@ Called from `chat-runtime.tsx:76`. Past anon traces in Langfuse stay anonymous �
 **Goal:** `can_use_paid_model` tier flag + credit balance gates paid model access.
 
 - [ ] Hardcode OW-curated paid model ID in config after testing
-- [ ] `app/api/chat/route.ts` — server-side check: reject paid model if `!canUsePaidModel || isOverLimit`
+- [ ] `app/api/chat/route.ts` — server-side check: reject paid model if `!canUsePaidModel || bonusCredits === 0`
 - [ ] Model selector UI — paid model item disabled + tooltip when ineligible
 
 ---
 
-## Phase 2: Credit Usage Tracking [ ]
+## Phase 2: Credit Tracking [ ]
 
-**Goal:** Deduct credits per message. Lazy monthly reset. Display in UserMenu.
+**Goal:** Deduct credits on paid model messages. Log all messages.
 
-- [ ] `lib/neon-db.ts` — add `getUserCredits()`, `deductCredits()`, `resetMonthlyIfNeeded()`
-- [ ] `app/api/chat/route.ts`:
-  - Before stream: check credits (monthly free first, then bonus)
-  - `onFinish`: `deductCredits()` using `tokensToCreditCost()` + log to `credit_usage_log` + lazy reset
-- [ ] Credit meter in `UserMenu` (monthly free + bonus balance)
+- [ ] `lib/neon-db.ts` — add `getUserCredits()`, `deductCredits()`
+- [ ] `app/api/chat/route.ts` `onFinish`:
+  - `deductCredits()` using `tokensToCreditCost()` (paid model only)
+  - log to `credit_usage_log` (all models, `credits_used = 0` for free)
+- [ ] Credit balance display in `UserMenu`
 
 ---
 
 ## Phase 3: Packages + Vouchers [ ]
 
-**Goal:** Admin creates voucher codes. Users apply at checkout to get credits free or discounted.
+**Goal:** Admin creates voucher codes. Users apply at checkout to get credits.
 
-- [ ] Seed `packages` table with initial offerings
-- [ ] `app/api/vouchers/redeem/route.ts` — validate + redeem voucher → insert `credit_topups` + increment
-  `bonus_credits`
-- [ ] Voucher input UI (simple code field, no full checkout page needed yet)
-- [ ] Payment gateway wired later — `credit_topups.payment_id` + `payment_provider` already nullable, zero migration
+- [ ] Seed `packages` table
+- [ ] `app/api/vouchers/redeem/route.ts` — validate + redeem → insert `credit_topups` + increment `bonus_credits`
+- [ ] Voucher input UI (simple code field)
+- [ ] Payment gateway wired later — `payment_id` + `payment_provider` nullable, zero migration
 
 ---
 
 ## Tier management (no admin UI needed)
 
-Change limits → update `tiers` table in Neon console.
-Grant tier manually: `UPDATE users SET tier = 'early_adopter' WHERE id = '...'`
-Create 100%-off voucher → redeem → grants bonus_credits (replaces manual_grant).
-Audit trail: write to `user_audit_log` on tier changes.
+Change tier: `UPDATE users SET tier = 'early_adopter' WHERE id = '...'`
+Grant credits: create 100%-off voucher → user redeems
+Audit trail: write to `user_audit_log` on tier changes
 
 ---
 
@@ -324,7 +311,7 @@ Audit trail: write to `user_audit_log` on tier changes.
 - Wallet card sync UI (`user_cards` table ready)
 - Payment gateway integration (schema ready: `payment_id`, `payment_provider` nullable)
 - Admin dashboard
-- Distributed rate limiting
+- Credit expiry
 
 ---
 
@@ -333,8 +320,9 @@ Audit trail: write to `user_audit_log` on tier changes.
 1. Sign in with Google → row in `users` with `signup_number` from sequence
 2. 101st signup → `tier = 'free'`, `can_use_paid_model = false`
 3. SQL: `UPDATE users SET tier = 'early_adopter'` → paid model unlocks in selector
-4. Send message with paid model → `credit_usage_log` row + `monthly_credits_used` increments
-5. Exceed `monthly_credit_limit` with zero `bonus_credits` → paid model disabled in selector, free models still work
-6. Redeem 100%-off voucher → `bonus_credits` increments → paid model re-enables
-7. Sign out → `getUserId()` returns anon localStorage ID
-8. Langfuse: signed-in traces tagged with Neon Auth user ID
+4. `bonus_credits = 0` → paid model disabled in selector, free models still work
+5. Redeem 100%-off voucher → `bonus_credits` increments → paid model re-enables
+6. Send message with paid model → `credit_usage_log` row + `bonus_credits` decrements
+7. Free model message → `credit_usage_log` row with `credits_used = 0`
+8. Sign out → `getUserId()` returns anon localStorage ID
+9. Langfuse: signed-in traces tagged with Neon Auth user ID
