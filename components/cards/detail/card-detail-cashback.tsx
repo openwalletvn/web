@@ -5,6 +5,7 @@ import {IntentModel} from '@/lib/intent-model';
 import type {CardModel} from '@/lib/card-model';
 import {OwAmount} from '@/components/owui/ow-amount';
 import {IconInfoCircle} from '@tabler/icons-react';
+import {OwBadge} from '@/components/owui/ow-badge';
 import {OwAlert} from '@/components/owui/ow-alert';
 import {CardDetailSection} from '@/components/cards/detail/card-detail-section';
 import {fmtIsoDate, fmtIsoDateLifespan} from '@/lib/utils';
@@ -53,7 +54,7 @@ export async function CardDetailCashback({card}: Props) {
     const cashback = card.getCashback()!;
 
     const hasFooter =
-        cashback.min_spend_per_period || cashback.global_cap || cashback.redemption || cashback.note;
+        cashback.min_spend_per_period || cashback.global_cap || cashback.global_mcc_excluded?.length || cashback.redemption || cashback.note;
 
     const allFrom = cashback.rules.map((r) => r.valid_from).filter(Boolean) as string[];
     const allUntil = cashback.rules.map((r) => r.valid_until).filter(Boolean) as string[];
@@ -104,6 +105,18 @@ export async function CardDetailCashback({card}: Props) {
                                         cashback.global_cap.amount === -1
                                             ? 'Hoàn không giới hạn'
                                             : <>{cashback.global_cap_max ? <><OwAmount amount={cashback.global_cap.amount} unit="k" textOnly/> – <OwAmount amount={cashback.global_cap_max.amount} unit="k" textOnly period="period"/></> : <OwAmount amount={cashback.global_cap.amount} unit="k" textOnly period="period"/>}</>
+                                    }
+                                />
+                            )}
+                            {cashback.global_mcc_excluded && cashback.global_mcc_excluded.length > 0 && (
+                                <FooterRow
+                                    label="MCC loại trừ"
+                                    value={
+                                        <span className="flex flex-wrap gap-1">
+                                            {cashback.global_mcc_excluded.map((code) => (
+                                                <OwBadge key={code} small colorHex="#ef4444" className="font-mono">{code}</OwBadge>
+                                            ))}
+                                        </span>
                                     }
                                 />
                             )}

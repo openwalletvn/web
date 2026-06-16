@@ -10,6 +10,7 @@ import {
     IconCircleCheck,
     IconCirclePercentage,
     IconCurrencyDollar,
+    IconHash,
     IconMapPin,
     IconMessageExclamation,
     IconSortAscending,
@@ -249,6 +250,36 @@ export function OwCardCashbackRule({rule, intentMap, merchantMap, selectable, se
                         <div className="flex flex-wrap gap-1.5">
                             {rule.merchants.map((m) => (
                                 <MerchantBadge key={m} slug={m} merchantMap={merchantMap}/>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* MCC targeted */}
+                {rule.mcc && rule.mcc.length > 0 && (
+                    <div className="space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                            <IconHash className="w-3.5 h-3.5 text-slate-400"/>
+                            MCC áp dụng
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                            {rule.mcc.map((code) => (
+                                <OwBadge key={code} small className="font-mono">{code}</OwBadge>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* MCC excluded */}
+                {rule.mcc_excluded && rule.mcc_excluded.length > 0 && (
+                    <div className="space-y-1.5">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                            <IconHash className="w-3.5 h-3.5 text-red-400"/>
+                            MCC loại trừ
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                            {rule.mcc_excluded.map((code) => (
+                                <OwBadge key={code} small colorHex="#ef4444" className="font-mono line-through">{code}</OwBadge>
                             ))}
                         </div>
                     </div>
